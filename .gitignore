@@ -49,3 +49,10 @@ rebel.xml
 
 ## Ignore jenv configuration
 .java-version
+
+
+## Ignore python cache and module files 
+__pychache__
+
+## Ignore logs files
+.log
