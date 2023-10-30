@@ -1,0 +1,16 @@
+{
+    "groups": [
+        {
+            "name": "manager",
+            "description": "Group regrouping managers"
+        },
+        {
+            "name": "librarian",
+            "description": "Group regrouping librarians"
+        },
+        {
+            "name": "student",
+            "description": "Group regrouping students"
+        }
+    ]
+}
