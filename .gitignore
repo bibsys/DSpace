@@ -29,6 +29,7 @@ nb-configuration.xml
 
 ## Igncore project files create by VSCode
 ## Edit at https://www.gitignore.io/?templates=visualstudiocode
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json

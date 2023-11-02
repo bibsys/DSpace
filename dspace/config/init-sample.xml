@@ -2,20 +2,10 @@
 <import_structure>
 	<community>
 		<name>UCLouvain</name>
-		<description />
-		<intro />
-		<copyright />
-		<sidebar />
 		<collection>
 			<name>Master thesis</name>
 			<entity-type>Thesis</entity-type>
 			<submission-type>master-thesis</submission-type>
-			<description />
-			<intro />
-			<copyright />
-			<sidebar />
-			<license />
-			<provenance />
 		</collection>
 	</community>
 </import_structure>
