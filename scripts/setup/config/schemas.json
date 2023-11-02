@@ -1,0 +1,45 @@
+{
+    "schemas": [
+        {
+            "prefix": "masterthesis",
+            "namespace": "https://uclouvain.be/ontology/masterthesis",
+            "fields": [
+                {
+                    "element": "degree",
+                    "qualifier": "code",
+                    "scope_note": "Real degree code"
+                },
+                {
+                    "element": "degree",
+                    "qualifier": "label",
+                    "scope_note": "Real degree label"
+                },
+                {
+                    "element": "faculty",
+                    "qualifier": "code",
+                    "scope_note": ""
+                },
+                {
+                    "element": "faculty",
+                    "qualifier": "name",
+                    "scope_note": ""
+                },
+                {
+                    "element": "root_degree",
+                    "qualifier": "code",
+                    "scope_note": "Root degree code"
+                },
+                {
+                    "element": "root_degree",
+                    "qualifier": "label",
+                    "scope_note": "Root degree label"
+                },
+                {
+                    "element": "session",
+                    "qualifier": "",
+                    "scope_note": ""
+                }
+            ]
+        }
+    ]
+}
