@@ -1,0 +1,148 @@
+{
+    "schemas": [
+        {
+            "prefix": "masterthesis",
+            "namespace": "https://uclouvain.be/ontology/masterthesis",
+            "fields": [
+                {
+                    "element": "degree",
+                    "qualifier": "code",
+                    "scope_note": "Real degree code"
+                },
+                {
+                    "element": "degree",
+                    "qualifier": "label",
+                    "scope_note": "Real degree label"
+                },
+                {
+                    "element": "faculty",
+                    "qualifier": "code",
+                    "scope_note": ""
+                },
+                {
+                    "element": "faculty",
+                    "qualifier": "name",
+                    "scope_note": ""
+                },
+                {
+                    "element": "root_degree",
+                    "qualifier": "code",
+                    "scope_note": "Root degree code"
+                },
+                {
+                    "element": "root_degree",
+                    "qualifier": "label",
+                    "scope_note": "Root degree label"
+                },
+                {
+                    "element": "session",
+                    "qualifier": "",
+                    "scope_note": ""
+                }
+            ]
+        },
+        {
+            "prefix": "authors",
+            "namespace": "https://uclouvain.be/ontology/persons",
+            "fields": [
+                {
+                    "element": "email",
+                    "qualifier": "",
+                    "scope_note": "Email for this person"
+                },
+                {
+                    "element": "identifier",
+                    "qualifier": "fgs",
+                    "scope_note": "UCLouvain global ID (aka FGS number)"
+                },
+                {
+                    "element": "identifier",
+                    "qualifier": "noma",
+                    "scope_note": "UCLouvain specific student ID"
+                },
+                {
+                    "element": "identifier",
+                    "qualifier": "orcid_id",
+                    "scope_note": "ORCID ID"
+                },
+                {
+                    "element": "institution",
+                    "qualifier": "code",
+                    "scope_note": "Author institution code at the publication datetime (i.e. 'UCLouvain')"
+                },
+                {
+                    "element": "institution",
+                    "qualifier": "name",
+                    "scope_note": "Author institution full-name at the publication datetime (i.e. 'Université catholique de Louvain')"
+                },
+                {
+                    "element": "name",
+                    "qualifier": "firstname",
+                    "scope_note": "Author first name"
+                },
+                {
+                    "element": "name",
+                    "qualifier": "lastname",
+                    "scope_note": "Author family name"
+                },
+                {
+                    "element": "name",
+                    "qualifier": "qualifier",
+                    "scope_note": "Author qualifier (Ininitals, numbering, ...)"
+                },
+                {
+                    "element": "name",
+                    "qualifier": "",
+                    "scope_note": "Author fullname in format 'lastname, firstname' (i.e. 'Smith, John')"
+                },
+                {
+                    "element": "role",
+                    "qualifier": "",
+                    "scope_note": "Author role in this publication"
+                }
+            ]
+        },
+        {
+            "prefix": "advisors",
+            "namespace": "https://uclouvain.be/ontology/advisors",
+            "fields": [
+                {
+                    "element": "email",
+                    "qualifier": "",
+                    "scope_note": ""
+                },
+                {
+                    "element": "institution",
+                    "qualifier": "code",
+                    "scope_note": ""
+                },
+                {
+                    "element": "institution",
+                    "qualifier": "full-name",
+                    "scope_note": ""
+                }
+            ]
+        },
+        {
+            "prefix": "tags",
+            "namespace": "https://uclouvain.be/ontology/tags",
+            "fields": [
+                {
+                    "element": "content",
+                    "qualifier": "",
+                    "scope_note": ""
+                },
+                {
+                    "element": "date",
+                    "qualifier": "",
+                    "scope_note": "Tag creation date (ISO format)"
+                },
+                {
+                    "element": "type",
+                    "qualifier": "",
+                    "scope_note": "Tag type (i.e. 'accepted', 'validated', 'comment', ...)"
+                }
+            ]
+        }
+    ]
+}
