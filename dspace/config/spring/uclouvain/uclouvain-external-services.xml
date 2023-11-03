@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                  http://www.springframework.org/schema/context
+                  http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
+
+    <!-- UCLouvain Authority -->
+    <bean id="uclouvainAuthorAuthority" class="org.dspace.uclouvain.authority.UCLouvainAuthorAuthority" />
+
+    <bean id="uclouvainAuthorAuthorityAPIConfiguration" class="org.dspace.uclouvain.authority.configuration.UCLouvainAuthorAuthorityAPIConfiguration">
+        <property name="filter" value="${uclouvain.main_author_query.filter}"/>
+        <property name="authorityName" value="${uclouvain.authority.name}" />
+    </bean>
+
+    <bean id="uclouvainAuthorAuthorityClient" class="org.dspace.uclouvain.dilbert.client.DilbertClient" >
+        <!-- Custom HttpClient -->
+        <property name="httpClient">
+            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
+                <property name="baseUrl" value="${uclouvain.main_author_query.url}"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="uclouvainAuthorAuthorityServiceFactory" class="org.dspace.uclouvain.authority.factory.UCLouvainServiceFactoryImpl"/>
+
+    <!-- OSIS -->
+    <bean id="osisConfiguration" class="org.dspace.uclouvain.osis.configuration.OSISConfiguration">
+        <property name="responseDataKey" value="return"/>
+    </bean>
+    <bean id="osisClient" class="org.dspace.uclouvain.osis.client.OSISClientImpl" >
+        <!-- Custom HttpClient -->
+        <property name="httpClient">
+            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
+                <property name="baseUrl" value="${uclouvain.osis.base_url}"/>
+                <property name="token" value="${uclouvain.osis.secret}"/>
+            </bean>
+        </property>
+    </bean>
+</beans>
