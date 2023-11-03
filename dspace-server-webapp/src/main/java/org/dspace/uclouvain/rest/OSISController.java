@@ -1,0 +1,96 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.dspace.uclouvain.rest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.dspace.uclouvain.core.model.MetadataSelectFieldValuesGenerator;
+import org.dspace.uclouvain.external.osis.client.OSISClientImpl;
+import org.dspace.uclouvain.external.osis.model.OSISStudentDegree;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+/** 
+* Main Controller for uclouvain/osis endpoint
+*/
+@RestController
+@RequestMapping("/api/uclouvain/osis")
+public class OSISController {
+    @Autowired
+    private OSISClientImpl osisClient;
+
+    /** 
+     * When calling /api/uclouvain/osis/student/{fgs}/info/all with a given FGS identifier,
+     * returns all information about the corresponding student studies.
+     * 
+     * @param fgs The fgs identifier of the student
+     * @return A list of containing student's degree information
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/student/{fgs}/info/all")
+    public OSISStudentDegree[] getAllStudentInfoByFGS(@PathVariable String fgs) {
+        return this.osisClient.getOSISStudentDegreeByFGS(fgs);
+    }
+
+    /** 
+     * When calling /api/uclouvain/osis/student/{fgs}/info/degree with a given FGS,
+     * returns the degree information of the corresponding student.
+     * 
+     * @param fgs The fgs identifier of the student
+     * @return A list containing all the degree codes for given FGSs
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/student/{fgs}/info/degree")
+    public List<HashMap<String, String>> getStudentDegreeCodesByFGS(@PathVariable String fgs) {
+        List<HashMap<String, String>> returnValueArray  = new ArrayList<>();
+        OSISStudentDegree[] osisStudentDegreeResponse = this.osisClient.getOSISStudentDegreeByFGS(fgs);
+        for (OSISStudentDegree degree: osisStudentDegreeResponse) {
+            HashMap<String, String> returnValueMap = new HashMap<>();
+            returnValueMap.put("fgs", fgs);
+            if (!degree.isError()) {
+                returnValueMap.put("category", degree.getCategorieDecret());
+                returnValueMap.put("degreeCode", degree.getSigleOffreRacine() + " - " + degree.getIntitOffreComplet());
+                returnValueArray.add(returnValueMap);
+            }
+        }
+        return returnValueArray;
+    }
+
+    /** 
+     * Generate a List that contains the metadata value to be modified and its value/options
+     * 
+     * @param fgs The fgs identifier of the student
+     * @param degreeTypeFilter Precise the type of the degree to retrieve
+     * @return List<HashMap<String, String>>
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/students/info/degree")
+    public HashMap<String,MetadataSelectFieldValuesGenerator.OSISStudentMetadataContent> getStudentsDegreeCodesByFGS(
+            @RequestParam List<String> fgs,
+            @RequestParam String degreeTypeFilter
+    ) {
+        MetadataSelectFieldValuesGenerator selectFieldValues =
+                new MetadataSelectFieldValuesGenerator("data-masterthesis.degree.code");
+        for (String fgs_id: fgs) {
+            OSISStudentDegree[] osisStudentDegreeResponse = this.getAllStudentInfoByFGS(fgs_id);
+            for (OSISStudentDegree studentDegree: osisStudentDegreeResponse) {
+                if (!studentDegree.isError() && (studentDegree.getSigleOffreRacine() != null)
+                    && studentDegree.getIntitOffreComplet().toLowerCase().contains(degreeTypeFilter.toLowerCase())
+                ) {
+                    String value = studentDegree.getSigleOffreRacine();
+                    String displayed = value + " - " + studentDegree.getIntitOffreComplet();
+                    selectFieldValues.addMetadataContentElementOption(value, displayed);
+                }
+            }
+        }
+        return selectFieldValues.generateResponse();
+    }
+}
