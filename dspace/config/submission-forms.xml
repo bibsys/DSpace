@@ -3,6 +3,243 @@
 
 <input-forms>
   <form-definitions>
+    <form name="master-thesis-dc-contributor-author">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>author</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Name</label>
+          <input-type>onebox</input-type>
+          <hint>
+          Enter the names of the authors of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
+          </hint>
+          <required>You must enter at least the author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>email</dc-element>
+          <repeatable>false</repeatable>
+          <label>Email</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the email where to contact the author</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>institution</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Institution</label>
+          <input-type>onebox</input-type>
+          <hint>Choose the author institution affiliation</hint>
+        </field>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>fgs</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>FGS</label>
+          <input-type>onebox</input-type>
+          <hint>FGS Identifier</hint>
+          <readonly>all</readonly>
+        </field>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>noma</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>NOMA</label>
+          <input-type>onebox</input-type>
+          <hint>NOMA Identifier</hint>
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>DegreeCode</label>
+          <input-type value-pairs-name="empty">dropdown</input-type>
+          <hint>Degree Code</hint>
+          <required>You must select a degree code, if the select field is empty, please select another person.</required>
+        </field>
+      </row>
+    </form>
+    <form name="master-thesis-dc-contributor-advisor">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>advisor</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Name</label>
+          <input-type>onebox</input-type>
+          <hint>
+          Enter the names of the advisor of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
+          </hint>
+          <required>You must enter at least the author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>advisors</dc-schema>
+          <dc-element>email</dc-element>
+          <repeatable>false</repeatable>
+          <label>Email</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the email where to contact the author</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>advisors</dc-schema>
+          <dc-element>institution</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Institution</label>
+          <input-type>onebox</input-type>
+          <hint>Choose the author institution affiliation</hint>
+        </field>
+      </row>
+    </form>
+    <form name="master-thesis">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>type</dc-element>
+          <repeatable>false</repeatable>
+          <label>Type</label>
+          <input-type>onebox</input-type>
+          <hint>Select the type(s) of content of the item.</hint>
+          <required>You must select a publication type</required>
+          <vocabulary>publication-coar-types</vocabulary>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>author</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Authors</label>
+          <input-type>group</input-type>
+          <hint>Enter the names of the authors of this item.</hint>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>title</dc-element>
+          <repeatable>false</repeatable>
+          <label>Title</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the main title of the item.</hint>
+          <required>You must enter a main title for this item.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>description</dc-element>
+          <dc-qualifier>abstract</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Abstract</label>
+          <input-type>textarea</input-type>
+          <hint>Enter the abstract of the item.</hint>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>language</dc-element>
+          <dc-qualifier>iso-639-2</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Language</label>
+          <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
+          <hint>
+          Select the language of the main content of the item. If the language does not appear in the list, please select 'Other'. If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.
+          </hint>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>subject</dc-element>
+          <repeatable>true</repeatable>
+          <label>Subject Keywords</label>
+          <input-type>tag</input-type>
+          <hint>Enter appropriate subject keywords or phrases.</hint>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>session</dc-element>
+          <repeatable>false</repeatable>
+          <label>Session</label>
+          <input-type value-pairs-name="masterthesis_session">dropdown</input-type>
+          <hint>
+          Session period during which the thesis was submitted.
+          </hint>
+          <required/>
+        </field>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>date</dc-element>
+          <dc-qualifier>issued</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Year</label>
+          <input-type>date</input-type>
+          <hint>Year during which the thesis was submitted.</hint>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Degree related to this item</label>
+          <input-type>onebox</input-type>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>faculty</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Facultyrelated to this item</label>
+          <input-type>onebox</input-type>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>advisor</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Promotors</label>
+          <input-type>group</input-type>
+          <hint>Enter the names of the promotors of this item.</hint>
+          <required/>
+        </field>
+      </row>
+    </form>
     <form name="bitstream-metadata">
       <row>
         <field>
@@ -2777,6 +3014,34 @@
     </form>
   </form-definitions>
   <form-value-pairs>
+    <value-pairs value-pairs-name="masterthesis_session" dc-term="masterthesis_session">
+      <pair>
+        <displayed-value>January</displayed-value>
+        <stored-value>January</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>June</displayed-value>
+        <stored-value>June</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>September</displayed-value>
+        <stored-value>September</stored-value>
+      </pair>
+    </value-pairs>    
+    <value-pairs value-pairs-name="common_iso_languages_639_2" dc-term="common_iso_languages_639_2">
+      <pair>
+        <displayed-value>English</displayed-value>
+        <stored-value>eng</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>French</displayed-value>
+        <stored-value>fre</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Multilingual</displayed-value>
+        <stored-value>mul</stored-value>
+      </pair>
+    </value-pairs>
     <value-pairs value-pairs-name="patent_types" dc-term="patent_types">
       <pair>
         <displayed-value>Use by owner</displayed-value>
@@ -4440,6 +4705,8 @@
         <displayed-value>Personal Picture</displayed-value>
         <stored-value>personal picture</stored-value>
       </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="empty" dc-term="empty" >
     </value-pairs>
   </form-value-pairs>
 </input-forms>
