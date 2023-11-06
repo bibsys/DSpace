@@ -52,7 +52,7 @@ rebel.xml
 
 
 ## Ignore python cache and module files 
-__pychache__
+__pycache__
 
 ## Ignore logs files
 .log
@@ -96,3 +96,6 @@ coverage.xml
 
 # Translations
 *.mo
+
+# vscode config 
+.vscode
