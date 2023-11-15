@@ -1,4 +1,4 @@
-package org.dspace.uclouvain.administer;
+package org.dspace.administer;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -25,6 +25,13 @@ public class UtilityCLITool {
         return opts;
     }
 
+    /**
+     * Display the usage of a command line with all possible arguments.
+     *
+     * @param cls: the CLI class to manage
+     * @param description: a human-readable description for the CLI.
+     * @param optionsGroupList: All options available for the CLI.
+     */
     public static void usage(Class<?> cls, String description, List<Options> optionsGroupList) {
         String header = "\n" + description + "\n\n";
         String footer = "\n";
