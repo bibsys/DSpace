@@ -86,4 +86,74 @@
         <element>contentmodels</element>
         <scope_note>FedoraCommons object content model</scope_note>
     </dc-type>
+    <!-- ADVISORS SCHEMA -->
+    <dc-schema>
+        <name>advisors</name>
+        <namespace>https://uclouvain.be/ontology/advisors</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>email</element>
+        <qualifier/>
+        <scope_note>Advisor email</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>institution</element>
+        <qualifier>name</qualifier>
+        <scope_note>Advisor institution full-name at the publication datetime (i.e. 'Université catholique de Louvain')</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>role</element>
+        <qualifier/>
+        <scope_note>Advisor role in this publication</scope_note>
+    </dc-type>
+    <!-- MASTERTHESIS SCHEMA -->
+    <dc-schema>
+        <name>masterthesis</name>
+        <namespace>https://uclouvain.be/ontology/masterthesis</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>degree</element>
+        <qualifier>code</qualifier>
+        <scope_note>Real degree code</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>degree</element>
+        <qualifier>label</qualifier>
+        <scope_note>Real degree label</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>faculty</element>
+        <qualifier>code</qualifier>
+        <scope_note>Faculty code</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>faculty</element>
+        <qualifier>name</qualifier>
+        <scope_note>Faculty name</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>rootdegree</element>
+        <qualifier>code</qualifier>
+        <scope_note>Root degree code</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>rootdegree</element>
+        <qualifier>label</qualifier>
+        <scope_note>Root degree label</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>session</element>
+        <qualifier/>
+        <scope_note>Session when thesis was defended</scope_note>
+    </dc-type>
 </dspace-dc-types>
