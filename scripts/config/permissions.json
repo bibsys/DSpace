@@ -1,3 +1,18 @@
 {
-    "collections": []
+    "collections": [{
+        "collection_name": "Master thesis",
+        "permissions": [{
+            "mode": "role",
+            "type": "submitter",
+            "groups": [
+                "student"
+            ]
+        }, {
+            "mode": "role",
+            "type": "reviewer",
+            "groups": [
+                "manager"
+            ]
+        }]
+    }]
 }
