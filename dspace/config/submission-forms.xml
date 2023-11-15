@@ -232,9 +232,9 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>advisor</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Promotors</label>
+          <label>Promoters</label>
           <input-type>group</input-type>
-          <hint>Enter the names of the promotors of this item.</hint>
+          <hint>Enter the names of the promoters of this item.</hint>
           <required/>
         </field>
       </row>

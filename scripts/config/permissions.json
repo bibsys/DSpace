@@ -1,0 +1,27 @@
+{
+    "collections": [{
+        "collection_name": "Master thesis",
+        "permissions": [{
+            "type": "submitter",
+            "groups": [
+                "student"
+            ]
+        }, {
+            "type": "reviewer",
+            "groups": [
+                "manager"
+            ]
+        }, {
+            "type": "editor",
+            "groups": [
+                "manager",
+                "librarian"
+            ]
+        }, {
+            "type": "finaleditor",
+            "groups": [
+                "librarian"
+            ]
+        }]
+    }]
+}

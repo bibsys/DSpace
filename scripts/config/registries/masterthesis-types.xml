@@ -1,4 +1,16 @@
 <dspace-dc-types>
+
+    <dspace-header>
+        <title>Master thesis specific metadata registry</title>
+        <contributor.author>Renaud Michotte</contributor.author>
+        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+    </dspace-header>
+
+    <dc-schema>
+        <name>masterthesis</name>
+        <namespace>https://uclouvain.be/ontology/masterthesis</namespace>
+    </dc-schema>
+
     <dc-type>
         <schema>masterthesis</schema>
         <element>degree</element>
@@ -39,6 +51,8 @@
         <schema>masterthesis</schema>
         <element>session</element>
         <qualifier/>
-        <scope_note/>
+        <scope_note>Session when thesis was defended</scope_note>
     </dc-type>
+
+
  </dspace-dc-types>
