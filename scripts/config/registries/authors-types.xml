@@ -1,0 +1,56 @@
+<dspace-dc-types>
+    <!-- HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dspace-header>
+        <title>Document author specific metadata</title>
+        <contributor.author>Renaud Michotte</contributor.author>
+        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>authors</name>
+        <namespace>https://uclouvain.be/ontology/persons</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>authors</schema>
+        <element>email</element>
+        <qualifier/>
+        <scope_note>Author email</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
+        <element>identifier</element>
+        <qualifier>fgs</qualifier>
+        <scope_note>UCLouvain global ID (aka FGS number)</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
+        <element>identifier</element>
+        <qualifier>noma</qualifier>
+        <scope_note>UCLouvain specific student ID</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
+        <element>identifier</element>
+        <qualifier>orcid_id</qualifier>
+        <scope_note>Orcid ID</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
+        <element>institution</element>
+        <qualifier>code</qualifier>
+        <scope_note>Author institution code at the publication datetime (i.e. 'UCLouvain')</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
+        <element>institution</element>
+        <qualifier>name</qualifier>
+        <scope_note>Author institution full-name at the publication datetime (i.e. 'Université catholique de Louvain')</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
+        <element>role</element>
+        <qualifier/>
+        <scope_note>Author role in this publication</scope_note>
+    </dc-type>
+ </dspace-dc-types>
