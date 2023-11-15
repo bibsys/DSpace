@@ -259,6 +259,8 @@ echo -e "\033[K✅ Community and collection created"
 echo -e "📘 Registering schemas & metadata fields..."
 METADATA_REGISTRIES=(
   "registries/dc-types.xml"
+  "registries/masterthesis-types.xml"
+  "registries/advisors-types.xml"
   "registries/authors-types.xml"
   "registries/fedora-types.xml"
 )
