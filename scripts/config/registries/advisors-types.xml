@@ -1,0 +1,32 @@
+<dspace-dc-types>
+    <!-- HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dspace-header>
+        <title>Document advisors specific metadata</title>
+        <contributor.author>Renaud Michotte</contributor.author>
+        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>advisors</name>
+        <namespace>https://uclouvain.be/ontology/advisors</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>advisors</schema>
+        <element>email</element>
+        <qualifier/>
+        <scope_note>Advisor email</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>institution</element>
+        <qualifier>name</qualifier>
+        <scope_note>Advisor institution full-name at the publication datetime (i.e. 'Université catholique de Louvain')</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>role</element>
+        <qualifier/>
+        <scope_note>Advisor role in this publication</scope_note>
+    </dc-type>
+ </dspace-dc-types>

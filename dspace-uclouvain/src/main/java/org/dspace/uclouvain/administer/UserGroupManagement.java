@@ -1,23 +1,13 @@
 package org.dspace.uclouvain.administer;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
-import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
-
-import java.sql.SQLException;
-import java.util.Arrays;
-
-import static org.dspace.uclouvain.administer.UtilityCLITool.usage;
 
 /**
  * A command-line tool for managing membership users into groups. With this
@@ -39,7 +29,7 @@ import static org.dspace.uclouvain.administer.UtilityCLITool.usage;
  * @author Renaud Michotte <renaud.michotte@uclouvain.be>
  * @version $Revision$
  */
-public class UserGroupManagement {
+public class UserGroupManagement extends AbstractCLICommand {
 
     // CLASS CONSTANTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /** CLI available options */
@@ -66,15 +56,20 @@ public class UserGroupManagement {
             .desc("action to execute (add|delete)")
             .required(true)
             .build();
+    private static final Option OPT_FORCE = Option.builder("f")
+            .longOpt("force")
+            .hasArg(false)
+            .desc("force group creation if not exists")
+            .required(false)
+            .build();
 
     public static final String USAGE_DESCRIPTION = "A command-line tool for managing the groups a user belongs to";
     public static final String ACTION_ADD = "add";
     public static final String ACTION_DELETE = "delete";
 
     // CLASS ATTRIBUTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    private final Context context;
-    protected EPersonService ePersonService;
-    protected GroupService groupService;
+    private final Context context = new Context();
+    protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
 
 
     // CONSTRUCTOR & MAIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -86,48 +81,25 @@ public class UserGroupManagement {
      * @throws MissingArgumentException: If a required argument is missing.
      */
     public static void main(String[] argv) throws Exception {
-
-        Options infoOptions = new Options();
-        infoOptions.addOption(OPT_HELP);
-
-        Options serviceOptions = new Options();
-        serviceOptions.addOption(OPT_USER);
-        serviceOptions.addOption(OPT_GROUP);
-        serviceOptions.addOption(OPT_ACTION);
-
-        // Check command line arguments
-        //    * First check if some information's options are present into CLI argument.
-        //    * Next we could re-parse the argument to check service's options and try to execute the CLI.
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cl = null;
-        try {
-            cl = parser.parse(infoOptions, argv, true);
-            if (cl.hasOption("help")) {
-                throw new ParseException("");
-            }
-            cl = parser.parse(serviceOptions, argv, true);
-        } catch (ParseException pe) {
-            if (!pe.getMessage().isEmpty()) {
-                System.err.println(pe.getMessage());
-            }
-            usage(UserGroupManagement.class,
-                  UserGroupManagement.USAGE_DESCRIPTION,
-                  Arrays.asList(infoOptions, serviceOptions)
-            );
-            System.exit(1);
-        }
-        // Execute the command
         UserGroupManagement ugm = new UserGroupManagement();
-        ugm.manageGroupMembership(cl.getOptionValue("a"), cl.getOptionValue("u"), cl.getOptionValue("g"));
+        CommandLine cl = ugm.validateCLIArgument(argv);
+        ugm.manageGroupMembership(
+                cl.getOptionValue("a"),
+                cl.getOptionValue("u"),
+                cl.getOptionValue("g"),
+                cl.hasOption("f")
+        );
     }
 
-    /**
-     * constructor, which just creates and object with a ready context
-     */
-    protected UserGroupManagement() {
-        context = new Context();
-        groupService = EPersonServiceFactory.getInstance().getGroupService();
-        ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
+    protected void buildOptions() {
+        serviceOptions.addOption(OPT_ACTION);
+        serviceOptions.addOption(OPT_GROUP);
+        serviceOptions.addOption(OPT_USER);
+        serviceOptions.addOption(OPT_FORCE);
+        infoOptions.addOption(OPT_HELP);
+    }
+    protected String getUsageDescription() {
+        return UserGroupManagement.USAGE_DESCRIPTION;
     }
 
     // PRIVATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -139,12 +111,10 @@ public class UserGroupManagement {
      * @param groupName: the group name to manage.
      * @throws Exception if any exceptions occurred during process.
      */
-    private void manageGroupMembership(String action, String userID, String groupName) throws Exception{
-        // This is a CLI command, no need to be authenticated
+    private void manageGroupMembership(String action, String userID, String groupName, boolean force) throws Exception{
         context.turnOffAuthorisationSystem();
-
-        EPerson eperson = findUser(userID);
-        Group group = findGroup(groupName);
+        EPerson eperson = UtilityCLITool.findUser(context, userID);
+        Group group = getGroup(groupName, force);
         switch (action) {
             case ACTION_ADD:
                 groupService.addMember(context, group, eperson);
@@ -157,46 +127,30 @@ public class UserGroupManagement {
         }
         groupService.update(context, group);
         context.complete();
-        System.out.println("Group '"+groupName+"' updated");
     }
 
-    /**
-     * Find an ePerson based either on email, either on UUID (aka. NetID)
-     *
-     * @param userID: the user's identifier
-     * @return the corresponding ePerson
-     * @throws IllegalStateException if a database exception occurred or no ePerson is found.
-     */
-    private EPerson findUser(String userID) throws IllegalStateException {
-        if (userID == null || userID.isEmpty()) {
-            throw new IllegalStateException("user ID must be specified");
-        }
-        try {
-            EPerson eperson = this.ePersonService.findByEmail(this.context, userID);
-            if (eperson != null) {
-                return eperson;
-            }
-            eperson = this.ePersonService.findByNetid(this.context, userID);
-            if (eperson != null) {
-                return eperson;
-            }
-        } catch(SQLException e) {
-            throw new IllegalStateException("User not found :: "+e.getMessage());
-        }
-        throw new IllegalStateException("User not found");
-    }
+
 
     /**
-     * Find a group based on its name
+     * Get a group based on its name. If this group doesn't yet exist, it could be
+     * created.
      *
      * @param groupName: the group name
+     * @param createGroup: If group doesn't yet exist, should it be created ?
      * @return the corresponding group
      * @throws IllegalStateException if a database exception occurred or no group is found
      */
-    private Group findGroup(String groupName) throws SQLException {
+    private Group getGroup(String groupName, boolean createGroup) throws Exception {
         Group group = this.groupService.findByName(this.context, groupName);
         if (group == null) {
-            throw new IllegalStateException("Group not found");
+            if (createGroup) {
+                group = this.groupService.create(context);
+                groupService.setName(group, groupName);
+                // DEV NOTES :: not need to update `groupService` because it will be
+                // triggered at the end of the CLI (if no errors occurred).
+            } else {
+                throw new IllegalStateException("Group not found");
+            }
         }
         return group;
     }
