@@ -615,6 +615,10 @@
             <groupId>org.dspace</groupId>
             <artifactId>dspace-swordv2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.dspace</groupId>
+            <artifactId>dspace-uclouvain</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
