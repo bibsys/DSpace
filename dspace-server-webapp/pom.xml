@@ -571,7 +571,6 @@
             <groupId>org.dspace</groupId>
             <artifactId>dspace-uclouvain</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
