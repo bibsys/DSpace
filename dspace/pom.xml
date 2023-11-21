@@ -252,7 +252,12 @@
             <groupId>org.dspace</groupId>
             <artifactId>dspace-oai</artifactId>
     	</dependency>
-
+        <!-- This dependency ensures DSpace UCLouvain JAR is added to [dspace]/lib/,
+             so that the all UCLouvain CLI commands referenced into 'launcher.xml' works.  -->
+        <dependency>
+            <groupId>org.dspace</groupId>
+            <artifactId>dspace-uclouvain</artifactId>
+        </dependency>
         <!-- The Servlet API is also needed by the 'dspace oai' launcher.xml
              command. -->
     	<dependency>
