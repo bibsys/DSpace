@@ -75,7 +75,7 @@ then
     # STEP 3: INIT COLLECTIONS & COMMUNITIES
 
     echo -en "📘 Creating new community and collection...\r"
-    docker exec ${BACKEND} sh -c "/dspace/bin/dspace dsrun org.dspace.administer.StructBuilder -e ${admin_email} -f /dspace/config/init-sample.xml -o /etc/null" >> ${LOG_PATH}
+    docker exec ${BACKEND} sh -c "/dspace/bin/dspace structure-builder -e ${admin_email} -f /dspace/config/init-sample.xml -o /etc/null" >> ${LOG_PATH}
     if [ $? -eq 0 ]
     then
         echo -e "\033[K✅ Community and collection created"
