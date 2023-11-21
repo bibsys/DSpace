@@ -1041,6 +1041,21 @@
         </profile>
 
         <!--
+           Builds UCLouvain extension for DSpace
+        -->
+        <profile>
+            <id>dspace-uclouvain</id>
+            <activation>
+                <file>
+                    <exists>dspace-uclouvain/pom.xml</exists>
+                </file>
+            </activation>
+            <modules>
+                <module>dspace-uclouvain</module>
+            </modules>
+        </profile>
+
+        <!--
          The 'release' profile is used by the 'maven-release-plugin' (see above)
          to actually perform a DSpace software release to Maven central.
          This profile contains settings which are ONLY enabled when performing
@@ -1192,6 +1207,11 @@
             <dependency>
                 <groupId>org.dspace</groupId>
                 <artifactId>dspace-server-webapp</artifactId>
+                <version>cris-2024.01.00-SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>org.dspace</groupId>
+                <artifactId>dspace-uclouvain</artifactId>
                 <version>cris-2024.01.00-SNAPSHOT</version>
             </dependency>
             <!-- DSpace API Localization Packages -->
