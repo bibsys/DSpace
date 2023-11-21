@@ -41,6 +41,7 @@ services:
     volumes:
       - assetstore:/dspace/assetstore
       - ./dspace/config:/dspace/config
+      - ./scripts/config:/uclouvain/config
       # - solr_configs:/dspace/solr
     # Ensure that the database is ready BEFORE starting tomcat
     entrypoint: 
