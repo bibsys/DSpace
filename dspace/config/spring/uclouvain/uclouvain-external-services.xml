@@ -9,6 +9,8 @@
 
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
+    <!-- NOTE: IN THE FUTURE THIS FILE SHOULD BE DIVIDED IN MULTIPLE ONES FOR BETTER READABILITY -->
+
     <!-- UCLouvain Authority -->
     <bean id="uclouvainAuthorAuthority" class="org.dspace.uclouvain.authority.UCLouvainAuthorAuthority" />
 
@@ -41,4 +43,19 @@
             </bean>
         </property>
     </bean>
+
+    <!-- PDF ATTESTATION GENERATORS -->
+    <!-- ConfigLoader -->
+    <bean id="pdfAttestationGeneratorConfiguration" class="org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration">
+        <constructor-arg value="/config/pdf/attestation/attestationGeneratorConfiguration.xml"/>
+    </bean>
+    
+    <!-- Factory -->
+    <bean id="pdfAttestationGeneratorFactory" class="org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactoryImpl" />
+    
+    <!-- Handlers -->
+    <bean id="masterThesisPdfAttestationGeneratorHandle" class="org.dspace.uclouvain.pdfAttestationGenerator.handlers.MasterThesisPdfAttestationGeneratorHandler"/>
+
+    <!-- UTILS -->
+    <bean id="metadataUtils" class="org.dspace.uclouvain.core.utils.MetadataUtils" />
 </beans>
