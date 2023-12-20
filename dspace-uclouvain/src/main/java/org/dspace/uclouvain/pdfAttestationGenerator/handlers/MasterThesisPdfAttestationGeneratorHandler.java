@@ -1,9 +1,13 @@
 package org.dspace.uclouvain.pdfAttestationGenerator.handlers;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -93,6 +97,24 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         }
     };
 
+    
+    /** 
+     * From an uuid, generates a PDF attestation for the given object an write it to an InputStream 
+     * 
+     * @param uuid: The uuid of the targeted object
+     * @return InputStream; The input stream containing the PDF Attestation
+     * @throws PDFGenerationException
+     */
+    public InputStream getAttestationAsInputStream(UUID uuid) throws PDFGenerationException {
+        try {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            this.getAttestation(out, uuid);
+            return convertOutputStreamToInputStream(out);
+        } catch (Exception e) {
+            throw new PDFGenerationException(e.getMessage());
+        }
+    }
+
     /** 
     * Generates a XML containing data to feed the template file.
     *
@@ -137,5 +159,32 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         pdfModel.imagePath = this.source + "/assets/images/dial_mem.png"; 
 
         return pdfModel.getRenderedXML();
+    }
+
+    /** 
+     * Utils method to convert a ByteArrayOutputStream to an InputStream
+     * 
+     * @param out: A ByteArrayOutputStream that contains the data to put in the inputStream
+     * @return InputStream or null
+     * @throws IOException
+     */
+    private static InputStream convertOutputStreamToInputStream(ByteArrayOutputStream out) throws IOException {
+        // We use pipes to transfer data from one type of stream to the other
+        PipedOutputStream pipeOut = new PipedOutputStream();
+        PipedInputStream pipeIn = new PipedInputStream(pipeOut);
+
+        try {
+            // Using both Input and Output stream pipes in the same thread isn't recommended (deadlock risks) so we create a new one
+            new Thread(() -> {
+                try {
+                    out.writeTo(pipeOut);
+                    pipeOut.close();
+                } catch (IOException e) {}
+            }).start();
+            return pipeIn;
+        }
+        catch (Exception e) {
+            return null;
+        }
     }
 }

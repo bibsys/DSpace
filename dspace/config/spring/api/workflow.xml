@@ -32,7 +32,17 @@
                 <ref bean="editstep"/>
                 <ref bean="finaleditstep"/>
                 <ref bean="checkcorrectionstep"/>
+                <ref bean="generatepdfattestationstep" />
             </util:list>
+        </property>
+    </bean>
+
+    <bean name="generatepdfattestationstep" class="org.dspace.xmlworkflow.state.Step">
+        <property name="userSelectionMethod" ref="noUserSelectionAction"/>
+        <property name="actions">
+            <list>
+                <ref bean="generatepdfaction"/>
+            </list>
         </property>
     </bean>
 
@@ -107,6 +117,12 @@
     
     <bean name="checkcorrectionstep" class="org.dspace.xmlworkflow.state.Step">
         <property name="userSelectionMethod" ref="noUserSelectionAction"/>
+        <property name="outcomes">
+            <util:map>
+                <entry key="#{ T(org.dspace.xmlworkflow.state.actions.ActionResult).OUTCOME_COMPLETE}"
+                       value-ref="generatepdfattestationstep"/>
+            </util:map>
+        </property>
         <property name="actions">
             <list>
                 <ref bean="checkcorrectionaction"/>
