@@ -1,0 +1,14 @@
+## Email sent to the submitter to inform that an error occurred when generating the PDF attestation email.
+## Parameters:  - {0} Date and time
+##              - {1} Submitter name
+##              - {2} Submission type
+##              - {3} Information about the submission (title, abstract...)
+
+-- ${params[0]} --
+
+Dear ${params[1]},
+We are sorry to announce you that an error occurred while generating your ${params[2]} submission PDF attestation.
+
+${params[3]}
+
+Please contact our team for support at ${config.get("mail.helpdesk")}.

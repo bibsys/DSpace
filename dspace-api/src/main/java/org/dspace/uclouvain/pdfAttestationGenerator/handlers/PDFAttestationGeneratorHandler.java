@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.pdfAttestationGenerator.handlers;
 
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
@@ -14,4 +15,5 @@ import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.PDFGenerationExce
 
 public interface PDFAttestationGeneratorHandler {
     void getAttestation(OutputStream out, UUID uuid) throws PDFGenerationException;
+    InputStream getAttestationAsInputStream(UUID uuid) throws PDFGenerationException;
 }
