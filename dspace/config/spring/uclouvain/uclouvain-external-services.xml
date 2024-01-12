@@ -10,32 +10,32 @@
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
     <!-- UCLouvain Authority -->
-    <bean id="uclouvainAuthorAuthority" class="org.dspace.uclouvain.authority.UCLouvainAuthorAuthority" />
+    <bean id="uclouvainAuthorAuthority" class="org.dspace.authority.UCLouvainAuthorAuthority" />
 
-    <bean id="uclouvainAuthorAuthorityAPIConfiguration" class="org.dspace.uclouvain.authority.configuration.UCLouvainAuthorAuthorityAPIConfiguration">
+    <bean id="uclouvainAuthorAuthorityAPIConfiguration" class="org.dspace.authority.configuration.UCLouvainAuthorAuthorityAPIConfiguration">
         <property name="filter" value="${uclouvain.main_author_query.filter}"/>
         <property name="authorityName" value="${uclouvain.authority.name}" />
     </bean>
 
-    <bean id="uclouvainAuthorAuthorityClient" class="org.dspace.uclouvain.dilbert.client.DilbertClient" >
+    <bean id="uclouvainAuthorAuthorityClient" class="org.dspace.external.dilbert.client.DilbertClient" >
         <!-- Custom HttpClient -->
         <property name="httpClient">
-            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
+            <bean class="org.dspace.core.GenericHttpClient">
                 <property name="baseUrl" value="${uclouvain.main_author_query.url}"/>
             </bean>
         </property>
     </bean>
 
-    <bean id="uclouvainAuthorAuthorityServiceFactory" class="org.dspace.uclouvain.authority.factory.UCLouvainServiceFactoryImpl"/>
+    <bean id="uclouvainAuthorAuthorityServiceFactory" class="org.dspace.authority.factory.UCLouvainServiceFactoryImpl"/>
 
     <!-- OSIS -->
-    <bean id="osisConfiguration" class="org.dspace.uclouvain.osis.configuration.OSISConfiguration">
+    <bean id="osisConfiguration" class="org.dspace.external.osis.configuration.OSISConfiguration">
         <property name="responseDataKey" value="return"/>
     </bean>
-    <bean id="osisClient" class="org.dspace.uclouvain.osis.client.OSISClientImpl" >
+    <bean id="osisClient" class="org.dspace.external.osis.client.OSISClientImpl" >
         <!-- Custom HttpClient -->
         <property name="httpClient">
-            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
+            <bean class="org.dspace.core.GenericHttpClient">
                 <property name="baseUrl" value="${uclouvain.osis.base_url}"/>
                 <property name="token" value="${uclouvain.osis.secret}"/>
             </bean>
