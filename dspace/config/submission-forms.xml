@@ -36,6 +36,7 @@
           <label>Institution</label>
           <input-type>onebox</input-type>
           <hint>Choose the author institution affiliation</hint>
+          <readonly>all</readonly>
         </field>
         <field>
           <dc-schema>authors</dc-schema>
@@ -81,9 +82,9 @@
           <label>Name</label>
           <input-type>onebox</input-type>
           <hint>
-          Enter the names of the advisor of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
+          Enter the names of the promoters of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
           </hint>
-          <required>You must enter at least the author.</required>
+          <required>You must enter at least the promoter.</required>
         </field>
       </row>
       <row>
@@ -93,7 +94,7 @@
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email where to contact the author</hint>
+          <hint>Enter the email where to contact the promoter</hint>
         </field>
       </row>
       <row>
@@ -104,12 +105,12 @@
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
-          <hint>Choose the author institution affiliation</hint>
+          <hint>Choose the promoter institution affiliation</hint>
         </field>
       </row>
     </form>
     <form name="master-thesis">
-      <row>
+      <!-- <row>
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
@@ -120,7 +121,7 @@
           <required>You must select a publication type</required>
           <vocabulary>publication-coar-types</vocabulary>
         </field>
-      </row>
+      </row> -->
       <row>
         <field>
           <dc-schema>dc</dc-schema>
