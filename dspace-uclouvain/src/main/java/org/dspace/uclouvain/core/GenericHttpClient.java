@@ -2,6 +2,7 @@ package org.dspace.uclouvain.core;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -26,7 +27,14 @@ public class GenericHttpClient {
         return httpRequestBuilder;
     }
 
-    public HttpResponse<String> get(String url) throws IOException, InterruptedException {
+    /** 
+     * Makes a GET Http Request on the given url and returns the response.
+     * 
+     * @param url: The url to get.
+     * @return: The request response.
+     * @throws URISyntaxException
+     */
+    public HttpResponse<String> get(String url) throws IOException, InterruptedException, URISyntaxException {
         String requestUrl = this.baseUrl + url;
 
         HttpRequest.Builder requestBuilder = this.generateHttpRequestBuilder(requestUrl);
@@ -36,7 +44,15 @@ public class GenericHttpClient {
         return this.httpClient.send(request, BodyHandlers.ofString()); 
     }
 
-    public HttpResponse<String> get(String url, HashMap<String, String> headers) throws IOException, InterruptedException {
+    /** 
+     * Makes a GET Http Request on the given url with the given headers and returns the response.
+     * 
+     * @param url: The url to get.
+     * @param headers: The headers to add to the request.
+     * @return: The request response.
+     * @throws URISyntaxException
+     */
+    public HttpResponse<String> get(String url, HashMap<String, String> headers) throws IOException, InterruptedException, URISyntaxException {
         String requestUrl = this.baseUrl + url;
 
         HttpRequest.Builder requestBuilder = generateHttpRequestBuilder(requestUrl);
@@ -49,6 +65,7 @@ public class GenericHttpClient {
     }
 
     // Getter && Setters
+
     public String getBaseUrl() {
         return this.baseUrl;
     }
