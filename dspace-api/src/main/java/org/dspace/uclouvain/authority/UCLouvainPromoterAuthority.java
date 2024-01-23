@@ -12,13 +12,9 @@ import java.util.Map;
 
 import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
 import org.dspace.uclouvain.authority.factory.UCLouvainServiceFactory;
-import org.dspace.uclouvain.core.model.Orcid;
 import org.dspace.uclouvain.external.dilbert.model.DialPerson;
 
-/**
- * This is an implementation for the UCLouvain's ChoiceAuthority which manages the addition of authors
- */
-public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
+public class UCLouvainPromoterAuthority extends AbstractUCLouvainAuthority {
 
     private UCLouvainAuthorityClient getUCLouvainAuthorityClient() {
         return UCLouvainServiceFactory.getInstance().getUCLouvainAuthorityClient();
@@ -29,13 +25,13 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
     }
 
     /** 
-     * Retrieve the list of student based on the query (first and last name)
+     * Retrieve the list of promoter based on the query (first and last name)
      * 
      * @param query The name typed by the user, used to search for students
      * @return An array containing the result of the search
      */
     DialPerson[] getSuggestions(String query) {
-        return this.getUCLouvainAuthorityClient().getSuggestionByTermWithFilter(query, "authors");
+        return this.getUCLouvainAuthorityClient().getSuggestionByTermWithFilter(query, "promoters");
     }
 
     /** 
@@ -47,30 +43,14 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
      */
     Map<String, String> generateExtras(DialPerson person) {
         Map<String, String> extras = new HashMap<>();
-
-        String employeeId = person.getEmployeeId();
+        String entity = person.getEntity();
         String institution = person.getInstitution();
-
-        Orcid orcid = new Orcid(person.orcidId);// String with "data-" will be used to fill other form fields
-
-        extras.put("data-authors_institution_code", institution);
-        extras.put("data-authors_email", person.getEmail());
-
-        // Default values for those fields are an empty string because this will allow us to override the previous
-        // set value
-        extras.put("data-authors_identifier_fgs", "");
-        extras.put("data-authors_identifier_noma", "");
-        if (institution.contains("UCL")) {
-            extras.put("data-authors_identifier_fgs", person.getPrimaryId());
+        if (!entity.isEmpty()) {
+            extras.put("institution-entity-name", entity);
         }
-        if (!employeeId.isEmpty()) {
-            extras.put("data-authors_identifier_noma", employeeId);
-            extras.put("authors-identifier-noma", employeeId);
-        }
-        if (!orcid.getOrcid().isEmpty()) {
-            // For future usage, metadata reference might need to be changed
-            extras.put("data-person_identifier_orcid", orcid.getID());
-        }
+        // String with "data-" will be used to fill other form fields
+        extras.put("data-advisors_email", person.getEmail());
+        extras.put("data-advisors_institution_code", institution);
         return extras;
     }
 }
