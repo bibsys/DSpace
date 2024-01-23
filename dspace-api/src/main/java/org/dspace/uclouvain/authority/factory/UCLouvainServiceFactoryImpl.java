@@ -7,8 +7,8 @@
  */
 package org.dspace.uclouvain.authority.factory;
 
-import org.dspace.uclouvain.authority.client.UCLouvainAuthorAuthorityClient;
-import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorAuthorityAPIConfiguration;
+import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
+import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -20,17 +20,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UCLouvainServiceFactoryImpl implements UCLouvainServiceFactory {
 
     @Autowired
-    private UCLouvainAuthorAuthorityClient uclouvainAuthorAuthorityClient;
+    private UCLouvainAuthorityClient uclouvainAuthorityClient;
     @Autowired
-    private UCLouvainAuthorAuthorityAPIConfiguration uclouvainAuthorAuthorityAPIConfiguration;
+    private UCLouvainAuthorityAPIConfiguration uclouvainAuthorityAPIConfiguration;
 
     @Override
-    public UCLouvainAuthorAuthorityClient getUCLouvainAuthorAuthorityClient() {
-        return this.uclouvainAuthorAuthorityClient;
+    public UCLouvainAuthorityClient getUCLouvainAuthorityClient() {
+        return this.uclouvainAuthorityClient;
     }
 
     @Override
-    public UCLouvainAuthorAuthorityAPIConfiguration getUCLouvainAuthorAuthorityConfiguration() {
-        return this.uclouvainAuthorAuthorityAPIConfiguration;
+    public UCLouvainAuthorityAPIConfiguration getUCLouvainAuthorityConfiguration() {
+        return this.uclouvainAuthorityAPIConfiguration;
     }
 }
