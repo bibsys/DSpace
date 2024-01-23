@@ -2,57 +2,60 @@ package org.dspace.uclouvain.external.dilbert.client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 
 import org.dspace.uclouvain.external.dilbert.model.DialPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.dspace.uclouvain.authority.client.UCLouvainAuthorAuthorityClient;
-import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorAuthorityAPIConfiguration;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
+import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration;
 import org.dspace.uclouvain.core.GenericHttpClient;
 import org.dspace.uclouvain.core.GenericResponse;
 
 @Service
-public class DilbertClient implements UCLouvainAuthorAuthorityClient {
+public class DilbertClient implements UCLouvainAuthorityClient {
 
-    private UCLouvainAuthorAuthorityAPIConfiguration uclouvainAuthorityConfiguration;
+    private static Logger logger = LogManager.getLogger(DilbertClient.class);
+
+    private UCLouvainAuthorityAPIConfiguration uclouvainAuthorityConfiguration;
     private GenericHttpClient httpClient;
 
     /** 
-     * Base UCLouvainClient Constructor, instantiate HttpClient & UCLouvainAuthorityConfiguration
+     * Base UCLouvainClient Constructor, instantiate HttpClient & UCLouvainAuthorityConfiguration.
      */
     @Autowired
-    public DilbertClient(UCLouvainAuthorAuthorityAPIConfiguration uclouvainAuthorityConfiguration) {
+    public DilbertClient(UCLouvainAuthorityAPIConfiguration uclouvainAuthorityConfiguration) {
         this.uclouvainAuthorityConfiguration = uclouvainAuthorityConfiguration;
     }
-    
+
     /** 
-     * Search by student first name or/and second name and filtering by {filter} (ex: filter="student")
-     * It returns a list of student information
+     * Generic method to call the Dilbert API with a given term && filter.
      * 
-     * @param term
-     * @param filter
-     * @return: A list of dial peron information 
+     * @param term: The name and/or second name of the person.
+     * @param filterKey: The filter key which indicate the type of person to extract (ex: student, promoter...)
+     * @return: A list of dial person information.
      */
-    public DialPerson[] getStudentByTermWithFilter(String term) {
-        // GET {apiUrl}/searchAuthorDrupal.php?term={term}&filter={filter}
-        String filter = "&filter=" + uclouvainAuthorityConfiguration.getFilter();
-        String url = "/searchAuthorDrupal.php?term=" + term + filter;
-
+    public DialPerson[] getSuggestionByTermWithFilter(String term, String filterKey) {
+        String filter = "&filter=" + uclouvainAuthorityConfiguration.getFilterByKey(filterKey);
+        String cleanedTerm = URLEncoder.encode(term, StandardCharsets.UTF_8);
+        String url = "/searchAuthorDrupal.php?term=" + cleanedTerm + filter;
         DialPerson[] dialPerson = {};
-
         try {
             HttpResponse<String> response = httpClient.get(url);
             dialPerson = new GenericResponse(response.body()).extractJsonResponseDataToClass(null, DialPerson[].class);
         }
         catch(IOException | InterruptedException | URISyntaxException e) {
-            System.err.println(e.getClass().getSimpleName() + "while fetching data :: " + e.getMessage());
+            logger.error(e.getClass().getSimpleName() + "while fetching data :: " + e.getMessage());
             e.printStackTrace(System.err);
         }
         return dialPerson;
     }
 
-    // Setters && getters 
+    // Setters && getters
     public void setHttpClient(GenericHttpClient httpClient) {
         this.httpClient = httpClient;
     }
