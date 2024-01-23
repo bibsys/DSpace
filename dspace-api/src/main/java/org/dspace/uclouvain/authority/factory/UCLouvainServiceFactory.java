@@ -1,8 +1,8 @@
 package org.dspace.uclouvain.authority.factory;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.authority.client.UCLouvainAuthorAuthorityClient;
-import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorAuthorityAPIConfiguration;
+import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
+import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration;
 
 /**
  * Main interface for UCLouvainServiceFactory
@@ -12,9 +12,9 @@ import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorAuthorityAPIC
  */
 public interface UCLouvainServiceFactory {
 
-    UCLouvainAuthorAuthorityClient getUCLouvainAuthorAuthorityClient();
+    UCLouvainAuthorityClient getUCLouvainAuthorityClient();
 
-    UCLouvainAuthorAuthorityAPIConfiguration getUCLouvainAuthorAuthorityConfiguration();
+    UCLouvainAuthorityAPIConfiguration getUCLouvainAuthorityConfiguration();
 
     static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory.getInstance().getServiceManager().getServiceByName(
