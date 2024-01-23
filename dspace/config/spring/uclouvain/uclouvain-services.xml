@@ -28,13 +28,18 @@
 
     <!-- UCLouvain Authority -->
     <bean id="uclouvainAuthorAuthority" class="org.dspace.uclouvain.authority.UCLouvainAuthorAuthority" />
+    <bean id="uclouvainPromoterAuthority" class="org.dspace.uclouvain.authority.UCLouvainPromoterAuthority" />
 
-    <bean id="uclouvainAuthorAuthorityAPIConfiguration" class="org.dspace.uclouvain.authority.configuration.UCLouvainAuthorAuthorityAPIConfiguration">
-        <property name="filter" value="${uclouvain.main_author_query.filter}"/>
-        <property name="authorityName" value="${uclouvain.authority.name}" />
+    <bean id="uclouvainAuthorityAPIConfiguration" class="org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration">
+        <property name="filters">
+            <util:map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="authors" value="${uclouvain.main_author_query.filter}" />
+                <entry key="promoters" value="${uclouvain.main_promoter_query.filter}" />
+            </util:map>
+        </property>
     </bean>
 
-    <bean id="uclouvainAuthorAuthorityClient" class="org.dspace.uclouvain.external.dilbert.client.DilbertClient" >
+    <bean id="uclouvainAuthorityClient" class="org.dspace.uclouvain.external.dilbert.client.DilbertClient" >
         <!-- Custom HttpClient -->
         <property name="httpClient">
             <bean class="org.dspace.uclouvain.core.GenericHttpClient">

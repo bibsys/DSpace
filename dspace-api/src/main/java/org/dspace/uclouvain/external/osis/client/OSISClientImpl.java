@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.http.HttpResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.uclouvain.core.GenericHttpClient;
 import org.dspace.uclouvain.core.GenericResponse;
 import org.dspace.uclouvain.core.utils.DateUtils;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OSISClientImpl implements OSISClient {
+
+    private static Logger logger = LogManager.getLogger(OSISClientImpl.class);
 
     @Autowired
     private OSISConfiguration osisConfiguration;
@@ -27,15 +31,12 @@ public class OSISClientImpl implements OSISClient {
      */
     @Override
     public OSISStudentDegree[] getOSISStudentDegreeByFGS(String fgs){
-
         int currentYear = new DateUtils().getCurrentAcademicYear();
         String url = "/students/v0.0/" + fgs + "/inscriptions/" + currentYear;
         OSISStudentDegree[] student = {};
-
         // Send the request and manage response
         try {
             HttpResponse<String> response = this.httpClient.get(url);
-
             // Convert JSON String into a java OSIS object
             OSISStudentDegree[] degrees = new GenericResponse(response.body()).extractJsonResponseDataToClass(this.osisConfiguration.getResponseDataKey(), OSISStudentDegree[].class);
             if(degrees != null){
@@ -43,10 +44,9 @@ public class OSISClientImpl implements OSISClient {
             }
         }
         catch(IOException | InterruptedException | URISyntaxException e){
-            System.err.println(e.getClass().getSimpleName() + "while fetching data :: " + e.getMessage());
+            logger.error(e.getClass().getSimpleName() + "while fetching data :: " + e.getMessage());
             e.printStackTrace(System.err);
         }
-        
         return student; 
     }
 
