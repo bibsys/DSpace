@@ -214,6 +214,7 @@
           <label>Degree related to this item</label>
           <input-type>onebox</input-type>
           <required/>
+          <visibility>workflow</visibility>
         </field>
       </row>
       <row>
@@ -225,6 +226,7 @@
           <label>Facultyrelated to this item</label>
           <input-type>onebox</input-type>
           <required/>
+          <visibility>workflow</visibility>
         </field>
       </row>
       <row>
