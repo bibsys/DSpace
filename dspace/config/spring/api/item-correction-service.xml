@@ -120,6 +120,15 @@
 				</bean>
 			</list>
 		</entry>
+		<entry key="MasterThesis">
+			<list>
+				<bean class="org.dspace.content.edit.CorrectItemMode">
+					<property name="security">
+						<value type="org.dspace.content.security.CrisSecurity">ADMIN</value>
+					</property>
+				</bean>
+			</list>
+		</entry> 
 	</util:map>
            
 </beans>
