@@ -200,7 +200,7 @@
           <dc-qualifier>issued</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Year</label>
-          <input-type>date</input-type>
+          <input-type>year</input-type>
           <hint>Year during which the thesis was submitted.</hint>
           <required/>
         </field>
