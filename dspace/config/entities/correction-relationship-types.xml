@@ -170,5 +170,4 @@
 	    <max>1</max>
         </rightCardinality>
     </type>
-    
 </relationships>
