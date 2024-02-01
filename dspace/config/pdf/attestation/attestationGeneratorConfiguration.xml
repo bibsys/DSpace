@@ -5,4 +5,9 @@
         <beanName>masterThesisPdfAttestationGeneratorHandle</beanName>
         <template>master-thesis-template.xsl</template>
     </handler>
+    <handler>
+        <itemType>MasterThesis</itemType>
+        <beanName>masterThesisPdfAttestationGeneratorHandle</beanName>
+        <template>master-thesis-template.xsl</template>
+    </handler>
 </handlers>

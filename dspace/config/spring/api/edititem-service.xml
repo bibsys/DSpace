@@ -191,6 +191,19 @@
                         </bean>
                     </list>
                 </entry>
+                <entry key="masterthesis">
+                    <list>
+                        <bean class="org.dspace.content.edit.EditItemMode">
+                            <property name="name" value="FULL" />
+                            <property name="security">
+                                <value type="org.dspace.content.security.CrisSecurity">
+                                    ITEM_ADMIN
+                                </value>
+                            </property>
+                            <property name="submissionDefinition" value="master-thesis-edit" />
+                        </bean>
+                    </list>
+                </entry>
             </map>
         </property>
     </bean>
