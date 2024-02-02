@@ -8,8 +8,8 @@
         <property name="components">
             <list>
                 <ref bean="sectionresearchoutputs" />
-                <ref bean="sectionfundings_and_projects" />
-                <ref bean="sectionresearcherprofiles" />
+                <!-- <ref bean="sectionfundings_and_projects" /> -->
+                <!-- <ref bean="sectionresearcherprofiles" /> -->
                 <ref bean="sectionsite" />
             </list>
         </property>
@@ -126,15 +126,15 @@
         <constructor-arg name="visible" value="false"/>
         <constructor-arg name="sectionComponents">
           <list>
-            <list>
+            <!-- <list>
                 <bean class="org.dspace.layout.CrisLayoutSearchComponent">
                     <property name="discoveryConfigurationName" value="site" />
                     <property name="style" value="col-md-12"/>
                     <property name="searchType" value="basic"/>
                     <property name="displayTitle" value="false"/>
                 </bean>
-            </list>
-            <list>
+            </list> -->
+            <!-- <list>
                 <bean class="org.dspace.layout.CrisLayoutCountersComponent">
                     <property name="style" value="col-md-12 py-4"/>
                     <property name="counterSettingsList">
@@ -160,22 +160,22 @@
                         </list>
                     </property>
                 </bean>
-            </list>
+            </list> -->
             <list>
                 <bean class="org.dspace.layout.CrisLayoutTopComponent">
                     <property name="discoveryConfigurationName" value="homePageTopItems" />
                     <property name="sortField" value="dc.date.accessioned" />
                     <property name="order" value="desc" />
-                    <property name="style" value="col-md-6"/>
+                    <property name="style" value="col-md-12"/>
                     <property name="numberOfItems" value="5"/>
                 </bean>
-                <bean class="org.dspace.layout.CrisLayoutTopComponent">
+                <!-- <bean class="org.dspace.layout.CrisLayoutTopComponent">
                     <property name="discoveryConfigurationName" value="homePageTopItems" />
                     <property name="sortField" value="metric.view" />
                     <property name="order" value="desc" />
                     <property name="style" value="col-md-6"/>
                     <property name="numberOfItems" value="5"/>
-                </bean>
+                </bean> -->
             </list>
           </list>
         </constructor-arg>
