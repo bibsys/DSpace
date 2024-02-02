@@ -267,6 +267,18 @@
       <row>
         <field>
           <dc-schema>dc</dc-schema>
+          <dc-element>rights</dc-element>
+          <dc-qualifier>license</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Select the license type for the file</label>
+          <input-type value-pairs-name="bitstream_licenses">dropdown</input-type>
+          <hint>License type: CC-BY, CC-BY-SA...</hint>
+          <required>You must select a license for the file</required>
+        </field>
+      </row>
+      <!-- <row>
+        <field>
+          <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
           <label>File type</label>
           <input-type value-pairs-name="bitstream_types">dropdown</input-type>
@@ -274,8 +286,8 @@
           <required />
           <hint>Personal picture, logo, main article, etc.</hint>
         </field>
-      </row>
-      <row>
+      </row> -->
+      <!-- <row>
         <field>
           <dc-schema>bitstream</dc-schema>
           <dc-element>hide</dc-element>
@@ -285,7 +297,7 @@
           <required />
           <hint />
         </field>
-      </row>
+      </row> -->
     </form>
     <form name="publication-dc-contributor-author">
       <row>
@@ -4506,6 +4518,32 @@ it, please enter the types and the actual numbers or codes.</hint>
       <pair>
         <displayed-value>Personal Picture</displayed-value>
         <stored-value>personal picture</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="bitstream_licenses" dc-term="bitstream_licenses">
+      <pair>
+        <displayed-value>CC-BY</displayed-value>
+        <stored-value>https://creativecommons.org/licenses/by/4.0/</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>CC-BY-SA</displayed-value>
+        <stored-value>https://creativecommons.org/licenses/by-sa/4.0/</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>CC-BY-NC</displayed-value>
+        <stored-value>https://creativecommons.org/licenses/by-nc/4.0/</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>CC-BY-NC-SA</displayed-value>
+        <stored-value>https://creativecommons.org/licenses/by-nc-sa/4.0/</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>CC-BY-ND</displayed-value>
+        <stored-value>https://creativecommons.org/licenses/by-nd/4.0/</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>CC-BY-NC-ND</displayed-value>
+        <stored-value>https://creativecommons.org/licenses/by-nc-nd/4.0/</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="empty" dc-term="empty" >
