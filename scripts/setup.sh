@@ -24,6 +24,19 @@ restart_dspace_container(){
   echo -e "\033[K✅ Restarting ${1} container"
 }
 
+create_group(){
+  docker exec ${BACKEND} sh -c "\
+      /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.GroupManagement \
+      --action create \
+      --name ${1}" >> "${LOG_PATH}"
+  if [ $? -ne 0 ]
+  then
+      error_msg+exit "\t❌ Error creating '${1}' group !"
+  fi
+  echo -e "\t${CYAN}${1}${NC} group created"
+}
+
+
 # =============================================================================
 #     MAIN SCRIPT
 # =============================================================================
@@ -134,6 +147,7 @@ restart_dspace_container ${BACKEND}
 
 # STEP#3: Create users ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   * Extract all groups to assign to user and create them
+#   * Create additional groups
 #   * Add an admin user
 #   * Adds users and assign it to the correct group
 echo -e "👥 Creating user groups..."
@@ -141,16 +155,9 @@ groups=$(jq '.users[].groups | @sh' ${USERS_CONFIG_PATH} | tr -d \' | tr -d \" |
 IFS=',' groups=($groups)
 for group in "${groups[@]}"
 do
-  docker exec ${BACKEND} sh -c "\
-      /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.GroupManagement \
-      --action create \
-      --name ${group}" >> "${LOG_PATH}"
-  if [ $? -ne 0 ]
-  then
-      error_msg+exit "\t❌ Error creating '${group}' group !"
-  fi
-  echo -e "\t${CYAN}${group}${NC} group created"
+  create_group "${group}"
 done
+create_group "UCLouvain network"
 
 
 echo -e "👤 Creating admin user..."
