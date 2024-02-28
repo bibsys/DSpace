@@ -41,6 +41,7 @@ import org.dspace.eperson.EPersonServiceImpl;
 import org.dspace.services.ConfigurationService;
 import org.dspace.submit.factory.SubmissionServiceFactory;
 import org.dspace.submit.service.SubmissionConfigService;
+import org.dspace.uclouvain.submissionMetadataGenerators.GenerateMetadataService;
 import org.dspace.workflow.WorkflowException;
 import org.dspace.workflow.WorkflowService;
 import org.dspace.xmlworkflow.WorkflowConfigurationException;
@@ -110,6 +111,9 @@ public class WorkflowItemRestRepository extends DSpaceRestRepository<WorkflowIte
     @Autowired
     protected XmlWorkflowFactory workflowFactory;
 
+    @Autowired
+    GenerateMetadataService generateMetadataService;
+
     private SubmissionConfigService submissionConfigService;
 
     public WorkflowItemRestRepository() throws SubmissionConfigReaderException {
@@ -176,6 +180,11 @@ public class WorkflowItemRestRepository extends DSpaceRestRepository<WorkflowIte
         } catch (SQLException e) {
             throw new RuntimeException("SQLException in " + this.getClass() + "#findBySubmitter trying to create " +
                 "a workflow and adding it to db.", e);
+        }
+        try {
+            this.generateMetadataService.executeMetadataGenerationSteps(context, source.getItem());
+        } catch (Exception e) {
+            log.warn(e);
         }
         //if the item go directly in published status we have to manage a status code 204 with no content
         if (source.getItem().isArchived()) {
