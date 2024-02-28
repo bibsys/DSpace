@@ -82,12 +82,15 @@ public class OSISController {
         for (String fgs_id: fgs) {
             OSISStudentDegree[] osisStudentDegreeResponse = this.getAllStudentInfoByFGS(fgs_id);
             for (OSISStudentDegree studentDegree: osisStudentDegreeResponse) {
-                if (!studentDegree.isError() && (studentDegree.getSigleOffreRacine() != null)
-                    && studentDegree.getIntitOffreComplet().toLowerCase().contains(degreeTypeFilter.toLowerCase())
+                String degreeCode = studentDegree.getSigleOffreCompletN();
+                String degreeLabel = studentDegree.getIntitOffreComplet();
+                if (!studentDegree.isError() && degreeCode != null
+                    && !degreeCode.isBlank()
+                        && degreeLabel != null && !degreeLabel.isBlank()
+                        && degreeLabel.toLowerCase().contains(degreeTypeFilter.toLowerCase())
                 ) {
-                    String value = studentDegree.getSigleOffreRacine();
-                    String displayed = value + " - " + studentDegree.getIntitOffreComplet();
-                    selectFieldValues.addMetadataContentElementOption(value, displayed);
+                    String value = degreeCode + " - " + degreeLabel;
+                    selectFieldValues.addMetadataContentElementOption(value, value);
                 }
             }
         }
