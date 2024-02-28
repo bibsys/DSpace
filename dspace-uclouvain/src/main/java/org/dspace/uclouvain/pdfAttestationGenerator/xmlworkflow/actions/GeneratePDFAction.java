@@ -11,8 +11,10 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.dspace.uclouvain.core.utils.MetadataUtils;
+import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.ResumeGenerationException;
 import org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactory;
 import org.dspace.uclouvain.pdfAttestationGenerator.handlers.PDFAttestationGeneratorHandler;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
@@ -77,7 +79,7 @@ public class GeneratePDFAction extends ProcessingAction {
 
                     email.addAttachment(pdfAttestation, map.get("dspace_entity_type").get(0) + "SubmissionAttestation.pdf", "application/pdf");
                     email.send();
-                } catch (Exception e ) {
+                } catch (Exception e) {
                     // Send an error email if something goes wrong
                     String templatePath = this.source + "/config/emails/pdf_attestation_error";
 
@@ -88,16 +90,15 @@ public class GeneratePDFAction extends ProcessingAction {
                     email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
                     email.addArgument(submitter.getFullName());
                     email.addArgument(map.get("dspace_entity_type").get(0).toLowerCase());
-                    email.addArgument(generateSubmissionResume(map));
+                    email.addArgument("Here are some information that my be useful for our team:\n -> Item's uuid: " + dspaceItem.getID() + "\n-> Stacktrace:\n" + ExceptionUtils.getStackTrace(e));
                     email.setSubject(this.mailErrorSubject);
 
                     email.send();
-
-                    throw new RuntimeException(e);
                 }   
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.err.println("An exception occurred while generating email attestation for uuid: " + uuid + ": " + e.getMessage());
+            return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
         }
         return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
     }
@@ -113,10 +114,14 @@ public class GeneratePDFAction extends ProcessingAction {
      * @param map The HashMap containing information about the submission
      * @return The resume as a String 
     */
-    private static String generateSubmissionResume(HashMap<String, List<String>> map) {
-        String title = map.get("dc_title").get(0);
-        List<String> authors = map.get("dc_contributor_author");
-        String abstractText = map.get("dc_description_abstract").get(0);
-        return "Title: " + title +"\nAuthor(s): " + authors.stream().reduce("", (subtotal, element) -> subtotal + element + "; ") +"\nAbstract: " + abstractText;
+    private static String generateSubmissionResume(HashMap<String, List<String>> map) throws ResumeGenerationException {
+        try {
+            String title = map.get("dc_title").get(0);
+            List<String> authors = map.get("dc_contributor_author");
+            String abstractText = map.get("dc_description_abstract").get(0);
+            return "Title: " + title +"\nAuthor(s): " + authors.stream().reduce("", (subtotal, element) -> subtotal + element + "; ") +"\nAbstract: " + abstractText;
+        } catch (Exception e) {
+            throw new ResumeGenerationException("Submission mail generation failed :: " + e.getMessage());
+        }
     }
 }
