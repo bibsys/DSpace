@@ -65,4 +65,31 @@
 
     <!-- UTILS -->
     <bean id="metadataUtils" class="org.dspace.uclouvain.core.utils.MetadataUtils" />
+
+    <!-- Submission steps configuration -->
+    <bean id="metadataGeneratorFactory" class="org.dspace.uclouvain.submissionMetadataGenerators.factory.MetadataGeneratorFactoryImpl"/>
+
+    <bean id="generateMetadataService" class="org.dspace.uclouvain.submissionMetadataGenerators.GenerateMetadataServiceImpl"/>
+
+    <bean id="degreeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.DegreeMetadataGenerator">
+        <property name="degreeCodeField" >
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.degree.code"/>
+            </bean>
+        </property>
+        <property name="degreeLabelField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.degree.label"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="generateMetadataConfiguration" class="org.dspace.uclouvain.submissionMetadataGenerators.configuration.GenerateMetadataConfigurationService">
+        <property name="metadataGenerators">
+            <!-- Lists the metadata operation, order matters -->
+            <util:list>
+                <ref bean="degreeMetadataGenerator"/>
+            </util:list>
+        </property>
+    </bean>
 </beans>
