@@ -71,6 +71,18 @@
           <required>You must select a degree code, if the select field is empty, please select another person.</required>
         </field>
       </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>label</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>DegreeLabel</label>
+          <input-type>onebox</input-type>
+          <hint>Degree Label</hint>
+          <visibility>workflow</visibility>
+        </field>
+      </row>
     </form>
     <form name="master-thesis-dc-contributor-advisor">
       <row>
