@@ -65,9 +65,9 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>code</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>DegreeCode</label>
-          <input-type value-pairs-name="empty">dropdown</input-type>
-          <hint>Degree Code</hint>
+          <label>Degree code</label>
+          <input-type>empty_select</input-type>
+          <hint>Select a degree Code</hint>
           <required>You must select a degree code, if the select field is empty, please select another person.</required>
         </field>
       </row>
@@ -215,18 +215,6 @@
           <input-type>year</input-type>
           <hint>Year during which the thesis was submitted.</hint>
           <required/>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>masterthesis</dc-schema>
-          <dc-element>degree</dc-element>
-          <dc-qualifier>code</dc-qualifier>
-          <repeatable>true</repeatable>
-          <label>Degree related to this item</label>
-          <input-type>onebox</input-type>
-          <required/>
-          <visibility>workflow</visibility>
         </field>
       </row>
       <row>
@@ -4558,8 +4546,6 @@ it, please enter the types and the actual numbers or codes.</hint>
         <displayed-value>CC-BY-NC-ND</displayed-value>
         <stored-value>https://creativecommons.org/licenses/by-nc-nd/4.0/</stored-value>
       </pair>
-    </value-pairs>
-    <value-pairs value-pairs-name="empty" dc-term="empty" >
     </value-pairs>
   </form-value-pairs>
 </input-forms>
