@@ -47,7 +47,7 @@ public class DilbertClient implements UCLouvainAuthorityClient {
 
         try {
             HttpResponse<String> response = httpClient.get(url);
-            dialPerson = new GenericResponse(response).extractJsonResponseDataToClass(null, DialPerson[].class);
+            dialPerson = new GenericResponse(response.body()).extractJsonResponseDataToClass(null, DialPerson[].class);
         }
         catch(Exception e) {
             logger.error(e.getClass().getSimpleName() + "while fetching data :: " + e.getMessage());
