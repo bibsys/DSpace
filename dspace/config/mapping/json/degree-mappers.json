@@ -1,0 +1,32 @@
+{
+    "INGE2MS/G":{
+        "root-code": "INGE2M",
+        "root-label": "Master [120] : ingénieur de gestion",
+        "faculty-code": "LSM",
+        "faculty-name": "Louvain School of Management"
+    },
+    "MD2MS/G": {
+        "root-code": "MD2M",
+        "root-label": "Master [180] en médecine",
+        "faculty-code": "MEDE",
+        "faculty-name": "Faculté de médecine et médecine dentaire"
+    },
+    "DROI2MS/ET": {
+        "root-code": "DROI2M",
+        "root-label": "Master [120] en droit",
+        "faculty-code": "DRT",
+        "faculty-name": "Faculté de droit et de criminologie"
+    },
+    "GEST2MS/GE": {
+        "root-code": "GEST2M",
+        "root-label": "Master [120] en sciences de gestion",
+        "faculty-code": "LSM",
+        "faculty-name": "Louvain School of Management"
+    },
+    "FOPA2MS/G": {
+        "root-code": "FOPA2M",
+        "root-label": "Master [120] en sciences de l'éducation (horaire décalé)",
+        "faculty-code": "PSP",
+        "faculty-name": "Faculté de psychologie et des sciences de l'éducation"
+    }
+}
