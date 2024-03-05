@@ -82,6 +82,26 @@
                 <constructor-arg value="masterthesis.degree.label"/>
             </bean>
         </property>
+        <property name="rootDegreeCodeField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.rootdegree.code"/>
+            </bean>
+        </property>
+        <property name="rootDegreeLabelField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.rootdegree.label"/>
+            </bean>
+        </property>
+        <property name="facultyCodeField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.faculty.code"/>
+            </bean>
+        </property>
+        <property name="facultyNameField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.faculty.name"/>
+            </bean>
+        </property>
     </bean>
 
     <bean id="generateMetadataConfiguration" class="org.dspace.uclouvain.submissionMetadataGenerators.configuration.GenerateMetadataConfigurationService">
@@ -91,5 +111,9 @@
                 <ref bean="degreeMetadataGenerator"/>
             </util:list>
         </property>
+    </bean>
+
+    <bean id="degreeMappersService" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.DegreeMappersService">
+        <constructor-arg value="/config/mapping/json/degree-mappers.json"/>
     </bean>
 </beans>
