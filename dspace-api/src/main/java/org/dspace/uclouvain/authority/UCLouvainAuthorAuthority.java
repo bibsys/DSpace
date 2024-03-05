@@ -53,6 +53,10 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
 
         Orcid orcid = new Orcid(person.orcidId);// String with "data-" will be used to fill other form fields
 
+        // Clear the previous selected value for the degree code when there is a new search
+        extras.put("data-masterthesis_degree_code", "");
+
+        // String with "data-" will be used to fill other form fields
         extras.put("data-authors_institution_code", institution);
         extras.put("data-authors_email", person.getEmail());
 
