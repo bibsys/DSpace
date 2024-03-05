@@ -84,10 +84,12 @@ public class OSISController {
             for (OSISStudentDegree studentDegree: osisStudentDegreeResponse) {
                 String degreeCode = studentDegree.getSigleOffreCompletN();
                 String degreeLabel = studentDegree.getIntitOffreComplet();
+                String category = studentDegree.getCategorieDecret();
                 if (!studentDegree.isError() && degreeCode != null
                     && !degreeCode.isBlank()
                         && degreeLabel != null && !degreeLabel.isBlank()
-                        && degreeLabel.toLowerCase().contains(degreeTypeFilter.toLowerCase())
+                        && category != null && !category.isBlank()
+                        && category.toLowerCase().equals(degreeTypeFilter.toLowerCase())
                 ) {
                     String value = degreeCode + " - " + degreeLabel;
                     selectFieldValues.addMetadataContentElementOption(value, value);
