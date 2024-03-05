@@ -40,7 +40,7 @@ public class OSISClientImpl implements OSISClient {
             HttpResponse<String> response = this.httpClient.get(url);
 
             // Convert JSON String into a java OSIS object
-            OSISStudentDegree[] degrees = new GenericResponse(response).extractJsonResponseDataToClass(this.osisConfiguration.getResponseDataKey(), OSISStudentDegree[].class);
+            OSISStudentDegree[] degrees = new GenericResponse(response.body()).extractJsonResponseDataToClass(this.osisConfiguration.getResponseDataKey(), OSISStudentDegree[].class);
             if(degrees != null){
                 student = degrees;
             }
