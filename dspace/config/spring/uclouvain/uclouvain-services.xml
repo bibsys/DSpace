@@ -107,4 +107,8 @@
         <property name="rpName" value="defaultPriority"/>
         <property name="weight" value="#{T(java.lang.Integer).MAX_VALUE}"/>
     </bean>
+
+    <bean id="degreeMappersService" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.DegreeMappersService">
+        <constructor-arg value="/config/mapping/json/degree-mappers.json"/>
+    </bean>
 </beans>
