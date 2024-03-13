@@ -27,6 +27,7 @@
     <!-- Uncomment the following entry to enable the indexing for LoginMIUR -->
     <!--<bean id="rPSourceIDSolrIndexPlugin" class="org.dspace.discovery.RPSourceIDSolrIndexer"/>-->
 
+    <bean id="solrServiceSessionYearFieldIndexingPlugin" class="org.dspace.uclouvain.discovery.SolrServiceSessionYearFieldIndexingPlugin" scope="prototype"/>
     <bean id="solrServiceResourceIndexPlugin" class="org.dspace.discovery.SolrServiceResourceRestrictionPlugin" scope="prototype"/>
     <bean id="solrServiceWorkspaceWorkflowPlugin" class="org.dspace.discovery.SolrServiceWorkspaceWorkflowRestrictionPlugin" scope="prototype"/>
     <bean id="solrServiceWorkflowMetadataRestrictionsPlugin" class="org.dspace.uclouvain.discovery.SolrServiceWorkflowMetadataRestrictionsPlugin" scope="prototype"/>
@@ -993,6 +994,7 @@
                 <!-- <ref bean="searchFilterSubmitter" /> -->
                 <ref bean="searchFilterFaculty"/>
                 <ref bean="searchFilterDegreeCode"/>
+                <ref bean="searchFilterSessionYear"/>
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -1006,6 +1008,7 @@
                 <!-- <ref bean="searchFilterSubmitter" /> -->
                 <ref bean="searchFilterFaculty"/>
                 <ref bean="searchFilterDegreeCode"/>
+                <ref bean="searchFilterSessionYear"/>
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -2930,6 +2933,14 @@
         <property name="pageSize" value="10"/>
         <property name="exposeMinAndMaxValue" value="true"/>
 
+    </bean>
+
+    <bean id="searchFilterSessionYear" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="sessionyear"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list/>
+        </property>
     </bean>
 
     <bean id="searchFilterContentInOriginalBundle" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
