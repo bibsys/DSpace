@@ -17,4 +17,16 @@
         <qualifier>iso-639-2</qualifier>
         <scope_note>ISO 639-2 code language</scope_note>
     </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>description</element>
+        <qualifier>tag</qualifier>
+        <scope_note>Custom tag placed on a publication [ie: accepted, submitted, ...]</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>fedora</qualifier>
+        <scope_note>To store original FedoraCommons PID</scope_note>
+    </dc-type>
  </dspace-dc-types>

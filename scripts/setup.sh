@@ -9,7 +9,7 @@ error_msg() {
 }
 
 error_msg+exit() {
-  error_msg ${1}
+  error_msg "${1}"
   exit 1
 }
 
@@ -65,6 +65,7 @@ readonly LOG_FILE=$(date +"%Y-%m-%d_%T")
 readonly LOG_PATH="${WORKING_PATH}/log/${LOG_FILE}.log"
 readonly USERS_CONFIG_PATH="${WORKING_PATH}/config/users.json"
 readonly PERMISSIONS_FILE="${WORKING_PATH}/config/permissions.json"
+
 readonly SOLR_BASE_URL="http://localhost:8983/solr"  # without ending slash !!
 readonly REQUIRED_EXTERNAL_COMMAND=( jq )
 
@@ -252,7 +253,7 @@ echo -e "📘 Registering schemas & metadata fields..."
 METADATA_REGISTRIES=(
   "registries/dc-types.xml"
   "registries/authors-types.xml"
-  "registries/tag-types.xml"
+  "registries/fedora-types.xml"
 )
 for registry in "${METADATA_REGISTRIES[@]}"
 do
