@@ -51,6 +51,9 @@ nb-configuration.xml
 /dspace/config/local.*.cfg
 !/dspace/config/local.cfg.EXAMPLE
 
+# Ignore archives files - Containing potential RGPD data
+/scripts/archives/*
+
 ##Mac noise
 .DS_Store
 
