@@ -32,7 +32,7 @@
     <dc-type>
         <schema>authors</schema>
         <element>identifier</element>
-        <qualifier>orcid_id</qualifier>
+        <qualifier>orcid</qualifier>
         <scope_note>Orcid ID</scope_note>
     </dc-type>
     <dc-type>

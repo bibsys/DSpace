@@ -25,13 +25,13 @@
     </dc-type>
     <dc-type>
         <schema>masterthesis</schema>
-        <element>root_degree</element>
+        <element>rootdegree</element>
         <qualifier>code</qualifier>
         <scope_note>Root degree code</scope_note>
     </dc-type>
     <dc-type>
         <schema>masterthesis</schema>
-        <element>root_degree</element>
+        <element>rootdegree</element>
         <qualifier>label</qualifier>
         <scope_note>Root degree label</scope_note>
     </dc-type>
