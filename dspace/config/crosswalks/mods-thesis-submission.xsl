@@ -49,21 +49,20 @@
             <xsl:apply-templates/>
         </xsl:element>
     </xsl:template>
-    
+
     <!-- GENRE -> dc.type ============================================= -->
-    <xsl:template match="/mods:mods/mods:genre[@authority='coar']">
-        <xsl:variable name="docType">
+    <xsl:template match="/mods:mods/mods:genre">
+        <xsl:variable name="value">
             <xsl:choose>
-                <xsl:when test="contains(@valueURI,'resource_type/c_bdcc')">text::thesis::master thesis</xsl:when>
+                <xsl:when test="@valueURI='http://purl.org/coar/resource_type/c_bdcc'">text::thesis::master thesis</xsl:when>
+                <xsl:otherwise>normalize-space(.)</xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <xsl:if test="$docType">
-            <xsl:element name="dim:field">
-                <xsl:attribute name="mdschema">dc</xsl:attribute>
-                <xsl:attribute name="element">type</xsl:attribute>
-                <xsl:value-of select="normalize-space($docType)"/>
-            </xsl:element>
-        </xsl:if>
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">type</xsl:attribute>
+            <xsl:value-of select="normalize-space($value)"/>
+        </xsl:element>
     </xsl:template>
     <!-- TITLE -> dc.title ============================================ -->
     <xsl:template match="/mods:mods/mods:titleInfo/mods:title">
@@ -108,6 +107,17 @@
             <xsl:attribute name="mdschema">masterthesis</xsl:attribute>
             <xsl:attribute name="element">session</xsl:attribute>
             <xsl:attribute name="lang">fr</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
+    <!-- IDENTIFIER =================================================== -->
+    <!--   * Manage `fedora_pid` identifier -->
+    <!--   * Skip other possible identifiers (not used for MasterThesis) -->
+    <xsl:template match="/mods:mods/mods:identifier[@type='fedora_pid']">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">identifier</xsl:attribute>
+            <xsl:attribute name="qualifier">fedora</xsl:attribute>
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
