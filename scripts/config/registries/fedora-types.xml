@@ -1,0 +1,24 @@
+<dspace-dc-types>
+    <!-- HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dspace-header>
+        <title>FedoraCommons archive metadata</title>
+        <contributor.author>Renaud Michotte</contributor.author>
+        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>fedora</name>
+        <namespace>https://fedora.lyrasis.org/resources/schema</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>fedora</schema>
+        <element>pid</element>
+        <scope_note>FedoraCommons object pid</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>fedora</schema>
+        <element>contentmodels</element>
+        <scope_note>FedoraCommons object content model</scope_note>
+    </dc-type>
+</dspace-dc-types>
