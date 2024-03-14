@@ -16,8 +16,7 @@ error_msg+exit() {
 restart_dspace_container(){
   echo -en "🔁 Restarting ${1} container...\r"
   docker container restart "${1}" >> /dev/null
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ]; then
     error_msg+exit "\033[K❌ Error when restarting the ${1} container";
   fi
   sleep 10 # TODO :: check if could be removed
@@ -28,12 +27,23 @@ create_group(){
   docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.GroupManagement \
       --action create \
-      --name ${1}" >> "${LOG_PATH}"
-  if [ $? -ne 0 ]
-  then
+      --name '${1}'" >> "${LOG_PATH}"
+  if [ $? -ne 0 ]; then
       error_msg+exit "\t❌ Error creating '${1}' group !"
   fi
   echo -e "\t${CYAN}${1}${NC} group created"
+}
+
+ingest_package(){
+  docker exec ${BACKEND} sh -c "\
+      /dspace/bin/dspace packager \
+      --submit --e admin@dspace.org \
+      --type METS \
+      --install ${1}" >> "${LOG_PATH}"
+  if [ $? -ne 0 ]; then
+      error_msg+exit "\t❌ Error ingesting '${1}' !"
+  fi
+  echo -e "\t${CYAN}${1}${NC} package ingested"
 }
 
 
@@ -76,15 +86,17 @@ readonly CYAN='\033[0;36m'
 readonly NC='\033[0m' # No Color
 
 # Global script variable
+INGEST_DATA=false
 CLEAN_SOLR_CORES=false
 
 # STEP#0 :: Check script requirement ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   - Check script arguments
 #   - Check all required commands for this script exists and are installed on the system.
 #   - Create log file
-while [ $# -gt 0 ]
-do
+while [ $# -gt 0 ]; do
   case $1 in
+    -I|--ingest)
+      INGEST_DATA=true;;
     -C|--clean-solr)
       CLEAN_SOLR_CORES=true;;
     (-*)
@@ -95,10 +107,8 @@ do
   shift
 done
 
-for cmd in "${REQUIRED_EXTERNAL_COMMAND[@]}"
-do
-	if ! command -v "$cmd" &> /dev/null
-  then
+for cmd in "${REQUIRED_EXTERNAL_COMMAND[@]}"; do
+	if ! command -v "$cmd" &> /dev/null; then
       error_msg+exit  "⛔ \`${RED}${cmd}${NC}\` could not be found. This command is required to complete the script."
       exit 1
   fi
@@ -114,8 +124,7 @@ touch "${LOG_PATH}"
 #    Check that the backend container is running, if not, we can stop execution
 #    of the script and return an explicit exit code.
 docker container inspect ${BACKEND} >> "${LOG_PATH}"
-if [ $? -ne 0 ]
-then
+if [ $? -ne 0 ]; then
   error_msg+exit "⛔ The given container does not exists ⛔"
 fi
 echo "✅ Found the container, performing actions ..."
@@ -127,17 +136,14 @@ echo "✅ Found the container, performing actions ..."
 echo -e "♻️  Cleaning data ..."
 echo -e "\t🗄️  database..."
 docker exec ${BACKEND} sh -c "(yes | /dspace/bin/dspace database clean) && /dspace/bin/dspace database migrate" >> "${LOG_PATH}"
-if [ $? -ne 0 ]
-then
+if [ $? -ne 0 ]; then
     error_msg+exit "\033[K❌ Error while cleaning the database, aborting..."
 fi
 
-if ${CLEAN_SOLR_CORES}
-then
+if ${CLEAN_SOLR_CORES}; then
   echo -e "\t🗄️  Solr cores..."
   solr_core_names=$(curl -s ${SOLR_BASE_URL}/admin/cores?action=STATUS | jq '.status' | jq -r 'keys | @sh' | tr -d \')
-  for core_name in $solr_core_names
-  do
+  for core_name in $solr_core_names; do
     solr_core_url="${SOLR_BASE_URL}/${core_name}/update?commit=true"
     curl -s "$solr_core_url" -H "Content-type: text/xml" --data-binary '<delete><query>*:*</query></delete>' > /dev/null
     echo -e "\t\t🗑  ${CYAN}${core_name}${NC} core cleared"
@@ -154,8 +160,7 @@ restart_dspace_container ${BACKEND}
 echo -e "👥 Creating user groups..."
 groups=$(jq '.users[].groups | @sh' ${USERS_CONFIG_PATH} | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
 IFS=',' groups=($groups)
-for group in "${groups[@]}"
-do
+for group in "${groups[@]}"; do
   create_group "${group}"
 done
 create_group "UCLouvain network"
@@ -163,8 +168,7 @@ create_group "UCLouvain network"
 
 echo -e "👤 Creating admin user..."
 users_number=$(jq '.admins | length' "${USERS_CONFIG_PATH}")
-for (( i=0; i<users_number; i++))
-do
+for (( i=0; i<users_number; i++)); do
   email=$(jq .admins[$i].email "${USERS_CONFIG_PATH}")
   lastname=$(jq .admins[$i].lastname "${USERS_CONFIG_PATH}")
   firstname=$(jq .admins[$i].firstname "${USERS_CONFIG_PATH}")
@@ -175,8 +179,7 @@ do
       --first ${firstname} \
       --last ${lastname} \
       --password ${password}" >> "${LOG_PATH}"
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ]; then
      error_msg+exit "❌ Error while creating admin user !"
   fi
   # automatic end-user agreement validation
@@ -184,8 +187,7 @@ do
   /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.UserAgreementManagement\
   --user ${email}\
   --enable" >> "${LOG_PATH}"
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ]; then
      error_msg "\t⚠️ Error during automatic user agreement validation for '${email}'!"
   fi
   echo -e "\t${CYAN}${email}${NC} admin created"
@@ -194,8 +196,7 @@ ADMIN_EMAIL=$(jq .admins[0].email "${USERS_CONFIG_PATH}")
 
 echo -e "👤 Creating alt users..."
 users_number=$(jq '.users | length' "${USERS_CONFIG_PATH}")
-for (( i=0; i<users_number; i++))
-do
+for (( i=0; i<users_number; i++)); do
     email=$(jq .users[$i].email "${USERS_CONFIG_PATH}")
     lastname=$(jq .users[$i].lastname "${USERS_CONFIG_PATH}")
     firstname=$(jq .users[$i].firstname "${USERS_CONFIG_PATH}")
@@ -206,20 +207,17 @@ do
         --givenname ${firstname} \
         --surname ${lastname} \
         --password ${password}" >> "${LOG_PATH}"
-    if [ $? -ne 0 ]
-    then
+    if [ $? -ne 0 ]; then
         error_msg+exit "\t❌ Error creating '${email}' user !"
     fi
     groups=$(jq -r ".users[${i}].groups[] | @sh" ${USERS_CONFIG_PATH} | tr -d \" | tr -d \' | tr '\n' ",")
-    for group in $groups
-    do
+    for group in $groups; do
       docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.UserGroupManagement\
       --user ${email}\
       --group ${group}\
       --action add" >> "${LOG_PATH}"
-      if [ $? -ne 0 ]
-      then
+      if [ $? -ne 0 ]; then
           error_msg+exit "\t❌ Error assigning '${email}' to '${group}' !"
       fi
     done
@@ -228,8 +226,7 @@ do
     /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.UserAgreementManagement\
     --user ${email}\
     --enable" >> "${LOG_PATH}"
-    if [ $? -ne 0 ]
-    then
+    if [ $? -ne 0 ]; then
        error_msg "\t⚠️ Error during automatic user agreement validation for '${email}'!"
     fi
     echo -e "\t${CYAN}${email}${NC} user created"
@@ -249,8 +246,7 @@ docker exec ${BACKEND} sh -c "\
     -e ${ADMIN_EMAIL} \
     -f /dspace/config/init-sample.xml \
     -o /etc/null" >> "${LOG_PATH}"
-if [ $? -ne 0 ]
-then
+if [ $? -ne 0 ]; then
     error_msg+exit "\033[K❌ Error while creating community and collection !"
 fi
 echo -e "\033[K✅ Community and collection created"
@@ -264,13 +260,11 @@ METADATA_REGISTRIES=(
   "registries/authors-types.xml"
   "registries/fedora-types.xml"
 )
-for registry in "${METADATA_REGISTRIES[@]}"
-do
+for registry in "${METADATA_REGISTRIES[@]}"; do
   docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace registry-loader -metadata \
       /uclouvain/config/${registry}" >> "${LOG_PATH}"
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ]; then
       error_msg+exit "❌ Error during ${registry} creation !"
   fi
   echo -e "\t${CYAN}${registry}${NC} registered"
@@ -279,18 +273,15 @@ done
 # STEP#5: Permissions management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo -e "🔒 Permissions management..."
 collection_length=$(jq '.collections | length' "${PERMISSIONS_FILE}")
-for (( i=0; i<collection_length; i++))
-do
+for (( i=0; i<collection_length; i++)); do
   collection_name=$(jq .collections[$i].collection_name "${PERMISSIONS_FILE}")
   permissions_length=$(jq ".collections[${i}].permissions | length" "${PERMISSIONS_FILE}")
-  for (( j=0; j<permissions_length; j++))
-  do
+  for (( j=0; j<permissions_length; j++)); do
     workflow_role=$(jq .collections[${i}].permissions[$j].type "${PERMISSIONS_FILE}")
     groups=$(jq ".collections[${i}].permissions[$j].groups[] | @sh" "${PERMISSIONS_FILE}" \
              | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
     IFS=',' groups=($groups)
-    for group_name in "${groups[@]}"
-    do
+    for group_name in "${groups[@]}"; do
       echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${workflow_role}${NC}..."
       docker exec ${BACKEND} sh -c "\
             /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement \
@@ -298,14 +289,32 @@ do
             --collection ${collection_name} \
             --role ${workflow_role} \
             --group ${group_name}" >> "${LOG_PATH}"
-      if [ $? -ne 0 ]
-      then
+      if [ $? -ne 0 ]; then
           error_msg+exit "❌ Error during permission management"
       fi
       echo -e "\t${GREEN}Success${NC}"
     done
   done
 done
+
+# STEP#6: Load archives data ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if ${INGEST_DATA}; then
+  echo -e "📕 Ingesting object ..."
+  ingest_package "/uclouvain/archives/thesis/thesis-11010.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-11325.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-12003.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-12141.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-13197.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-15325.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-16411.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-16551.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-16987.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-18335.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-19207.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-19584.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-19601.zip"
+  ingest_package "/uclouvain/archives/thesis/thesis-21307.zip"
+fi
 
 # STEP#FINAL: Restart the container
 restart_dspace_container ${BACKEND}
