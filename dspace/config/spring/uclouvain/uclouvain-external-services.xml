@@ -84,11 +84,30 @@
         </property>
     </bean>
 
+    <bean id="accessTypeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.AccessTypeMetadataGenerator">
+        <!-- List of accessTypes that are handled by the generator -->
+        <property name="accessTypes">
+            <util:list>
+                <value>openaccess</value>
+                <value>UCLouvain networks restriction</value>
+                <value>embargo</value>
+                <value>administrator</value>
+            </util:list>
+        </property>
+        <!-- The field in which the new metadata will go in -->
+        <property name="accessTypeField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="dcterms.accessRights"/>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="generateMetadataConfiguration" class="org.dspace.uclouvain.submissionMetadataGenerators.configuration.GenerateMetadataConfigurationService">
         <property name="metadataGenerators">
             <!-- Lists the metadata operation, order matters -->
             <util:list>
                 <ref bean="degreeMetadataGenerator"/>
+                <ref bean="accessTypeMetadataGenerator"/>
             </util:list>
         </property>
     </bean>
