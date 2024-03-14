@@ -4,7 +4,7 @@
 		<name>UCLouvain</name>
 		<collection>
 			<name>Master thesis</name>
-			<entity-type>Thesis</entity-type>
+			<entity-type>MasterThesis</entity-type>
 			<submission-type>master-thesis</submission-type>
 		</collection>
 	</community>
