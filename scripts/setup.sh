@@ -28,9 +28,14 @@ create_group(){
   docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.GroupManagement \
       --action create \
+<<<<<<< Updated upstream
       --name ${1}" >> "${LOG_PATH}"
   if [ $? -ne 0 ]
   then
+=======
+      --name '${1}'" >> "${LOG_PATH}"
+  if [ $? -ne 0 ]; then
+>>>>>>> Stashed changes
       error_msg+exit "\t❌ Error creating '${1}' group !"
   fi
   echo -e "\t${CYAN}${1}${NC} group created"
