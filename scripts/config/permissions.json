@@ -11,17 +11,6 @@
             "groups": [
                 "manager"
             ]
-        }, {
-            "type": "editor",
-            "groups": [
-                "manager",
-                "librarian"
-            ]
-        }, {
-            "type": "finaleditor",
-            "groups": [
-                "librarian"
-            ]
         }]
     }]
 }
