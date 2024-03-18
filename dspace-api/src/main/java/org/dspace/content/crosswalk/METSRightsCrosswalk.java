@@ -38,6 +38,8 @@ import org.dspace.eperson.service.GroupService;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
 
+import static org.dspace.authorize.ResourcePolicy.TYPE_CUSTOM;
+
 /**
  * METSRights Ingestion and Dissemination Crosswalk
  * <p>
@@ -433,6 +435,7 @@ public class METSRightsCrosswalk
                     String contextClass = element.getAttributeValue("CONTEXTCLASS");
 
                     ResourcePolicy rp = resourcePolicyService.create(context);
+                    rp.setRpType(TYPE_CUSTOM);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
                     // get reference to the <Permissions> element

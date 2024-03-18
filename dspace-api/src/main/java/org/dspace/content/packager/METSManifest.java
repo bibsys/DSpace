@@ -324,6 +324,19 @@ public class METSManifest {
         return mets.getAttributeValue("OBJID");
     }
 
+
+    /**
+     * Return the record status attribute of the METS manifest.
+     *
+     * @return RECORDSTATUS of the `metsHDR` element if exists.
+     */
+    public String getRecordStatus() {
+        Element metsHdr = mets.getChild("metsHdr", metsNS);
+        return (metsHdr != null)
+            ? metsHdr.getAttributeValue("RECORDSTATUS")
+            : null;
+    }
+
     /**
      * Gets all <code>file</code> elements which make up
      * the item's content.
