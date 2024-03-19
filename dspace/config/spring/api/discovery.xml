@@ -597,15 +597,18 @@
         <!--Which sidebar facets are to be displayed (same as defaultConfiguration above)-->
         <property name="sidebarFacets">
             <list>
-                <ref bean="searchFilterType" />
+                <!-- <ref bean="searchFilterType" />
                 <ref bean="graphPublicationByType" />
-                <ref bean="graphPublicationByDate" />
-                <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterSubject" />
+                <ref bean="graphPublicationByDate" /> -->
+                <!-- <ref bean="searchFilterAuthor" /> -->
+                <ref bean="searchFilterAdvisor"/>
+                <!-- <ref bean="searchFilterSubject" /> -->
                 <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
-                <ref bean="searchFilterLanguage" />
+                <ref bean="searchFilterFaculty"/>
+                <ref bean="searchFilterRootDegreeLabel"/>
+                <!-- <ref bean="searchFilterContentInOriginalBundle"/> -->
+                <!-- <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterLanguage" /> -->
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -631,6 +634,9 @@
                 <ref bean="searchFilterIsPublicationOfJournalIssueRelation"/>
                 <ref bean="searchFilterIsJournalOfPublicationRelation"/>
                 <ref bean="searchFilterLanguage" />
+                <ref bean="searchFilterAdvisor"/>
+                <ref bean="searchFilterFaculty"/>
+                <ref bean="searchFilterRootDegreeLabel"/>
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -872,20 +878,26 @@
         <!--Which sidebar facets are to be displayed -->
         <property name="sidebarFacets">
             <list>
-                <ref bean="searchFilterObjectNamedType" />
-                <ref bean="searchFilterType" />
-                <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterSubmitter" />
+                <ref bean="searchFilterAdvisor"/>
+                <!-- <ref bean="searchFilterObjectNamedType" /> -->
+                <!-- <ref bean="searchFilterType" /> -->
+                <!-- <ref bean="searchFilterIssued"/> -->
+                <!-- <ref bean="searchFilterSubmitter" /> -->
+                <ref bean="searchFilterFaculty"/>
+                <ref bean="searchFilterDegreeCode"/>
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
         <!--The search filters which can be used on the discovery search page -->
         <property name="searchFilters">
             <list>
-                <ref bean="searchFilterObjectNamedType" />
-                <ref bean="searchFilterType" />
-                <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterSubmitter" />
+                <ref bean="searchFilterAdvisor"/>
+                <!-- <ref bean="searchFilterObjectNamedType" /> -->
+                <!-- <ref bean="searchFilterType" /> -->
+                <!-- <ref bean="searchFilterIssued"/> -->
+                <!-- <ref bean="searchFilterSubmitter" /> -->
+                <ref bean="searchFilterFaculty"/>
+                <ref bean="searchFilterDegreeCode"/>
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -2461,6 +2473,66 @@
         <property name="metadataFields">
             <list>
                 <value>dcterms.accessRights</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="searchFilterAdvisor" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="advisor"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.contributor.advisor</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="searchFilterDegreeCode" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="degreecode"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>masterthesis.degree.code</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="searchFilterRootDegreeCode" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="rootdegreecode"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>masterthesis.rootdegree.code</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="searchFilterRootDegreeLabel" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="rootdegreelabel"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>masterthesis.rootdegree.label</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="searchFilterDegreeLabel" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="degreelabel"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>masterthesis.degree.label</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="searchFilterFaculty" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="facultyname"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>masterthesis.faculty.name</value>
             </list>
         </property>
     </bean>
