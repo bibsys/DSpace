@@ -397,4 +397,29 @@
  <copyField source="dspace.entity.type" dest="search.entitytype"/>
  <copyField source="masterthesis.degree.code" dest="masterthesis.degree.code_sort"/>
 
+ <!-- Indexing metadata fields for facetting && querying -->
+ <copyField source="masterthesis.faculty.name" dest="masterthesis.faculty.name_filter"/>
+ <copyField source="masterthesis.faculty.name" dest="masterthesis.faculty.name_keyword"/>
+
+ <copyField source="masterthesis.faculty.code" dest="masterthesis.faculty.code_filter"/>
+ <copyField source="masterthesis.faculty.code" dest="masterthesis.faculty.code_keyword"/>
+
+ <copyField source="masterthesis.rootdegree.label" dest="masterthesis.rootdegree.label_filter"/>
+ <copyField source="masterthesis.rootdegree.label" dest="masterthesis.rootdegree.label_keyword"/>
+
+ <copyField source="masterthesis.rootdegree.code" dest="masterthesis.rootdegree.code_filter"/>
+ <copyField source="masterthesis.rootdegree.code" dest="masterthesis.rootdegree.code_keyword"/>
+
+ <copyField source="masterthesis.degree.code" dest="masterthesis.degree.code_filter"/>
+ <copyField source="masterthesis.degree.code" dest="masterthesis.degree.code_keyword"/>
+
+ <copyField source="dc.contributor.advisor" dest="dc.contributor.advisor_filter"/>
+ <copyField source="dc.contributor.advisor" dest="dc.contributor.advisor_keyword"/>
+
+ <copyField source="dc.contributor.author" dest="dc.contributor.author_filter"/>
+ <copyField source="dc.contributor.author" dest="dc.contributor.author_keyword"/>
+
+ <copyField source="masterthesis.session" dest="masterthesis.session_filter"/>
+ <copyField source="masterthesis.session" dest="masterthesis.session_keyword"/>
+
 </schema>
