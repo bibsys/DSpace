@@ -30,6 +30,8 @@ public class DegreeMetadataGenerator implements MetadataGenerator {
 
     public String NAME = "degreeMetadataGenerator";
 
+    private List<String> acceptedEntityTypes;
+
     private MetadataField degreeCodeField;
 
     private MetadataField degreeLabelField;
@@ -103,6 +105,12 @@ public class DegreeMetadataGenerator implements MetadataGenerator {
         } catch (AuthorizeException e) {
             throw new GeneratorProcessException("Not authorized to update the item", e);
         }
+    }
+
+    @Override
+    public Boolean canBeProcessed(Context ctx, Item item) {
+        String currentEntityType = item.getItemService().getEntityType(item);
+        return currentEntityType != null && this.acceptedEntityTypes.contains(currentEntityType);
     }
 
     /**
@@ -210,6 +218,14 @@ public class DegreeMetadataGenerator implements MetadataGenerator {
     // -------------------
     // Getters && Setters
     // -------------------
+
+    public List<String> getAcceptedEntityTypes(){
+        return this.acceptedEntityTypes;
+    }
+
+    public void setAcceptedEntityTypes(List<String> acceptedEntityTypes){
+        this.acceptedEntityTypes = acceptedEntityTypes;
+    }
 
     public MetadataField getDegreeCodeField(){
         return this.degreeCodeField;
