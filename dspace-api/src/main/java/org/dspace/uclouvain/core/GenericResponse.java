@@ -37,13 +37,11 @@ public class GenericResponse {
      */
     public <T> T extractJsonResponseDataToClass(String targetKey, Class<T> clazz) throws IOException {
         this.objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-
         JsonNode cleanedJson = this.objectMapper.readTree(responseBody);
         // If set, find the "targetKey" element's value
         if (targetKey != null) {
             cleanedJson = cleanedJson.findValue(targetKey);
         }
-
         // Convert JSON String into a java object
         return this.objectMapper.treeToValue(cleanedJson, clazz);
     }

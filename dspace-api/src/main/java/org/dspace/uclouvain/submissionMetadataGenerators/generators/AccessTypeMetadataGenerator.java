@@ -60,8 +60,8 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
     /**
      * Check if the item can be processed by this generator.
      *
-     * @param ctx: The DSpace context.
-     * @param item: The item to process.
+     * @param ctx The DSpace context.
+     * @param item The item to process.
      */
     @Override
     public Boolean canBeProcessed(Context ctx, Item item) {
@@ -71,8 +71,9 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
 
     /**
      * Extract the list of access types from the item's bitstreams
-     * @param ctx: The DSpace context
-     * @param item: The item to process
+     *
+     * @param ctx The DSpace context
+     * @param item The item to process
      * @return A list of access types
      */
     private List<String> extractFileAccessTypeList(Context ctx, Item item) {
@@ -98,7 +99,7 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
 
     /**
      * Retrieve the global access type for a given list of access types
-     * @param accessTypes: The list of all the different access types
+     * @param accessTypes The list of all the different access types
      * @return The processed global access type
      */
     private String getGlobalAccessType(List<String> accessTypes) {
