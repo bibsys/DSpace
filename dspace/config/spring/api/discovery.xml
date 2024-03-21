@@ -606,6 +606,7 @@
                 <ref bean="searchFilterContentInOriginalBundle"/>
                 <ref bean="searchFilterEntityType"/>
                 <ref bean="searchFilterLanguage" />
+                <ref bean="searchFilterAccessType"/>
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -630,6 +631,7 @@
                 <ref bean="searchFilterIsPublicationOfJournalIssueRelation"/>
                 <ref bean="searchFilterIsJournalOfPublicationRelation"/>
                 <ref bean="searchFilterLanguage" />
+                <ref bean="searchFilterAccessType"/>
             </list>
         </property>
         <!--The sort filters for the discovery search (same as defaultConfiguration above)-->
@@ -874,6 +876,7 @@
                 <ref bean="searchFilterType" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterSubmitter" />
+                <ref bean="searchFilterAccessType"/>
             </list>
         </property>
         <!--The search filters which can be used on the discovery search page -->
@@ -883,6 +886,7 @@
                 <ref bean="searchFilterType" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterSubmitter" />
+                <ref bean="searchFilterAccessType"/>
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -2450,6 +2454,16 @@
     </bean>
 
     <!--Search filter configuration beans-->
+
+    <bean id="searchFilterAccessType" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="accessType"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>dcterms.accessRights</value>
+            </list>
+        </property>
+    </bean>
 
     <bean id="searchFilterDiscoverable" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
         <property name="indexFieldName" value="discoverable"/>
