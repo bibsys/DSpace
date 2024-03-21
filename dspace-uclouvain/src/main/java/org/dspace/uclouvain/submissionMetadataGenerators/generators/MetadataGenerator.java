@@ -7,4 +7,5 @@ import org.dspace.uclouvain.submissionMetadataGenerators.exceptions.GeneratorPro
 public interface MetadataGenerator {
     public String getGeneratorName();
     public void process(Context ctx, Item item) throws GeneratorProcessException;
+    public Boolean canBeProcessed(Context ctx, Item item);
 }
