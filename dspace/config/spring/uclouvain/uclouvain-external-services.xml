@@ -72,6 +72,11 @@
     <bean id="generateMetadataService" class="org.dspace.uclouvain.submissionMetadataGenerators.GenerateMetadataServiceImpl"/>
 
     <bean id="degreeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.DegreeMetadataGenerator">
+        <property name="acceptedEntityTypes">
+            <util:list>
+                <value>MasterThesis</value>
+            </util:list>
+        </property>
         <property name="degreeCodeField" >
             <bean class="org.dspace.uclouvain.core.model.MetadataField">
                 <constructor-arg value="masterthesis.degree.code"/>
@@ -105,6 +110,11 @@
     </bean>
 
     <bean id="accessTypeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.AccessTypeMetadataGenerator">
+        <property name="acceptedEntityTypes">
+            <util:list>
+                <value>MasterThesis</value>
+            </util:list>
+        </property>
         <!-- List of accessTypes that are handled by the generator -->
         <property name="accessTypes">
             <util:list>
