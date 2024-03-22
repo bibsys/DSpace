@@ -395,6 +395,5 @@
  <copyField source="title" dest="itemauthoritylookup"/>
  <copyField source="title" dest="itemauthoritylookupexactmatch"/>
  <copyField source="dspace.entity.type" dest="search.entitytype"/>
- <copyField source="masterthesis.degree.code" dest="masterthesis.degree.code_sort"/>
 
 </schema>
