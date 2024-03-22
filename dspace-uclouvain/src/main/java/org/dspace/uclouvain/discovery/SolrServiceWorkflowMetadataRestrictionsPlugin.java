@@ -36,7 +36,7 @@ public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServic
     @Autowired
     ResearcherProfileService researcherProfileService;
 
-    private String degreeMetadataFilterFieldName = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.solr.plugin.workflow.degree.field.filter", "masterthesis.degree.code_sort");
+    private String degreeMetadataFilterFieldName = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.solr.plugin.workflow.degree.field.filter", "degreecode_keyword");
     private String degreeMetadataFieldName = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.solr.plugin.workflow.degree.field.metadata", "crisrp.workgroup");
 
     /**
