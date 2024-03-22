@@ -44,7 +44,7 @@ public class UCLouvainPromoterAuthority extends AbstractUCLouvainAuthority {
 
         // String with "data-" will be used to fill other form fields 
         extras.put("data-advisors_email", person.getEmail());
-        extras.put("data-advisors_institution_code", institution);
+        extras.put("data-advisors_institution_name", institution);
 
         return extras;
     }
