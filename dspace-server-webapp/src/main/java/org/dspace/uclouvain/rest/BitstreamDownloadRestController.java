@@ -1,0 +1,200 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.dspace.uclouvain.rest;
+
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dspace.content.Bitstream;
+import org.dspace.content.DSpaceObject;
+import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
+import org.dspace.content.service.BitstreamService;
+import org.dspace.content.service.ItemService;
+import org.dspace.core.Context;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.Hasher;
+import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.web.ContextUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/uclouvain/bitstream")
+public class BitstreamDownloadRestController {
+
+    private final Logger logger = LogManager.getLogger(BitstreamDownloadRestController.class);
+
+    private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
+    private final String algo = configService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
+    private final String encryptionKey = configService.getProperty("uclouvain.api.bitstream.download.secret", "");
+    private final Integer bitstreamContentBufferSize = Integer.parseInt(
+            configService.getProperty("uclouvain.api.bitstream.download.buffer.size", "10240"));
+    private MetadataField promoterField;
+
+    @Autowired
+    private BitstreamService bitstreamService;
+
+    public BitstreamDownloadRestController() {
+        try {
+            String promoterFieldName = configService
+                    .getProperty("uclouvain.api.bitstream.download.promoterfield", "advisors.email");
+            promoterField = new MetadataField(promoterFieldName);
+        } catch (Exception e) {
+            logger.error("Error while instantiating the MetadataField", e);
+            promoterField = null;
+        }
+    }
+
+    /**
+     * Main entry point to download a bitstream. The bitstream is identified by its UUID.
+     * First, we retrieve the bitstream with the given UUID and the given hash parameter.
+     * We then check if the hash corresponds to one of the promoters of the item containing the bitstream.
+     *
+     * @param uuid The UUID of the bitstream to download.
+     * @param response The response object to stream the bitstream to.
+     * @param request The request object to retrieve the hash parameter.
+     * @return * IF the bitstream is found and the hash is correct, the bitstream is streamed to the response output
+     *           stream and an HTTP-200 code response is returned.
+     *         * IF the bitstream is not found, a 404 error is returned.
+     *         * IF the hash is missing, a 400 error is returned.
+     * @throws SQLException
+     */
+    @RequestMapping(method = RequestMethod.GET, value = "/{uuid}/content")
+    public ResponseEntity getBitstreamContent(
+            @PathVariable UUID uuid,
+            HttpServletResponse response,
+            HttpServletRequest request
+    ) throws SQLException {
+        Context context = ContextUtil.obtainContext(request);
+        Bitstream bitstream = bitstreamService.find(context, uuid);
+        String hash = request.getParameter("hash");
+        if (bitstream == null) {
+            return new ResponseEntity<>("Bitstream not found", HttpStatus.NOT_FOUND);
+        }
+        if (hash == null || isEmpty(hash)) {
+            return new ResponseEntity<>("Missing hash parameter", HttpStatus.BAD_REQUEST);
+        }
+
+        if (this.isAuthorized(context, bitstream, hash)) {
+            try {
+                String mimeType = bitstream.getFormat(context).getMIMEType();
+                // Using the 'ContentDisposition' of Spring.http which helps to build the header.
+                // It also sanitizes the filename.
+                ContentDisposition contentDisposition = ContentDisposition
+                    .builder("attachment")
+                    .filename(bitstream.getName())
+                    .build();
+                response.setHeader(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());;
+                response.setContentLength((int) bitstream.getSizeBytes());
+                response.setContentType(mimeType);
+
+                context.turnOffAuthorisationSystem();
+                // Fixed buffer size to minimize memory usage. If we have big files, it will save us by not loading
+                // everything at once in the memory.
+                byte[] buffer = new byte[this.bitstreamContentBufferSize];
+                InputStream input = bitstreamService.retrieve(context, bitstream);
+                OutputStream output = response.getOutputStream();
+                for (int length = 0; (length = input.read(buffer)) > 0;) {
+                    output.write(buffer, 0, length);
+                }
+                response.flushBuffer();
+                context.restoreAuthSystemState();
+                return new ResponseEntity<>(HttpStatus.OK);
+            } catch (Exception e) {
+                logger.error("Could not retrieve bitstream's input stream: " + e.getMessage());
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            logger.warn("Failed bitstream download attempt; bitstream uuid: " + uuid + "; used hash: "
+                    + (hash != null ? hash : "NONE"));
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    /** 
+     * First retrieve the list of promoters from the item containing the bitstream.
+     * Then hash their email addresses and compare the hash with the one given with the request.
+     *
+     * @param context The current DSpace context.
+     * @param bitstream The bitstream to check the authorization for.
+     * @param hash The hash to compare with the promoters' hashes.
+     * @return If one hash match the given one, return true, else return false.
+    */
+    private boolean isAuthorized(Context context, Bitstream bitstream, String hash) {
+        try {
+            DSpaceObject parentObject = bitstreamService.getParentObject(context, bitstream);
+            if (parentObject != null && parentObject instanceof Item) {
+                Item dspaceItem = (Item) parentObject;
+                List<String> hashList = getPromotersEmailsAsHash(context, dspaceItem);
+                return !hashList.isEmpty() && hashList.contains(hash);
+            }
+            return false;
+        } catch (Exception e) {
+            logger.error("Unhandled exception occurred while checking bitstream access authorization", e);
+            return false;
+        }
+    }
+
+    /**
+     * Retrieve the supervisor emails list from the item containing the bitstream, and hash them using the
+     * encryption key.
+     *
+     * @param context The current DSpace context.
+     * @param item The item which is the parent of the bitstream.
+     * @return A list of hashed email addresses of the promoters of the item.
+     */
+    private List<String> getPromotersEmailsAsHash(Context context, Item item) {
+        if (encryptionKey.isEmpty()) {
+            logger.error("!! NO ENCRYPTION KEY PROVIDED FOR BITSTREAM PROMOTER HASHING !!");
+            return new ArrayList<>();
+        }
+        if (promoterField == null) {
+            logger.error("Cannot retrieve promoters because `this.promoterField` is null.");
+            return new ArrayList<>();
+        }
+        try {
+            Hasher hasher = new Hasher(algo, encryptionKey);
+            ItemService currentItemService = item.getItemService();
+            return currentItemService.getMetadata(
+                item,
+                this.promoterField.getSchema(),
+                this.promoterField.getElement(),
+                this.promoterField.getQualifier(),
+                null
+            )
+                .stream()
+                .map(MetadataValue::getValue)
+                .map(hasher::processHashAsString)
+                .collect(Collectors.toList());
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn("'" + algo + "' is not a known algorithm name.", e);
+            return new ArrayList<>();
+        }
+    }
+}
