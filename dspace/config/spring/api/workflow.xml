@@ -58,7 +58,7 @@
         </property>
         <property name="actions">
             <list>
-                <ref bean="generatepdfaction"/>
+                <ref bean="sendemailattestationaction"/>
             </list>
         </property>
     </bean>
