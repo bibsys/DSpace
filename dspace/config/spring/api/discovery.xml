@@ -24,6 +24,7 @@
 
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
+    <bean id="solrServicePromoterItemPlugin" class="org.dspace.uclouvain.discovery.SolrServicePromoterItemPlugin" scope="prototype"/>
     <bean id="solrServiceSessionYearFieldIndexingPlugin" class="org.dspace.uclouvain.discovery.SolrServiceSessionYearFieldIndexingPlugin" scope="prototype"/>
     <bean id="solrServiceResourceIndexPlugin" class="org.dspace.discovery.SolrServiceResourceRestrictionPlugin" scope="prototype"/>
     <bean id="solrServiceWorkspaceWorkflowPlugin" class="org.dspace.discovery.SolrServiceWorkspaceWorkflowRestrictionPlugin" scope="prototype"/>
@@ -100,6 +101,9 @@
                 <entry key="workflowAdmin" value-ref="workflowAdminConfiguration" />
                 <!-- "supervision" is a special entry to search for all workspace and workflow items if you are an administrator -->
                 <entry key="supervision" value-ref="supervisionConfiguration" />
+
+                <!-- "promoter" is a special entry to search for the promoter's kined items -->
+                <entry key="promoter" value-ref="promoterConfiguration" />
 
                 <entry key="undiscoverable" value-ref="unDiscoverableItems" />
                 <entry key="administrativeView" value-ref="administrativeView" />
@@ -186,6 +190,40 @@
                     </list>
                 </entry>
             </map>
+        </property>
+    </bean>
+
+    <bean id="promoterConfiguration" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
+        <property name="id" value="promoterConfiguration"/>
+        <property name="sidebarFacets">
+            <list>
+                <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterAuthor" />
+            </list>
+        </property>
+        <property name="searchFilters">
+            <list>
+                <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterAuthor" />
+            </list>
+        </property>
+        <property name="searchSortConfiguration">
+            <bean class="org.dspace.discovery.configuration.DiscoverySortConfiguration">
+                <property name="defaultSortField" ref="sortLastModified" />
+                <property name="sortFields">
+                    <list>
+                        <ref bean="sortLastModified" />
+                        <ref bean="sortTitleAsc" />
+                        <ref bean="sortDateIssuedDesc" />
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="defaultFilterQueries">
+            <list>
+                <value>search.resourcetype:Item</value>
+                <value>withdrawn:false AND discoverable:true</value>
+            </list>
         </property>
     </bean>
 
