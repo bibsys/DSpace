@@ -65,6 +65,8 @@ public class SendEmailAttestationAction extends ProcessingAction {
     private final String mailErrorSubject = configService.getProperty("uclouvain.pdf_attestation.mail.error.subject");
     private final List<String> recipientsConfig = Arrays.asList(
         configService.getArrayProperty("uclouvain.pdf_attestation.mail.recipients", new String[0]));
+    private final String[] validAddressSuffix =
+            configService.getArrayProperty("uclouvain.pdf_attestation.mail.suffixes", new String[0]);
 
     @Override
     public void activate(Context c, XmlWorkflowItem wf){}
@@ -309,9 +311,27 @@ public class SendEmailAttestationAction extends ProcessingAction {
         } else {
             for (String metadata: metadataToLookup) {
                 for (String address: itemMetadata.get(metadata)) {
-                    email.addRecipient(address);
+                    if (this.isValidAddress(address)) {
+                        email.addRecipient(address);
+                    }
                 }
             }
         }
+    }
+
+    /**
+     * Checks the validity of an address.
+     * An address is valid if it contains a configured suffix.
+     *
+     * @param address The address to validate.
+     * @return Returns 'true' if the address contains at least one of the configured suffixes, 'false' if not.
+     */
+    private Boolean isValidAddress(String address) {
+        for (String suffix: this.validAddressSuffix) {
+            if (address.endsWith(suffix)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
