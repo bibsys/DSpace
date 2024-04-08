@@ -1,0 +1,29 @@
+## Email sent to a DSpace User when his submission has be validated and entered the archive
+## This email comes with an attachment: an attestation that confirms the submission.
+## Parameters:  - {0} Date and time
+##              - {1} Type of the submission (ex: Thesis)
+##              - {2} Information about the submission (title, abstract...)
+##              - {3} List of urls to access the bitstreams
+#set($phone = ${config.get('mail.message.helpdesk.telephone')})
+
+-- ${params[0]} --
+
+Dear promoter,
+
+Since you are in charge, please find in attachment the ${params[1]} attestation for the following submission:
+
+${params[2]}
+
+#if(${params[3]})
+Here are your access urls for the attestation's bitstreams:
+#foreach($url in ${params[3]})
+    - ${url}
+#end
+#end
+
+If you need assistance, please email ${config.get("mail.helpdesk")}
+#if( $phone )
+or call us at ${phone}.
+#end
+
+The ${config.get('dspace.name')} Team
