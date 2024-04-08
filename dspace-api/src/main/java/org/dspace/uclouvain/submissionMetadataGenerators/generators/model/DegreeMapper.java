@@ -12,10 +12,7 @@ public class DegreeMapper {
     @JsonProperty("faculty-name")
     private String facultyName;
 
-    public String getRootDegreeCode() {
-        return rootDegreeCode;
-    }
-
+    public String getRootDegreeCode() { return rootDegreeCode; }
     public void setRootDegreeCode(String rootDegreeCode) {
         this.rootDegreeCode = rootDegreeCode;
     }
@@ -23,7 +20,6 @@ public class DegreeMapper {
     public String getRootDegreeLabel() {
         return rootDegreeLabel;
     }
-
     public void setRootDegreeLabel(String rootDegreeLabel) {
         this.rootDegreeLabel = rootDegreeLabel;
     }
@@ -31,7 +27,6 @@ public class DegreeMapper {
     public String getFacultyCode() {
         return facultyCode;
     }
-
     public void setFacultyCode(String facultyName) {
         this.facultyCode = facultyName;
     }
@@ -39,7 +34,6 @@ public class DegreeMapper {
     public String getFacultyName() {
         return facultyName;
     }
-
     public void setFacultyName(String facultyName) {
         this.facultyName = facultyName;
     }
