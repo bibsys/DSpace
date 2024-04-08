@@ -1,6 +1,7 @@
 package org.dspace.uclouvain.external.osis.rest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +25,8 @@ public class OSISController {
     @Autowired
     private OSISClientImpl osisClient;
 
+    public static final String DEGREE_PART_SEPARATOR = " - ";
+
     /** 
      * When calling /api/uclouvain/osis/student/{fgs}/info/all with a given FGS identifier,
      * returns all information about the corresponding student studies.
@@ -46,20 +49,21 @@ public class OSISController {
     @RequestMapping(method = RequestMethod.GET, value = "/student/{fgs}/info/degree")
     public List<HashMap<String, String>> getStudentDegreeCodesByFGS(@PathVariable String fgs) {
         List<HashMap<String, String>> returnValueArray  = new ArrayList<HashMap<String, String>>();
-        
         OSISStudentDegree[] osisStudentDegreeResponse = this.osisClient.getOSISStudentDegreeByFGS(fgs);
-
         for (OSISStudentDegree degree: osisStudentDegreeResponse){
             HashMap<String, String> returnValueMap = new HashMap<>();
-
             returnValueMap.put("fgs", fgs);
             if(!degree.isError()){
+                String degreeCode = degree.getSigleOffreRacine();
+                String degreeLabel = degree.getIntitOffreComplet();
                 returnValueMap.put("category", degree.getCategorieDecret());
-                returnValueMap.put("degreeCode", degree.getSigleOffreRacine() + " - " + degree.getIntitOffreComplet());
+                returnValueMap.put("degreeCode", degreeCode);
+                returnValueMap.put("degreeLabel", degreeLabel);
+                returnValueMap.put("degreeDisplayValue",
+                        String.join(DEGREE_PART_SEPARATOR, Arrays.asList(degreeCode, degreeLabel)));
                 returnValueArray.add(returnValueMap);
             } 
         }
-
         return returnValueArray;
     }
 
@@ -71,9 +75,11 @@ public class OSISController {
      * @return List<HashMap<String, String>>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/students/info/degree")
-    public HashMap<String,MetadataSelectFieldValuesGenerator.OSISStudentMetadataContent> getStudentsDegreeCodesByFGS(@RequestParam List<String> fgs, @RequestParam String degreeTypeFilter){
+    public HashMap<String, MetadataSelectFieldValuesGenerator.OSISStudentMetadataContent>
+           getStudentsDegreeCodesByFGS(@RequestParam List<String> fgs, @RequestParam String degreeTypeFilter){
 
-        MetadataSelectFieldValuesGenerator selectFieldValues  = new MetadataSelectFieldValuesGenerator("data-masterthesis.degree.code");
+        MetadataSelectFieldValuesGenerator selectFieldValues =
+                new MetadataSelectFieldValuesGenerator("data-masterthesis.degree.code");
         for(String fgs_id: fgs){
             OSISStudentDegree[] osisStudentDegreeResponse = this.getAllStudentInfoByFGS(fgs_id);
             for (OSISStudentDegree studentDegree: osisStudentDegreeResponse){
@@ -84,13 +90,11 @@ public class OSISController {
                         && degreeLabel != null && !degreeLabel.isBlank()
                         && category != null && !category.isBlank()
                         && category.toLowerCase().equals(degreeTypeFilter.toLowerCase())) {
-                    String value = degreeCode + " - " + degreeLabel;
-                    String displayed = value;
-                    selectFieldValues.addMetadataContentElementOption(value, displayed);
+                    String displayed = String.join(DEGREE_PART_SEPARATOR, Arrays.asList(degreeCode, degreeLabel));
+                    selectFieldValues.addMetadataContentElementOption(degreeCode, displayed);
                 }
             }
         }
-
         return selectFieldValues.generateResponse();
     }
 }
