@@ -66,9 +66,21 @@
           <dc-qualifier>code</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Degree code</label>
-          <input-type>empty_select</input-type>
-          <hint>Select a degree Code</hint>
-          <required>You must select a degree code, if the select field is empty, please select another person.</required>
+          <input-type>degree_select</input-type>
+          <hint>Select a degree code</hint>
+          <required>Select a degree code. If empty no data could be retrieved from OSIS; check about author inscriptions.</required>
+          <visibility>submission</visibility>
+        </field>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Degree code</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the degree code. Please be CAREFUL and consistent with degree label</hint>
+          <required>Enter the degree code</required>
+          <visibility>workflow</visibility>
         </field>
       </row>
       <row>
@@ -78,8 +90,19 @@
           <dc-qualifier>label</dc-qualifier>
           <repeatable>false</repeatable>
           <label>DegreeLabel</label>
+          <input-type>hidden</input-type>
+          <hint/>
+          <visibility>submission</visibility>
+        </field>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>label</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>DegreeLabel</label>
           <input-type>onebox</input-type>
-          <hint>Degree Label</hint>
+          <hint>Enter the degree label. Please be CAREFUL and consistent with degree code</hint>
+          <required>Enter the degree label</required>
           <visibility>workflow</visibility>
         </field>
       </row>
@@ -122,18 +145,6 @@
       </row>
     </form>
     <form name="master-thesis">
-      <!-- <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>type</dc-element>
-          <repeatable>false</repeatable>
-          <label>Type</label>
-          <input-type>onebox</input-type>
-          <hint>Select the type(s) of content of the item.</hint>
-          <required>You must select a publication type</required>
-          <vocabulary>publication-coar-types</vocabulary>
-        </field>
-      </row> -->
       <row>
         <field>
           <dc-schema>dc</dc-schema>
@@ -143,6 +154,18 @@
           <label>Authors</label>
           <input-type>group</input-type>
           <hint>Enter the names of the authors of this item.</hint>
+          <required/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>advisor</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Promoters</label>
+          <input-type>group</input-type>
+          <hint>Enter the names of the promoters of this item.</hint>
           <required/>
         </field>
       </row>
@@ -162,7 +185,8 @@
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
           <dc-qualifier>abstract</dc-qualifier>
-          <repeatable>false</repeatable>
+          <language value-pairs-name="common_iso_languages">true</language>
+          <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
           <hint>Enter the abstract of the item.</hint>
@@ -201,9 +225,7 @@
           <repeatable>false</repeatable>
           <label>Session</label>
           <input-type value-pairs-name="masterthesis_session">dropdown</input-type>
-          <hint>
-          Session period during which the thesis was submitted.
-          </hint>
+          <hint>Session period during which the thesis was submitted.</hint>
           <required/>
         </field>
         <field>
@@ -214,30 +236,6 @@
           <label>Year</label>
           <input-type>year</input-type>
           <hint>Year during which the thesis was submitted.</hint>
-          <required/>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>masterthesis</dc-schema>
-          <dc-element>faculty</dc-element>
-          <dc-qualifier>code</dc-qualifier>
-          <repeatable>true</repeatable>
-          <label>Facultyrelated to this item</label>
-          <input-type>onebox</input-type>
-          <required/>
-          <visibility>workflow</visibility>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>contributor</dc-element>
-          <dc-qualifier>advisor</dc-qualifier>
-          <repeatable>true</repeatable>
-          <label>Promoters</label>
-          <input-type>group</input-type>
-          <hint>Enter the names of the promoters of this item.</hint>
           <required/>
         </field>
       </row>
@@ -2817,6 +2815,10 @@ it, please enter the types and the actual numbers or codes.</hint>
     </value-pairs>    
     <value-pairs value-pairs-name="common_iso_languages_639_2" dc-term="common_iso_languages_639_2">
       <pair>
+        <displayed-value>Dutch</displayed-value>
+        <stored-value>dut</stored-value>
+      </pair>
+      <pair>
         <displayed-value>English</displayed-value>
         <stored-value>eng</stored-value>
       </pair>
@@ -2825,8 +2827,24 @@ it, please enter the types and the actual numbers or codes.</hint>
         <stored-value>fre</stored-value>
       </pair>
       <pair>
+        <displayed-value>Italian</displayed-value>
+        <stored-value>ita</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>German</displayed-value>
+        <stored-value>ger</stored-value>
+      </pair>
+      <!--<pair>
         <displayed-value>Multilingual</displayed-value>
         <stored-value>mul</stored-value>
+      </pair>-->
+      <pair>
+        <displayed-value>Spanish</displayed-value>
+        <stored-value>spa</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>(Other)</displayed-value>
+        <stored-value>other</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="patent_types" dc-term="patent_types">
@@ -2988,9 +3006,13 @@ it, please enter the types and the actual numbers or codes.</hint>
         <displayed-value>N/A</displayed-value>
         <stored-value />
       </pair>
-      <pair>
+      <!--<pair>
         <displayed-value>English (United States)</displayed-value>
         <stored-value>en_US</stored-value>
+      </pair>-->
+      <pair>
+        <displayed-value>Dutch</displayed-value>
+        <stored-value>nl</stored-value>
       </pair>
       <pair>
         <displayed-value>English</displayed-value>
@@ -3012,7 +3034,7 @@ it, please enter the types and the actual numbers or codes.</hint>
         <displayed-value>Italian</displayed-value>
         <stored-value>it</stored-value>
       </pair>
-      <pair>
+      <!--<pair>
         <displayed-value>Japanese</displayed-value>
         <stored-value>ja</stored-value>
       </pair>
@@ -3023,7 +3045,7 @@ it, please enter the types and the actual numbers or codes.</hint>
       <pair>
         <displayed-value>Turkish</displayed-value>
         <stored-value>tr</stored-value>
-      </pair>
+      </pair>-->
       <pair>
         <displayed-value>(Other)</displayed-value>
         <stored-value>other</stored-value>
