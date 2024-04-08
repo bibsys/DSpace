@@ -5,7 +5,7 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
     <bean id="claimactionAPI" class="org.dspace.xmlworkflow.state.actions.userassignment.ClaimAction" scope="prototype"/>
-    <bean id="generatepdfactionAPI" class="org.dspace.uclouvain.pdfAttestationGenerator.xmlworkflow.actions.GeneratePDFAction" scope="prototype" />
+    <bean id="sendemailattestationactionAPI" class="org.dspace.uclouvain.pdfAttestationGenerator.xmlworkflow.actions.SendEmailAttestationAction" scope="prototype" />
     <bean id="uclouvainthesisreviewactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.UCLouvainThesisReviewAction" scope="prototype"/>
     <bean id="reviewactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.ReviewAction" scope="prototype"/>
     <bean id="editactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.AcceptEditRejectAction" scope="prototype"/>
@@ -29,9 +29,9 @@
     <bean id="noUserSelectionActionAPI" class="org.dspace.xmlworkflow.state.actions.userassignment.NoUserSelectionAction" scope="prototype"/>
     <bean id="assignoriginalsubmitteractionAPI" class="org.dspace.xmlworkflow.state.actions.userassignment.AssignOriginalSubmitterAction" scope="prototype"/>
 
-    <bean id="generatepdfaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
-        <constructor-arg type="java.lang.String" value="generatepdfaction"/>
-        <property name="processingAction" ref="generatepdfactionAPI"/>
+    <bean id="sendemailattestationaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
+        <constructor-arg type="java.lang.String" value="sendemailattestationaction"/>
+        <property name="processingAction" ref="sendemailattestationactionAPI"/>
         <property name="requiresUI" value="false"/>
     </bean>
 
