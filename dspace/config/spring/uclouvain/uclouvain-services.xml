@@ -18,10 +18,12 @@
         <property name="generators">
             <util:map>
                 <entry key="limitedTime" value-ref="limitedTimeDirectLinkGenerator"/>
+                <entry key="thesisSupervisor" value-ref="thesisSupervisorDirectLinkGenerator"/>
             </util:map>
         </property>
     </bean>
     <bean id="limitedTimeDirectLinkGenerator" class="org.dspace.uclouvain.core.directLink.LimitedTimeDirectLinkGenerator"/>
+    <bean id="thesisSupervisorDirectLinkGenerator" class="org.dspace.uclouvain.core.directLink.ThesisSupervisorDirectLinkGenerator"/>
 
 
     <bean id="rabbitConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
