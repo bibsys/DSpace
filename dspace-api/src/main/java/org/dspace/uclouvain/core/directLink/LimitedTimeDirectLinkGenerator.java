@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LimitedTimeDirectLinkGenerator extends DirectLinkGenerator {
 
-    private final static String LINK_TYPE = "limitedTime";
+    public final static String LINK_TYPE = "limitedTime";
 
     private final String password = configurationService.getProperty("uclouvain.crypto.password");
     private final String salt = configurationService.getProperty("uclouvain.crypto.salt");

@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.rest;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -30,7 +31,9 @@ public class OSISController {
     @Autowired
     private OSISClientImpl osisClient;
 
-    /** 
+    public static final String DEGREE_PART_SEPARATOR = " - ";
+
+    /**
      * When calling /api/uclouvain/osis/student/{fgs}/info/all with a given FGS identifier,
      * returns all information about the corresponding student studies.
      * 
@@ -57,8 +60,13 @@ public class OSISController {
             HashMap<String, String> returnValueMap = new HashMap<>();
             returnValueMap.put("fgs", fgs);
             if (!degree.isError()) {
+                String degreeCode = degree.getSigleOffreRacine();
+                String degreeLabel = degree.getIntitOffreComplet();
                 returnValueMap.put("category", degree.getCategorieDecret());
-                returnValueMap.put("degreeCode", degree.getSigleOffreRacine() + " - " + degree.getIntitOffreComplet());
+                returnValueMap.put("degreeCode", degreeCode);
+                returnValueMap.put("degreeLabel", degreeLabel);
+                returnValueMap.put("degreeDisplayValue",
+                        String.join(DEGREE_PART_SEPARATOR, Arrays.asList(degreeCode, degreeLabel)));
                 returnValueArray.add(returnValueMap);
             }
         }
@@ -73,7 +81,8 @@ public class OSISController {
      * @return List<HashMap<String, String>>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/students/info/degree")
-    public HashMap<String,MetadataSelectFieldValuesGenerator.OSISStudentMetadataContent> getStudentsDegreeCodesByFGS(
+    public HashMap<String, MetadataSelectFieldValuesGenerator.OSISStudentMetadataContent>
+           getStudentsDegreeCodesByFGS(
             @RequestParam List<String> fgs,
             @RequestParam String degreeTypeFilter
     ) {
@@ -91,8 +100,8 @@ public class OSISController {
                         && category != null && !category.isBlank()
                         && category.toLowerCase().equals(degreeTypeFilter.toLowerCase())
                 ) {
-                    String value = degreeCode + " - " + degreeLabel;
-                    selectFieldValues.addMetadataContentElementOption(value, value);
+                    String displayed = String.join(DEGREE_PART_SEPARATOR, Arrays.asList(degreeCode, degreeLabel));
+                    selectFieldValues.addMetadataContentElementOption(degreeCode, displayed);
                 }
             }
         }
