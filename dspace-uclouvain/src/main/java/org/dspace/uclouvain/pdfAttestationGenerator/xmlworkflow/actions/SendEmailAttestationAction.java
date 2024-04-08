@@ -59,6 +59,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
     private String mailErrorSubject = this.configurationService.getProperty("uclouvain.pdf_attestation.mail.error.subject");
 
     private List<String> recipientsConfig = Arrays.asList(this.configurationService.getArrayProperty("uclouvain.pdf_attestation.mail.recipients", new String[0]));
+    private String[] validAddressSuffix = this.configurationService.getArrayProperty("uclouvain.pdf_attestation.mail.suffixes", new String[0]);
 
     private String algorithm = this.configurationService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
     private String encryptionKey = this.configurationService.getProperty("uclouvain.api.bitstream.download.secret", "");
@@ -297,9 +298,22 @@ public class SendEmailAttestationAction extends ProcessingAction {
         } else {
             for (String metadata: metadataToLookup) {
                 for (String address: itemMetadata.get(metadata)) {
-                    email.addRecipient(address);
+                    if (this.isValidAddress(address)) email.addRecipient(address);
                 }
             }
         }
+    }
+
+    /**
+     * Checks the validity of an address.
+     * An address is valid if it contains a configured suffix.
+     * @param address: The address to validate.
+     * @return: Returns 'true' if the address contains at least one of the configured suffix, 'false' if not.
+     */
+    private Boolean isValidAddress(String address){
+        for (String suffix: this.validAddressSuffix) {
+            if (address.endsWith(suffix)) return true;
+        }
+        return false;
     }
 }
