@@ -1,88 +1,43 @@
 package org.dspace.uclouvain.submissionMetadataGenerators.generators;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.core.GenericResponse;
+import org.dspace.uclouvain.configurationFiles.ConfigurationFile;
+import org.dspace.uclouvain.configurationFiles.factory.ConfigurationFileFactory;
+import org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile;
 import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMapper;
-import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMappers;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Service to read the degree mappers JSON data file.
+ * Service to read the degree mappers JSON configuration file.
  */
 public class DegreeMappersService {
     
-    private static final Logger log = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger(DegreeMappersService.class);
 
-    private String absoluteFilePath;
+    private ConfigurationFile<DegreeMapper> fileLoader;
 
-    private DegreeMappers degreeMappers;
-
-    private Long lastModified;
-
-    @Autowired
-    private String source = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("dspace.dir");
-
-
-    DegreeMappersService(String filePath) {
-        this.absoluteFilePath = this.source + filePath;
-        this.loadFileMappers(this.absoluteFilePath);
-    }
+    // Use this syntax to load bean since @Autowired does not work in this case.
+    ConfigurationFileFactory configurationFileFactory = DSpaceServicesFactory
+        .getInstance()
+        .getServiceManager()
+        .getApplicationContext()
+        .getBean(ConfigurationFileFactory.class);
 
     /**
-     * Load the given file mapping configuration if needed.
-     * The file will only be loaded if a newer version of it exists.
-     * The version (date) of the file is stored in the lastModified attribute.
-     *
-     * @param filePath: The path to the file to read.
+     * CONSTRUCTOR:
+     * Load the degree mappers configuration file && keep it as an attribute for later use.
+     * If the class is not found in the configuration file, logs a warning.
      */
-    private void loadFileMappers(String filePath) {
-        File mappingFile = new File(filePath);
-        if (mappingFile.exists() && mappingFile.canRead()) {
-            if (this.isNewVersion(mappingFile)){
-                this.readMappingFile(mappingFile);
-                this.lastModified = mappingFile.lastModified();
-            }
+    @SuppressWarnings("unchecked")
+    DegreeMappersService() {
+        this.fileLoader = (ConfigurationFile<DegreeMapper>) this.configurationFileFactory.getConfigurationFile(DegreeMappersConfigurationFile.NAME);
+        if (fileLoader == null) {
+            logger.warn("There was an error instantiating a file loader for the following file: " + this.fileLoader.getPath());
         }
-        else {
-            log.warn("Could not find or read the degree mappers configuration file. Given path: " + filePath);
-            this.degreeMappers = new DegreeMappers();
-        }
-    }
-
-    /**
-     * Read the mapping file and load the data into the degreeMappers attribute.
-     *
-     * @param mappingFile: The file to read.
-     */
-    private void readMappingFile(File mappingFile) {
-        try {
-            String mappingFileString = Files.readString(Path.of(mappingFile.getPath()));
-            this.degreeMappers = new GenericResponse(mappingFileString).extractJsonResponseDataToClass(null, DegreeMappers.class);
-        } catch (IOException e){
-            log.warn("Could not read the degree code mappers file or load the data. Given path: " + mappingFile.getAbsolutePath(), e);
-            this.degreeMappers = new DegreeMappers();
-        }
-    }
-
-    /**
-    * Check if the file as been modified since the last time it was read.
-    * If the lastModified attribute is null or if the version is newer, it will return true.
-    * If the version is the same return false.
-    *
-    * @param mappingFile: The file to check.
-    */
-    private boolean isNewVersion(File mappingFile) {
-        return (this.lastModified == null) ? true : mappingFile.lastModified() > this.lastModified;
     }
 
     /**
@@ -94,8 +49,7 @@ public class DegreeMappersService {
      * @return The degree mapper for the given degree code.
      */
     public DegreeMapper getDegreeMapperForDegreeCode(String degreeCode) {
-        this.loadFileMappers(this.absoluteFilePath);
-        return this.degreeMappers.get(degreeCode);
+        return (fileLoader != null) ? this.fileLoader.get(degreeCode): null;
     }
 
     /**
@@ -105,11 +59,6 @@ public class DegreeMappersService {
      * @return The degree mappers for the given degree codes.
      */
     public List<DegreeMapper> getDegreeMappersForDegreeCodes(List<String> degreeCodes) {
-        this.loadFileMappers(this.absoluteFilePath);
-        return degreeCodes
-            .stream()
-            .map(degreeCode -> this.degreeMappers.get(degreeCode))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+        return (fileLoader != null) ? this.fileLoader.get(degreeCodes): new ArrayList<DegreeMapper>();
     }
 }
