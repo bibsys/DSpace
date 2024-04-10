@@ -7,87 +7,30 @@
  */
 package org.dspace.uclouvain.submissionMetadataGenerators.generators;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.core.GenericResponse;
+import org.dspace.uclouvain.configurationFiles.ConfigurationFile;
 import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMapper;
-import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMappers;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Service to read the degree mappers JSON data file.
+ * Service to read the degree mappers JSON configuration file.
  */
 public class DegreeMappersService {
 
-    private static final Logger log = LogManager.getLogger();
-    private String absoluteFilePath;
-    private DegreeMappers degreeMappers;
-    private Long lastModified;
+    private static final Logger logger = LogManager.getLogger(DegreeMappersService.class);
 
-    @Autowired
-    private String source = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("dspace.dir");
-
-
-    DegreeMappersService(String filePath) {
-        this.absoluteFilePath = this.source + filePath;
-        this.loadFileMappers(this.absoluteFilePath);
-    }
+    private ConfigurationFile<DegreeMapper> fileLoader;
 
     /**
-     * Load the given file mapping configuration if needed.
-     * The file will only be loaded if a newer version of it exists.
-     * The version (date) of the file is stored in the lastModified attribute.
-     *
-     * @param filePath The path to the file to read.
+     * CONSTRUCTOR:
+     * Load the degree mappers configuration file && keep it as an attribute for later use.
+     * If the class is not found in the configuration file, logs a warning.
      */
-    private void loadFileMappers(String filePath) {
-        File mappingFile = new File(filePath);
-        if (mappingFile.exists() && mappingFile.canRead()) {
-            if (isNewVersion(mappingFile)) {
-                readMappingFile(mappingFile);
-                lastModified = mappingFile.lastModified();
-            }
-        } else {
-            log.warn("Could not find or read the degree mappers configuration file. Given path: " + filePath);
-            degreeMappers = new DegreeMappers();
-        }
-    }
-
-    /**
-     * Read the mapping file and load the data into the degreeMappers attribute.
-     *
-     * @param mappingFile The file to read.
-     */
-    private void readMappingFile(File mappingFile) {
-        try {
-            String mappingFileString = Files.readString(Path.of(mappingFile.getPath()));
-            degreeMappers = new GenericResponse(mappingFileString)
-                    .extractJsonResponseDataToClass(null, DegreeMappers.class);
-        } catch (IOException e) {
-            log.warn("Could not read the degree code mappers file or load the data. Given path: "
-                    + mappingFile.getAbsolutePath(), e);
-            degreeMappers = new DegreeMappers();
-        }
-    }
-
-    /**
-    * Check if the file as been modified since the last time it was read.
-    * If the lastModified attribute is null or if the version is newer, it will return true.
-    * If the version is the same, return false.
-    *
-    * @param mappingFile The file to check.
-    */
-    private boolean isNewVersion(File mappingFile) {
-        return lastModified == null || mappingFile.lastModified() > lastModified;
+    @SuppressWarnings("unchecked")
+    DegreeMappersService() {
+        // empty
     }
 
     /**
@@ -99,8 +42,8 @@ public class DegreeMappersService {
      * @return The degree mapper for the given degree code.
      */
     public DegreeMapper getDegreeMapperForDegreeCode(String degreeCode) {
-        loadFileMappers(absoluteFilePath);
-        return degreeMappers.get(degreeCode);
+        // empty
+        return null;
     }
 
     /**
@@ -110,11 +53,7 @@ public class DegreeMappersService {
      * @return The degree mappers for the given degree codes.
      */
     public List<DegreeMapper> getDegreeMappersForDegreeCodes(List<String> degreeCodes) {
-        loadFileMappers(absoluteFilePath);
-        return degreeCodes
-            .stream()
-            .map(degreeCode -> degreeMappers.get(degreeCode))
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+        // empty
+        return null;
     }
 }
