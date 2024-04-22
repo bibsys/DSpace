@@ -34,7 +34,7 @@
                             </property>
                             <property name="submissionDefinition" value="admin-person-edit" />
                         </bean>
-                        <bean class="org.dspace.content.edit.EditItemMode">
+                        <!-- <bean class="org.dspace.content.edit.EditItemMode">
                             <property name="name" value="OWNER" />
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
@@ -42,7 +42,7 @@
                                 </value>
                             </property>
                             <property name="submissionDefinition" value="person-edit" />
-                        </bean>
+                        </bean> -->
                     </list>
                 </entry>
                 <entry key="equipment">
