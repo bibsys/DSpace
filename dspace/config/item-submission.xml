@@ -306,19 +306,19 @@
       <step id="custom-url" />
       <step id="correction" />
       <step id="detect-duplicate" />
-      <step id="upload" />
+      <!-- <step id="upload" /> -->
       <step id="license" />
     </submission-process>
     <submission-process name="person-edit">
       <step id="person" />
       <step id="custom-url" />
-      <step id="upload" />
+      <!-- <step id="upload" /> -->
     </submission-process>
     <submission-process name="admin-person-edit">
       <step id="person" />
       <step id="custom-url" />
       <step id="owner" />
-      <step id="upload" />
+      <!-- <step id="upload" /> -->
     </submission-process>
     <submission-process name="event">
       <step id="collection" />
