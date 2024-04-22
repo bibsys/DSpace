@@ -1209,7 +1209,7 @@
             <dependency>
                 <groupId>org.dspace</groupId>
                 <artifactId>dspace-uclouvain</artifactId>
-                <version>cris-2023.02.02-SNAPSHOT</version>
+                <version>cris-2024.01.00-SNAPSHOT</version>
             </dependency>
             <!-- DSpace API Localization Packages -->
             <dependency>
