@@ -1,8 +1,6 @@
 package org.dspace.uclouvain.core;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
-
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
