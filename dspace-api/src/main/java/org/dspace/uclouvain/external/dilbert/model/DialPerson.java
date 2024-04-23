@@ -111,6 +111,9 @@ public class DialPerson {
         return this.inscription;
     }
     public void setInscription(DialPersonInscription inscription) {
+        if (inscription.institution.equalsIgnoreCase("UCL")) {
+            inscription.institution = "UCLouvain";
+        }
         this.inscription = inscription;
     }
 }
