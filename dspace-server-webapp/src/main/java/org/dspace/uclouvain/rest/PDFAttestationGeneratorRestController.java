@@ -7,21 +7,16 @@
  */
 package org.dspace.uclouvain.rest;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.fop.apps.FOPException;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.eperson.EPerson;
+import org.dspace.uclouvain.pdfAttestationGenerator.AttestationAuthorizationService;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.PDFGenerationException;
 import org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactory;
@@ -32,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import org.xml.sax.SAXException;
 
 @RestController
 @RequestMapping("/api/uclouvain/item/{uuid}/attestation")
@@ -41,7 +35,7 @@ public class PDFAttestationGeneratorRestController {
     @Autowired
     private ItemService itemService;
     @Autowired
-    private AuthorizeService authorizeService;
+    private AttestationAuthorizationService attestationAuthorizationService;
 
     /** 
      * Generates and returns a PDF attestation with a template depending on the targeted DSpace object type
@@ -53,13 +47,14 @@ public class PDFAttestationGeneratorRestController {
         HttpServletResponse response,
         HttpServletRequest request,
         @PathVariable UUID uuid
-    ) throws FileNotFoundException, IOException, FOPException, TransformerConfigurationException, TransformerException,
-            SAXException, SQLException {
+    ) throws IOException {
         try {
-            PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory
-                    .getInstance()
-                    .getHandlerInstance(uuid);
             if (this.checkAuthorization(request, uuid)) {
+                // If the authorization check passes, handler cannot be null.
+                // See why in 'AttestationAuthorizationService.isItemValidForAttestation'
+                PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory
+                        .getInstance()
+                        .getHandlerInstance(uuid);
                 try {
                     response.setContentType("application/pdf");
                     handler.getAttestation(response.getOutputStream(), uuid);
@@ -81,12 +76,11 @@ public class PDFAttestationGeneratorRestController {
 
     private Boolean checkAuthorization(HttpServletRequest request, UUID uuid) throws SQLException {
         Context ctx = ContextUtil.obtainContext(request);
-        EPerson currentUser = ctx.getCurrentUser();
         Item dsItem = itemService.find(ctx, uuid);
-        if (currentUser == null) {
+        if (dsItem == null) {
             return false;
         }
-        return authorizeService.isAdmin(ctx, dsItem) || (dsItem.isArchived()
-                && (dsItem.getSubmitter() == ctx.getCurrentUser()));
+        return attestationAuthorizationService.isItemValidForAttestation(dsItem, ctx)
+            && attestationAuthorizationService.isUserAuthorized(dsItem, ctx);
     }
 }
