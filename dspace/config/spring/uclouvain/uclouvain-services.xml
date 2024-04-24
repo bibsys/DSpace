@@ -59,14 +59,34 @@
     <!-- PDF ATTESTATION GENERATORS -->
     <!-- ConfigLoader -->
     <bean id="pdfAttestationGeneratorConfiguration" class="org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration">
-        <constructor-arg value="/config/pdf/attestation/attestationGeneratorConfiguration.xml"/>
+        <property name="handlersConfiguration">
+            <util:list>
+                <bean class="org.dspace.uclouvain.pdfAttestationGenerator.model.Handler">
+                    <property name="itemType" value="Thesis"/>
+                    <property name="handlerClass">
+                        <ref bean="masterThesisPdfAttestationGeneratorHandle"/>
+                    </property>
+                </bean>
+                <bean class="org.dspace.uclouvain.pdfAttestationGenerator.model.Handler">
+                    <property name="itemType" value="MasterThesis"/>
+                    <property name="handlerClass">
+                        <ref bean="masterThesisPdfAttestationGeneratorHandle"/>
+                    </property>
+                </bean>
+            </util:list>
+        </property>
     </bean>
 
     <!-- Factory -->
     <bean id="pdfAttestationGeneratorFactory" class="org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactoryImpl" />
 
     <!-- Handlers -->
-    <bean id="masterThesisPdfAttestationGeneratorHandle" class="org.dspace.uclouvain.pdfAttestationGenerator.handlers.MasterThesisPdfAttestationGeneratorHandler"/>
+    <bean id="masterThesisPdfAttestationGeneratorHandle" class="org.dspace.uclouvain.pdfAttestationGenerator.handlers.MasterThesisPdfAttestationGeneratorHandler">
+        <property name="templateName" value="master-thesis-template.xsl"/>
+    </bean>
+
+    <!-- Attestation Authorization Service -->
+    <bean id="attestationAuthorizationService" class="org.dspace.uclouvain.pdfAttestationGenerator.AttestationAuthorizationService"/>
 
 
     <!-- UTILS ============================================================ -->
