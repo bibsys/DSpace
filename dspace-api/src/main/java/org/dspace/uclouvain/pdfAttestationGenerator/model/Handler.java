@@ -1,18 +1,25 @@
 package org.dspace.uclouvain.pdfAttestationGenerator.model;
 
-import com.thoughtworks.xstream.annotations.XStreamAlias;
+import org.dspace.uclouvain.pdfAttestationGenerator.handlers.PDFAttestationGeneratorHandler;
 
-@XStreamAlias("handler")
 public class Handler {
     public String itemType;
-    @XStreamAlias("beanName")
-    public String className;
-    @XStreamAlias("template")
-    public String templateName;
+    public PDFAttestationGeneratorHandler handlerClass;
 
-    public Handler(String type, String className, String templateName) {
-        this.itemType = type;
-        this.className = className;
-        this.templateName = templateName;
-     }
+    // GETTERS && SETTERS
+    public String getItemType() {
+        return this.itemType;
+    }
+
+    public void setItemType(String itemType) {
+        this.itemType = itemType;
+    }
+
+    public PDFAttestationGeneratorHandler getHandlerClass() {
+        return this.handlerClass;
+    }
+
+    public void setHandlerClass(PDFAttestationGeneratorHandler handlerClass) {
+        this.handlerClass = handlerClass;
+    }
 }

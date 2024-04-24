@@ -47,6 +47,8 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     @Autowired
     PDFAttestationGeneratorConfiguration config;
 
+    private String templateName;
+
     private String source = DSpaceServicesFactory
         .getInstance()
         .getConfigurationService()
@@ -67,7 +69,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         try {
             Context DSpaceContext = new Context();
 
-            File templateFile = new File(this.source + templateDir + config.getConfigForItemType("Thesis").templateName);
+            File templateFile = new File(this.source + templateDir + this.templateName);
             
             // Generate the input xml with item data 
             String renderedXml = this.generatePDFMasterThesisAttestationFromObjectId(uuid, DSpaceContext);
@@ -111,6 +113,11 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         } catch (Exception e) {
             throw new PDFGenerationException(e.getMessage());
         }
+    }
+
+    // Returns the current template name
+    public String getAttestationTemplateName() {
+        return this.getTemplateName();
     }
 
     /** 
@@ -184,5 +191,14 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         catch (Exception e) {
             return null;
         }
+    }
+
+    // GETTERS && SETTERS
+    public void setTemplateName(String templateName) {
+        this.templateName = templateName;
+    }
+
+    public String getTemplateName() {
+        return this.templateName;
     }
 }
