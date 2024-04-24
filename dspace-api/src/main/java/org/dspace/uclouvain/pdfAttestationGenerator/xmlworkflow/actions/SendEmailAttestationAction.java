@@ -36,6 +36,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.Hasher;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
+import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.ResumeGenerationException;
 import org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactory;
 import org.dspace.uclouvain.pdfAttestationGenerator.handlers.PDFAttestationGeneratorHandler;
@@ -120,6 +121,9 @@ public class SendEmailAttestationAction extends ProcessingAction {
                     }
                 }
             }
+        } catch (HandlerNotFoundException e) {
+            logger.error("No handler found for item with uuid: " + uuid + ": " + e.getMessage());
+            return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
         } catch (Exception e) {
             logger.error("An exception occurred while generating email attestation for uuid: " + uuid + ": "
                 + e.getMessage());
