@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
@@ -44,11 +43,7 @@ public class PDFAttestationGeneratorFactoryImpl implements PDFAttestationGenerat
 
         Handler handler = this.pdfAttestationGeneratorConfiguration.getConfigForItemType(itemType);
         if (handler != null) {
-            return (PDFAttestationGeneratorHandler) DSpaceServicesFactory
-                .getInstance()
-                .getServiceManager()
-                .getApplicationContext()
-                .getBean(handler.className);
+            return handler.handlerClass;
         }
         throw new HandlerNotFoundException("No handler found for type: " + itemType);
     }
