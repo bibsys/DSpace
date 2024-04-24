@@ -2,22 +2,23 @@ package org.dspace.app.rest.authorization.impl;
 
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.authorization.AuthorizationFeature;
 import org.dspace.app.rest.authorization.AuthorizationFeatureDocumentation;
 import org.dspace.app.rest.model.BaseObjectRest;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.app.rest.utils.Utils;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.eperson.EPerson;
+import org.dspace.uclouvain.pdfAttestationGenerator.AttestationAuthorizationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Rule to indicate who has the permission to download a given item's submission attestation
+ * Rule to indicate if a PDF attestation can be downloaded for a given item && user.
  */
 @Component
 @AuthorizationFeatureDocumentation(
@@ -28,30 +29,41 @@ public class CanDownloadPDFAttestationFeature implements AuthorizationFeature {
     public final static String NAME = "canDownloadPDFAttestation";
 
     @Autowired
-    private AuthorizeService authorizeService;
-
-    @Autowired
     private ItemService itemService;
 
     @Autowired
     private Utils utils;
 
+    @Autowired
+    private AttestationAuthorizationService attestationAuthorizationService;
+
+    private static Logger logger = LogManager.getLogger(CanDownloadPDFAttestationFeature.class);
+
+    /**
+     * This method checks if a PDF attestation can be downloaded for a given item && user.
+     * @param context: The current DSpace context.
+     * @param object: The object to check authorization for.
+     * @return True if the user is authorized to download the attestation of the item.
+     * @throws SQLException If something goes wrong.
+     */
     @Override
     @SuppressWarnings("rawtypes")
-    public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException {
-        DSpaceObject dsObject = (DSpaceObject)utils.getDSpaceAPIObjectFromRest(context, object);
-        Item dsItem = itemService.find(context, dsObject.getID());
-        return dsItem.isArchived() && this.isUserAuthorized(dsItem, context);
+    public boolean isAuthorized(Context context, BaseObjectRest object) {
+        try {
+            DSpaceObject dsObject = (DSpaceObject)utils.getDSpaceAPIObjectFromRest(context, object);
+            Item dsItem = itemService.find(context, dsObject.getID());
+            if (dsItem == null) return false;
+            return attestationAuthorizationService.isItemValidForAttestation(dsItem, context) 
+            && attestationAuthorizationService.isUserAuthorized(dsItem, context);
+        } catch (SQLException e) {
+            logger.warn("Could not check for PDF attestation download authorization", e);
+            return false;
+        }
+
     }
 
     @Override
     public String[] getSupportedTypes() {
         return new String[] {ItemRest.CATEGORY + "." + ItemRest.NAME};
-    }
-
-    public Boolean isUserAuthorized(Item dsItem, Context ctx) throws SQLException {
-        EPerson currentUser = ctx.getCurrentUser();
-        if (currentUser == null) return false; 
-        return authorizeService.isAdmin(ctx, dsItem) || (dsItem.getSubmitter() == ctx.getCurrentUser());
     }
 }
