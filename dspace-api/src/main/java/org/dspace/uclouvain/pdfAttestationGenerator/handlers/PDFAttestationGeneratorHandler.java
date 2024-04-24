@@ -10,4 +10,5 @@ import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.PDFGenerationExce
 public interface PDFAttestationGeneratorHandler {
     public void getAttestation(OutputStream out, UUID uuid) throws PDFGenerationException;
     public InputStream getAttestationAsInputStream(UUID uuid) throws PDFGenerationException;
+    public String getAttestationTemplateName();
 }
