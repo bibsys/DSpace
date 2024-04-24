@@ -11,11 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.fop.apps.FOPException;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.eperson.EPerson;
+import org.dspace.uclouvain.pdfAttestationGenerator.AttestationAuthorizationService;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.PDFGenerationException;
 import org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactory;
@@ -36,7 +35,7 @@ public class PDFAttestationGeneratorRestController {
     private ItemService itemService;
 
     @Autowired
-    private AuthorizeService authorizeService;
+    private AttestationAuthorizationService attestationAuthorizationService;
 
     /** 
      * Generates and returns a PDF attestation with a template depending on the targeted DSpace object type
@@ -50,14 +49,15 @@ public class PDFAttestationGeneratorRestController {
         @PathVariable UUID uuid
     ) throws FileNotFoundException, IOException, FOPException, TransformerConfigurationException, TransformerException, SAXException, SQLException {
         try {
-            PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory.getInstance().getHandlerInstance(uuid);
             if(this.checkAuthorization(request, uuid)) {
+                // If the authorization check passes, handler cannot be null.
+                // See why in 'AttestationAuthorizationService.isItemValidForAttestation'
+                PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory.getInstance().getHandlerInstance(uuid);
                 try {
                     response.setContentType("application/pdf");
                     handler.getAttestation(response.getOutputStream(), uuid);
                     response.flushBuffer();
                 } catch (PDFGenerationException e) {
-                    System.out.println(e.getMessage());
                     response.sendError(500, "An error occurred while generating the attestation");
                 }
             }
@@ -71,16 +71,16 @@ public class PDFAttestationGeneratorRestController {
             response.sendError(404, "No handler configured for this type of item");
         }
         catch (Exception e) {
-            System.out.println(e);
             throw new RuntimeException(e);
         }
     }
 
     private Boolean checkAuthorization(HttpServletRequest request, UUID uuid) throws SQLException {
         Context ctx = ContextUtil.obtainContext(request);
-        EPerson currentUser = ctx.getCurrentUser();
         Item dsItem = itemService.find(ctx, uuid);
-        if (currentUser == null) return false;
-        return authorizeService.isAdmin(ctx, dsItem) || (dsItem.isArchived() && (dsItem.getSubmitter() == ctx.getCurrentUser()));
+        if (dsItem == null) return false;
+
+        return attestationAuthorizationService.isItemValidForAttestation(dsItem, ctx) 
+            && attestationAuthorizationService.isUserAuthorized(dsItem, ctx);
     }
 }
