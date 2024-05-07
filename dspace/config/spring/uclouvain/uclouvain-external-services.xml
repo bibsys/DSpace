@@ -135,15 +135,6 @@
                 <value>MasterThesis</value>
             </util:list>
         </property>
-        <!-- List of accessTypes that are handled by the generator -->
-        <property name="accessTypes">
-            <util:list>
-                <value>openaccess</value>
-                <value>UCLouvain networks restriction</value>
-                <value>embargo</value>
-                <value>administrator</value>
-            </util:list>
-        </property>
         <!-- The field in which the new metadata will go in -->
         <property name="accessTypeField">
             <bean class="org.dspace.uclouvain.core.model.MetadataField">
@@ -177,5 +168,20 @@
     <bean id="degreeMappersConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile">
         <!-- Relative path to the configuration file -->
         <constructor-arg value="/config/mapping/json/degree-mappers.json"/>
+    </bean>
+
+    <!-- CUSTOM RESOURCE POLICIES SERVICE -->
+    <bean id="resourcePolicyUtilService" class="org.dspace.uclouvain.services.ResourcePolicyUtilService">
+        <property name="typeList">
+            <util:list>
+                <!-- List of policy types sorted by weight-->
+                <!-- Forbidden Access -->
+                <value>administrator</value>
+                <!-- Restricted Access -->
+                <value>UCLouvain networks restriction</value>
+                <value>embargo</value>
+                <value>openaccess</value>
+            </util:list>
+        </property>
     </bean>
 </beans>
