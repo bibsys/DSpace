@@ -49,9 +49,6 @@ public class SendEmailAttestationAction extends ProcessingAction {
     @Autowired
     ItemService itemService;
 
-    @Autowired
-    MetadataUtils metadataUtils;
-
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
     private String backendURL = this.configurationService.getProperty("dspace.server.url");
@@ -71,7 +68,8 @@ public class SendEmailAttestationAction extends ProcessingAction {
     public void activate(Context c, XmlWorkflowItem wf){}
 
     /**
-    * Create an email with some information from the submission, attach the PDF attestation and send it to the submitter
+    * Create an email with some information from the submission, attach the PDF attestation and send it to the submitter.
+    * Action used by the workflow system to send an email when a submission is made.
     */
     @Override
     public ActionResult execute(Context c, XmlWorkflowItem wfi, Step step, HttpServletRequest request){
