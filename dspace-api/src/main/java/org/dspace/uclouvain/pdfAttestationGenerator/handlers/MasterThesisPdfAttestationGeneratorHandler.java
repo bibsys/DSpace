@@ -156,9 +156,11 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         // TODO: Manage Handle recovery
         pdfModel.handle = "http://handle.net/";
         // Add files to model
-        // TODO: Recover permissions for each files ?? => For now, HARD CODED.
         for (Bitstream bitstream: ItemUtils.extractItemFiles(dspaceItem)) {
-            pdfModel.addFile(bitstream.getName(), "Open access");
+            pdfModel.addFile(
+                bitstream.getName(),
+                null // should be changed in next commit !!!!
+            );
         }
         pdfModel.abstractText = map.get("dc_description_abstract").get(0);
         pdfModel.imagePath = this.source + "/assets/images/dial_mem.png";
