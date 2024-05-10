@@ -18,77 +18,6 @@
     <bean id="uclouvainEntityService" class="org.dspace.uclouvain.services.UCLouvainEntityServiceImpl"/>
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl"/>
 
-    <!-- UCLouvain Authority -->
-    <bean id="uclouvainAuthorAuthority" class="org.dspace.uclouvain.authority.UCLouvainAuthorAuthority" />
-    <bean id="uclouvainPromoterAuthority" class="org.dspace.uclouvain.authority.UCLouvainPromoterAuthority" />
-
-    <bean id="uclouvainAuthorityAPIConfiguration" class="org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration">
-        <property name="filters">
-            <util:map key-type="java.lang.String" value-type="java.lang.String">
-                <entry key="authors" value="${uclouvain.main_author_query.filter}" />
-                <entry key="promoters" value="${uclouvain.main_promoter_query.filter}" />
-            </util:map>
-        </property>
-    </bean>
-
-    <bean id="uclouvainAuthorityClient" class="org.dspace.uclouvain.external.dilbert.client.DilbertClient" >
-        <!-- Custom HttpClient -->
-        <property name="httpClient">
-            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
-                <property name="baseUrl" value="${uclouvain.main_author_query.url}"/>
-            </bean>
-        </property>
-    </bean>
-
-    <bean id="uclouvainAuthorAuthorityServiceFactory" class="org.dspace.uclouvain.authority.factory.UCLouvainServiceFactoryImpl"/>
-
-    <!-- OSIS -->
-    <bean id="osisConfiguration" class="org.dspace.uclouvain.external.osis.configuration.OSISConfiguration">
-        <property name="responseDataKey" value="return"/>
-    </bean>
-    <bean id="osisClient" class="org.dspace.uclouvain.external.osis.client.OSISClientImpl" >
-        <!-- Custom HttpClient -->
-        <property name="httpClient">
-            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
-                <property name="baseUrl" value="${uclouvain.osis.base_url}"/>
-                <property name="token" value="${uclouvain.osis.secret}"/>
-            </bean>
-        </property>
-    </bean>
-
-    <!-- PDF ATTESTATION GENERATORS -->
-    <!-- ConfigLoader -->
-    <bean id="pdfAttestationGeneratorConfiguration" class="org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration">
-        <property name="handlersConfiguration">
-            <util:list>
-                <bean class="org.dspace.uclouvain.pdfAttestationGenerator.model.Handler">
-                    <property name="itemType" value="Thesis"/>
-                    <property name="handlerClass">
-                        <ref bean="masterThesisPdfAttestationGeneratorHandle"/>
-                    </property>
-                </bean>
-                <bean class="org.dspace.uclouvain.pdfAttestationGenerator.model.Handler">
-                    <property name="itemType" value="MasterThesis"/>
-                    <property name="handlerClass">
-                        <ref bean="masterThesisPdfAttestationGeneratorHandle"/>
-                    </property>
-                </bean>
-            </util:list>
-        </property>
-    </bean>
-
-    <!-- Factory -->
-    <bean id="pdfAttestationGeneratorFactory" class="org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactoryImpl" />
-
-    <!-- Handlers -->
-    <bean id="masterThesisPdfAttestationGeneratorHandle" class="org.dspace.uclouvain.pdfAttestationGenerator.handlers.MasterThesisPdfAttestationGeneratorHandler">
-        <property name="templateName" value="master-thesis-template.xsl"/>
-    </bean>
-
-    <!-- Attestation Authorization Service -->
-    <bean id="attestationAuthorizationService" class="org.dspace.uclouvain.pdfAttestationGenerator.AttestationAuthorizationService"/>
-
-
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
 
@@ -118,22 +47,5 @@
     <bean id="defaultResourcePolicyPriority" class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
         <property name="rpName" value="defaultPriority"/>
         <property name="weight" value="#{T(java.lang.Integer).MAX_VALUE}"/>
-    </bean>
-
-    <bean id="degreeMappersService" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.DegreeMappersService"/>
-
-    <!-- CONFIG FILE LOADERS -->
-    <bean id="configurationFileFactory" class="org.dspace.uclouvain.configurationFiles.factory.ConfigurationFileFactoryImpl">
-        <property name="configurationFiles">
-            <util:list>
-                <!-- PUT CONFIG FILE BEANS HERE -->
-                <ref bean="degreeMappersConfigurationFile"/>
-            </util:list>
-        </property>
-    </bean>
-
-    <bean id="degreeMappersConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile">
-        <!-- Relative path to the configuration file -->
-        <constructor-arg value="/config/mapping/json/degree-mappers.json"/>
     </bean>
 </beans>
