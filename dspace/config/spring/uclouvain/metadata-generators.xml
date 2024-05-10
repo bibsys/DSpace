@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                  http://www.springframework.org/schema/context
+                  http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+       xmlns:util="http://www.springframework.org/schema/util">
+    
+    <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
+
+    <!-- ////////////////////////////////////////// -->
+    <!-- METADATA GENERATORS ON SUBMISSION FEATURE -->
+    <!-- ////////////////////////////////////////// -->
+
+    <bean id="metadataGeneratorFactory" class="org.dspace.uclouvain.submissionMetadataGenerators.factory.MetadataGeneratorFactoryImpl"/>
+
+    <bean id="generateMetadataService" class="org.dspace.uclouvain.submissionMetadataGenerators.GenerateMetadataServiceImpl"/>
+
+    <!-- Configuration Class -->
+    <bean id="generateMetadataConfiguration" class="org.dspace.uclouvain.submissionMetadataGenerators.configuration.GenerateMetadataConfigurationService">
+        <property name="metadataGenerators">
+            <util:list>
+                <!-- Put generator beans here, order matters -->
+                <ref bean="degreeMetadataGenerator"/>
+                <ref bean="accessTypeMetadataGenerator"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <!-- GENERATORS CLASSES -->
+    
+    <!-- Generates root degree label & code, faculty label & code from the submitted degree code -->
+    <bean id="degreeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.DegreeMetadataGenerator">
+        <property name="acceptedEntityTypes">
+            <util:list>
+                <value>MasterThesis</value>
+            </util:list>
+        </property>
+        <property name="degreeCodeField" >
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.degree.code"/>
+            </bean>
+        </property>
+        <property name="degreeLabelField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.degree.label"/>
+            </bean>
+        </property>
+        <property name="rootDegreeCodeField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.rootdegree.code"/>
+            </bean>
+        </property>
+        <property name="rootDegreeLabelField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.rootdegree.label"/>
+            </bean>
+        </property>
+        <property name="facultyCodeField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.faculty.code"/>
+            </bean>
+        </property>
+        <property name="facultyNameField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="masterthesis.faculty.name"/>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Generates the global access type of a submission based on the uploaded files's access types -->
+    <bean id="accessTypeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.AccessTypeMetadataGenerator">
+        <property name="acceptedEntityTypes">
+            <util:list>
+                <value>MasterThesis</value>
+            </util:list>
+        </property>
+        <!-- The field in which the new metadata will go in -->
+        <property name="accessTypeField">
+            <bean class="org.dspace.uclouvain.core.model.MetadataField">
+                <constructor-arg value="dcterms.accessRights"/>
+            </bean>
+        </property>
+    </bean>
+
+</beans>
