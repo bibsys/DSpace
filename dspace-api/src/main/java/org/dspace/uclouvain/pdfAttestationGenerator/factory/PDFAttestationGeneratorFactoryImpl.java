@@ -9,7 +9,6 @@ import org.dspace.core.Context;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
-import org.dspace.uclouvain.pdfAttestationGenerator.handlers.MasterThesisPdfAttestationGeneratorHandler;
 import org.dspace.uclouvain.pdfAttestationGenerator.handlers.PDFAttestationGeneratorHandler;
 import org.dspace.uclouvain.pdfAttestationGenerator.model.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,9 @@ public class PDFAttestationGeneratorFactoryImpl implements PDFAttestationGenerat
     
     @Autowired
     ItemService itemService;
-
-    @Autowired
-    MasterThesisPdfAttestationGeneratorHandler masterThesisHandler;
     
     @Autowired
     PDFAttestationGeneratorConfiguration pdfAttestationGeneratorConfiguration;
-
-    @Autowired
-    MetadataUtils metadataUtils;
 
     /** 
      * Returns an handler instance for a dspace item to handle PDF attestation generation.
