@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
-import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 
 /** 
@@ -59,21 +56,6 @@ public class MetadataUtils {
     public static String extractItemType(String inputType) {
         String[] splitted = inputType.split("::");
         return splitted[splitted.length - 1];
-    }
-
-    /** 
-    * This method is used to extract the files's bit stream from an item.
-    * 
-    * @param DSpaceItem: The item to extract files from.
-    * @return The list of bit streams for the given item.
-    */
-    public static List<Bitstream> extractItemFiles(Item DSpaceItem) {
-        for (Bundle bundle: DSpaceItem.getBundles()) {
-            if (bundle.getName().equals("ORIGINAL")) {
-                return bundle.getBitstreams();
-            }
-        }
-        return new ArrayList<Bitstream>();
     }
 
     /** 
