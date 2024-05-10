@@ -1,28 +1,23 @@
 package org.dspace.uclouvain.services;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.constants.AccessConditions;
 import org.dspace.uclouvain.core.model.ResourcePolicyRestModel;
 import org.dspace.uclouvain.core.model.ResourcePolicyRestResponse;
+import org.dspace.uclouvain.core.utils.ItemUtils;
 
 /**
  * Service to handle different operations related to resource policies.
  */
 public class ResourcePolicyUtilService {
-    private List<String> acceptedBundles = Arrays.asList(
-        DSpaceServicesFactory.getInstance().getConfigurationService().getArrayProperty("uclouvain.resource_policy.accepted_bundles")
-    );
     /**
      * 'typeList' controls the handled access types for a resource policy.
      * The order matters and sets the 'weight' of each access type.
@@ -80,14 +75,8 @@ public class ResourcePolicyUtilService {
      */
     public List<String> extractItemAccessTypes(Context ctx, Item item) {
         List<ResourcePolicy> allItemResourcePolicies = new ArrayList<ResourcePolicy>();
-        for (Bundle bundle: item.getBundles()) {
-            // Retrieve bitstreams only from the configured bundles
-            if (this.acceptedBundles.contains(bundle.getName())) {
-                // For each bitstream, add resource policies to the list
-                for (Bitstream bs: bundle.getBitstreams()) {
-                    allItemResourcePolicies.addAll(bs.getResourcePolicies());
-                }
-            }
+        for (Bitstream bs: ItemUtils.extractItemFiles(item)) {
+            allItemResourcePolicies.addAll(bs.getResourcePolicies());
         }
         // Return only the "rpname" of the resource policies which have the type "custom" and are in the list of controlled access types.
         // RP that have the type "custom" are the one that are assigned by the user in the file form.
