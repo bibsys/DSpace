@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
-import org.dspace.uclouvain.authority.factory.UCLouvainServiceFactory;
+import org.dspace.uclouvain.authority.factory.UCLouvainAuthorityServiceFactory;
 import org.dspace.uclouvain.core.model.Orcid;
 import org.dspace.uclouvain.external.dilbert.model.DialPerson;
 
@@ -21,7 +21,7 @@ import org.dspace.uclouvain.external.dilbert.model.DialPerson;
 public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
 
     private UCLouvainAuthorityClient getUCLouvainAuthorityClient() {
-        return UCLouvainServiceFactory.getInstance().getUCLouvainAuthorityClient();
+        return UCLouvainAuthorityServiceFactory.getInstance().getUCLouvainAuthorityClient();
     }
 
     public String getLabel(String key, String locale) {
