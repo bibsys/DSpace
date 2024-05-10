@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Laurent Dubois (laurent.dubois@uclouvain.be)
  * @co-author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
-public class UCLouvainServiceFactoryImpl implements UCLouvainServiceFactory {
+public class UCLouvainAuthorityServiceFactoryImpl implements UCLouvainAuthorityServiceFactory {
 
     @Autowired
     private UCLouvainAuthorityClient uclouvainAuthorityClient;
