@@ -12,21 +12,21 @@ import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
 import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration;
 
 /**
- * Main interface for UCLouvainServiceFactory
+ * Main interface for UCLouvainAuthorityServiceFactory
  * 
  * @author Laurent Dubois (laurent.dubois@uclouvain.be)
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
-public interface UCLouvainServiceFactory {
+public interface UCLouvainAuthorityServiceFactory {
 
     UCLouvainAuthorityClient getUCLouvainAuthorityClient();
 
     UCLouvainAuthorityAPIConfiguration getUCLouvainAuthorityConfiguration();
 
-    static UCLouvainServiceFactory getInstance() {
+    static UCLouvainAuthorityServiceFactory getInstance() {
         return DSpaceServicesFactory
                 .getInstance()
                 .getServiceManager()
-                .getServiceByName("uclouvainAuthorAuthorityServiceFactory", UCLouvainServiceFactory.class);
+                .getServiceByName("uclouvainAuthorityServiceFactory", UCLouvainAuthorityServiceFactory.class);
     }
 }
