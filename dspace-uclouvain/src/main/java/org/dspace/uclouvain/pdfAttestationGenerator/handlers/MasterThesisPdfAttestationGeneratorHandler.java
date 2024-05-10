@@ -47,9 +47,6 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     ItemService itemService;
 
     @Autowired
-    MetadataUtils metadataUtils;
-
-    @Autowired
     PDFAttestationGeneratorConfiguration config;
 
     @Autowired
