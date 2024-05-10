@@ -29,11 +29,13 @@ import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.model.ResourcePolicyRestModel;
 import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.PDFGenerationException;
 import org.dspace.uclouvain.pdfAttestationGenerator.model.MasterThesisPDFAttestationModel;
+import org.dspace.uclouvain.services.ResourcePolicyUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** 
@@ -46,6 +48,9 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
 
     @Autowired
     PDFAttestationGeneratorConfiguration config;
+
+    @Autowired
+    ResourcePolicyUtilService resourcePolicyUtilService;
 
     private String templateName;
 
@@ -155,9 +160,12 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         pdfModel.handle = "http://handle.net/";
         
         // Add files to model
-        // TODO: Recover permissions for each files ?? => For now, HARD CODED.
         for (Bitstream bitstream: ItemUtils.extractItemFiles(dspaceItem)) {
-            pdfModel.addFile(bitstream.getName(), "Open access");
+            ResourcePolicyRestModel masterPolicy = this.resourcePolicyUtilService.getRestResponse(bitstream.getResourcePolicies()).masterPolicy;
+            pdfModel.addFile(
+                bitstream.getName(),
+                masterPolicy != null ? masterPolicy.name : "Open Access"
+            );
         }
 
         pdfModel.abstractText = map.get("dc_description_abstract").get(0);
