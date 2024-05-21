@@ -12,7 +12,7 @@
                 <ref bean="openAccess"/>
                 <!--<ref bean="lease"/>-->
                 <ref bean="embargoed" />
-                <ref bean="uclouvain_network"/>
+                <ref bean="restricted"/>
                 <ref bean="administrator"/>
                 <!-- <ref bean="networkAdministration"/> -->
             </list>
@@ -51,9 +51,9 @@
         <property name="hasStartDate" value="false"/>
         <property name="hasEndDate" value="false"/>
     </bean> -->
-    <bean id="uclouvain_network" class="org.dspace.submit.model.AccessConditionOption">
+    <bean id="restricted" class="org.dspace.submit.model.AccessConditionOption">
         <property name="groupName" value="UCLouvain network"/>
-        <property name="name" value="UCLouvain networks restriction"/>
+        <property name="name" value="restricted"/>
         <property name="hasStartDate" value="false"/>
         <property name="hasEndDate" value="false"/>
     </bean>
@@ -78,7 +78,7 @@
                 <ref bean="openAccess"/>
                 <!--<ref bean="lease"/>-->
                 <ref bean="embargoed" />
-                <ref bean="uclouvain_network"/>
+                <ref bean="restricted"/>
                 <ref bean="administrator"/>
             </list>
         </property>
@@ -92,7 +92,7 @@
                 <ref bean="openAccess"/>
                 <ref bean="administrator"/>
                 <ref bean="embargoed" />
-                <ref bean="uclouvain_network"/>
+                <ref bean="restricted"/>
                 <!--<ref bean="lease"/>-->
             </list>
         </property>
@@ -101,7 +101,7 @@
                 <ref bean="openAccess"/>
                 <ref bean="administrator"/>
                 <ref bean="embargoed" />
-                <ref bean="uclouvain_network"/>
+                <ref bean="restricted"/>
                 <!--<ref bean="lease"/>-->
             </list>
         </property>
