@@ -29,6 +29,7 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
+import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
@@ -51,15 +52,17 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     ItemService itemService;
     @Autowired
     PDFAttestationGeneratorConfiguration config;
+    @Autowired
+    AccessStatusService accessStatusService;
 
     private String templateName;
 
-    private String source = DSpaceServicesFactory
+    private final String source = DSpaceServicesFactory
         .getInstance()
         .getConfigurationService()
         .getProperty("dspace.dir");
 
-    private String templateDir = DSpaceServicesFactory
+    private final String templateDir = DSpaceServicesFactory
         .getInstance()
         .getConfigurationService()
         .getProperty("uclouvain.pdf_attestation.template_dir");
@@ -72,11 +75,11 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     */
     public void getAttestation(OutputStream out, UUID uuid) throws PDFGenerationException {
         try {
-            Context DSpaceContext = new Context();
+            Context context = new Context();
             File templateFile = new File(this.source + templateDir + this.templateName);
 
             // Generate the input XML with item data
-            String renderedXml = this.generatePDFMasterThesisAttestationFromObjectId(uuid, DSpaceContext);
+            String renderedXml = this.generatePDFMasterThesisAttestationFromObjectId(context, uuid);
 
             // Load rendered data input XML into template
             //1. Inject input data into stream
@@ -114,7 +117,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     public InputStream getAttestationAsInputStream(UUID uuid) throws PDFGenerationException {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            this.getAttestation(out, uuid);
+            getAttestation(out, uuid);
             return convertOutputStreamToInputStream(out);
         } catch (Exception e) {
             throw new PDFGenerationException(e.getMessage());
@@ -132,7 +135,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     * @param uuid UUID of the targeted DSpace object.
     * @param context The current DSpace context, used to recover the DSpace object from UUID.
     */
-    private String generatePDFMasterThesisAttestationFromObjectId(UUID uuid, Context context) throws SQLException {
+    private String generatePDFMasterThesisAttestationFromObjectId(Context context, UUID uuid) throws SQLException {
         // 1. Retrieve DSpace item's metadata
         Item dspaceItem = itemService.find(context, uuid);
         List<MetadataValue> metadataValues = dspaceItem.getMetadata();
@@ -159,7 +162,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         for (Bitstream bitstream: ItemUtils.extractItemFiles(dspaceItem)) {
             pdfModel.addFile(
                 bitstream.getName(),
-                null // should be changed in next commit !!!!
+                accessStatusService.getBitstreamAccessStatus(context, bitstream)
             );
         }
         pdfModel.abstractText = map.get("dc_description_abstract").get(0);
