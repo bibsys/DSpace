@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.util.Date;
 
 import org.dspace.access.status.service.AccessStatusService;
+import org.dspace.content.Bitstream;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.core.service.PluginService;
@@ -71,5 +72,10 @@ public class AccessStatusServiceImpl implements AccessStatusService {
     @Override
     public String getEmbargoFromItem(Context context, Item item) throws SQLException {
         return helper.getEmbargoFromItem(context, item, forever_date);
+    }
+
+    @Override
+    public String getBitstreamAccessStatus(Context context, Bitstream bitstream) throws SQLException {
+        return helper.calculateAccessStatusForDso(context, bitstream);
     }
 }

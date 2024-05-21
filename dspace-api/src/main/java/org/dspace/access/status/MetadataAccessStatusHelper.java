@@ -12,6 +12,8 @@ import static org.dspace.content.Item.ANY;
 import java.sql.SQLException;
 import java.util.Date;
 
+import org.apache.commons.lang.NotImplementedException;
+import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataFieldName;
 import org.dspace.content.factory.ContentServiceFactory;
@@ -106,6 +108,11 @@ public class MetadataAccessStatusHelper implements AccessStatusHelper {
         }
 
         return itemService.getMetadataFirstValue(item, new MetadataFieldName(availabilityDateMetadata), ANY);
+    }
+
+    @Override
+    public String calculateAccessStatusForDso(Context context, DSpaceObject dso) throws SQLException {
+        throw new NotImplementedException();
     }
 
 }

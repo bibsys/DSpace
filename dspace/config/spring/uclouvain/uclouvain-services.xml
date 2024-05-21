@@ -13,17 +13,32 @@
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
     <!-- CUSTOM RESOURCE POLICIES SERVICE -->
-    <bean id="resourcePolicyUtilService" class="org.dspace.uclouvain.services.ResourcePolicyUtilService">
-        <property name="typeList">
-            <util:list>
-                <!-- List of policy types sorted by weight-->
-                <!-- Forbidden Access -->
-                <value>administrator</value>
-                <!-- Restricted Access -->
-                <value>UCLouvain networks restriction</value>
-                <value>embargo</value>
-                <value>openaccess</value>
-            </util:list>
-        </property>
+    <bean id="uclouvainResourcePolicyServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainResourcePolicyServiceFactoryImpl"/>
+    <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl"/>
+    <util:list id="resourcePolicyPriorities">
+        <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+            <property name="rpName" value="administrator"/>
+            <property name="weight" value="0"/>
+        </bean>
+        <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+            <property name="rpName" value="restricted"/>
+            <property name="weight" value="10"/>
+        </bean>
+        <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+            <property name="rpName" value="embargo"/>
+            <property name="weight" value="20"/>
+        </bean>
+        <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+            <property name="rpName" value="lease"/>
+            <property name="weight" value="20"/>
+        </bean>
+        <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+            <property name="rpName" value="openaccess"/>
+            <property name="weight" value="#{T(java.lang.Integer).MAX_VALUE}"/>
+        </bean>
+    </util:list>
+    <bean id="defaultResourcePolicyPriority" class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+        <property name="rpName" value="defaultPriority"/>
+        <property name="weight" value="#{T(java.lang.Integer).MAX_VALUE}"/>
     </bean>
 </beans>
