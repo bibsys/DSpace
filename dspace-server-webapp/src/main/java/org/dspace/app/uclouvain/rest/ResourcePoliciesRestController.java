@@ -10,7 +10,6 @@ package org.dspace.app.uclouvain.rest;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,6 +25,7 @@ import org.dspace.uclouvain.core.model.ResourcePolicyRestModel;
 import org.dspace.uclouvain.core.model.ResourcePolicyRestResponse;
 import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.services.ResourcePolicyUtilService;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/uclouvain/resourcepolicies")
-public class ResourcePoliciesRestController {
+public class ResourcePoliciesRestController implements InitializingBean {
 
     @Autowired
     private ResourcePolicyService resourcePolicyService;
@@ -50,6 +50,16 @@ public class ResourcePoliciesRestController {
 
     @Autowired
     private ResourcePolicyUtilService resourcePolicyUtilService;
+
+    /*@Autowired
+    DiscoverableEndpointsService discoverableEndpointsService;
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        discoverableEndpointsService.register(this, Arrays.asList(
+                Link.of("/api/uclouvain/resourcepolicies", "accessconditions")));
+    }*/
+    public void afterPropertiesSet() throws Exception {}
 
     /**
      * Endpoint to retrieve resource policies information for a given bitstream UUID.
@@ -83,7 +93,7 @@ public class ResourcePoliciesRestController {
      * @throws IOException
      */
     @RequestMapping(value = "/item/{id}", method = RequestMethod.GET)
-    public HashMap<String, String> getItemGlobalPolicy(
+    public ItemGlobalPolicyResponse getItemGlobalPolicy(
             Context context, @PathVariable UUID id, HttpServletResponse response)
             throws SQLException, IOException {
         Item item = itemService.find(context, id);
@@ -91,8 +101,10 @@ public class ResourcePoliciesRestController {
             response.sendError(400, "Object not found or not an item");
             return null;
         }
-        List<String> rpTypes = new ArrayList<String>();
-        // Retrieve all the bitstreams from the accepted bundles and get their master policy.
+
+        List<String> rpTypes = new ArrayList<>();
+        // Retrieve all the bitstreams from the accepted bundles;
+        // For each of them, collect their master policy (the most restrictive - checking date) ;
         for (Bitstream bs: ItemUtils.extractItemFiles(item)) {
             ResourcePolicyRestModel masterPolicy = this.resourcePolicyUtilService
                     .getRestResponse(bs.getResourcePolicies()).masterPolicy;
@@ -100,11 +112,29 @@ public class ResourcePoliciesRestController {
                 rpTypes.add(masterPolicy.name);
             }
         }
+        ItemGlobalPolicyResponse igpResponse = new ItemGlobalPolicyResponse();
+        igpResponse.globalAccessType = this.resourcePolicyUtilService.getGlobalAccessType(rpTypes);
+        igpResponse.analyzedBitstreamCounter = rpTypes.size();
+        return igpResponse;
+    }
 
-        // Use a hashmap object to return the global access type of the item in a JSON format.
-        HashMap<String, String> responseMap = new HashMap<String, String>();
-        // From all the master policies, generate the global access type of the item.
-        responseMap.put("globalAccessType", resourcePolicyUtilService.getGlobalAccessType(rpTypes));
-        return responseMap;
+
+    /** Inner class representing a JSON response for `getItemGlobalPolicy` method */
+    class ItemGlobalPolicyResponse {
+        private String globalAccessType = null;
+        private int analyzedBitstreamCounter = 0;
+
+        public String getGlobalAccessType() {
+            return this.globalAccessType;
+        }
+        public int getAnalyzedBitstreamCounter() {
+            return this.analyzedBitstreamCounter;
+        }
+        public void setGlobalAccessType(String value) {
+            this.globalAccessType = value;
+        }
+        public void setAnalyzedBitstreamCounter(int value) {
+            this.analyzedBitstreamCounter = value;
+        }
     }
 }

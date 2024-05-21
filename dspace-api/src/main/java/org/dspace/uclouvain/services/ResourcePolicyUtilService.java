@@ -39,7 +39,7 @@ public class ResourcePolicyUtilService {
      */
     public ResourcePolicyRestResponse getRestResponse(List<ResourcePolicy> rp) {
         ResourcePolicyRestResponse rpRestResponse = new ResourcePolicyRestResponse(rp, ResourcePolicy.TYPE_CUSTOM);
-        this.setMasterPolicy(rpRestResponse);
+        rpRestResponse.masterPolicy = this.getMasterPolicy(rpRestResponse);
         return rpRestResponse;
     };
 
@@ -48,32 +48,29 @@ public class ResourcePolicyUtilService {
      * The logic to give the primary policy is influenced by the 'typeList'.
      *
      * @param rpRestResponse An object containing the list of all the resource policies about a bitstream.
+     * @return The more restrictive `ResourcePolicyRestModel` (aka master policy)
      */
-    private void setMasterPolicy(ResourcePolicyRestResponse rpRestResponse) {
-        List<ResourcePolicyRestModel> activePolicies = rpRestResponse.restPolicies.stream()
-            // Only keep active embargo
-            .filter(
-                policy -> {
-                    if (policy.name.equals("embargo")) {
-                        long currentDate = new Date().getTime();
-                        return policy.startDate != null && (currentDate < policy.startDate.getTime());
-                    }
-                    return true;
+    private ResourcePolicyRestModel getMasterPolicy(ResourcePolicyRestResponse rpRestResponse) {
+        Date currentDate = new Date();
+        return rpRestResponse.restPolicies
+            .stream()
+            // Keep only active policies depending on policy dates
+            .filter(policy -> {
+                if (policy.name.equalsIgnoreCase("embargo") && policy.startDate != null) {
+                    return currentDate.getTime() <= policy.startDate.getTime();
                 }
-            )
-            .collect(Collectors.toList());
-        List<String> policiesTypes = activePolicies.stream().map(x -> x.name).toList();
-
-        for (String type: this.typeList) {
-            if (policiesTypes.contains(type)) {
-                rpRestResponse.masterPolicy = this.getResourceForType(type, activePolicies);
-                return;
-            }
-        }
-    }
-
-    private ResourcePolicyRestModel getResourceForType(String type, List<ResourcePolicyRestModel> policies) {
-        return policies.stream().filter(x -> x.name.equals(type)).findFirst().orElse(null);
+                if (policy.name.equalsIgnoreCase("lease") && policy.endDate != null) {
+                    return currentDate.getTime() <= policy.endDate.getTime();
+                }
+                return true;
+            })
+            // Sort policies based on ``this.typeList`` weight
+            .sorted((policyA, policyB) -> {
+                int policyAWeight = this.typeList.indexOf(policyA.name);
+                int policyBWeight = this.typeList.indexOf(policyB.name);
+                return (policyBWeight == policyAWeight) ? 0 : policyBWeight - policyAWeight;
+            })
+            .findFirst().orElse(null);
     }
 
     /**
@@ -129,7 +126,6 @@ public class ResourcePolicyUtilService {
     public List<String> getTypeList() {
         return this.typeList;
     }
-
     public void setTypeList(List<String> typeList) {
         this.typeList = typeList;
     }
