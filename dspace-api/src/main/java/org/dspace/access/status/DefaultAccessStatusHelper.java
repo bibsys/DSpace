@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
@@ -208,6 +209,11 @@ public class DefaultAccessStatusHelper implements AccessStatusHelper {
         embargoDate = this.retrieveShortestEmbargo(context, bitstream);
 
         return embargoDate != null ? embargoDate.toString() : null;
+    }
+
+    @Override
+    public String calculateAccessStatusForDso(Context context, DSpaceObject dso) throws SQLException {
+        throw new NotImplementedException();
     }
 
     /**
