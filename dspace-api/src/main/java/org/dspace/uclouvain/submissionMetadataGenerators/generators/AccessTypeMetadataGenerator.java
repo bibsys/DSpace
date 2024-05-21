@@ -1,10 +1,10 @@
 package org.dspace.uclouvain.submissionMetadataGenerators.generators;
 
+import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.core.model.MetadataField;
-import org.dspace.uclouvain.services.ResourcePolicyUtilService;
 import org.dspace.uclouvain.submissionMetadataGenerators.exceptions.GeneratorProcessException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +18,7 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
     private MetadataField accessTypeField;
 
     @Autowired
-    private ResourcePolicyUtilService resourcePoliciesUtilService;
+    private AccessStatusService accessStatusService;
 
     @Autowired
     private ItemService itemService;
@@ -32,17 +32,16 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
      * Retrieve all the access types of the item and generate the global access type from them.
      */
     @Override
-    public void process(Context ctx, Item item) throws GeneratorProcessException {
+    public void process(Context context, Item item) throws GeneratorProcessException {
         try {
-            List<String> accessTypesRP = this.resourcePoliciesUtilService.extractItemAccessTypes(ctx, item);
-            String globalAccessType = this.resourcePoliciesUtilService.getGlobalAccessType(accessTypesRP);
-            if (globalAccessType != null) {
-                this.itemService.setMetadataSingleValue(ctx, item,
+            String accessValue = accessStatusService.getAccessStatus(context, item);
+            if (accessValue != null) {
+                this.itemService.setMetadataSingleValue(context, item,
                         this.accessTypeField.getSchema(),
                         this.accessTypeField.getElement(),
                         this.accessTypeField.getQualifier(),
                         null,
-                        globalAccessType
+                        accessValue
                 );
             }
         } catch (SQLException e) {
