@@ -7,6 +7,6 @@ public class AccessConditions {
     public static final String EMBARGO = "embargo";
     public static final String MIXED = "mixed";
     public static final String CLOSED = "administrator";
-    public static final String RESTRICTED = "UCLouvain networks restriction";
+    public static final String RESTRICTED = "restricted";
 
 }
