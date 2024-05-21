@@ -171,6 +171,7 @@
     </bean>
 
     <!-- CUSTOM RESOURCE POLICIES SERVICE -->
+    <!-- TODO :: remove when completly replaced by resource subrequest API -->
     <bean id="resourcePolicyUtilService" class="org.dspace.uclouvain.services.ResourcePolicyUtilService">
         <property name="typeList">
             <util:list>
@@ -182,6 +183,39 @@
                 <value>embargo</value>
                 <value>openaccess</value>
             </util:list>
+        </property>
+    </bean>
+
+    <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyService">
+        <property name="rpPriorities">
+            <util:list>
+                <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+                    <property name="rpName" value="administrator"/>
+                    <property name="weight" value="0"/>
+                </bean>
+                <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+                    <property name="rpName" value="UCLouvain networks restriction"/>
+                    <property name="weight" value="10"/>
+                </bean>
+                <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+                    <property name="rpName" value="embargo"/>
+                    <property name="weight" value="20"/>
+                </bean>
+                <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+                    <property name="rpName" value="lease"/>
+                    <property name="weight" value="20"/>
+                </bean>
+                <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+                    <property name="rpName" value="openaccess"/>
+                    <property name="weight" value="#{T(java.lang.Integer).MAX_VALUE}"/>
+                </bean>
+            </util:list>
+        </property>
+        <property name="defaultResourcePolicyPriority">
+            <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
+                <property name="rpName" value="defaultPriority"/>
+                <property name="weight" value="#{T(java.lang.Integer).MAX_VALUE}"/>
+            </bean>
         </property>
     </bean>
 </beans>
