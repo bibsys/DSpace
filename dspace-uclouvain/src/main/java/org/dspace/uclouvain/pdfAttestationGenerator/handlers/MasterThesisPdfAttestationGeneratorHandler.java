@@ -23,19 +23,18 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
+import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.core.model.ResourcePolicyRestModel;
 import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.PDFGenerationException;
 import org.dspace.uclouvain.pdfAttestationGenerator.model.MasterThesisPDFAttestationModel;
-import org.dspace.uclouvain.services.ResourcePolicyUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** 
@@ -50,16 +49,16 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     PDFAttestationGeneratorConfiguration config;
 
     @Autowired
-    ResourcePolicyUtilService resourcePolicyUtilService;
+    AccessStatusService accessStatusService;
 
     private String templateName;
 
-    private String source = DSpaceServicesFactory
+    private final String source = DSpaceServicesFactory
         .getInstance()
         .getConfigurationService()
         .getProperty("dspace.dir");
 
-    private String templateDir = DSpaceServicesFactory
+    private final String templateDir = DSpaceServicesFactory
         .getInstance()
         .getConfigurationService()
         .getProperty("uclouvain.pdf_attestation.template_dir");
@@ -67,17 +66,16 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     /** 
     * Recovers data about the object and uses it to construct the PDF file.
     * 
-    * @param response: The response object from the controller. The PDF file will be passed to it.
+    * @param out: The response object from the controller. The PDF file will be passed to it.
     * @param uuid: UUID of the targeted DSpace object.
     */
     public void getAttestation(OutputStream out, UUID uuid) throws PDFGenerationException {
         try {
-            Context DSpaceContext = new Context();
-
+            Context context = new Context();
             File templateFile = new File(this.source + templateDir + this.templateName);
             
             // Generate the input xml with item data 
-            String renderedXml = this.generatePDFMasterThesisAttestationFromObjectId(uuid, DSpaceContext);
+            String renderedXml = this.generatePDFMasterThesisAttestationFromObjectId(context, uuid);
 
             // Load rendered data input XML into template 
             //1. Inject input data into stream
@@ -129,11 +127,11 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     * Generates a XML containing data to feed the template file.
     *
     * @param uuid: UUID of the targeted DSpace object.
-    * @param DSpaceContext: The current DSpace context, used to recover the DSpace object from UUID.
+    * @param context: The current DSpace context, used to recover the DSpace object from UUID.
     */
-    private String generatePDFMasterThesisAttestationFromObjectId(UUID uuid, Context DSpaceContext) throws SQLException {
+    private String generatePDFMasterThesisAttestationFromObjectId(Context context, UUID uuid) throws SQLException {
         // 1. Retrieve DSpace item's metadata
-        Item dspaceItem = itemService.find(DSpaceContext, uuid);
+        Item dspaceItem = itemService.find(context, uuid);
         List<MetadataValue> metadataValues = dspaceItem.getMetadata();
         MasterThesisPDFAttestationModel pdfModel = new MasterThesisPDFAttestationModel();
 
@@ -161,10 +159,9 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         
         // Add files to model
         for (Bitstream bitstream: ItemUtils.extractItemFiles(dspaceItem)) {
-            ResourcePolicyRestModel masterPolicy = this.resourcePolicyUtilService.getRestResponse(bitstream.getResourcePolicies()).masterPolicy;
             pdfModel.addFile(
                 bitstream.getName(),
-                masterPolicy != null ? masterPolicy.name : "Open Access"
+                this.accessStatusService.getBitstreamAccessStatus(context, bitstream)
             );
         }
 
