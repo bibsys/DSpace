@@ -9,8 +9,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.uclouvain.configurationFiles.AbstractConfigurationFile;
 import org.dspace.uclouvain.core.GenericResponse;
-import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMapper;
-import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMappers;
+import org.dspace.uclouvain.degreeMappers.model.DegreeMapper;
+import org.dspace.uclouvain.degreeMappers.model.DegreeMappers;
 
 /**
  * Configuration file representing the degree mapper configuration.

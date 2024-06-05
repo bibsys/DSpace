@@ -1,4 +1,4 @@
-package org.dspace.uclouvain.submissionMetadataGenerators.exceptions;
+package org.dspace.uclouvain.degreeMappers.exceptions;
 
 /**
  * An error thrown when the `process` method of a `MetadataGenerator` class fails.

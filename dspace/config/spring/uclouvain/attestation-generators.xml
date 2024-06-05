@@ -19,12 +19,6 @@
         <property name="handlersConfiguration">
             <util:list>
                 <bean class="org.dspace.uclouvain.pdfAttestationGenerator.model.Handler">
-                    <property name="itemType" value="Thesis"/>
-                    <property name="handlerClass">
-                        <ref bean="masterThesisPdfAttestationGeneratorHandle"/>
-                    </property>
-                </bean>
-                <bean class="org.dspace.uclouvain.pdfAttestationGenerator.model.Handler">
                     <property name="itemType" value="MasterThesis"/>
                     <property name="handlerClass">
                         <ref bean="masterThesisPdfAttestationGeneratorHandle"/>
