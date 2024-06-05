@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
     @LinkRest(name = BitstreamRest.FORMAT, method = "getFormat"),
     @LinkRest(name = BitstreamRest.THUMBNAIL, method = "getThumbnail"),
     @LinkRest(name = BitstreamRest.ACCESS, method = "getAccessCondition"),
+    @LinkRest(name = BitstreamRest.DOWNLOAD_URL, method = "getDownloadURL")
 })
 public class BitstreamRest extends DSpaceObjectRest {
     public static final String PLURAL_NAME = "bitstreams";
@@ -30,6 +31,7 @@ public class BitstreamRest extends DSpaceObjectRest {
     public static final String FORMAT = "format";
     public static final String THUMBNAIL = "thumbnail";
     public static final String ACCESS = "access";
+    public static final String DOWNLOAD_URL = "download_url";
 
     private String bundleName;
 
@@ -42,7 +44,6 @@ public class BitstreamRest extends DSpaceObjectRest {
     public String getBundleName() {
         return bundleName;
     }
-
     public void setBundleName(String bundleName) {
         this.bundleName = bundleName;
     }
@@ -50,7 +51,6 @@ public class BitstreamRest extends DSpaceObjectRest {
     public Long getSizeBytes() {
         return sizeBytes;
     }
-
     public void setSizeBytes(Long sizeBytes) {
         this.sizeBytes = sizeBytes;
     }
@@ -58,7 +58,6 @@ public class BitstreamRest extends DSpaceObjectRest {
     public CheckSumRest getCheckSum() {
         return checkSum;
     }
-
     public void setCheckSum(CheckSumRest checkSum) {
         this.checkSum = checkSum;
     }
@@ -66,7 +65,6 @@ public class BitstreamRest extends DSpaceObjectRest {
     public Integer getSequenceId() {
         return sequenceId;
     }
-
     public void setSequenceId(Integer sequenceId) {
         this.sequenceId = sequenceId;
     }

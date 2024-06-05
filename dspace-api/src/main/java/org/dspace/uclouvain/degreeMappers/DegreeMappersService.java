@@ -5,14 +5,14 @@
  *
  * http://www.dspace.org/license/
  */
-package org.dspace.uclouvain.submissionMetadataGenerators.generators;
+package org.dspace.uclouvain.degreeMappers;
 
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.uclouvain.configurationFiles.ConfigurationFile;
-import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMapper;
+import org.dspace.uclouvain.degreeMappers.model.DegreeMapper;
 
 /**
  * Service to read the degree mappers JSON configuration file.

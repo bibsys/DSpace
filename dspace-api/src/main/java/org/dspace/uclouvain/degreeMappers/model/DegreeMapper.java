@@ -5,7 +5,7 @@
  *
  * http://www.dspace.org/license/
  */
-package org.dspace.uclouvain.submissionMetadataGenerators.generators.model;
+package org.dspace.uclouvain.degreeMappers.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
