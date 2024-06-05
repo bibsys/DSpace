@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.MetadataSelectFieldValuesGenerator;
 import org.dspace.uclouvain.external.osis.client.OSISClientImpl;
 import org.dspace.uclouvain.external.osis.model.OSISStudentDegree;
@@ -26,6 +27,9 @@ public class OSISController {
     private OSISClientImpl osisClient;
 
     public static final String DEGREE_PART_SEPARATOR = " - ";
+
+    private final String DEGREE_CODE_FIELD = DSpaceServicesFactory.getInstance().getConfigurationService()
+            .getProperty("uclouvain.global.metadata.degreecode.field", "masterthesis.degree.code");
 
     /** 
      * When calling /api/uclouvain/osis/student/{fgs}/info/all with a given FGS identifier,
@@ -79,7 +83,7 @@ public class OSISController {
            getStudentsDegreeCodesByFGS(@RequestParam List<String> fgs, @RequestParam String degreeTypeFilter){
 
         MetadataSelectFieldValuesGenerator selectFieldValues =
-                new MetadataSelectFieldValuesGenerator("data-masterthesis.degree.code");
+                new MetadataSelectFieldValuesGenerator("data-" + DEGREE_CODE_FIELD);
         for(String fgs_id: fgs){
             OSISStudentDegree[] osisStudentDegreeResponse = this.getAllStudentInfoByFGS(fgs_id);
             for (OSISStudentDegree studentDegree: osisStudentDegreeResponse){
