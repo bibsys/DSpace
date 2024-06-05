@@ -12,7 +12,8 @@
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
     <!-- SERVICES -->
-    <bean id="degreeMappersService" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.DegreeMappersService"/>
+    <bean id="degreeMappersServiceFactory" class="org.dspace.uclouvain.degreeMappers.factory.DegreeMappersServiceFactoryImpl"/>
+    <bean id="degreeMappersService" class="org.dspace.uclouvain.degreeMappers.DegreeMappersService"/>
 
     <!-- CUSTOM RESOURCE POLICIES SERVICE -->
     <bean id="uclouvainResourcePolicyServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainResourcePolicyServiceFactoryImpl"/>

@@ -4,29 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.dspace.content.MetadataFieldName;
+
 /**
- * Little class that represent a metadata field reference string.
+ * Little class that extends a metadata field reference string.
  */
-public class MetadataField {
-    private String schema;
-    private String element;
-    private String qualifier;
-
-    public MetadataField(String metadataFieldName, String separator) throws Exception {
-        List<String> splitted = Arrays.asList(metadataFieldName.split(separator));
-
-        if (splitted.size() < 2) {
-            throw new Exception("Error while splitting the metadata field with separator: '" + separator + "'");
-        }
-        this.schema = splitted.get(0);
-        this.element = splitted.get(1);
-        if (splitted.size() > 2) {
-            this.qualifier = splitted.get(2);
-        }
-    }
+public class MetadataField extends MetadataFieldName {
 
     public MetadataField(String metadataFieldName) throws Exception {
-        this(metadataFieldName, "\\.");
+        super(metadataFieldName);
     }
 
     public String getSchema() {
