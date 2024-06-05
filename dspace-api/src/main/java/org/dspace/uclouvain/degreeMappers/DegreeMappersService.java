@@ -1,4 +1,4 @@
-package org.dspace.uclouvain.submissionMetadataGenerators.generators;
+package org.dspace.uclouvain.degreeMappers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.configurationFiles.ConfigurationFile;
 import org.dspace.uclouvain.configurationFiles.factory.ConfigurationFileFactory;
 import org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile;
-import org.dspace.uclouvain.submissionMetadataGenerators.generators.model.DegreeMapper;
+import org.dspace.uclouvain.degreeMappers.model.DegreeMapper;
 
 /**
  * Service to read the degree mappers JSON configuration file.
