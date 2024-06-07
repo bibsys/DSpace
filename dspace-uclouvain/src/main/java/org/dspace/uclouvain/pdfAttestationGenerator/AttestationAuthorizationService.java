@@ -12,7 +12,9 @@ import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
+import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.dspace.xmlworkflow.storedcomponents.service.CollectionRoleService;
+import org.dspace.xmlworkflow.storedcomponents.service.XmlWorkflowItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 // Service to check permission for attestation generation and download.
@@ -23,6 +25,9 @@ public class AttestationAuthorizationService {
 
     @Autowired
     private ItemService itemService;
+
+    @Autowired
+    private XmlWorkflowItemService xmlWorkflowItemService;
 
     @Autowired
     private CollectionRoleService collectionRoleService;
@@ -88,6 +93,13 @@ public class AttestationAuthorizationService {
      */
     public Boolean isManagerOfItem(Item item, EPerson currentUser, Context ctx) throws SQLException {
         Collection collection = item.getOwningCollection();
+        if (collection == null) {
+            // Check if the item is in the workflow, if it is we need to use the XmlWorkflowItem to retrieve the owning collection.
+            XmlWorkflowItem xmlWorkflowItem = xmlWorkflowItemService.findByItem(ctx, item);
+            if (xmlWorkflowItem != null) {
+                collection = xmlWorkflowItem.getCollection();
+            };
+        }
 
         // Retrieve all the roles created for the item's collection.
         for (CollectionRole role : collectionRoleService.findByCollection(ctx, collection)) {
@@ -99,6 +111,6 @@ public class AttestationAuthorizationService {
                 }
             }
         }
-        return false;    
+        return false;
     }
 }
