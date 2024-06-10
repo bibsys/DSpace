@@ -32,6 +32,7 @@ import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
+import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
 import org.dspace.xmlworkflow.state.actions.processingaction.ReviewAction;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.dspace.xmlworkflow.storedcomponents.service.WorkflowItemRoleService;
@@ -100,6 +101,8 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
         options.add(SUBMIT_APPROVE);
         options.add(SUBMIT_APPROVE_WITHOUT_DIFFUSION);
         options.add(SUBMIT_REJECT);
+        // Edit item button
+        options.add(ProcessingAction.SUBMIT_EDIT_METADATA);
         options.add(RETURN_TO_POOL);
         return options;
     }
