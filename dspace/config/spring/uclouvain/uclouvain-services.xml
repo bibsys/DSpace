@@ -29,6 +29,7 @@
     </bean>
     <bean id="degreeMappersServiceFactory" class="org.dspace.uclouvain.degreeMappers.factory.DegreeMappersServiceFactoryImpl"/>
     <bean id="degreeMappersService" class="org.dspace.uclouvain.degreeMappers.DegreeMappersService"/>
+    <bean id="bitstreamDirectDownloadURLService" class="org.dspace.uclouvain.services.BitstreamDirectDownloadURLServiceImpl"/>
 
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
