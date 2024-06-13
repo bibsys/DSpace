@@ -23,9 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Bitstream;
-import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
-import org.dspace.content.MetadataValue;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
@@ -33,6 +31,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.Hasher;
 import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.web.ContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
@@ -44,27 +43,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Main controller for the bitstream download URL API.
+ * This controller is used to download a bitstream from a URL and using a Hash.
+ * This hash must correspond to one of the promoters or managers of the item containing the bitstream.
+ *
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ */
 @RestController
 @RequestMapping("/api/uclouvain/bitstream")
-public class BitstreamDownloadRestController {
+public class BitstreamDirectDownloadRestController {
 
-    private final Logger logger = LogManager.getLogger(BitstreamDownloadRestController.class);
+    private final Logger logger = LogManager.getLogger(BitstreamDirectDownloadRestController.class);
 
     private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-    private final String algo = configService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
-    private final String encryptionKey = configService.getProperty("uclouvain.api.bitstream.download.secret", "");
+    private final String algo =
+            configService.getProperty("uclouvain.api.bitstream.download.algorithm", "peGl308bXNr2F7tCKKHgR2u0qNSMqiev");
+    private final String encryptionKey =
+            configService.getProperty("uclouvain.api.bitstream.download.secret");
     private final Integer bitstreamContentBufferSize = Integer.parseInt(
             configService.getProperty("uclouvain.api.bitstream.download.buffer.size", "10240"));
     private MetadataField promoterField;
 
+    private Hasher hasher;
+
     @Autowired
     private BitstreamService bitstreamService;
 
-    public BitstreamDownloadRestController() {
+    @Autowired
+    private ItemUtils itemUtils;
+
+    @Autowired
+    private ItemService itemService;
+
+    public BitstreamDirectDownloadRestController() throws NoSuchAlgorithmException {
         try {
-            String promoterFieldName = configService
-                    .getProperty("uclouvain.api.bitstream.download.promoterfield", "advisors.email");
-            promoterField = new MetadataField(promoterFieldName);
+            hasher = new Hasher(algo, encryptionKey);
+        } catch (NoSuchAlgorithmException e) {
+            logger.warn(algo + " is not a known algorithm name : using default 'MD5' instead.");
+            hasher = new Hasher("MD5", encryptionKey);
+        }
+        try {
+            promoterField = new MetadataField(
+                    configService.getProperty("uclouvain.api.bitstream.download.promoterfield", "advisors.email"));
         } catch (Exception e) {
             logger.error("Error while instantiating the MetadataField", e);
             promoterField = null;
@@ -101,7 +122,7 @@ public class BitstreamDownloadRestController {
             return new ResponseEntity<>("Missing hash parameter", HttpStatus.BAD_REQUEST);
         }
 
-        if (this.isAuthorized(context, bitstream, hash)) {
+        if (isAuthorized(context, bitstream, hash)) {
             try {
                 String mimeType = bitstream.getFormat(context).getMIMEType();
                 // Using the 'ContentDisposition' of Spring.http which helps to build the header.
@@ -117,7 +138,7 @@ public class BitstreamDownloadRestController {
                 context.turnOffAuthorisationSystem();
                 // Fixed buffer size to minimize memory usage. If we have big files, it will save us by not loading
                 // everything at once in the memory.
-                byte[] buffer = new byte[this.bitstreamContentBufferSize];
+                byte[] buffer = new byte[bitstreamContentBufferSize];
                 InputStream input = bitstreamService.retrieve(context, bitstream);
                 OutputStream output = response.getOutputStream();
                 for (int length = 0; (length = input.read(buffer)) > 0;) {
@@ -140,6 +161,7 @@ public class BitstreamDownloadRestController {
     /** 
      * First retrieve the list of promoters from the item containing the bitstream.
      * Then hash their email addresses and compare the hash with the one given with the request.
+     * Also the item must be in workflow validation.
      *
      * @param context The current DSpace context.
      * @param bitstream The bitstream to check the authorization for.
@@ -148,11 +170,12 @@ public class BitstreamDownloadRestController {
     */
     private boolean isAuthorized(Context context, Bitstream bitstream, String hash) {
         try {
-            DSpaceObject parentObject = bitstreamService.getParentObject(context, bitstream);
-            if (parentObject != null && parentObject instanceof Item) {
-                Item dspaceItem = (Item) parentObject;
-                List<String> hashList = getPromotersEmailsAsHash(context, dspaceItem);
-                return !hashList.isEmpty() && hashList.contains(hash);
+            Item parentObject = itemUtils.getItemFromBitstream(context, bitstream);
+            if (parentObject != null && hasher != null) {
+                // Create a list with all hashed emails of the promoters and managers of the item.
+                List<String> hashList = this.getPromotersEmailsAsHash(context, parentObject);
+                hashList.addAll(getManagerEmailsAsHash(context, parentObject));
+                return !hashList.isEmpty() && hashList.contains(hash) && itemUtils.isWorkflow(context, parentObject);
             }
             return false;
         } catch (Exception e) {
@@ -170,31 +193,33 @@ public class BitstreamDownloadRestController {
      * @return A list of hashed email addresses of the promoters of the item.
      */
     private List<String> getPromotersEmailsAsHash(Context context, Item item) {
-        if (encryptionKey.isEmpty()) {
-            logger.error("!! NO ENCRYPTION KEY PROVIDED FOR BITSTREAM PROMOTER HASHING !!");
+        if (this.promoterField == null) {
+            logger.error("Cannot retrieve promoters hash list because `this.promoterField` is null.");
             return new ArrayList<>();
         }
-        if (promoterField == null) {
-            logger.error("Cannot retrieve promoters because `this.promoterField` is null.");
-            return new ArrayList<>();
-        }
-        try {
-            Hasher hasher = new Hasher(algo, encryptionKey);
-            ItemService currentItemService = item.getItemService();
-            return currentItemService.getMetadata(
-                item,
-                this.promoterField.getSchema(),
-                this.promoterField.getElement(),
-                this.promoterField.getQualifier(),
-                null
-            )
-                .stream()
-                .map(MetadataValue::getValue)
-                .map(hasher::processHashAsString)
-                .collect(Collectors.toList());
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("'" + algo + "' is not a known algorithm name.", e);
-            return new ArrayList<>();
-        }
+
+        return this.itemService.getMetadata(
+            item,
+            promoterField.getSchema(),
+            promoterField.getElement(),
+            promoterField.getQualifier(),
+            null
+        ).stream()
+            .map(md -> new String(hasher.processHashAsString(md.getValue())))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves a list of hashed email from all the managers of the item's collection.
+     *
+     * @param context The current DSpace context.
+     * @param item The item which is the parent to retrieve manager from.
+     * @return A list of hashed email addresses from the managers of the item.
+     * @throws SQLException
+     */
+    private List<String> getManagerEmailsAsHash(Context context, Item item) throws SQLException {
+        return itemUtils.getManagersOfItem(context, item).stream()
+            .map(manager -> new String(hasher.processHashAsString(manager.getEmail())))
+            .collect(Collectors.toList());
     }
 }
