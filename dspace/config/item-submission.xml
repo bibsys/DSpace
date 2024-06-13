@@ -216,9 +216,9 @@
     <submission-process name="master-thesis">
       <step id="collection" />
       <step id="extractionstep" />
+      <step id="upload" />
       <step id="master-thesis" />
       <step id="correction" />
-      <step id="upload" />
       <step id="license" />
     </submission-process>
     <submission-process name="master-thesis-edit">
