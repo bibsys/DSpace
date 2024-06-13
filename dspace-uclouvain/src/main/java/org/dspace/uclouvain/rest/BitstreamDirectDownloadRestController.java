@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.dspace.content.Bitstream;
-import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.ItemService;
@@ -26,6 +25,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.Hasher;
 import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.web.ContextUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,26 +38,47 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Main controller for the bitstream download URL API.
+ * This controller is used to download a bitstream from a URL and using a Hash.
+ * This hash must correspond to one of the promoters or managers of the item containing the bitstream.
+ * 
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ */
 @RestController
 @RequestMapping("/api/uclouvain/bitstream")
-public class BitstreamDownloadRestController {
+public class BitstreamDirectDownloadRestController {
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService(); 
-    private String algo = this.configurationService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
-    private String encryptionKey = this.configurationService.getProperty("uclouvain.api.bitstream.download.secret", "");
+    private String algo = this.configurationService.getProperty("uclouvain.api.bitstream.download.algorithm", "peGl308bXNr2F7tCKKHgR2u0qNSMqiev");
+    private String encryptionKey = this.configurationService.getProperty("uclouvain.api.bitstream.download.secret");
     private Integer bitstreamContentBufferSize = Integer.parseInt(this.configurationService.getProperty("uclouvain.api.bitstream.download.buffer.size", "10240"));
-    private String promoterFieldName = this.configurationService.getProperty("uclouvain.api.bitstream.download.promoterfield", "advisors.email");
-    private Logger logger = LogManager.getLogger(BitstreamDownloadRestController.class);
     private MetadataField promoterField;
+    private Logger logger = LogManager.getLogger(BitstreamDirectDownloadRestController.class);
+
+    private Hasher hasher;
 
     @Autowired
     private BitstreamService bitstreamService;
 
-    public BitstreamDownloadRestController() {
+    @Autowired
+    private ItemUtils itemUtils;
+
+    @Autowired
+    private ItemService itemService;
+
+    public BitstreamDirectDownloadRestController() throws NoSuchAlgorithmException {
         try {
-            this.promoterField = new MetadataField(this.promoterFieldName);
+            this.hasher = new Hasher(this.algo, this.encryptionKey);
+        } catch (NoSuchAlgorithmException e) {
+            this.logger.warn("Could not instantiate Hasher because '" + algo + "' is not a known algorithm name. Using default 'MD5' instead.");
+            this.hasher = new Hasher("MD5", this.encryptionKey);
+        }
+
+        try {
+            this.promoterField = new MetadataField(this.configurationService.getProperty("uclouvain.api.bitstream.download.promoterfield", "advisors.email"));
         } catch (Exception e) {
-            logger.error("Error while instantiating the MetadataField", e);
+            this.logger.error("Error while instantiating the MetadataField", e);
             this.promoterField = null;
         }
     }
@@ -121,6 +142,7 @@ public class BitstreamDownloadRestController {
     /** 
      * First retrieve the list of promoters from the item containing the bitstream.
      * Then hash their email addresses and compare the hash with the one given with the request.
+     * Also the item must be in workflow validation.
      * @param ctx: The current DSpace context.
      * @param bitstream: The bitstream to check the authorization for.
      * @param hash: The hash to compare with the promoters' hashes.
@@ -128,17 +150,17 @@ public class BitstreamDownloadRestController {
     */
     private boolean isAuthorized(Context ctx, Bitstream bitstream, String hash) {
         try {
-            DSpaceObject parentObject = this.bitstreamService.getParentObject(ctx, bitstream);
+            Item parentObject = this.itemUtils.getItemFromBitstream(ctx, bitstream);
             
-            if (parentObject != null && parentObject instanceof Item) {
-                Item dspaceItem = (Item) parentObject;
-                List<String> hashList = this.getPromotersEmailsAsHash(ctx, dspaceItem);
-
-                return !hashList.isEmpty() && hashList.contains(hash);
+            if (parentObject != null && this.hasher != null) {
+                // Create a list with all hashed emails of the promoters and managers of the item.
+                List<String> hashList = this.getPromotersEmailsAsHash(ctx, parentObject);
+                hashList.addAll(this.getManagerEmailsAsHash(ctx, parentObject));
+                return !hashList.isEmpty() && hashList.contains(hash) && this.itemUtils.isWorkflow(ctx, parentObject);
             }
             return false;
         } catch (Exception e) {
-            logger.error("Unhandled exception occurred while checking bitstream access authorization", e);
+            this.logger.error("Unhandled exception occurred while checking bitstream access authorization", e);
             return false;
         }
     }
@@ -150,29 +172,32 @@ public class BitstreamDownloadRestController {
      * @return: A list of hashed email addresses of the promoters of the item.
      */
     private List<String> getPromotersEmailsAsHash(Context ctx, Item item) {
-        if (this.encryptionKey.isEmpty()){
-            logger.error("!! NO ENCRYPTION KEY PROVIDED FOR BITSTREAM PROMOTER HASHING !!");
-            return new ArrayList<String>();
-        }
         if (this.promoterField == null){
-            logger.error("Cannot retrieve promoters because `this.promoterField` is null.");
+            this.logger.error("Cannot retrieve promoters hash list because `this.promoterField` is null.");
             return new ArrayList<String>();
         }
 
-        try {
-            Hasher hasher = new Hasher(this.algo, this.encryptionKey);
-            ItemService currentItemService = item.getItemService();
+        return this.itemService.getMetadata(
+            item, 
+            this.promoterField.getSchema(),
+            this.promoterField.getElement(),
+            this.promoterField.getQualifier(),
+            null
+        ).stream()
+            .map(md -> new String(this.hasher.processHashAsString(md.getValue())))
+            .collect(Collectors.toList());
+    }
 
-            return currentItemService.getMetadata(
-                item, 
-                this.promoterField.getSchema(),
-                this.promoterField.getElement(),
-                this.promoterField.getQualifier(),
-                null
-            ).stream().map(md -> md.getValue()).map(value -> new String(hasher.processHashAsString(value))).collect(Collectors.toList());
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("'" + algo + "' is not a known algorithm name.", e);
-            return new ArrayList<String>();
-        }
+    /**
+     * Retrieves a list of hashed email from all the managers of the item's collection.
+     * @param ctx: The current DSpace context.
+     * @param item: The item which is the parent to retrieve manager from.
+     * @return: A list of hashed email addresses from the managers of the item.
+     * @throws SQLException
+     */
+    private List<String> getManagerEmailsAsHash(Context ctx, Item item) throws SQLException {
+        return this.itemUtils.getManagersOfItem(ctx, item).stream()
+            .map(manager -> new String(this.hasher.processHashAsString(manager.getEmail())))
+            .collect(Collectors.toList());
     }
 }
