@@ -31,6 +31,10 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
         @LinkRest(
                 name = BitstreamRest.ACCESS,
                 method = "getAccessCondition"
+        ),
+        @LinkRest(
+                name = BitstreamRest.DOWNLOAD_URL,
+                method= "getDownloadURL"
         )
 })
 public class BitstreamRest extends DSpaceObjectRest {
@@ -42,6 +46,7 @@ public class BitstreamRest extends DSpaceObjectRest {
     public static final String FORMAT = "format";
     public static final String THUMBNAIL = "thumbnail";
     public static final String ACCESS = "access";
+    public static final String DOWNLOAD_URL = "download_url";
 
     private String bundleName;
 
