@@ -16,6 +16,7 @@ import java.util.function.BinaryOperator;
 import javax.servlet.http.HttpServletRequest;
 
 import org.dspace.uclouvain.core.Hasher;
+import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.ResumeGenerationException;
@@ -64,6 +65,32 @@ public class SendEmailAttestationAction extends ProcessingAction {
 
     private Logger logger = LogManager.getLogger(SendEmailAttestationAction.class);
 
+    // FIELD CONFIGURATION
+    private String authorEmailField;
+    private String authorNameField;
+    private String promoterEmailField;
+    private String promoterNameField;
+    private String entityTypeField;
+
+    public SendEmailAttestationAction() throws Exception {
+        // Instantiate the metadata fields from the configuration
+        this.authorEmailField = new MetadataField(
+            this.configurationService.getProperty("uclouvain.global.metadata.authoremail.field", "authors.email")
+        ).getFullString("_");
+        this.authorNameField = new MetadataField(
+            this.configurationService.getProperty("uclouvain.global.metadata.authorname.field", "dc.contributor.author")
+        ).getFullString("_");
+        this.promoterEmailField = new MetadataField(
+            this.configurationService.getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email")
+        ).getFullString("_");
+        this.promoterNameField = new MetadataField(
+            this.configurationService.getProperty("uclouvain.global.metadata.advisorname.field", "dc.contributor.advisor")
+        ).getFullString("_");
+        this.entityTypeField = new MetadataField(
+            this.configurationService.getProperty("uclouvain.global.metadata.entitytype.field", "dspace.entity.type")
+        ).getFullString("_");
+    }
+
     @Override
     public void activate(Context c, XmlWorkflowItem wf){}
 
@@ -83,6 +110,13 @@ public class SendEmailAttestationAction extends ProcessingAction {
 
                 Item dspaceItem = itemService.find(c, uuid);
                 HashMap<String, List<String>> map = MetadataUtils.getValuesHashMap(dspaceItem.getMetadata());
+
+                // Checks if authors and promoter are present
+                if (map.get(this.authorEmailField) == null || map.get(this.promoterEmailField) == null) {
+                    logger.warn("No authors or advisors found for the following item: " + dspaceItem.getID() + ". Aborting email attestation generation.");
+                    return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
+                }
+
                 try {
                     String submitterTemplatePath = this.source + "/config/emails/pdf_attestation_author";
                     String promoterTemplatePath = this.source + "/config/emails/pdf_attestation_promoter";
@@ -136,7 +170,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
      * @throws Exception
      */
     private void sendSubmitterEmail(HashMap<String, List<String>> metadata, Item dspaceItem, String templatePath, InputStream attestation) throws Exception {
-        Email email = this.generateBaseEmail(metadata, templatePath, Arrays.asList("authors_email"), attestation);
+        Email email = this.generateBaseEmail(metadata, templatePath, Arrays.asList(this.authorEmailField), attestation);
         email.send();
     }
 
@@ -149,7 +183,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
      * @throws Exception
      */
     private void sendPromoterEmail(HashMap<String, List<String>> metadata, Item dspaceItem, String templatePath, InputStream attestation) throws Exception {
-        Email email = this.generateBaseEmail(metadata, templatePath, Arrays.asList("advisors_email"), attestation);
+        Email email = this.generateBaseEmail(metadata, templatePath, Arrays.asList(this.promoterEmailField), attestation);
         this.appendUrlsToEmail(metadata, email, dspaceItem);
         email.send(); 
     }
@@ -166,10 +200,10 @@ public class SendEmailAttestationAction extends ProcessingAction {
     private void sendErrorEmail(HashMap<String, List<String>> metadata, EPerson submitter, Item dspaceItem, Exception e) throws Exception {
         Email email = Email.getEmail(this.source + "/config/emails/pdf_attestation_error");
 
-        this.addRecipients(metadata, Arrays.asList("authors_email", "advisors_email"), email);
+        this.addRecipients(metadata, Arrays.asList(this.authorEmailField, this.promoterEmailField), email);
         email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
         email.addArgument(submitter.getFullName());
-        email.addArgument(metadata.get("dspace_entity_type").get(0).toLowerCase());
+        email.addArgument(metadata.get(this.entityTypeField).get(0).toLowerCase());
         email.addArgument("Here are some information that might be useful for our team:\n -> Item's uuid: " + dspaceItem.getID() + "\n-> Stacktrace:\n" + ExceptionUtils.getStackTrace(e));
         email.setSubject(this.mailErrorSubject);
 
@@ -182,7 +216,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
      * @param map The HashMap containing information about the submission.
      * @return The resume as a String.
     */
-    private static String generateSubmissionResume(HashMap<String, List<String>> map) throws ResumeGenerationException {
+    private String generateSubmissionResume(HashMap<String, List<String>> map) throws ResumeGenerationException {
         try {
             BinaryOperator<String> parser = (subtotal, element) -> subtotal + element + "; ";
             List<String> resultString = new ArrayList<String>();
@@ -193,12 +227,12 @@ public class SendEmailAttestationAction extends ProcessingAction {
                 resultString.add("Title: " + title.get(0));
             }
 
-            List<String> authors = map.get("dc_contributor_author");
+            List<String> authors = map.get(this.authorNameField);
             if (authors != null && !authors.isEmpty()){
                 resultString.add("Authors: " + authors.stream().reduce("", parser));
             }
 
-            List<String> promoters = map.get("dc_contributor_advisor");
+            List<String> promoters = map.get(this.promoterNameField);
             if (promoters != null && !promoters.isEmpty()){
                 resultString.add("Promoters: " + promoters.stream().reduce("", parser));
             }
@@ -233,7 +267,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
         Email email = Email.getEmail(templatePath);
         this.addRecipients(metadata, recipients, email);
         email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
-        email.addArgument(metadata.get("dspace_entity_type").get(0).toLowerCase());
+        email.addArgument(metadata.get(entityTypeField).get(0).toLowerCase());
         email.addArgument(generateSubmissionResume(metadata));
         email.setSubject(this.mailSubject);
         this.appendAttachmentToEmail(attachment, metadata, email);
@@ -247,7 +281,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
      * @param email: The email object to append the attachment to.
      */
     private void appendAttachmentToEmail(InputStream attestation, HashMap<String, List<String>> metadata, Email email) {
-        email.addAttachment(attestation, metadata.get("dspace_entity_type").get(0) + "SubmissionAttestation.pdf", "application/pdf");
+        email.addAttachment(attestation, metadata.get(entityTypeField).get(0) + "SubmissionAttestation.pdf", "application/pdf");
     }
 
     /**
@@ -265,7 +299,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
             }
             Hasher hasher = new Hasher(this.algorithm, this.encryptionKey);
     
-            String promoter = metadata.get("advisors_email").get(0);
+            String promoter = metadata.get(this.promoterEmailField).get(0);
             if (promoter != null) {
                 String promoterHash = hasher.processHashAsString(promoter);
                 Bundle bitstreamBundle = dspaceItem.getBundles("ORIGINAL").get(0);
