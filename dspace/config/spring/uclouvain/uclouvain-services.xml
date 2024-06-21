@@ -11,19 +11,21 @@
        xmlns:util="http://www.springframework.org/schema/util">
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
-    <!-- SERVICES -->
+    <!-- FACTORIES ======================================================== -->
+    <bean id="uclouvainServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainServiceFactoryImpl"/>
+
+    <!-- SERVICES ========================================================= -->
     <bean id="degreeMappersServiceFactory" class="org.dspace.uclouvain.degreeMappers.factory.DegreeMappersServiceFactoryImpl"/>
     <bean id="degreeMappersService" class="org.dspace.uclouvain.degreeMappers.DegreeMappersService"/>
-
+    <bean id="uclouvainEntityService" class="org.dspace.uclouvain.services.UCLouvainEntityServiceImpl"/>
+    <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl"/>
     <bean id="bitstreamDirectDownloadURLService" class="org.dspace.uclouvain.services.BitstreamDirectDownloadURLServiceImpl"/>
 
-    <!-- UTILS -->
+    <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
     <bean id="authorizationUtils" class="org.dspace.uclouvain.core.utils.AuthorizationUtils" />
 
-    <!-- CUSTOM RESOURCE POLICIES SERVICE -->
-    <bean id="uclouvainResourcePolicyServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainResourcePolicyServiceFactoryImpl"/>
-    <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl"/>
+    <!-- OTHER BEANS ====================================================== -->
     <util:list id="resourcePolicyPriorities">
         <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
             <property name="rpName" value="administrator"/>

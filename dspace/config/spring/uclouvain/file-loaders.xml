@@ -14,6 +14,10 @@
     <!-- ////////////////////////////////////////// -->
     <!-- FILE LOADER FEATURE -->
     <!-- ////////////////////////////////////////// -->
+    <bean id="entitiesConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.EntitiesConfigurationFile">
+        <constructor-arg value="/config/mapping/entities.json"/>
+    </bean>
+
 
     <!-- CONFIG FILE LOADERS -->
     <bean id="configurationFileFactory" class="org.dspace.uclouvain.configurationFiles.factory.ConfigurationFileFactoryImpl">
