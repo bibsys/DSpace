@@ -1,0 +1,66 @@
+[{
+  "code": "DRT",
+  "name": "Faculté de droit et de criminologie",
+  "type": "faculty",
+  "children": [{
+    "code": "DROI2M",
+    "name": "Master [120] en droit",
+    "type": "degree",
+    "children": [{
+      "code": "DROI2MS/ET",
+      "name": "Master [120] en droit, à finalité spécialisée: Etat et Europe",
+      "type": "degree"
+    }]
+  }]
+}, {
+  "code": "LSM",
+  "name": "Louvain School of Management",
+  "type": "faculty",
+  "children": [{
+    "code": "INGE2M",
+    "name": "Master [120] : ingénieur de gestion",
+    "type": "degree",
+    "children": [{
+      "code": "INGE2MS/G",
+      "name": "Master [120] : ingénieur de gestion, à finalité spécialisée",
+      "type": "degree"
+    }]
+  }, {
+    "code": "GEST2M",
+    "name": "Master [120] en sciences de gestion",
+    "type": "degree",
+    "children": [{
+      "code": "GEST2MS/GE",
+      "name": "Master [120] en sciences de gestion, à finalité spécialisée",
+      "type": "degree"
+    }]
+  }]
+}, {
+  "code": "MEDE",
+  "name": "Faculté de médecine et médecine dentaire",
+  "type": "faculty",
+  "children": [{
+    "code": "MD2M",
+    "name": "Master [180] en médecine",
+    "type": "degree",
+    "children": [{
+      "code": "MD2MS/G",
+      "name": "Master [180] en médecine, à finalité spécialisée",
+      "type": "degree"
+    }]
+  }]
+}, {
+  "code": "PSP",
+  "name": "Faculté de psychologie et des sciences de l'éducation",
+  "type": "faculty",
+  "children": [{
+    "code": "FOPA2M",
+    "name": "Master [120] en sciences de l'éducation",
+    "type": "degree",
+    "children": [{
+      "code": "FOPA2MS/G",
+      "name": "Master [120] en sciences de l'éducation, à finalité spécialisée",
+      "type": "degree"
+    }]
+  }]
+}]
