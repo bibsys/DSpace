@@ -218,8 +218,8 @@
     </submission-process>
     <submission-process name="master-thesis-edit">
       <step id="extractionstep" />
-      <step id="master-thesis" />
       <step id="upload" />
+      <step id="master-thesis" />
     </submission-process>
     <submission-process name="product">
       <step id="collection" />
