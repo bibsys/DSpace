@@ -12,6 +12,19 @@
 				</metadata>
 			</templateItem>
 		</collection>
+		<collection identifier="123456789/master_thesis_cataretro_collection">
+			<name>Master thesis - Cataretro</name>
+			<entity-type>MasterThesis</entity-type>
+			<submission-type>master-thesis-cataretro</submission-type>
+			<templateItem>
+				<metadata schema="dc" element="type">
+					<value>text::thesis::master thesis</value>
+				</metadata>
+				<metadata schema="dcterms" element="provenance">
+					<value>cataretro</value>
+				</metadata>
+			</templateItem>
+		</collection>
 	</community>
 	<community>
 		<name>Management</name>
