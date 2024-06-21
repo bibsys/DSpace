@@ -79,7 +79,7 @@ public class DegreeMetadataConsumer implements Consumer {
      * Refreshes the additional degree metadata since the degree code has been modified.
      * 
      * @param ctx: The current Dspace context.
-     * @param Item: The item which has seen his degree code changed and will be updated.
+     * @param item: The item which has seen his degree code changed and will be updated.
      */
     private void process(Context ctx, Item item) throws GeneratorProcessException {
         try {
@@ -121,19 +121,16 @@ public class DegreeMetadataConsumer implements Consumer {
      * @return True if the correct field is modified by the event. False otherwise.
      */
     private Boolean canBeProcessed(Context ctx, Event event) {
-        List<String> correctMetadata = Arrays.asList(
-            event.getDetail().split(",")).stream()
+        return Arrays
+                .stream(event.getDetail().split(","))
                 .map(String::trim)
-                .filter(x -> x.equals(this.degreeCodeField.getFullString("_")))
-                .collect(Collectors.toList());
-        return !correctMetadata.isEmpty();
+                .anyMatch(x -> x.equals(this.degreeCodeField.getFullString("_")));
     }
 
     /**
      * Clear previous metadata values for the degree code, degree label, root degree code, root degree label, faculty code and faculty name.
      * @param ctx: The DSpace context.
      * @param item: The item to update.
-     * @param itemService: The item service used to make the operations.
      * @throws SQLException
      */
     private void clearPreviousMetadata(Context ctx, Item item) throws SQLException {
@@ -170,7 +167,6 @@ public class DegreeMetadataConsumer implements Consumer {
      * Generate additional metadata from a `DegreeMapper` object and add it to the item.
      * @param ctx: The DSpace context.
      * @param item: The item to update.
-     * @param itemService: The item service used to make the operations.
      * @param mapping: The degree mapper to use to generate the additional metadata.
      * @throws SQLException
      */
