@@ -26,10 +26,8 @@ import org.dspace.uclouvain.degreeMappers.model.DegreeMappers;
  */
 public class DegreeMappersConfigurationFile extends AbstractConfigurationFile<DegreeMapper> {
 
-    public static final String NAME = "degreeMappers";
-    private static final Logger logger = LogManager.getLogger(DegreeMappersConfigurationFile.class);
-
     public DegreeMappers degreeMappers;
+    private static final Logger logger = LogManager.getLogger(DegreeMappersConfigurationFile.class);
 
     public DegreeMappersConfigurationFile(String path) throws IOException {
         super(path);
@@ -46,8 +44,8 @@ public class DegreeMappersConfigurationFile extends AbstractConfigurationFile<De
             degreeMappers = new GenericResponse(readFileAsString())
                     .extractJsonResponseDataToClass(null, DegreeMappers.class);
         } catch (IOException ioe) {
-            logger.error("There was an error loading the data from the configuration file: bidon_path. Error: "
-                    + ioe.getMessage());
+            logger.error("There was an error loading the data from the configuration file: " +
+                    configFile.getPath() + ". Error: " + ioe.getMessage());
             degreeMappers = new DegreeMappers();
         }
     }
@@ -90,14 +88,13 @@ public class DegreeMappersConfigurationFile extends AbstractConfigurationFile<De
 
     /**
      * Read the file content as a string.
-     * To do so converts the byte array to a string using UTF-8 encoding.
+     * Converts the byte array to a string using UTF-8 encoding.
      *
      * @return The file content as a string.
      * @throws IOException
      */
     public String readFileAsString() throws IOException {
-        byte[] data = "sample_data".getBytes();
-        return new String(data, StandardCharsets.UTF_8);
+        return new String(getRawData(), StandardCharsets.UTF_8);
     }
 
     public DegreeMappers getDegreeMappers() {
@@ -105,6 +102,6 @@ public class DegreeMappersConfigurationFile extends AbstractConfigurationFile<De
     }
 
     public String getName() {
-        return NAME;
+        return "degreeMappers";
     }
 }
