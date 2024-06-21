@@ -318,4 +318,10 @@ fi
 
 # STEP#FINAL: Restart the container
 restart_dspace_container ${BACKEND}
+
+echo "⚠️⚠️⚠️ Add CATARETRO metadata into the created related collection ⚠️⚠️⚠️"
+echo -e "\t* 1) Find UUID of the created collection using the HAL browser"
+echo -e "\t* 2) Run the command : ./dspace dsrun org.dspace.uclouvain.administer.MetadataManagement -t [uuid] -a set -f dcterms.provenance -v cataretro"
+echo ""
+
 echo "🎉 Setup script finished successfully! Time for a drink. Enjoy ! 🍺🍺🍺"
