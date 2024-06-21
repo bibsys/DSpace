@@ -10,9 +10,8 @@
     <bean class="org.dspace.xmlworkflow.XmlWorkflowFactoryImpl">
         <property name="workflowMapping">
             <util:map>
-                <entry key="defaultWorkflow"
-                       value-ref="masterThesisWorkflow"/>
-<!--                <entry key="123456789/4" value-ref="selectSingleReviewer"/>-->
+                <entry key="defaultWorkflow" value-ref="defaultWorkflow"/>
+                <entry key="123456789/master_thesis_collection" value-ref="masterThesisWorkflow"/>
 <!--                <entry key="123456789/5" value-ref="scoreReview"/>-->
             </util:map>
         </property>
@@ -21,17 +20,6 @@
     <bean class='org.dspace.workflow.CurationTaskConfig'>
         <constructor-arg name='configurationDocument'
                          value='file:${dspace.dir}/config/workflow-curation.xml'/>
-    </bean>
-
-    <!-- Master Theses Workflow -->
-    <bean name="masterThesisWorkflow" class="org.dspace.xmlworkflow.state.Workflow">
-        <property name="firstStep" ref="generatepdfattestationstep"/>
-        <property name="steps">
-            <util:list>
-                <ref bean="generatepdfattestationstep" />
-                <ref bean="uclouvainthesisreviewstep"/>
-            </util:list>
-        </property>
     </bean>
 
     <!--Standard DSpace workflow-->
@@ -43,32 +31,16 @@
                 <ref bean="editstep"/>
                 <ref bean="finaleditstep"/>
                 <ref bean="checkcorrectionstep"/>
-                <ref bean="generatepdfattestationstep" />
             </util:list>
         </property>
     </bean>
-
-    <bean name="generatepdfattestationstep" class="org.dspace.xmlworkflow.state.Step">
-        <property name="userSelectionMethod" ref="noUserSelectionAction"/>
-        <property name="outcomes">
-            <util:map>
-                <entry key="#{ T(org.dspace.xmlworkflow.state.actions.ActionResult).OUTCOME_COMPLETE}"
-                       value-ref="uclouvainthesisreviewstep"/>
-            </util:map>
-        </property>
-        <property name="actions">
-            <list>
-                <ref bean="sendemailattestationaction"/>
-            </list>
-        </property>
-    </bean>
-
-    <bean name="uclouvainthesisreviewstep" class="org.dspace.xmlworkflow.state.Step">
-        <property name="userSelectionMethod" ref="claimaction"/>
-        <property name="role" ref="reviewer"/>
-        <property name="actions">
+    <!-- Master Theses Workflow -->
+    <bean name="masterThesisWorkflow" class="org.dspace.xmlworkflow.state.Workflow">
+        <property name="firstStep" ref="generatepdfattestationstep"/>
+        <property name="steps">
             <util:list>
-                <ref bean="uclouvainthesisreviewaction"/>
+                <ref bean="generatepdfattestationstep" />
+                <ref bean="uclouvainthesisreviewstep"/>
             </util:list>
         </property>
     </bean>
@@ -144,16 +116,35 @@
     
     <bean name="checkcorrectionstep" class="org.dspace.xmlworkflow.state.Step">
         <property name="userSelectionMethod" ref="noUserSelectionAction"/>
-        <property name="outcomes">
-            <util:map>
-                <entry key="#{ T(org.dspace.xmlworkflow.state.actions.ActionResult).OUTCOME_COMPLETE}"
-                       value-ref="generatepdfattestationstep"/>
-            </util:map>
-        </property>
         <property name="actions">
             <list>
                 <ref bean="checkcorrectionaction"/>
             </list>
+        </property>
+    </bean>
+
+    <bean name="generatepdfattestationstep" class="org.dspace.xmlworkflow.state.Step">
+        <property name="userSelectionMethod" ref="noUserSelectionAction"/>
+        <property name="outcomes">
+            <util:map>
+                <entry key="#{ T(org.dspace.xmlworkflow.state.actions.ActionResult).OUTCOME_COMPLETE}"
+                       value-ref="uclouvainthesisreviewstep"/>
+            </util:map>
+        </property>
+        <property name="actions">
+            <list>
+                <ref bean="sendemailattestationaction"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="uclouvainthesisreviewstep" class="org.dspace.xmlworkflow.state.Step">
+        <property name="userSelectionMethod" ref="claimaction"/>
+        <property name="role" ref="reviewer"/>
+        <property name="actions">
+            <util:list>
+                <ref bean="uclouvainthesisreviewaction"/>
+            </util:list>
         </property>
     </bean>
 
