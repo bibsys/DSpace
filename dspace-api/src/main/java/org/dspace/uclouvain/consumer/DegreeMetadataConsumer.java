@@ -141,11 +141,10 @@ public class DegreeMetadataConsumer implements Consumer {
      * @return True if the correct field is modified by the event. False otherwise.
      */
     private Boolean canBeProcessed(Context context, Event event) {
-        List<String> correctMetadata = Arrays.stream(event.getDetail().split(","))
-            .map(String::trim)
-            .filter(x -> x.equals(degreeCodeField.getFullString("_")))
-            .toList();
-        return !correctMetadata.isEmpty();
+        return Arrays
+                .stream(event.getDetail().split(","))
+                .map(String::trim)
+                .anyMatch(x -> x.equals(degreeCodeField.getFullString("_")));
     }
 
     /**
