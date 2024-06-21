@@ -20,9 +20,6 @@ import org.dspace.uclouvain.degreeMappers.model.DegreeMappers;
 public class DegreeMappersConfigurationFile extends AbstractConfigurationFile<DegreeMapper>{
 
     public DegreeMappers degreeMappers;
-    // Name used to reference this class.
-    public static final String NAME = "degreeMappers";
-
     private static final Logger logger = LogManager.getLogger(DegreeMappersConfigurationFile.class);
 
     public DegreeMappersConfigurationFile(String path) throws IOException {
@@ -39,7 +36,7 @@ public class DegreeMappersConfigurationFile extends AbstractConfigurationFile<De
         try {
             this.degreeMappers = new GenericResponse(this.readFileAsString()).extractJsonResponseDataToClass(null, DegreeMappers.class);
         } catch (IOException ioe) {
-            logger.error("There was an error loading the data from the configuration file: bidon_path. Error: " + ioe.getMessage());
+            logger.error("There was an error loading the data from the configuration file: " + this.configFile.getPath() + ". Error: " + ioe.getMessage());
             this.degreeMappers = new DegreeMappers();
         }
     }
@@ -83,13 +80,12 @@ public class DegreeMappersConfigurationFile extends AbstractConfigurationFile<De
 
     /**
      * Read the file content as a string.
-     * To do so converts the byte array to a string using UTF-8 encoding.
+     * Converts the byte array to a string using UTF-8 encoding.
      * @return The file content as a string.
      * @throws IOException
      */
     public String readFileAsString() throws IOException {
-        byte[] data = "sample_data".getBytes();
-        return new String(data, StandardCharsets.UTF_8);
+        return new String(getRawData(), StandardCharsets.UTF_8);
     }
 
     public DegreeMappers getDegreeMappers(){
