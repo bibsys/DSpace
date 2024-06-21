@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.configurationFiles.ConfigurationFile;
 import org.dspace.uclouvain.configurationFiles.factory.ConfigurationFileFactory;
 import org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile;
 import org.dspace.uclouvain.degreeMappers.model.DegreeMapper;
@@ -18,7 +17,7 @@ public class DegreeMappersService {
     
     private static final Logger logger = LogManager.getLogger(DegreeMappersService.class);
 
-    private ConfigurationFile<DegreeMapper> fileLoader;
+    private DegreeMappersConfigurationFile fileLoader;
 
     // Use this syntax to load bean since @Autowired does not work in this case.
     ConfigurationFileFactory configurationFileFactory = DSpaceServicesFactory
@@ -34,9 +33,9 @@ public class DegreeMappersService {
      */
     @SuppressWarnings("unchecked")
     DegreeMappersService() {
-        this.fileLoader = (ConfigurationFile<DegreeMapper>) this.configurationFileFactory.getConfigurationFile(DegreeMappersConfigurationFile.NAME);
+        this.fileLoader = (DegreeMappersConfigurationFile) this.configurationFileFactory.getConfigurationFile(DegreeMappersConfigurationFile.class);
         if (fileLoader == null) {
-            logger.warn("There was an error instantiating a file loader for the following file: " + this.fileLoader.getPath());
+            logger.warn("Unable to load configuration file !");
         }
     }
 
