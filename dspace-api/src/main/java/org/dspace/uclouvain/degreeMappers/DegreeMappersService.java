@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.uclouvain.configurationFiles.ConfigurationFile;
+import org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile;
 import org.dspace.uclouvain.degreeMappers.model.DegreeMapper;
 
 /**
@@ -21,7 +21,7 @@ public class DegreeMappersService {
 
     private static final Logger logger = LogManager.getLogger(DegreeMappersService.class);
 
-    private ConfigurationFile<DegreeMapper> fileLoader;
+    private DegreeMappersConfigurationFile fileLoader;
 
     /**
      * CONSTRUCTOR:
