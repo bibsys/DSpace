@@ -14,5 +14,14 @@
                 "manager"
             ]
         }]
+    }, {
+        "collection_name": "Master thesis - Cataretro",
+        "permissions": [{
+            "mode": "role",
+            "type": "submitter",
+            "groups": [
+                "librarian"
+            ]
+        }]
     }]
 }
