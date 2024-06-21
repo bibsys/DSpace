@@ -235,6 +235,11 @@ done
 # STEP#4: Create basics communities & collections ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 docker exec ${BACKEND} sh -c "\
     /dspace/bin/dspace dsrun org.dspace.app.util.InitializeEntityTypesOnly -d" >> "${LOG_PATH}"
+docker exec ${BACKEND} sh -c "\
+    /dspace/bin/dspace initialize-entities -f /dspace/config/entities/relationship-types.xml" >> "${LOG_PATH}"
+docker exec ${BACKEND} sh -c "\
+    /dspace/bin/dspace initialize-entities -f /dspace/config/entities/correction-relationship-types.xml" >> "${LOG_PATH}"
+
 echo -en "📘 Creating new community and collection...\r"
 docker exec ${BACKEND} sh -c "\
     /dspace/bin/dspace structure-builder \
@@ -313,4 +318,10 @@ fi
 
 # STEP#FINAL: Restart the container
 restart_dspace_container ${BACKEND}
+
+echo "⚠️⚠️⚠️ Add CATARETRO metadata into the created related collection ⚠️⚠️⚠️"
+echo -e "\t* 1) Find UUID of the created collection using the HAL browser"
+echo -e "\t* 2) Run the command : ./dspace dsrun org.dspace.uclouvain.administer.MetadataManagement -t [uuid] -a set -f dcterms.provenance -v cataretro"
+echo ""
+
 echo "🎉 Setup script finished successfully! Time for a drink. Enjoy ! 🍺🍺🍺"
