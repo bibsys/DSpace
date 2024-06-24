@@ -24,8 +24,6 @@
 
     <!-- SERVICES ========================================================= -->
     <bean id="bitstreamDirectDownloadURLService" class="org.dspace.uclouvain.services.BitstreamDirectDownloadURLServiceImpl"/>
-    <bean id="degreeMappersServiceFactory" class="org.dspace.uclouvain.degreeMappers.factory.DegreeMappersServiceFactoryImpl"/>
-    <bean id="degreeMappersService" class="org.dspace.uclouvain.degreeMappers.DegreeMappersService"/>
     <bean id="uclouvainEntityService" class="org.dspace.uclouvain.services.UCLouvainEntityServiceImpl"/>
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl">
         <property name="resourcePolicyPriorities" ref="resourcePolicyPriorities"/>
