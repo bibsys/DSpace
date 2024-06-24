@@ -8,6 +8,8 @@ import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
+import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.model.MetadataField;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -22,6 +24,14 @@ public class AuthorizationUtils {
 
     @Autowired
     private ItemService itemService;
+
+    private MetadataField promoterField;
+
+    public AuthorizationUtils() throws Exception {
+        this.promoterField = new MetadataField(
+            DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email")
+        );
+    }
 
     /**
      * Checks if the current user is a manager of the item's collection.
@@ -43,9 +53,8 @@ public class AuthorizationUtils {
      * @return True if the user is a promoter of the item, false otherwise.
      */
     public boolean isPromoterOfItem(Item item, EPerson person) {
-        // TODO: Use config for field name
         List<String> promoters = this.itemService.getMetadata(
-            item, "advisors", "email", null, null
+            item, this.promoterField.getSchema(), this.promoterField.getElement(), null, null
         ).stream().map(metadataValue -> metadataValue.getValue()).collect(Collectors.toList());
     
         return promoters.contains(person.getEmail());
