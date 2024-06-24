@@ -17,8 +17,10 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 /**
  * Consumer used to add a default license to a bitstream that does not have one.
  * Only adds one if the metadata field is empty.
- * 
- * Authored-By: Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ *
+ * @version $Revision$
+ *
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class LicenseConsumer implements Consumer {
 
