@@ -35,7 +35,6 @@ public class BitstreamDirectDownloadURLRestRepository extends DSpaceRestReposito
      */
     @PreAuthorize("hasPermission(#bitstreamId, 'BITSTREAM', 'DOWNLOAD_URL')")
     public BitstreamDirectDownloadURLRest findOne(Context context, UUID bitstreamId) {
-        System.out.println(bitstreamId);
         // TODO: Duplicate with 'BitstreamDirectDownloadURLLinkRepository.java' see if there is a way to avoid this
         try {
             Bitstream bitstream = this.bitstreamService.find(context, bitstreamId);
