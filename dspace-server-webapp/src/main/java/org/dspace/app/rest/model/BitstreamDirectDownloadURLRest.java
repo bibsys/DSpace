@@ -11,10 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * The BitstreamDirectDownloadURL REST Resource.
  * This class is used to return the download URL of a bitstream.
  * 
- * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class BitstreamDirectDownloadURLRest extends BaseObjectRest<UUID> {
     public static final String NAME = "bitstreamdirectdownloadurl";
+    public static final String PLURAL_NAME = "bitstreamdirectdownloadurls";
     public static final String CATEGORY = RestAddressableModel.CORE;
 
     private String url;
@@ -32,6 +33,12 @@ public class BitstreamDirectDownloadURLRest extends BaseObjectRest<UUID> {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getType() {
         return NAME;
+    }
+
+    @Override
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getTypePlural() {
+        return PLURAL_NAME;
     }
 
     @Override
