@@ -75,7 +75,6 @@ public class BitstreamDirectDownloadURLPermissionEvaluatorPlugin extends RestObj
                 }
             }
         }
-        System.out.println("Targetid was probably null: " + targetId + " and targetType: " + targetType + " and permission: " + permission);
         return false;
     }
 
