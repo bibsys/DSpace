@@ -34,7 +34,9 @@ import java.util.List;
 /**
  * Consumer to generate additional metadata from the faculty code ONLY for "catareto" collection.
  *
- * Authored-By: Renaud Michotte <renaud.michotte@uclouvain.be>
+ * @version $Revision$
+ *
+ * @author Renaud Michotte <renaud.michotte@uclouvain.be>
  */
 public class CataretroFacultyMetadataConsumer implements Consumer {
 
