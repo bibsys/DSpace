@@ -202,6 +202,20 @@
                             </property>
                             <property name="submissionDefinition" value="master-thesis-edit" />
                         </bean>
+                        <bean class="org.dspace.content.edit.EditItemMode">
+                            <property name="name" value="LIBRARIAN" />
+                            <property name="security">
+                                <value type="org.dspace.content.security.CrisSecurity">
+                                    GROUP
+                                </value>
+                            </property>
+                            <property name="groups">
+                                <list>
+                                    <value>librarian</value>
+                                </list>
+                            </property>
+                            <property name="submissionDefinition" value="master-thesis-edit" />
+                        </bean>
                     </list>
                 </entry>
             </map>

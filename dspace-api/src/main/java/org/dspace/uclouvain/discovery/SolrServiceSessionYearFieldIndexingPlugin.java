@@ -19,21 +19,31 @@ import org.dspace.discovery.indexobject.IndexableClaimedTask;
 import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.discovery.indexobject.IndexablePoolTask;
 import org.dspace.services.ConfigurationService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.model.MetadataField;
 
 /**
  * This class is a Solr indexing plugin that indexes the session and year fields as one field in Solr.
  */
 public class SolrServiceSessionYearFieldIndexingPlugin implements SolrServiceIndexPlugin {
 
-    @Autowired
-    private ConfigurationService configurationService;
+    private ConfigurationService configService;
+    private MetadataField sessionField;
+    private MetadataField yearField;
+
+    public SolrServiceSessionYearFieldIndexingPlugin() throws Exception {
+        configService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        sessionField = new MetadataField(configService.getProperty(
+                "uclouvain.global.metadata.session.field", "masterthesis.session"));
+        yearField = new MetadataField(configService.getProperty(
+                "uclouvain.global.metadata.year.field", "dc.date.issued"));
+    }
 
     @Override
     public void additionalIndex(Context context, IndexableObject dso, SolrInputDocument document) {
         Item item = this.getItem(dso);
         if (item != null) {
-            this.generateSolrSessionYearField(item, document);
+            generateSolrSessionYearField(item, document);
         }
     };
 
@@ -63,13 +73,13 @@ public class SolrServiceSessionYearFieldIndexingPlugin implements SolrServiceInd
      */
     private void generateSolrSessionYearField(Item item, SolrInputDocument document) {
         ItemService currentItemService = item.getItemService();
-        // TODO: Abstract this to configuration
-        String sessionValue = currentItemService.getMetadataFirstValue(item, "masterthesis", "session", null, null);
-        String yearValue = currentItemService.getMetadataFirstValue(item, "dc", "date", "issued", null);
+
+        String sessionValue = currentItemService.getMetadataFirstValue(item, sessionField, null);
+        String yearValue = currentItemService.getMetadataFirstValue(item, yearField, null);
         if (sessionValue != null && yearValue != null && !sessionValue.isEmpty() && !yearValue.isEmpty()) {
             String value = sessionValue + " " + yearValue;
             String valueLowerCase = value.toLowerCase();
-            String separator = configurationService.getProperty("discovery.solr.facets.split.char", FILTER_SEPARATOR);
+            String separator = configService.getProperty("discovery.solr.facets.split.char", FILTER_SEPARATOR);
             document.addField("sessionyear_filter", valueLowerCase + separator + value);
             document.addField("sessionyear_keyword", value);
         }
