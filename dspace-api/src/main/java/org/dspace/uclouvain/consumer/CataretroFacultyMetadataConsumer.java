@@ -42,6 +42,7 @@ import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
  * Consumer to generate additional metadata from the faculty code ONLY for "catareto" collection.
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
+ * @version $Revision$
  */
 public class CataretroFacultyMetadataConsumer implements Consumer {
 
