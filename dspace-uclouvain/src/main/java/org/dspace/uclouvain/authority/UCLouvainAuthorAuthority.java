@@ -25,7 +25,7 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
      * Retrieve the list of student based on the query (first and last name)
      * 
      * @param query: The name typed by the user, used to search for students
-     * @return: An array containing the result of the search  
+     * @return an array containing the result of the search
      */
     DialPerson[] getSuggestions(String query) {
         return this.getUCLouvainAuthorityClient().getSuggestionByTermWithFilter(query, "authors");
@@ -35,8 +35,8 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
      * Generate a list of extra information that will be displayed under the main information 
      * Also used to populate the fields when the user selects a choice in the list
      * 
-     * @param DialPerson: One dialPerson (result from a search) that will be used to generate extra data
-     * @return: An array containing the extras 
+     * @param person: One dialPerson (result from a search) that will be used to generate extra data
+     * @return a dictionary containing additional information's
      */
     Map<String, String> generateExtras(DialPerson person){
         Map<String, String> extras = new HashMap<>();
@@ -50,10 +50,11 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
         extras.put("data-masterthesis_degree_code", "");
 
         // String with "data-" will be used to fill other form fields 
-        extras.put("data-authors_institution_code", institution);
+        extras.put("data-authors_institution_name", institution);
         extras.put("data-authors_email", person.getEmail());
 
-        // Default value for those field is an empty string because this will allow us to override the previous set value
+        // The Default value for those fields is an empty string because this will allow us to override
+        // the previous set value
         extras.put("data-authors_identifier_fgs", "");
         extras.put("data-authors_identifier_noma", "");
         if(institution.contains("UCL")){

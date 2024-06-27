@@ -32,7 +32,7 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>institution</dc-element>
-          <dc-qualifier>code</dc-qualifier>
+          <dc-qualifier>name</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
@@ -259,7 +259,7 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>institution</dc-element>
-          <dc-qualifier>code</dc-qualifier>
+          <dc-qualifier>name</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>

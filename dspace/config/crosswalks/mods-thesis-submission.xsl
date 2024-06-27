@@ -49,15 +49,21 @@
             <xsl:apply-templates/>
         </xsl:element>
     </xsl:template>
-
-
+    
     <!-- GENRE -> dc.type ============================================= -->
-    <xsl:template match="/mods:mods/mods:genre">
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">dc</xsl:attribute>
-            <xsl:attribute name="element">type</xsl:attribute>
-            <xsl:value-of select="normalize-space(.)"/>
-        </xsl:element>
+    <xsl:template match="/mods:mods/mods:genre[@authority='coar']">
+        <xsl:variable name="docType">
+            <xsl:choose>
+                <xsl:when test="contains(@valueURI,'resource_type/c_bdcc')">text::thesis::master thesis</xsl:when>
+            </xsl:choose>
+        </xsl:variable>
+        <xsl:if test="$docType">
+            <xsl:element name="dim:field">
+                <xsl:attribute name="mdschema">dc</xsl:attribute>
+                <xsl:attribute name="element">type</xsl:attribute>
+                <xsl:value-of select="normalize-space($docType)"/>
+            </xsl:element>
+        </xsl:if>
     </xsl:template>
     <!-- TITLE -> dc.title ============================================ -->
     <xsl:template match="/mods:mods/mods:titleInfo/mods:title">
@@ -89,7 +95,7 @@
     <!-- ORIGIN_INFO ================================================== -->
     <!--   * dateIssued -> dc.date.issued -->
     <!--   * dateOther[@type='session'] -> masterthesis.session -->
-    <xsl:template match="/mods:mods/mods:originInf/mods:dateIssued">
+    <xsl:template match="/mods:mods/mods:originInfo/mods:dateIssued">
         <xsl:element name="dim:field">
             <xsl:attribute name="mdschema">dc</xsl:attribute>
             <xsl:attribute name="element">date</xsl:attribute>
@@ -102,6 +108,14 @@
             <xsl:attribute name="mdschema">masterthesis</xsl:attribute>
             <xsl:attribute name="element">session</xsl:attribute>
             <xsl:attribute name="lang">fr</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template match="/mods:mods/mods:language/mods:languageTerm[@type='code' and @authority='iso639-2b']">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">language</xsl:attribute>
+            <xsl:attribute name="qualifier">iso-639-2</xsl:attribute>
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
@@ -151,16 +165,6 @@
                     <xsl:attribute name="qualifier">fgs</xsl:attribute>
                     <xsl:call-template name="valueOrDefault">
                         <xsl:with-param name="value" select="./mods:nameIdentifier[@type='fgs']"/>
-                    </xsl:call-template>
-                </xsl:element>
-                <xsl:element name="dim:field">
-                    <xsl:attribute name="mdschema">
-                        <xsl:value-of select="$mdschema"/>
-                    </xsl:attribute>
-                    <xsl:attribute name="element">identifier</xsl:attribute>
-                    <xsl:attribute name="qualifier">orcid</xsl:attribute>
-                    <xsl:call-template name="valueOrDefault">
-                        <xsl:with-param name="value" select="./mods:nameIdentifier[@type='orcid']"/>
                     </xsl:call-template>
                 </xsl:element>
                 <xsl:element name="dim:field">
@@ -233,12 +237,6 @@
                 <xsl:value-of select="$comment"/>
             </xsl:if>
         </xsl:variable>
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">dc</xsl:attribute>
-            <xsl:attribute name="element">description</xsl:attribute>
-            <xsl:attribute name="qualifier">tag</xsl:attribute>
-            <xsl:value-of select="$type"/>
-        </xsl:element>
         <xsl:element name="dim:field">
             <xsl:attribute name="mdschema">dc</xsl:attribute>
             <xsl:attribute name="element">description</xsl:attribute>
