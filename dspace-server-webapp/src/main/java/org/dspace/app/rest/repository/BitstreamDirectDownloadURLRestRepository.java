@@ -33,17 +33,17 @@ public class BitstreamDirectDownloadURLRestRepository extends DSpaceRestReposito
      * @param context The current DSpace context.
      * @param bitstreamId The UUID of the bitstream to generate url for.
      */
-    @PreAuthorize("hasPermission(#bitstreamId, 'BITSTREAM', 'DOWNLOAD_URL')")
-    public BitstreamDirectDownloadURLRest findOne(Context context, UUID bitstreamId) {
+    @PreAuthorize("hasPermission(#id, 'BITSTREAM', 'DOWNLOAD_URL')")
+    public BitstreamDirectDownloadURLRest findOne(Context context, UUID id) {
         // TODO: Duplicate with 'BitstreamDirectDownloadURLLinkRepository.java' see if there is a way to avoid this
         try {
-            Bitstream bitstream = this.bitstreamService.find(context, bitstreamId);
+            Bitstream bitstream = this.bitstreamService.find(context, id);
             if (bitstream == null) {
-                throw new ResourceNotFoundException("No such bitstream: " + bitstreamId);
+                throw new ResourceNotFoundException("No such bitstream: " + id);
             } 
 
             BitstreamDirectDownloadURL bdu = new BitstreamDirectDownloadURL();
-            bdu.setBitstreamId(bitstreamId);
+            bdu.setBitstreamId(id);
             bdu.setUrl(this.bitstreamDirectDownloadURLService.getURL(bitstream, context.getCurrentUser()));
 
             return converter.toRest(bdu, utils.obtainProjection());
