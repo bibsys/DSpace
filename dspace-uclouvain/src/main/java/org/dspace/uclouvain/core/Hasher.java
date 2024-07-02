@@ -8,10 +8,11 @@ import java.security.NoSuchAlgorithmException;
  */
 public class Hasher {
     private MessageDigest digest;
+    private String encryptionKey;
 
     public Hasher(String algorithm, String encryptionKey) throws NoSuchAlgorithmException {
-        this.digest = MessageDigest.getInstance(algorithm);
-        this.digest.update(encryptionKey.getBytes());
+        this(algorithm);
+        this.encryptionKey = encryptionKey;
     }
 
     public Hasher(String algorithm) throws NoSuchAlgorithmException {
@@ -25,6 +26,9 @@ public class Hasher {
      * @return: The hash of the data.
      */
     public byte[] processHash(String data){
+        if (this.encryptionKey != null) {
+            this.digest.update(this.encryptionKey.getBytes());
+        }
         return digest.digest(data.getBytes());
     }
 
