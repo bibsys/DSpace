@@ -45,11 +45,6 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
 
     // CLASS CONSTANTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /** CLI available options */
-    private static final Option OPT_HELP = Option.builder("h")
-            .longOpt("help")
-            .hasArg(false)
-            .desc("explain collection-permission-management options")
-            .build();
     private static final Option OPT_COLLECTION_NAME = Option.builder("c")
             .longOpt("collection")
             .hasArg(true)
@@ -119,11 +114,10 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
         serviceOptions.addOption(OPT_GROUP_NAME);
         serviceOptions.addOption(OPT_ACTION_ENABLE);
         serviceOptions.addOption(OPT_ACTION_DISABLE);
-
         infoOptions.addOption(OPT_HELP);
     }
     protected String getUsageDescription() {
-        return CollectionPermissionManagement.USAGE_DESCRIPTION;
+        return USAGE_DESCRIPTION;
     }
 
 
