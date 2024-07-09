@@ -8,7 +8,6 @@
 package org.dspace.uclouvain.core;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,13 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class GenericResponse {
 
-    private HttpResponse<String> requestResponse;
     private String responseBody;
     private ObjectMapper objectMapper = new ObjectMapper(); // From Jackson, used to deserialize JSON to java
 
-    public GenericResponse(HttpResponse<String> response) {
-        this.requestResponse = response;
-        this.responseBody = this.requestResponse.body();
+    public GenericResponse(String response) {
+        this.responseBody = response;
     }
 
     /**
