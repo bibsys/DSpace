@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.dspace.core.Context;
@@ -24,6 +25,12 @@ import org.dspace.core.Context;
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public abstract class AbstractCLICommand {
+
+    protected static final Option OPT_HELP = Option.builder("h")
+            .longOpt("help")
+            .hasArg(false)
+            .desc("explain metadata management options")
+            .build();
 
     protected Context context = new Context();
     protected Options serviceOptions = new Options();

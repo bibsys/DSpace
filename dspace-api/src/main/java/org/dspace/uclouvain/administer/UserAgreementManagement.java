@@ -42,11 +42,6 @@ public class UserAgreementManagement extends AbstractCLICommand {
             "A command-line tool to automatically manage the user agreement for a user";
 
     /** CLI available options*/
-    private static final Option OPT_HELP = Option.builder("h")
-            .longOpt("help")
-            .hasArg(false)
-            .desc("explain user-group-management options")
-            .build();
     private static final Option OPT_USER = Option.builder("u")
             .longOpt("user")
             .hasArg(true)
@@ -91,7 +86,7 @@ public class UserAgreementManagement extends AbstractCLICommand {
     }
 
     protected String getUsageDescription() {
-        return UserGroupManagement.USAGE_DESCRIPTION;
+        return USAGE_DESCRIPTION;
     }
 
     protected void extraValidationCLIArgument(CommandLine cl) throws ParseException {

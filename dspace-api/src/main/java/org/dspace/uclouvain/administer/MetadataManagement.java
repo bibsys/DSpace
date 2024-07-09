@@ -25,8 +25,8 @@ import org.dspace.core.Context;
 import org.dspace.utils.DSpace;
 
 /**
- * A command-line tool for manager item metadata. With this command we can
- * set, add or remove any item metadata.
+ * A command-line tool for manager item metadata.
+ * With this command, we can set, add or remove any item metadata.
  *
  * USAGE:
  *   dspace dsrun org.dspace.uclouvain.administer.MetadataManagement -t [objUUID] -a [set|add|delete]
@@ -39,7 +39,7 @@ import org.dspace.utils.DSpace;
  *                 [delete] Remove all existing sibling metadata.
  *   -f, --field:  The metadata field to manage (schema.element[.qualifier])
  *   -v, --value:  The value to add|set (not used for remove action)
- *   -h, --help:   display metadata management  options.
+ *   -h, --help:   display metadata management options.
  *
  * @author Renaud Michotte <renaud.michotte@uclouvain.be>
  * @version $Revision$
@@ -48,11 +48,6 @@ public class MetadataManagement extends AbstractCLICommand {
 
     // CLASS CONSTANTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /** CLI available options */
-    private static final Option OPT_HELP = Option.builder("h")
-            .longOpt("help")
-            .hasArg(false)
-            .desc("explain metadata management options")
-            .build();
     private static final Option OPT_TARGET = Option.builder("t")
             .longOpt("target")
             .hasArg(true)
@@ -112,11 +107,10 @@ public class MetadataManagement extends AbstractCLICommand {
         serviceOptions.addOption(OPT_ACTION);
         serviceOptions.addOption(OPT_FIELD);
         serviceOptions.addOption(OPT_VALUE);
-
         infoOptions.addOption(OPT_HELP);
     }
     protected String getUsageDescription() {
-        return GroupManagement.USAGE_DESCRIPTION;
+        return USAGE_DESCRIPTION;
     }
 
     // PRIVATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

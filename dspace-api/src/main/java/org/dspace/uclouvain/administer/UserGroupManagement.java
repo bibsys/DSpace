@@ -43,11 +43,6 @@ public class UserGroupManagement extends AbstractCLICommand {
     public static final String ACTION_DELETE = "delete";
 
     /** CLI available options */
-    private static final Option OPT_HELP = Option.builder("h")
-            .longOpt("help")
-            .hasArg(false)
-            .desc("explain user-group-management options")
-            .build();
     private static final Option OPT_USER = Option.builder("u")
             .longOpt("user")
             .hasArg(true)
@@ -106,7 +101,7 @@ public class UserGroupManagement extends AbstractCLICommand {
     }
 
     protected String getUsageDescription() {
-        return UserGroupManagement.USAGE_DESCRIPTION;
+        return USAGE_DESCRIPTION;
     }
 
     // PRIVATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
