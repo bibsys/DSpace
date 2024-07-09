@@ -13,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 */
 public class GenericResponse{
 
-    private HttpResponse<String> requestResponse;
     private String responseBody;
     // From Jackson, used to deserialize JSON to java 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -21,9 +20,8 @@ public class GenericResponse{
     /** 
      * Base GenericResponse constructor
      */
-    public GenericResponse(HttpResponse<String> response) {
-        this.requestResponse = response;
-        this.responseBody = this.requestResponse.body();
+    public GenericResponse(String response) {
+        this.responseBody = response;
     }
 
     /** 
