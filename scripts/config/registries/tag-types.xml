@@ -1,0 +1,32 @@
+<dspace-dc-types>
+    <!-- HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dspace-header>
+        <title>Specific tags to add on a document</title>
+        <contributor.author>Renaud Michotte</contributor.author>
+        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>tags</name>
+        <namespace>https://uclouvain.be/ontology/tags</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>tags</schema>
+        <element>content</element>
+        <qualifier/>
+        <scope_note/>
+    </dc-type>
+    <dc-type>
+        <schema>tags</schema>
+        <element>date</element>
+        <qualifier/>
+        <scope_note>Tag creation date (ISO format)</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>tags</schema>
+        <element>type</element>
+        <qualifier/>
+        <scope_note>Tag type (i.e. 'accepted', 'validated', 'comment', ...)</scope_note>
+    </dc-type>
+ </dspace-dc-types>
