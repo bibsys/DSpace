@@ -149,6 +149,23 @@
             </DefaultRolloverStrategy>
         </Appender>
 
+        <!-- A6 is for Packager batch ingest -->
+        <Appender name='A6'
+                  filePattern="${log.dir}/batch-packager.log-%d{yyyy-MM-dd}"
+                  type='RollingFile'
+                  fileName='${log.dir}/batch-packager.log'>
+            <Layout type='PatternLayout' pattern='%d %-5p :: %m%n'/>
+            <policies>
+                <policy type='TimeBasedTriggeringPolicy'>yyyy-MM-dd</policy>
+            </policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath='${log.dir}'>
+                    <IfFileName glob='batch-packager.log-*'/>
+                    <IfAccumulatedFileCount exceeds='${logging.server.retention-accumulated-to-keep}'/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </Appender>
+
     </Appenders>
 
     <Loggers>
@@ -186,6 +203,13 @@
                 level='TRACE'
                 additivity='false'>
             <AppenderRef ref='A5'/>
+        </Logger>
+
+        <!-- Batch Ingester -->
+        <Logger name='org.dspace.uclouvain.administer.RabbitMQPackager'
+                level='TRACE'
+                additivity='false'>
+            <AppenderRef ref='A6'/>
         </Logger>
 
         <!-- Block services logging except on exceptions -->

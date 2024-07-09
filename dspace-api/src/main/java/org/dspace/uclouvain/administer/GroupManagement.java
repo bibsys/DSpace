@@ -29,11 +29,6 @@ public class GroupManagement extends AbstractCLICommand {
 
     // CLASS CONSTANTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /** CLI available options */
-    private static final Option OPT_HELP = Option.builder("h")
-            .longOpt("help")
-            .hasArg(false)
-            .desc("explain group-management options")
-            .build();
     private static final Option OPT_NAME = Option.builder("n")
             .longOpt("name")
             .hasArg(true)
@@ -92,11 +87,10 @@ public class GroupManagement extends AbstractCLICommand {
         serviceOptions.addOption(OPT_NAME);
         serviceOptions.addOption(OPT_CREATE);
         serviceOptions.addOption(OPT_FORCE);
-
         infoOptions.addOption(OPT_HELP);
     }
     protected String getUsageDescription() {
-        return GroupManagement.USAGE_DESCRIPTION;
+        return USAGE_DESCRIPTION;
     }
 
     // PRIVATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
