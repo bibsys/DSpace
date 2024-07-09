@@ -69,3 +69,7 @@ __pycache__/
 
 ## Ignore logs files
 **/*.log
+
+
+# Ignore TestApplication
+TestApp.java
