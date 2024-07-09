@@ -33,11 +33,6 @@ public class UserGroupManagement extends AbstractCLICommand {
 
     // CLASS CONSTANTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     /** CLI available options */
-    private static final Option OPT_HELP = Option.builder("h")
-            .longOpt("help")
-            .hasArg(false)
-            .desc("explain user-group-management options")
-            .build();
     private static final Option OPT_USER = Option.builder("u")
             .longOpt("user")
             .hasArg(true)
@@ -99,7 +94,7 @@ public class UserGroupManagement extends AbstractCLICommand {
         infoOptions.addOption(OPT_HELP);
     }
     protected String getUsageDescription() {
-        return UserGroupManagement.USAGE_DESCRIPTION;
+        return USAGE_DESCRIPTION;
     }
 
     // PRIVATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

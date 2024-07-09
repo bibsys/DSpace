@@ -15,6 +15,14 @@
     <!-- FACTORIES ======================================================== -->
     <bean id="uclouvainServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainServiceFactoryImpl"/>
 
+    <bean id="rabbitConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
+        <property name="host" value="${uclouvain.rabbitmq.server.url}"/>
+        <property name="port" value="${uclouvain.rabbitmq.server.port}"/>
+        <property name="username" value="${uclouvain.rabbitmq.server.username}"/>
+        <property name="password" value="${uclouvain.rabbitmq.server.password}"/>
+        <property name="virtualHost" value="${uclouvain.rabbitmq.server.vhost}"/>
+    </bean>
+
     <!-- SERVICES ========================================================= -->
     <bean id="uclouvainEntityService" class="org.dspace.uclouvain.services.UCLouvainEntityServiceImpl"/>
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl"/>
