@@ -950,7 +950,7 @@
                 </dependencies>
             </dependencyManagement>
         </profile>
-        
+
         <!--
             Builds loginmiur addon for DSpace
         -->
