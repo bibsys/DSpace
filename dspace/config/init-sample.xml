@@ -1,11 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <import_structure>
-	<community>
-		<name>UCLouvain</name>
-		<collection>
-			<name>Master thesis</name>
-			<entity-type>Thesis</entity-type>
-			<submission-type>master-thesis</submission-type>
-		</collection>
-	</community>
 </import_structure>
