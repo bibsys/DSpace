@@ -324,6 +324,16 @@ public class METSManifest {
         return mets.getAttributeValue("OBJID");
     }
 
+    /**
+     * Return the ID attribute of the METS manifest.
+     * This is where the original ID of the object can be found.
+     *
+     * @return ID attribute value of the METS manifest
+     */
+    public String getID() {
+        return mets.getAttributeValue("ID");
+    }
+
 
     /**
      * Return the record status attribute of the METS manifest.
