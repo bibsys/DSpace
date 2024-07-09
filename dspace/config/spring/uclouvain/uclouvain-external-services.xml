@@ -10,4 +10,16 @@
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
     <!-- UTILS -->
     <bean id="metadataUtils" class="org.dspace.uclouvain.core.utils.MetadataUtils" />
+
+    <!-- Submission steps configuration -->
+    <bean id="metadataGeneratorFactory" class="org.dspace.uclouvain.submissionMetadataGenerators.factory.MetadataGeneratorFactoryImpl"/>
+    <bean id="generateMetadataService" class="org.dspace.uclouvain.submissionMetadataGenerators.GenerateMetadataServiceImpl"/>
+
+    <bean id="generateMetadataConfiguration" class="org.dspace.uclouvain.submissionMetadataGenerators.configuration.GenerateMetadataConfigurationService">
+        <property name="metadataGenerators">
+            <!-- Lists the metadata operation, order matters -->
+            <util:list>
+            </util:list>
+        </property>
+    </bean>
 </beans>
