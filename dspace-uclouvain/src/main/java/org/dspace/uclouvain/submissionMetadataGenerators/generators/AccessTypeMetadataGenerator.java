@@ -19,6 +19,7 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
     
     private String NAME = "accessTypeMetadataGenerator";
     private String MAIN_BUNDLE_NAME = "ORIGINAL";
+    private List<String> acceptedEntityTypes;
     private List<String> accessTypes = new ArrayList<String>();
     private MetadataField accessTypeField;
 
@@ -47,6 +48,18 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
         } catch (Exception e) {
             throw new GeneratorProcessException("An unhandled exception occurred", e);
         }
+    }
+
+    /**
+     * Check if the item can be processed by this generator.
+     * 
+     * @param ctx: The DSpace context.
+     * @param item: The item to process.
+     */
+    @Override
+    public Boolean canBeProcessed(Context ctx, Item item) {
+        String currentEntityType = item.getItemService().getEntityType(item);
+        return currentEntityType != null && this.acceptedEntityTypes.contains(currentEntityType);
     }
 
     /**
@@ -104,6 +117,15 @@ public class AccessTypeMetadataGenerator implements MetadataGenerator {
     }
 
     // Getters && Setters
+
+    public List<String> getAcceptedEntityTypes() {
+        return this.acceptedEntityTypes;
+    }
+
+    public void setAcceptedEntityTypes(List<String> acceptedEntityTypes) {
+        this.acceptedEntityTypes = acceptedEntityTypes;
+    }
+
     public List<String> getAccessTypes() {
         return this.accessTypes;
     }

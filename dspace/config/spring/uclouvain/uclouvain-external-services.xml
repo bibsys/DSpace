@@ -19,6 +19,11 @@
     <bean id="generateMetadataService" class="org.dspace.uclouvain.submissionMetadataGenerators.GenerateMetadataServiceImpl"/>
 
     <bean id="accessTypeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.AccessTypeMetadataGenerator">
+        <property name="acceptedEntityTypes">
+            <util:list>
+                <value>MasterThesis</value>
+            </util:list>
+        </property>
         <!-- List of accessTypes that are handled by the generator -->
         <property name="accessTypes">
             <util:list>

@@ -13,7 +13,9 @@ public class GenerateMetadataServiceImpl implements GenerateMetadataService {
     public void executeMetadataGenerationSteps(Context ctx, Item item) throws Exception {
         for (MetadataGenerator mg: generateMetadataConfigurationService.getMetadataGenerators()) {
             try {
-                mg.process(ctx, item);
+                if (mg.canBeProcessed(ctx, item)) {
+                    mg.process(ctx, item);
+                }
             }
             catch (Exception e){
                 throw new Exception("An error occurred with the following metadata generator: " + mg.getGeneratorName(), e);
