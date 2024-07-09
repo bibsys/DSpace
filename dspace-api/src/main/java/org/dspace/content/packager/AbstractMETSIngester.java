@@ -307,7 +307,7 @@ public abstract class AbstractMETSIngester extends AbstractPackageIngester {
      * @throws AuthorizeException          if authorization error
      * @throws MetadataValidationException if metadata validation error
      */
-    protected METSManifest parsePackage(Context context, File pkgFile,
+    public METSManifest parsePackage(Context context, File pkgFile,
                                         PackageParameters params) throws IOException, SQLException,
         AuthorizeException, MetadataValidationException {
         // whether or not to validate the METSManifest before processing

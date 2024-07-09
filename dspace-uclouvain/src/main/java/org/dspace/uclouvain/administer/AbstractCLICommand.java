@@ -12,6 +12,12 @@ import java.util.List;
  */
 public abstract class AbstractCLICommand {
 
+    protected static final Option OPT_HELP = Option.builder("h")
+            .longOpt("help")
+            .hasArg(false)
+            .desc("explain metadata management options")
+            .build();
+
     protected Context context = new Context();
     protected Options serviceOptions = new Options();
     protected Options infoOptions = new Options();
