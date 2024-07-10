@@ -10,9 +10,9 @@ public class ConfigurationFileFactoryImpl implements ConfigurationFileFactory {
     /**
      * Returns a ConfigurationFile class for the given configuration file path.
      */
-    public ConfigurationFile<?> getConfigurationFile(String name){
+    public ConfigurationFile<?> getConfigurationFile(Class klass){
         for (ConfigurationFile<?> cf: this.configurationFiles){
-            if (cf.getName().equals(name)){
+            if (cf.getClass() == klass){
                 return cf;
             }
         }
