@@ -11,35 +11,6 @@
 >
 
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
-    <!-- UTILS -->
-    <bean id="metadataUtils" class="org.dspace.uclouvain.core.utils.MetadataUtils" />
-
-    <!-- Submission steps configuration -->
-    <bean id="metadataGeneratorFactory" class="org.dspace.uclouvain.submissionMetadataGenerators.factory.MetadataGeneratorFactoryImpl"/>
-    <bean id="generateMetadataService" class="org.dspace.uclouvain.submissionMetadataGenerators.GenerateMetadataServiceImpl"/>
-
-    <bean id="accessTypeMetadataGenerator" class="org.dspace.uclouvain.submissionMetadataGenerators.generators.AccessTypeMetadataGenerator">
-        <property name="acceptedEntityTypes">
-            <util:list>
-                <value>MasterThesis</value>
-            </util:list>
-        </property>
-        <!-- The field in which the new metadata will go in -->
-        <property name="accessTypeField">
-            <bean class="org.dspace.uclouvain.core.model.MetadataField">
-                <constructor-arg value="dcterms.accessRights"/>
-            </bean>
-        </property>
-    </bean>
-
-    <bean id="generateMetadataConfiguration" class="org.dspace.uclouvain.submissionMetadataGenerators.configuration.GenerateMetadataConfigurationService">
-        <property name="metadataGenerators">
-            <!-- Lists the metadata operation, order matters -->
-            <util:list>
-                <ref bean="accessTypeMetadataGenerator"/>
-            </util:list>
-        </property>
-    </bean>
 
     <!-- CUSTOM RESOURCE POLICIES SERVICE -->
     <bean id="resourcePolicyUtilService" class="org.dspace.uclouvain.services.ResourcePolicyUtilService">
