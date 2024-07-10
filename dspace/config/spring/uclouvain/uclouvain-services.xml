@@ -12,6 +12,9 @@
 
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
+    <!-- UTILS -->
+    <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
+
     <!-- CUSTOM RESOURCE POLICIES SERVICE -->
     <bean id="uclouvainResourcePolicyServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainResourcePolicyServiceFactoryImpl"/>
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl"/>
