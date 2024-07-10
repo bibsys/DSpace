@@ -22,8 +22,10 @@ import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 /**
  * Consumer to update the access type metadata of an item.
  * This consumer is triggered by bitstream events and refreshes, if necessary, the global item's access type.
- * 
- * Authored-By: Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ *
+ * @version $Revision$
+ *
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class AccessTypeConsumer implements Consumer {
 
