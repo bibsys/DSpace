@@ -10,7 +10,6 @@ package org.dspace.app.uclouvain.rest;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -19,14 +18,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
 import org.dspace.content.Item;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.ResourcePolicyRestModel;
 import org.dspace.uclouvain.core.model.ResourcePolicyRestResponse;
+import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.services.ResourcePolicyUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,12 +38,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/uclouvain/resourcepolicies")
 public class ResourcePoliciesRestController {
-
-    // List of all accepted bundles that will be used to generate the global access type of item.
-    private List<String> acceptedBundles = Arrays.asList(
-        DSpaceServicesFactory.getInstance().getConfigurationService()
-                .getArrayProperty("uclouvain.resource_policy.accepted_bundles")
-    );
 
     @Autowired
     private ResourcePolicyService resourcePolicyService;
@@ -78,7 +70,7 @@ public class ResourcePoliciesRestController {
             return null;
         }
         List<ResourcePolicy> rp = resourcePolicyService.find(context, bitstream);
-        return this.resourcePolicyUtilService.getRestResponse(rp);
+        return resourcePolicyUtilService.getRestResponse(rp);
     }
 
     /**
@@ -99,23 +91,20 @@ public class ResourcePoliciesRestController {
             response.sendError(400, "Object not found or not an item");
             return null;
         }
-        List<String> rpTypes = new ArrayList<>();
-        for (Bundle bundle: item.getBundles()) {
-            // Retrieve all the bitstreams from the accepted bundles and get their primary policy.
-            if (this.acceptedBundles.contains(bundle.getName())) {
-                for (Bitstream bs: bundle.getBitstreams()) {
-                    ResourcePolicyRestModel masterPolicy =
-                            resourcePolicyUtilService.getRestResponse(bs.getResourcePolicies()).masterPolicy;
-                    if (masterPolicy != null) {
-                        rpTypes.add(masterPolicy.name);
-                    }
-                }
+        List<String> rpTypes = new ArrayList<String>();
+        // Retrieve all the bitstreams from the accepted bundles and get their master policy.
+        for (Bitstream bs: ItemUtils.extractItemFiles(item)) {
+            ResourcePolicyRestModel masterPolicy = this.resourcePolicyUtilService
+                    .getRestResponse(bs.getResourcePolicies()).masterPolicy;
+            if (masterPolicy != null) {
+                rpTypes.add(masterPolicy.name);
             }
         }
+
         // Use a hashmap object to return the global access type of the item in a JSON format.
-        HashMap<String, String> responseMap = new HashMap<>();
-        // From all the primary policies, generate the global access type of the item.
-        responseMap.put("globalAccessType", this.resourcePolicyUtilService.getGlobalAccessType(rpTypes));
+        HashMap<String, String> responseMap = new HashMap<String, String>();
+        // From all the master policies, generate the global access type of the item.
+        responseMap.put("globalAccessType", resourcePolicyUtilService.getGlobalAccessType(rpTypes));
         return responseMap;
     }
 }

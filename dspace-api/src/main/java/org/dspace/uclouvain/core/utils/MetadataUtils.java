@@ -11,9 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
-import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 
 /**
@@ -75,27 +72,12 @@ public class MetadataUtils {
         return parts[parts.length - 1];
     }
 
-    /**
-     * This method is used to extract the attached files from an item.
-     *
-     * @param DSpaceItem The item to extract files from.
-     * @return The list of bit streams for the given item.
-     */
-    public static List<Bitstream> extractItemFiles(Item DSpaceItem) {
-        for (Bundle bundle : DSpaceItem.getBundles()) {
-            if (bundle.getName().equals("ORIGINAL")) {
-                return bundle.getBitstreams();
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    /**
-     * Converts a list of metadataValues into a HashMap for easier data access.
-     *
-     * @param metadataValues The list of `MetadataValue` to insert into the HashMap.
-     * @return The HashMap with all the values (key=fieldName, value= List of strings values).
-     */
+    /** 
+    * Converts a list of metadataValues into a HashMap for easier data access.
+    * 
+    * @param metadataValues The list of `MetadataValue` to insert into the HashMap.
+    * @return The HashMap with all the values (key=fieldName, value= List of strings values).
+    */
     public static HashMap<String, List<String>> getValuesHashMap(List<MetadataValue> metadataValues) {
         HashMap<String, List<String>> hashMap = new HashMap<>();
         for (MetadataValue metadataValue : metadataValues) {
