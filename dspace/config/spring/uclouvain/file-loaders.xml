@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                  http://www.springframework.org/schema/context
+                  http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+       xmlns:util="http://www.springframework.org/schema/util">
+    
+    <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
+
+    <!-- ////////////////////////////////////////// -->
+    <!-- FILE LOADER FEATURE -->
+    <!-- ////////////////////////////////////////// -->
+    <bean id="entitiesConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.EntitiesConfigurationFile">
+        <constructor-arg value="/config/mapping/entities.json"/>
+    </bean>
+
+
+    <!-- CONFIG FILE LOADERS -->
+    <bean id="configurationFileFactory" class="org.dspace.uclouvain.configurationFiles.factory.ConfigurationFileFactoryImpl">
+        <property name="configurationFiles">
+            <util:list>
+                <!-- Put config files bean here -->
+                <ref bean="degreeMappersConfigurationFile"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <!-- Used by the 'degreeMetadataGenerator' metadata generator to load a mapping config -->
+    <bean id="degreeMappersConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile">
+        <!-- Relative path to the configuration file -->
+        <constructor-arg value="/config/mapping/json/degree-mappers.json"/>
+    </bean>
+</beans>
