@@ -11,8 +11,6 @@
 >
 
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
-    <!-- UTILS -->
-    <bean id="metadataUtils" class="org.dspace.uclouvain.core.utils.MetadataUtils" />
 
     <!-- Submission steps configuration -->
     <bean id="metadataGeneratorFactory" class="org.dspace.uclouvain.submissionMetadataGenerators.factory.MetadataGeneratorFactoryImpl"/>
@@ -37,21 +35,6 @@
             <!-- Lists the metadata operation, order matters !! -->
             <util:list>
                 <ref bean="accessTypeMetadataGenerator"/>
-            </util:list>
-        </property>
-    </bean>
-
-    <!-- CUSTOM RESOURCE POLICIES SERVICE -->
-    <bean id="resourcePolicyUtilService" class="org.dspace.uclouvain.services.ResourcePolicyUtilService">
-        <property name="typeList">
-            <util:list>
-                <!-- List of policy types sorted by weight-->
-                <!-- Forbidden Access -->
-                <value>administrator</value>
-                <!-- Restricted Access -->
-                <value>UCLouvain networks restriction</value>
-                <value>embargo</value>
-                <value>openaccess</value>
             </util:list>
         </property>
     </bean>
