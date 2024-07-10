@@ -60,7 +60,8 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
 
 
     public UCLouvainAccessStatusHelper() {
-        String fieldName = configurationService.getProperty("global.access.metadata.field", "dcterms.accessRights");
+        String fieldName = configurationService
+                .getProperty("uclouvain.global.metadata.accesstype.field", "dcterms.accessRights");
         this.accessMetadataFieldName = new MetadataFieldName(fieldName);
     }
 
