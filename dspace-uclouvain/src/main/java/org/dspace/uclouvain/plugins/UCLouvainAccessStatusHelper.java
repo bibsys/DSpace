@@ -3,14 +3,18 @@ package org.dspace.uclouvain.plugins;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.access.status.AccessStatusHelper;
 import org.dspace.authorize.ResourcePolicy;
-import org.dspace.content.*;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.DSpaceObjectService;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
+import org.dspace.content.DSpaceObject;
+import org.dspace.content.Item;
+import org.dspace.content.MetadataFieldName;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.factories.UCLouvainResourcePolicyServiceFactory;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
 import javax.validation.constraints.NotNull;
@@ -44,7 +48,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
 
     protected ContentServiceFactory contentFactory = ContentServiceFactory.getInstance();
     protected ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
-    protected UCLouvainResourcePolicyService uclouvainResourcePolicyService = UCLouvainResourcePolicyServiceFactory.getInstance().getResourcePolicyService();
+    protected UCLouvainResourcePolicyService uclouvainResourcePolicyService = UCLouvainServiceFactory.getInstance().getResourcePolicyService();
 
 
     public UCLouvainAccessStatusHelper() {
