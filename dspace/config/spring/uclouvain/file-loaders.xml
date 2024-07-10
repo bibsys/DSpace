@@ -17,21 +17,4 @@
     <bean id="entitiesConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.EntitiesConfigurationFile">
         <constructor-arg value="/config/mapping/entities.json"/>
     </bean>
-
-
-    <!-- CONFIG FILE LOADERS -->
-    <bean id="configurationFileFactory" class="org.dspace.uclouvain.configurationFiles.factory.ConfigurationFileFactoryImpl">
-        <property name="configurationFiles">
-            <util:list>
-                <!-- Put config files bean here -->
-                <ref bean="degreeMappersConfigurationFile"/>
-            </util:list>
-        </property>
-    </bean>
-
-    <!-- Used by the 'degreeMetadataGenerator' metadata generator to load a mapping config -->
-    <bean id="degreeMappersConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.DegreeMappersConfigurationFile">
-        <!-- Relative path to the configuration file -->
-        <constructor-arg value="/config/mapping/json/degree-mappers.json"/>
-    </bean>
 </beans>

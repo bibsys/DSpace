@@ -10,7 +10,6 @@ package org.dspace.uclouvain.core.model;
 public enum EntityType {
 
     DEGREE("degree"),
-    ROOT_DEGREE("root_degree"),
     FACULTY("faculty");
 
     public final String label;
