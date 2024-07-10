@@ -153,7 +153,7 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
     private Collection findCollectionByName(String collectionName) throws Exception {
         DiscoverQuery dq = new DiscoverQuery();
         dq.setMaxResults(20);
-        dq.setQuery(String.format("search.resourcetype:Collection AND dc.title:\"%s\"", collectionName));
+        dq.setQuery(String.format("search.resourcetype:Collection AND dc.title_sort:\"%s\"", collectionName));
 
         DiscoverResult result = searchService.search(context, dq);
         if (result.getTotalSearchResults() == 0)

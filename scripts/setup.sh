@@ -236,6 +236,13 @@ do
 done
 
 # STEP#4: Create basics communities & collections ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+docker exec ${BACKEND} sh -c "\
+    /dspace/bin/dspace dsrun org.dspace.app.util.InitializeEntityTypesOnly -d" >> "${LOG_PATH}"
+docker exec ${BACKEND} sh -c "\
+    /dspace/bin/dspace initialize-entities -f /dspace/config/entities/relationship-types.xml" >> "${LOG_PATH}"
+docker exec ${BACKEND} sh -c "\
+    /dspace/bin/dspace initialize-entities -f /dspace/config/entities/correction-relationship-types.xml" >> "${LOG_PATH}"
+
 echo -en "📘 Creating new community and collection...\r"
 docker exec ${BACKEND} sh -c "\
     /dspace/bin/dspace structure-builder \
