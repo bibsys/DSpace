@@ -27,7 +27,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.factories.UCLouvainResourcePolicyServiceFactory;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
 /**
@@ -56,7 +56,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
     protected ContentServiceFactory contentFactory = ContentServiceFactory.getInstance();
     protected ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
     protected UCLouvainResourcePolicyService uclouvainResourcePolicyService =
-            UCLouvainResourcePolicyServiceFactory.getInstance().getResourcePolicyService();
+            UCLouvainServiceFactory.getInstance().getResourcePolicyService();
 
 
     public UCLouvainAccessStatusHelper() {

@@ -16,19 +16,19 @@ public class ConfigurationFileFactoryImpl implements ConfigurationFileFactory {
     private List<ConfigurationFile<?>> configurationFiles;
 
     /** Returns a ConfigurationFile class for the given configuration file path. */
-    public ConfigurationFile<?> getConfigurationFile(String name) {
+    public ConfigurationFile<?> getConfigurationFile(Class klass) {
         return configurationFiles
                 .stream()
-                .filter(cf -> cf.getName().equals(name))
+                .filter(cf -> cf.getClass() == klass)
                 .findFirst().orElse(null);
     }
 
     // GETTERS && SETTERS
     public List<ConfigurationFile<?>> getConfigurationFiles() {
-        return this.configurationFiles;
+        return configurationFiles;
     }
 
-    public void setConfigurationFiles(List<ConfigurationFile<?>> configurationFiles) {
-        this.configurationFiles = configurationFiles;
+    public void setConfigurationFiles(List<ConfigurationFile<?>> file) {
+        configurationFiles = file;
     }
 }

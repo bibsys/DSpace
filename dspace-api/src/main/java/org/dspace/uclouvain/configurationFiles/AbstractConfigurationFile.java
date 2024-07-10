@@ -11,77 +11,69 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
+import java.nio.file.Paths;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Base abstract class for the `ConfigurationFile` interface.
- * When adding a new custom `ConfigurationFile` class, you must inherit from this class & implement abstract methods.
- */
+/** Base abstract class for the `ConfigurationFile` interface. */
 public abstract class AbstractConfigurationFile<T> implements ConfigurationFile<T> {
 
-    // ATTRIBUTES
-    @Autowired
-    protected String source = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("dspace.dir");
-    protected byte[] cache;
+    // CLASS ATTRIBUTES =======================================================
     protected File configFile;
-    protected long lastModified;
-    protected String path;
+    protected byte[] rawData;
+    protected T data;
 
+    private long lastModified;
+
+    // CONSTRUCTOR ============================================================
     /**
-     * CONSTRUCTOR:
-     * Create a new File object from the given path.
-     * Use this object to find out if the file exists and ensure that it can be read.
-     *
+     * Create a new ConfigurationFile object from the given path.
      * @param path The relative path to the file.
-     * @throws IOException
+     * @throws IOException if the file doesn't exist or cannot be read.
      */
-    public AbstractConfigurationFile(String path) throws IOException {
-        this.path = path;
-        this.configFile = new File(this.source + this.path);
-        if (!this.configFile.exists() || !this.configFile.canRead()) {
+    protected AbstractConfigurationFile(String path) throws IOException {
+        Path fullPath = Paths.get(
+            DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("dspace.dir"),
+            path
+        );
+        configFile = fullPath.toFile();
+        if (!configFile.exists() || !configFile.canRead()) {
             throw new IOException("Could not read the file because it does not exist or it cannot be read.");
         }
-        this.lastModified = -1;
+        lastModified = -1;
     }
 
-    // METHODS
+    // METHODS ================================================================
+    public T getData() throws IOException {
+        reloadData();
+        return data;
+    }
 
     /**
-     * Called to access the data from the file.
-     * First check for a new file version (update if needed) then return the data.
-     *
+     * Get raw data from the configuration file ensuring the data is up-to-date
+     * with file content.
+     * 
      * @return The data from the file.
-     * @throws IOException
+     * @throws IOException for any system IO errors
      */
-    public byte[] getData() throws IOException {
-        this.reloadData();
-        return this.cache;
+    public byte[] getRawData() throws IOException {
+        reloadData();
+        return rawData;
     }
 
     /**
-     * Checks if a data reload is required by checking the last modified date of the file.
-     * If the file has been modified, reload the data && update 'this.lastModified'.
+     * Reload data from the configuration file if needed (by checking the last modified date of the file)
      *
-     * @throws IOException
+     * @throws IOException for any system IO errors
      */
     protected void reloadData() throws IOException {
-        if (this.configFile.lastModified() > this.lastModified) {
-            this.cache = Files.readAllBytes(Path.of(this.configFile.getAbsolutePath()));
-            this.lastModified = this.configFile.lastModified();
-            this.loadData();
+        if (configFile.lastModified() > lastModified) {
+            lastModified = configFile.lastModified();
+            rawData = Files.readAllBytes(Path.of(configFile.getAbsolutePath()));
+            loadData();
         }
-    }
-
-    public String getPath() {
-        return this.path;
     }
 
     public abstract void loadData();
-    public abstract T get(String key);
-    public abstract List<T> get(List<String> key);
-    public abstract String getName();
 }
 

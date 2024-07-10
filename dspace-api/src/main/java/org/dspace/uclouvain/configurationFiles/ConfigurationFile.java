@@ -7,14 +7,10 @@
  */
 package org.dspace.uclouvain.configurationFiles;
 
+
 import java.io.IOException;
-import java.util.List;
 
 public interface ConfigurationFile<T> {
-    byte[] getData() throws IOException;
     void loadData();
-    T get(String key);
-    List<T> get(List<String> key);
-    String getPath();
-    String getName();
+    T getData() throws IOException;
 }
