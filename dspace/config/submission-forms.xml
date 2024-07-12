@@ -32,7 +32,7 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>institution</dc-element>
-          <dc-qualifier>code</dc-qualifier>
+          <dc-qualifier>name</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
@@ -177,6 +177,7 @@
           <label>Title</label>
           <input-type>onebox</input-type>
           <hint>Enter the main title of the item.</hint>
+          <!--<hint>&lt;br/&gt;&lt;a href=&quot;www.google.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;</hint>-->
           <required>You must enter a main title for this item.</required>
         </field>
       </row>
@@ -258,7 +259,7 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>institution</dc-element>
-          <dc-qualifier>code</dc-qualifier>
+          <dc-qualifier>name</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
@@ -2950,7 +2951,7 @@ it, please enter the types and the actual numbers or codes.</hint>
         <displayed-value>September</displayed-value>
         <stored-value>September</stored-value>
       </pair>
-    </value-pairs>
+    </value-pairs>    
     <value-pairs value-pairs-name="common_iso_languages_639_2" dc-term="common_iso_languages_639_2">
       <pair>
         <displayed-value>Dutch</displayed-value>
