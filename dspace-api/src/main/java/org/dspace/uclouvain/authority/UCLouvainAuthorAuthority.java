@@ -57,11 +57,11 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
         extras.put("data-masterthesis_degree_code", "");
 
         // String with "data-" will be used to fill other form fields
-        extras.put("data-authors_institution_code", institution);
+        extras.put("data-authors_institution_name", institution);
         extras.put("data-authors_email", person.getEmail());
 
-        // Default values for those fields are an empty string because this will allow us to override the previous
-        // set value
+        // The Default value for those fields is an empty string because this will allow us to override
+        // the previous set value
         extras.put("data-authors_identifier_fgs", "");
         extras.put("data-authors_identifier_noma", "");
         if (institution.contains("UCL")) {
