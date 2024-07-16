@@ -1,0 +1,37 @@
+<dspace-dc-types>
+    <!-- HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dspace-header>
+        <title>Metadata fields definition for 'funding' schema</title>
+        <contributor.author>Michaël Pourbaix</contributor.author>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>funding</name>
+        <namespace>https://uclouvain.be/ontology/funding</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>funding</schema>
+        <element>organization</element>
+        <qualifier/>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>funding</schema>
+        <element>program</element>
+        <qualifier/>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>funding</schema>
+        <element>project</element>
+        <qualifier/>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>funding</schema>
+        <element>number</element>
+        <qualifier/>
+        <scope_note></scope_note>
+    </dc-type>
+ </dspace-dc-types>

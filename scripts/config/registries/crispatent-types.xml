@@ -1,0 +1,48 @@
+<dspace-dc-types>
+    <dspace-header>
+        <title>Additional metadata fields for the 'crispatent' schema</title>
+        <contributor.author>Michaël Pourbaix</contributor.author>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>crispatent</name>
+        <namespace>http://dspace.org/crispatent</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>crispatent</schema>
+        <element>identifier</element>
+        <qualifier>type</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>crispatent</schema>
+        <element>identifier</element>
+        <qualifier>id</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>crispatent</schema>
+        <element>identifier</element>
+        <qualifier>code</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>crispatent</schema>
+        <element>identifier</element>
+        <qualifier>date</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>crispatent</schema>
+        <element>depositLevel</element>
+        <qualifier/>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>crispatent</schema>
+        <element>place</element>
+        <qualifier>country</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+</dspace-dc-types>

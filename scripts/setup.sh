@@ -261,6 +261,11 @@ METADATA_REGISTRIES=(
   "registries/dc-types.xml"
   "registries/authors-types.xml"
   "registries/fedora-types.xml"
+  "registries/crispatent-types.xml"
+  "registries/funding-types.xml"
+  "registries/oaire-types.xml"
+  "registries/oairecerif-types.xml"
+  "registries/report-types.xml"
 )
 for registry in "${METADATA_REGISTRIES[@]}"
 do
