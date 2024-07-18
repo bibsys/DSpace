@@ -114,6 +114,31 @@
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
     </step-definition>
+    <step-definition id="external_source" mandatory="true">
+      <heading>submit.progressbar.describe.external_source</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="workingpaper_author" mandatory="true">
+      <heading>submit.progressbar.describe.workingpaper_author</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="workingpaper" mandatory="true">
+      <heading>submit.progressbar.describe.workingpaper</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="workingpaper_advanced" mandatory="true">
+      <heading>submit.progressbar.describe.workingpaper_advanced</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="basic_funding" mandatory="false">
+      <heading>submit.progressbar.describe.basic_funding</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
     <step-definition id="publication" mandatory="true">
       <heading>submit.progressbar.describe.publication</heading>
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
@@ -261,6 +286,27 @@
     <submission-process name="journal-edit">
       <step id="journal" />
       <step id="upload" />
+    </submission-process>
+    <submission-process name="workingpaper">
+      <step id="collection"/>
+      <step id="extractionstep"/>
+      <step id="upload" />
+      <step id="external_source"/>
+      <step id="workingpaper_author"/>
+      <step id="workingpaper"/>
+      <step id="workingpaper_advanced"/>
+      <step id="basic_funding"/>
+      <step id="correction" />
+      <step id="license" />
+    </submission-process>
+    <submission-process name="workingpaper-edit">
+      <step id="extractionstep"/>
+      <step id="upload" />
+      <step id="external_source"/>
+      <step id="workingpaper_author"/>
+      <step id="workingpaper"/>
+      <step id="workingpaper_advanced"/>
+      <step id="basic_funding"/>
     </submission-process>
     <submission-process name="publication">
       <step id="collection" />
