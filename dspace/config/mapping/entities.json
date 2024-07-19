@@ -13,6 +13,57 @@
     }]
   }]
 }, {
+  "code": "EPL",
+  "name": "Ecole polytechnique de Louvain",
+  "type": "faculty",
+  "children": [{
+    "code": "ELME2M",
+    "name": "Master [120] : ingénieur civil électromécanicien",
+    "type": "degree"
+  }, {
+    "code": "MAP2M",
+    "name": "Master [120] : ingénieur civil en mathématiques appliquées",
+    "type": "degree"
+  }]
+}, {
+  "code": "ESPO",
+  "name": "Faculté des sciences économiques, sociales, politiques et de communication",
+  "type": "faculty",
+  "children": [{
+    "code": "CORP2M",
+    "name": "Master [120] en communication",
+    "type": "degree"
+  }, {
+    "code": "EJL2M",
+    "name": "Master [120] en journalisme",
+    "type": "degree"
+  }, {
+    "code": "EURO2M",
+    "name": "Master [120] en études européennes (UCLouvain / USL-B)",
+    "type": "degree"
+  }, {
+    "code": "TRAV2M1",
+    "name": "Master [60] en sciences du travail (horaire décalé)",
+    "type": "degree"
+  }]
+}, {
+  "code": "FIAL",
+  "name": "Faculté de philosophie, arts et lettres",
+  "type": "faculty",
+  "children": [{
+    "code": "GERM2M",
+    "name": "Master [120] en langues et lettres modernes, orientation germaniques",
+    "type": "degree"
+  }, {
+    "code": "HIST2M",
+    "name": "Master [120] en histoire",
+    "type": "degree"
+  }, {
+    "code": "THEA2M",
+    "name": "Master [120] en arts du spectacle",
+    "type": "degree"
+  }]
+}, {
   "code": "LSM",
   "name": "Louvain School of Management",
   "type": "faculty",
@@ -62,5 +113,9 @@
       "name": "Master [120] en sciences de l'éducation, à finalité spécialisée",
       "type": "degree"
     }]
+  }, {
+    "code": "PSY2M",
+    "name": "Master [120] en sciences psychologiques",
+    "type": "degree"
   }]
 }]
