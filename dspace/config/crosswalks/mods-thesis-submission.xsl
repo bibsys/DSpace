@@ -243,5 +243,11 @@
             <xsl:attribute name="qualifier">provenance</xsl:attribute>
             <xsl:value-of select="$note-content"/>
         </xsl:element>
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">description</xsl:attribute>
+            <xsl:attribute name="qualifier">tag</xsl:attribute>
+            <xsl:value-of select="$type"/>
+        </xsl:element>
     </xsl:template>
 </xsl:stylesheet>
