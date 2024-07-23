@@ -59,7 +59,7 @@ create_group(){
 #   6. Create OrgUnit (if required)
 
 # Define constants used during script execution
-readonly BACKEND="dspace"
+readonly BACKEND="dspace-pr"
 readonly FILE_PATH="$(pwd)/${BASH_SOURCE[0]}"
 readonly WORKING_PATH=$(dirname -- "${FILE_PATH}")
 readonly LOG_FILE=$(date +"%Y-%m-%d_%T")
