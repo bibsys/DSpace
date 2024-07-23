@@ -1,34 +1,34 @@
 version: '3.7'
 networks:
-  dspacenet:
-    ipam:
-      config: 
-        - subnet: 192.168.0.0/24
+ dspacenet-pr:
+  ipam:
+    config:
+    - subnet: 192.168.1.0/24
 services:
-  dspace: 
-    container_name: dspace
+  dspace-pr:
+    container_name: dspace-pr
     environment:
       dspace__P__dir: /dspace
       dspace__P__server__P__url: http://localhost:8080/server
       dspace__P__ui__P__url: http://localhost:4000
       dspace__P__name: 'DSpace-Cris Started with Docker Compose'
       # db.url
-      db__P__url: 'jdbc:postgresql://dspacedb:5432/dspace'
+      db__P__url: 'jdbc:postgresql://dspacedb-pr:5432/dspace'
       # solr.server
-      solr__P__server: http://dspacesolr:8983/solr
-      # proxies.trusted.ipranges: This setting is required for a REST API running in Docker to trust requests 
-      # from the host machine. This IP range MUST correspond to the 'dspacenet' subnet defined above.
-      proxies__P__trusted__P__ipranges: '192.168.0'
+      solr__P__server: http://dspacesolr-pr:8983/solr
+      # proxies.trusted.ipranges: This setting is required for a REST API running in Docker to trust requests
+      # from the host machine. This IP range MUST correspond to the 'dspacenet-pr' subnet defined above.
+      proxies__P__trusted__P__ipranges: '192.168.1'
     # Will probably be modified, the dspace backend image
-    image: "test/dspace-cris"
+    image: "test/dspace-cris-pr"
     # build:
-    #   context: .
-    #   dockerfile: Dockerfile
-    #  Indicate services that needs to be started before the current one
+    # context: .
+    # dockerfile: Dockerfile
+    # Indicate services that needs to be started before the current one
     depends_on:
-    - dspacedb
+    - dspacedb-pr
     networks:
-      dspacenet:
+      dspacenet-pr:
     ports:
     - published: 8080
       target: 8080
@@ -39,20 +39,20 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - assetstore:/dspace/assetstore
+      - assetstore-pr:/dspace/assetstore
       - ./dspace/config:/dspace/config
       - ./scripts/config:/uclouvain/config
-      # - solr_configs:/dspace/solr
+    # - solr_configs:/dspace/solr
     # Ensure that the database is ready BEFORE starting tomcat
-    entrypoint: 
+    entrypoint:
     - /bin/bash
     - '-c'
     - |
-      while (!</dev/tcp/dspacedb/5432) > /dev/null 2>&1; do sleep 1; done;
+      while (!</dev/tcp/dspacedb-pr/5432) > /dev/null 2>&1; do sleep 1; done;
       /dspace/bin/dspace database migrate
       catalina.sh run
-  dspacedb: 
-    container_name: dspacedb
+  dspacedb-pr:
+    container_name: dspacedb-pr
     environment:
       PGDATA: /pgdata
       POSTGRES_USER: dspace
@@ -60,21 +60,21 @@ services:
       POSTGRES_PASSWORD: dspace
     image: dspace/dspace-postgres-pgcrypto
     networks:
-      dspacenet:
-    ports: 
+      dspacenet-pr:
+    ports:
     - published: 5432
       target: 5432
     stdin_open: true
     tty: true
     volumes:
-      - pgdata:/pgdata
-  dspacesolr:
-    container_name: dspacesolr
+      - pgdata-pr:/pgdata
+  dspacesolr-pr:
+    container_name: dspacesolr-pr
     image: solr:8.11-slim
     # Indicate services that needs to be started before the current one
     networks:
-      dspacenet:
-    ports: 
+      dspacenet-pr:
+    ports:
     - published: 8983
       target: 8983
     stdin_open: true
@@ -92,7 +92,7 @@ services:
     - ./dspace/solr/ocr:/opt/solr/server/solr/configsets/ocr
     - ./dspace/solr/suggestion:/opt/solr/server/solr/configsets/suggestion
     #  This one is to keep solr data between reboots
-    - solr_data:/var/solr/data
+    - solr_data-pr:/var/solr/data
     # Initialize all DSpace Solr cores using the mounted local configsets (see above), then start Solr
     # * First, run precreate-core to create the core (if it doesn't yet exist). If exists already, this is a no-op
     # * Second, copy updated configs from mounted configsets to this core. If it already existed, this updates core
@@ -122,6 +122,6 @@ services:
       cp -r -u /opt/solr/server/solr/configsets/suggestion/* suggestion
       exec solr -f
 volumes:
-  assetstore:
-  pgdata:
-  solr_data:
+  assetstore-pr:
+  pgdata-pr:
+  solr_data-pr:
