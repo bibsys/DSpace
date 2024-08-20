@@ -1,0 +1,182 @@
+<dspace-dc-types>
+    <dspace-header>
+        <title>DSpace publication specific metadata</title>
+        <contributor.author>Renaud Michotte</contributor.author>
+        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+    </dspace-header>
+    <dc-schema>
+        <name>publication</name>
+        <namespace>http://dspace.org/publication</namespace>
+    </dc-schema>
+    <!-- SINGLE FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>editionStatement</element>
+        <scope_note>To specify an edition statement for the publication (1st edition, 2nd edition, ...)</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>isAbstract</element>
+        <scope_note>To specify if the item is only an abstract of another publication</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>numberOfPages</element>
+        <scope_note>To specify the number of pages of the publication. Should contain only digits</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>publicationStatus</element>
+        <scope_note>To specify the publication status of the publication (submitted, in-press, published)</scope_note>
+    </dc-type>
+    <!-- COLLECTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>collection</element>
+        <qualifier>name</qualifier>
+        <scope_note>To specify the collection name to which the publication belongs</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>collection</element>
+        <qualifier>number</qualifier>
+        <scope_note>To specify the number into the collection to which the publication belongs</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>collection</element>
+        <qualifier>issn</qualifier>
+        <scope_note>To specify the collection ISSN to which the publication belongs</scope_note>
+    </dc-type>
+    <!-- CONFERENCE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>conference</element>
+        <qualifier>endDate</qualifier>
+        <scope_note>To specify the conference end date where to the publication take place</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>conference</element>
+        <qualifier>location</qualifier>
+        <scope_note>To specify the conference location/city where to the publication take place</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>conference</element>
+        <qualifier>startDate</qualifier>
+        <scope_note>To specify the conference start date where to the publication take place</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>conference</element>
+        <qualifier>title</qualifier>
+        <scope_note>To specify the conference title where to the publication take place</scope_note>
+    </dc-type>
+    <!-- EDITOR ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>editor</element>
+        <qualifier>name</qualifier>
+        <scope_note>To specify the editor name of the publication.</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>editor</element>
+        <qualifier>location</qualifier>
+        <scope_note>To specify the editor location/city of the publication.</scope_note>
+    </dc-type>
+    <!-- HOST DOCUMENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>type</qualifier>
+        <scope_note>To specify the type of the host document</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>title</qualifier>
+        <scope_note>To specify the title of the host document</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>editionStatement</qualifier>
+        <scope_note>To specify the edition statement of the host document</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>authors</qualifier>
+        <scope_note>To specify all the authors of the host document (default separator should be ',')</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>pages</qualifier>
+        <scope_note>To specify pagination of the described item into the host document</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>dateIssued</qualifier>
+        <scope_note>To specify date issued of the host document</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>isbn</qualifier>
+        <scope_note>To specify the ISBN of the host document</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>host</element>
+        <qualifier>isbn</qualifier>
+        <scope_note>To specify if the host document is peer-reviewed</scope_note>
+    </dc-type>
+    <!-- REPORT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>report</element>
+        <qualifier>organization</qualifier>
+        <scope_note>To specify the organization name of the report</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>report</element>
+        <qualifier>period</qualifier>
+        <scope_note>To specify the period time for a report</scope_note>
+    </dc-type>
+    <!-- SERIAL ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>serial</element>
+        <qualifier>volume</qualifier>
+        <scope_note>To specify the volume of the serial the publication belongs</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>serial</element>
+        <qualifier>issue</qualifier>
+        <scope_note>To specify the issue number of the serial the publication belongs</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>serial</element>
+        <qualifier>pages</qualifier>
+        <scope_note>To specify the pagination of the publication into the serial</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>serial</element>
+        <qualifier>dateIssued</qualifier>
+        <scope_note>To specify the date issued of the serial the publication belongs</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>serial</element>
+        <qualifier>peerReviwed</qualifier>
+        <scope_note>To specify if the serial the publication belongs is peer-reviewed</scope_note>
+    </dc-type>
+</dspace-dc-types>

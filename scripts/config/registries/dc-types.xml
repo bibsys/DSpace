@@ -3,7 +3,7 @@
     <dspace-header>
         <title>Augmented Dublin Core field for UCLouvain utility</title>
         <contributor.author>Renaud Michotte</contributor.author>
-        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+        <contributor.editor>Michaël Pourbaix</contributor.editor>
     </dspace-header>
     <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <dc-schema>
@@ -13,9 +13,15 @@
     <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <dc-type>
         <schema>dc</schema>
-        <element>language</element>
-        <qualifier>iso-639-2</qualifier>
-        <scope_note>ISO 639-2 code language</scope_note>
+        <element>contributor</element>
+        <qualifier>etal</qualifier>
+        <scope-note/>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>contributor</element>
+        <qualifier>submitter</qualifier>
+        <scope-note/>
     </dc-type>
     <dc-type>
         <schema>dc</schema>
@@ -26,7 +32,85 @@
     <dc-type>
         <schema>dc</schema>
         <element>identifier</element>
+        <qualifier>ecla</qualifier>
+        <scope-note>Patent ECLA number</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
         <qualifier>fedora</qualifier>
         <scope_note>To store original FedoraCommons PID</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>ipc</qualifier>
+        <scope-note>Patent IPC identifier</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>patentDepositID</qualifier>
+        <scope-note>Patent deposit ID</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>patentDeliveryID</qualifier>
+        <scope-note>Patent delivery ID</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>patentPublishID</qualifier>
+        <scope-note>Patent published ID</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>priorityNumber</qualifier>
+        <scope-note>Patent priority number</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>reportID</qualifier>
+        <scope-note>Report identifier</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>language</element>
+        <qualifier>iso-639-2</qualifier>
+        <scope_note>ISO 639-2 code language</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>relation</element>
+        <qualifier>dataset</qualifier>
+        <scope-note/>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>relation</element>
+        <qualifier>host</qualifier>
+        <scope-note/>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>subject</element>
+        <qualifier>internal</qualifier>
+        <scope-note/>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>type</element>
+        <qualifier>maintype</qualifier>
+        <scope-note/>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>type</element>
+        <qualifier>subtype</qualifier>
+        <scope-note/>
     </dc-type>
  </dspace-dc-types>
