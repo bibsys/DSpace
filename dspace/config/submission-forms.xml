@@ -597,7 +597,8 @@ it, please enter the types and the actual numbers or codes.</hint>
           <label>Type</label>
           <input-type>onebox</input-type>
           <repeatable>false</repeatable>
-          <required>You must select a publication type</required>
+          <!--<required>You must select a publication type</required>-->
+          <required/>
           <hint>Select the type(s) of content of the item.</hint>
           <vocabulary>publication-coar-types</vocabulary>
         </field>
@@ -664,7 +665,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <repeatable>false</repeatable>
           <required />
           <hint>The publication where this publication is included. E.g. a book chapter lists here the book, a contribution to a conference lists here the conference proceeding.</hint>
-          <type-bind>publication-coar-types:c_3248,publication-coar-types:c_5794,publication-coar-types:c_6670</type-bind>
+          <type-bind>publication-coar-types:c_3248,publication-coar-types:c_f744,publication-coar-types:c_6670</type-bind>
         </field>
       </row>
       <row>
