@@ -1744,7 +1744,7 @@
         <property name="defaultFilterQueries">
             <list>
                 <!--Only find items, communities and collections-->
-                <value>search.resourcetype:Item AND (entityType_keyword:Publication OR entityType_keyword:Patent OR entityType_keyword:Product)</value>
+                <value>search.resourcetype:Item AND (entityType_keyword:Publication OR entityType_keyword:Patent OR entityType_keyword:Product OR entityType_keyword:MasterThesis)</value>
                 <value>-withdrawn:true AND -discoverable:false</value>
             </list>
         </property>
