@@ -3,7 +3,7 @@
     <dspace-header>
         <title>Augmented Dublin Core field for UCLouvain utility</title>
         <contributor.author>Renaud Michotte</contributor.author>
-        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+        <contributor.editor>Michaël Pourbaix</contributor.editor>
     </dspace-header>
     <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <dc-schema>
@@ -25,8 +25,98 @@
     </dc-type>
     <dc-type>
         <schema>dc</schema>
+        <element>description</element>
+        <qualifier>publicationStatus</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>description</element>
+        <qualifier>editionStatement</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>description</element>
+        <qualifier>editorLocation</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
         <element>identifier</element>
         <qualifier>fedora</qualifier>
         <scope_note>To store original FedoraCommons PID</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>priorityNumber</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>ipc</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>ecla</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>relation</element>
+        <qualifier>dataset</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>relation</element>
+        <qualifier>collectionName</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>relation</element>
+        <qualifier>collectionNumber</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>relation</element>
+        <qualifier>host</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>contributor</element>
+        <qualifier>submitter</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>contributor</element>
+        <qualifier>etal</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>date</element>
+        <qualifier>monthIssued</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>subject</element>
+        <qualifier>internal</qualifier>
+        <scope-note></scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>format</element>
+        <qualifier>pageNumber</qualifier>
+        <scope-note></scope-note>
     </dc-type>
  </dspace-dc-types>

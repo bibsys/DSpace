@@ -1,3 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <import_structure>
+    <community>
+        <name>UCLouvain</name>
+        <collection identifier="123456789/PersonProfile">
+            <name>Person</name>
+            <entity-type>Person</entity-type>
+            <submission-type>person</submission-type>
+        </collection>
+        <collection identifier="123456789/OrgUnit">
+            <name>OrgUnit</name>
+            <entity-type>OrgUnit</entity-type>
+            <submission-type>orgunit</submission-type>
+        </collection>
+        <collection identifier="123456789/Journal">
+            <name>Journal</name>
+            <entity-type>Journal</entity-type>
+            <submission-type>journal</submission-type>
+        </collection>
+        <collection identifier="123456789/Book">
+            <name>Book</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/BookChapter">
+            <name>Book chapter</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/ConferenceSpeech">
+            <name>Conference speech</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/Dissertation">
+            <name>Dissertation</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/Patent">
+            <name>Patent</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/PeriodicalArticle">
+            <name>Periodical article</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/Report">
+            <name>Report</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/WorkingPaper">
+            <name>Working paper</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+    </community>
 </import_structure>

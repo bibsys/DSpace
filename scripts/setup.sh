@@ -28,7 +28,7 @@ create_group(){
   docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.GroupManagement \
       --action create \
-      --name ${1}" >> "${LOG_PATH}"
+      --name '${1}'" >> "${LOG_PATH}"
   if [ $? -ne 0 ]
   then
       error_msg+exit "\t❌ Error creating '${1}' group !"
@@ -151,15 +151,13 @@ restart_dspace_container ${BACKEND}
 #   * Create additional groups
 #   * Add an admin user
 #   * Adds users and assign it to the correct group
-echo -e "👥 Creating user groups..."
-groups=$(jq '.users[].groups | @sh' ${USERS_CONFIG_PATH} | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
-IFS=',' groups=($groups)
-for group in "${groups[@]}"
-do
-  create_group "${group}"
-done
-create_group "UCLouvain network"
+IFS=','
 
+echo -e "👥 Creating user groups..."
+while IFS= read -r group; do
+  create_group "${group}"
+done < <(jq -r '.users[].groups[]' ${USERS_CONFIG_PATH} | sort -u)
+create_group "UCLouvain network"
 
 echo -e "👤 Creating admin user..."
 users_number=$(jq '.admins | length' "${USERS_CONFIG_PATH}")
@@ -215,8 +213,8 @@ do
     do
       docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.UserGroupManagement\
-      --user ${email}\
-      --group ${group}\
+      --user '${email}'\
+      --group '${group}'\
       --action add" >> "${LOG_PATH}"
       if [ $? -ne 0 ]
       then
@@ -261,6 +259,11 @@ METADATA_REGISTRIES=(
   "registries/dc-types.xml"
   "registries/authors-types.xml"
   "registries/fedora-types.xml"
+  "registries/crispatent-types.xml"
+  "registries/funding-types.xml"
+  "registries/oaire-types.xml"
+  "registries/oairecerif-types.xml"
+  "registries/report-types.xml"
 )
 for registry in "${METADATA_REGISTRIES[@]}"
 do
@@ -284,24 +287,40 @@ do
   for (( j=0; j<permissions_length; j++))
   do
     workflow_role=$(jq .collections[${i}].permissions[$j].type "${PERMISSIONS_FILE}")
-    groups=$(jq ".collections[${i}].permissions[$j].groups[] | @sh" "${PERMISSIONS_FILE}" \
-             | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
-    IFS=',' groups=($groups)
-    for group_name in "${groups[@]}"
-    do
-      echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${workflow_role}${NC}..."
+    #groups=$(jq ".collections[${i}].permissions[$j].groups[] | @sh" "${PERMISSIONS_FILE}" \
+    #         | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
+    #IFS=',' groups=($groups)
+    #for group_name in "${groups[@]}"
+    #do
+    #  echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${workflow_role}${NC}..."
+    #  docker exec ${BACKEND} sh -c "\
+    #        /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement \
+    #        --enable \
+    #        --collection '${collection_name}' \
+    #        --role '${workflow_role}' \
+    #        --group '${group_name}'" >> "${LOG_PATH}"
+    #  if [ $? -ne 0 ]
+    #  then
+    #      error_msg+exit "❌ Error during permission management"
+    #  fi
+    #  echo -e "\t${GREEN}Success${NC}"
+    #done
+
+    while IFS= read -r group; do
+      echo -en "\tAssigning ${CYAN}${group}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${workflow_role}${NC}..."
       docker exec ${BACKEND} sh -c "\
             /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement \
             --enable \
-            --collection ${collection_name} \
-            --role ${workflow_role} \
-            --group ${group_name}" >> "${LOG_PATH}"
+            --collection '${collection_name}' \
+            --role '${workflow_role}' \
+            --group '${group}'" >> "${LOG_PATH}"
       if [ $? -ne 0 ]
       then
           error_msg+exit "❌ Error during permission management"
       fi
       echo -e "\t${GREEN}Success${NC}"
-    done
+    done < <(jq -r ".collections[${i}].permissions[$j].groups[]" ${PERMISSIONS_FILE} | sort -u)
+
   done
 done
 
