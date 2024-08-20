@@ -1,3 +1,42 @@
 {
-    "collections": []
+    "collections": [{
+        "collection_name": "OrgUnit",
+        "permissions": [{
+            "mode": "role",
+            "type": "submitter",
+            "groups": [
+                "Administrator"
+            ]
+        }]
+    }, {
+        "collection_name": "Journal",
+        "permissions": [{
+            "mode": "role",
+            "type": "submitter",
+            "groups": [
+                "Manager"
+            ]
+        }, {
+            "mode": "role",
+            "type": "reviewer",
+            "groups": [
+                "Journal manager"
+            ]
+        }]
+    }, {
+        "collection_name": "Dissertation",
+        "permissions": [{
+            "mode": "role",
+            "type": "submitter",
+            "groups": [
+                "Doctoral thesis submitter"
+            ]
+        }, {
+            "mode": "role",
+            "type": "reviewer",
+            "groups": [
+                "Doctoral thesis manager"
+            ]
+        }]
+    }]
 }

@@ -65,7 +65,7 @@
     </bean>
     <bean class="org.dspace.layout.CrisLayoutSection" id="sectionfundings_and_projects">
         <constructor-arg name="id" value="fundings_and_projects"/>
-        <constructor-arg name="visible" value="true"/>
+        <constructor-arg name="visible" value="false"/>
         <constructor-arg name="sectionComponents">
             <list>
                 <list>
@@ -125,7 +125,7 @@
         <constructor-arg name="visible" value="false"/>
         <constructor-arg name="sectionComponents">
           <list>
-            <list>
+            <!--<list>
                 <bean class="org.dspace.layout.CrisLayoutSearchComponent">
                     <property name="discoveryConfigurationName" value="site" />
                     <property name="style" value="col-md-12"/>
@@ -175,7 +175,7 @@
                     <property name="style" value="col-md-6"/>
                     <property name="numberOfItems" value="5"/>
                 </bean>
-            </list>
+            </list>-->
           </list>
         </constructor-arg>
     </bean>
