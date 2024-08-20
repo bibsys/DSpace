@@ -1,0 +1,60 @@
+<dspace-dc-types>
+    <dspace-header>
+        <title>Additional metadata fields for the 'oaire' schema</title>
+        <contributor.author>Michaël Pourbaix</contributor.author>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>oaire</name>
+        <namespace>http://namespace.openaire.eu/schema/oaire/</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>type</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>statement</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>authors</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>pages</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>date</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>peerReview</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>conferenceTitle</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>oaire</schema>
+        <element>citation</element>
+        <qualifier>isAbstract</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+</dspace-dc-types>

@@ -1,0 +1,31 @@
+<dspace-dc-types>
+    <!-- HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dspace-header>
+        <title>Metadata fields definition for 'report' schema</title>
+        <contributor.author>Michaël Pourbaix</contributor.author>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>report</name>
+        <namespace>https://uclouvain.be/ontology/report</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>report</schema>
+        <element>organization</element>
+        <qualifier>name</qualifier>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>report</schema>
+        <element>id</element>
+        <qualifier/>
+        <scope_note></scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>report</schema>
+        <element>period</element>
+        <qualifier/>
+        <scope_note></scope_note>
+    </dc-type>
+ </dspace-dc-types>

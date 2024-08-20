@@ -1,3 +1,24 @@
 {
-    "collections": []
+    "collections": [{
+        "collection_name": "OrgUnit",
+        "permissions": [{
+            "type": "submitter",
+            "groups": [
+                "Administrator"
+            ]
+        }]
+    }, {
+        "collection_name": "Journal",
+        "permissions": [{
+            "type": "submitter",
+            "groups": [
+                "Manager"
+            ]
+        }, {
+            "type": "reviewer",
+            "groups": [
+                "Journal manager"
+            ]
+        }]
+    }]
 }
