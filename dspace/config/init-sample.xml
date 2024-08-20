@@ -1,3 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <import_structure>
+    <community>
+        <name>UCLouvain</name>
+        <collection identifier="123456789/PersonProfile">
+            <name>Person</name>
+            <entity-type>Person</entity-type>
+            <submission-type>person</submission-type>
+        </collection>
+        <collection identifier="123456789/OrgUnit">
+            <name>OrgUnit</name>
+            <entity-type>OrgUnit</entity-type>
+            <submission-type>orgunit</submission-type>
+        </collection>
+        <collection identifier="123456789/Journal">
+            <name>Journal</name>
+            <entity-type>Journal</entity-type>
+            <submission-type>journal</submission-type>
+        </collection>
+        <collection identifier="123456789/Publication">
+            <name>Publication</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+        <collection identifier="123456789/Dissertation">
+            <name>Dissertation</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>dissertation</submission-type>
+            <templateItem>
+                <metadata schema="dc" element="type" qualifier="maintype">
+                    <value>text::thesis</value>
+                </metadata>
+                <metadata schema="dc" element="type" qualifier="subtype">
+                    <value>doctoral thesis</value>
+                </metadata>
+            </templateItem>
+        </collection>
+    </community>
 </import_structure>
