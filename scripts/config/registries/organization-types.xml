@@ -1,0 +1,18 @@
+<dspace-dc-types>
+    <dspace-header>
+        <title>Additional metadata fields for the 'organization' schema</title>
+        <contributor.author>Renaud Michotte</contributor.author>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>organization</name>
+        <namespace>https://schema.org/Organization</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>organization</schema>
+        <element>isSelectable</element>
+        <qualifier></qualifier>
+        <scope_note>Is this entity could be selected when a publication is submitted</scope_note>
+    </dc-type>
+</dspace-dc-types>
