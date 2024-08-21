@@ -820,7 +820,7 @@
         <property name="sidebarFacets">
             <list>
                 <ref bean="searchFilterObjectNamedType" />
-                <ref bean="searchFilterType" />
+                <!--<ref bean="searchFilterType" />-->
                 <ref bean="searchFilterIssued" />
             </list>
         </property>
@@ -852,6 +852,8 @@
             <list>
                 <!--Only find items, workspace and accepted for workflow -->
                 <value>search.resourcetype:Item OR search.resourcetype:WorkspaceItem OR search.resourcetype:XmlWorkflowItem</value>
+                <!--Don't show researcher profile => reserved for admin search only -->
+                <value>-entityType_keyword:Person</value>
             </list>
         </property>
         <!--Default result per page  -->
@@ -1697,12 +1699,15 @@
         <property name="sidebarFacets">
             <list>
                 <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterEditor" />
-                <ref bean="searchFilterOrgUnit" />
+                <ref bean="searchFilterAdvisor" />
+                <ref bean="searchFilterFacultyCombined" />
+                <ref bean="searchFilterDegreeCombined" />
+                <!--<ref bean="searchFilterEditor" />
+                <ref bean="searchFilterOrgUnit" />-->
                 <ref bean="searchFilterSubject" />
-                <ref bean="searchFilterFunding" />
+                <!--<ref bean="searchFilterFunding" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterEntityType"/>-->
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -1712,14 +1717,17 @@
             <list>
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterEditor" />
-                <ref bean="searchFilterOrgUnit" />
+                <ref bean="searchFilterAdvisor" />
+                <ref bean="searchFilterFacultyCombined" />
+                <ref bean="searchFilterDegreeCombined" />
+                <!--<ref bean="searchFilterEditor" />-->
+                <!--<ref bean="searchFilterOrgUnit" />-->
                 <ref bean="searchFilterSubject" />
-                <ref bean="searchFilterFunding" />
+                <!--<ref bean="searchFilterFunding" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
                 <ref bean="searchFilterFileNameInOriginalBundle" />
                 <ref bean="searchFilterFileDescriptionInOriginalBundle" />
-                <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterEntityType"/>-->
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -2692,11 +2700,35 @@
         </property>
     </bean>
 
+    <bean id="searchFilterDegreeCombined" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="degreeCombined"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>masterthesis.degree.code</value>
+                <value>masterthesis.degree.label</value>
+                <value>masterthesis.rootdegree.code</value>
+                <value>masterthesis.rootdegree.label</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="searchFilterFaculty" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
         <property name="indexFieldName" value="facultyname"/>
         <property name="type" value="text"/>
         <property name="metadataFields">
             <list>
+                <value>masterthesis.faculty.name</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="searchFilterFacultyCombined" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="facultyCombined"/>
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>masterthesis.faculty.code</value>
                 <value>masterthesis.faculty.name</value>
             </list>
         </property>
