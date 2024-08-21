@@ -29,9 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Solr plugin used to add one or many filter(s) on the degree code of the workflow items.
- * First, we extract them from the current eperson's metadata.
- * After that, we add them to the query filters.
- * If a user has no degree code, nothing should be returned from Solr.
+ *  - First, we extract them from the current eperson's metadata,
+ *  - Next, we add them to the query filters.
+ *  - If a user has no degree code, nothing should be returned from Solr.
  */
 public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServiceSearchPlugin {
 
