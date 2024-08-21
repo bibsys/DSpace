@@ -2,7 +2,6 @@ package org.dspace.uclouvain.discovery;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,10 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
- * Solr plugin used to add a or many filter(s) on the degree code of the workflow items.
- * First, we extract them from the current eperson's metadata.
- * After that we add them to the query filters.
- * If a user has no degree code, nothing should be returned from Solr. 
+ * Solr plugin used to add one or many filter(s) on the degree code of the workflow items.
+ *  - First, we extract them from the current eperson's metadata,
+ *  - Next, we add them to the query filters.
+ *  - If a user has no degree code, nothing should be returned from Solr.
  */
 public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServiceSearchPlugin {
 
@@ -40,7 +39,7 @@ public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServic
     private String degreeMetadataFieldName = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.solr.plugin.workflow.degree.field.metadata", "crisrp.workgroup");
 
     /**
-     * The name of the discover configuration used to search for workflow tasks in the mydspace
+     * The name of the discover configuration used to search for workflow tasks in the myDspace
      */
     public static final String DISCOVER_WORKFLOW_CONFIGURATION_NAME = "workflow";
 
