@@ -24,12 +24,15 @@
                     <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
                         <property name="browseNames">
                             <list>
-                                <value>rodept</value>
-                                <value>author</value>
-                                <value>title</value>
-                                <value>type</value>
+                                <!--<value>rodept</value>-->
+                                <!--<value>author</value>-->
+                                <value>promoter</value>
+                                <!--<value>title</value>-->
+                                <!--<value>type</value>-->
                                 <value>dateissued</value>
-                                <value>subject</value>
+                                <!--<value>subject</value>-->
+                                <value>faculty</value>
+                                <value>degree</value>
                             </list>
                         </property>
                         <property name="style" value="col-md-4"/>
@@ -39,7 +42,7 @@
                         <property name="style" value="col-md-8"/>
                     </bean>
                 </list>
-                <list>
+                <!--<list>
                     <bean class="org.dspace.layout.CrisLayoutTopComponent">
                         <property name="discoveryConfigurationName" value="researchoutputs" />
                         <property name="sortField" value="dc.date.accessioned" />
@@ -60,7 +63,7 @@
                         <property name="discoveryConfigurationName" value="researchoutputs" />
                         <property name="style" value="col-md-12"/>
                     </bean>
-                </list>
+                </list>-->
             </list>
         </constructor-arg>
     </bean>
