@@ -6,6 +6,7 @@
  * http://www.dspace.org/license/
  */
 package org.dspace.app.rest.authorization.impl;
+
 import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,6 +26,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.discovery.SearchServiceException;
+import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -42,21 +44,19 @@ public class CanManageMappingsFeature implements AuthorizationFeature {
 
     @Autowired
     private AuthorizeService authorizeService;
-
     @Autowired
     private Utils utils;
-
     @Autowired
     private ItemService itemService;
-
     @Autowired
     private CollectionService collectionService;
+    @Autowired
+    private ConfigurationService configService;
 
     @Override
     public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException {
         if (object instanceof CollectionRest) {
             Collection collection = (Collection)utils.getDSpaceAPIObjectFromRest(context, object);
-
             if (authorizeService.authorizeActionBoolean(context, collection, Constants.WRITE)
                 && authorizeService.authorizeActionBoolean(context, collection, Constants.ADD)) {
                 return true;
@@ -68,18 +68,19 @@ public class CanManageMappingsFeature implements AuthorizationFeature {
                 return false;
             }
             try {
-                Optional<Collection> collections = collectionService.findCollectionsWithSubmit(StringUtils.EMPTY,
-                                                 context, null, null, 0, Integer.MAX_VALUE)
-                                                .stream()
-                                                .filter(c -> !c.getID().equals(item.getOwningCollection().getID()))
-                                                .filter(c -> {
-                                                    try {
-                                                        return collectionService.canEditBoolean(context, c);
-                                                    } catch (SQLException e) {
-                                                        throw new RuntimeException(e.getMessage(), e);
-                                                    }
-                                                })
-                                                .findFirst();
+                Integer limit = configService.getIntProperty("core.authorization.collection-mapping.solr.limit", 10000);
+                Optional<Collection> collections = collectionService
+                        .findCollectionsWithSubmit(StringUtils.EMPTY, context, null, null, 0, limit)
+                        .stream()
+                        .filter(c -> !c.getID().equals(item.getOwningCollection().getID()))
+                        .filter(c -> {
+                            try {
+                                return collectionService.canEditBoolean(context, c);
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e.getMessage(), e);
+                            }
+                        })
+                        .findFirst();
                 return collections.isPresent();
             } catch (SearchServiceException e) {
                 throw new RuntimeException(e.getMessage(), e);
