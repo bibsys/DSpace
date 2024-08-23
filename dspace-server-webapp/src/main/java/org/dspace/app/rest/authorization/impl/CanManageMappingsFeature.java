@@ -25,6 +25,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.discovery.SearchServiceException;
+import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -52,6 +53,9 @@ public class CanManageMappingsFeature implements AuthorizationFeature {
     @Autowired
     private CollectionService collectionService;
 
+    @Autowired
+    private ConfigurationService configurationService;
+
     @Override
     public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException {
         if (object instanceof CollectionRest) {
@@ -68,8 +72,9 @@ public class CanManageMappingsFeature implements AuthorizationFeature {
                 return false;
             }
             try {
+                Integer limit = configurationService.getIntProperty("core.authorization.collection-mapping.solr.limit", 10000);
                 Optional<Collection> collections = collectionService.findCollectionsWithSubmit(StringUtils.EMPTY,
-                                                 context, null, null, 0, Integer.MAX_VALUE)
+                                                 context, null, null, 0, limit)
                                                 .stream()
                                                 .filter(c -> !c.getID().equals(item.getOwningCollection().getID()))
                                                 .filter(c -> {
