@@ -56,6 +56,7 @@ create_group(){
 #     - Create additional users
 #     - Create user groups and assign users into.
 #   5. Initialize collections and communities
+#   6. Create OrgUnit (if required)
 
 # Define constants used during script execution
 readonly BACKEND="dspace"
@@ -65,6 +66,7 @@ readonly LOG_FILE=$(date +"%Y-%m-%d_%T")
 readonly LOG_PATH="${WORKING_PATH}/log/${LOG_FILE}.log"
 readonly USERS_CONFIG_PATH="${WORKING_PATH}/config/users.json"
 readonly PERMISSIONS_FILE="${WORKING_PATH}/config/permissions.json"
+readonly ENTITIES_FILE="/uclouvain/config/entities.json"
 
 readonly SOLR_BASE_URL="http://localhost:8983/solr"  # without ending slash !!
 readonly REQUIRED_EXTERNAL_COMMAND=( jq )
@@ -77,6 +79,7 @@ readonly NC='\033[0m' # No Color
 
 # Global script variable
 CLEAN_SOLR_CORES=false
+CREATE_ENTITIES=false
 
 # STEP#0 :: Check script requirement ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   - Check script arguments
@@ -87,6 +90,8 @@ do
   case $1 in
     -C|--clean-solr)
       CLEAN_SOLR_CORES=true;;
+    -E|--create-entities)
+      CREATE_ENTITIES=true;;
     (-*)
       error_msg+exit "$0: Unrecognized option $1";;
     (*)
@@ -304,6 +309,23 @@ do
 
   done
 done
+
+# STEP#6: Create entities (if required) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if ${CREATE_ENTITIES}
+then
+  echo -e "\t🏢  Entities creation..."
+  docker exec ${BACKEND} sh -c "\
+              /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.OrgUnitImporter \
+              --file '${ENTITIES_FILE}' \
+              --default-type 'Research Institue' \
+              --collection-name 'OrgUnit' \
+              --user '${ADMIN_EMAIL}'"
+        if [ $? -ne 0 ]
+        then
+            error_msg+exit "❌ Error during entities creation"
+        fi
+        echo -e "\t${GREEN}Success${NC}"
+fi
 
 # STEP#FINAL: Restart the container
 restart_dspace_container ${BACKEND}
