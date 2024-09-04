@@ -65,6 +65,7 @@ readonly LOG_FILE=$(date +"%Y-%m-%d_%T")
 readonly LOG_PATH="${WORKING_PATH}/log/${LOG_FILE}.log"
 readonly USERS_CONFIG_PATH="${WORKING_PATH}/config/users.json"
 readonly PERMISSIONS_FILE="${WORKING_PATH}/config/permissions.json"
+readonly ENTITIES_FILE="/uclouvain/config/entities.json"
 
 readonly SOLR_BASE_URL="http://localhost:8983/solr"  # without ending slash !!
 readonly REQUIRED_EXTERNAL_COMMAND=( jq )
@@ -77,6 +78,7 @@ readonly NC='\033[0m' # No Color
 
 # Global script variable
 CLEAN_SOLR_CORES=false
+CREATE_ENTITIES=false
 
 # STEP#0 :: Check script requirement ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #   - Check script arguments
@@ -87,6 +89,8 @@ do
   case $1 in
     -C|--clean-solr)
       CLEAN_SOLR_CORES=true;;
+    -E|--create-entities)
+      CREATE_ENTITIES=true;;
     (-*)
       error_msg+exit "$0: Unrecognized option $1";;
     (*)
@@ -263,6 +267,7 @@ METADATA_REGISTRIES=(
   "registries/funding-types.xml"
   "registries/oaire-types.xml"
   "registries/oairecerif-types.xml"
+  "registries/organization.xml"
   "registries/report-types.xml"
 )
 for registry in "${METADATA_REGISTRIES[@]}"
@@ -287,25 +292,6 @@ do
   for (( j=0; j<permissions_length; j++))
   do
     workflow_role=$(jq .collections[${i}].permissions[$j].type "${PERMISSIONS_FILE}")
-    #groups=$(jq ".collections[${i}].permissions[$j].groups[] | @sh" "${PERMISSIONS_FILE}" \
-    #         | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
-    #IFS=',' groups=($groups)
-    #for group_name in "${groups[@]}"
-    #do
-    #  echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${workflow_role}${NC}..."
-    #  docker exec ${BACKEND} sh -c "\
-    #        /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement \
-    #        --enable \
-    #        --collection '${collection_name}' \
-    #        --role '${workflow_role}' \
-    #        --group '${group_name}'" >> "${LOG_PATH}"
-    #  if [ $? -ne 0 ]
-    #  then
-    #      error_msg+exit "❌ Error during permission management"
-    #  fi
-    #  echo -e "\t${GREEN}Success${NC}"
-    #done
-
     while IFS= read -r group; do
       echo -en "\tAssigning ${CYAN}${group}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${workflow_role}${NC}..."
       docker exec ${BACKEND} sh -c "\
@@ -323,6 +309,23 @@ do
 
   done
 done
+
+# STEP#6: Create entities (if required) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if ${CREATE_ENTITIES}
+then
+  echo -e "\t🏢  Entities creation..."
+  docker exec ${BACKEND} sh -c "\
+              /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.OrgUnitImporter \
+              --file '${ENTITIES_FILE}' \
+              --default-type 'Research Institue' \
+              --collection-name 'OrgUnit' \
+              --user '${ADMIN_EMAIL}'"
+        if [ $? -ne 0 ]
+        then
+            error_msg+exit "❌ Error during entities creation"
+        fi
+        echo -e "\t${GREEN}Success${NC}"
+fi
 
 # STEP#FINAL: Restart the container
 restart_dspace_container ${BACKEND}
