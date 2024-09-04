@@ -1,0 +1,1696 @@
+[
+  {
+    "acronym": "UCLouvain",
+    "name": "Université catholique de Louvain",
+    "selectable": false,
+    "type": "University",
+    "identifiers": [
+      {"type": "ror", "value": "https://ror.org/02495e989"},
+      {"type": "isni", "value": "http://isni.org/isni/000000012294713X"},
+      {"type": "crossrefid", "value": "https://api.crossref.org/funders/100007355"}
+    ],
+    "children": [
+      {
+        "name": "Anciens départements (publication pré 2010)",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Département de biologie appliquée et des productions agricoles",
+            "acronym": "AGRO/BAPA"
+          },
+          {
+            "name": "Département de chimie appliquée et des bio-industries",
+            "acronym": "AGRO/CABI"
+          },
+          {
+            "name": "Département des sciences du milieu et de l'aménagement du territoire",
+            "acronym": "AGRO/MILA"
+          },
+          {
+            "name": "Centre de philosophie du droit",
+            "acronym": "DRT/CPDR"
+          },
+          {
+            "name": "Département de droit économique et social",
+            "acronym": "DRT/DESO"
+          },
+          {
+            "name": "Département de criminologie et de droit pénal",
+            "acronym": "DRT/DPCR"
+          },
+          {
+            "name": "Département de droit privé",
+            "acronym": "DRT/DPRI"
+          },
+          {
+            "name": "Département de droit international Charles De Visscher",
+            "acronym": "DRT/INT"
+          },
+          {
+            "name": "Département de droit public",
+            "acronym": "DRT/PUBL"
+          },
+          {
+            "name": "Département de communication",
+            "acronym": "ESPO/COMU"
+          },
+          {
+            "name": "Département des sciences économiques",
+            "acronym": "ESPO/ECON"
+          },
+          {
+            "name": "Département d'administration et de gestion",
+            "acronym": "ESPO/IAG"
+          },
+          {
+            "name": "Département des sciences politiques et sociales",
+            "acronym": "ESPO/POLS"
+          },
+          {
+            "name": "Département des sciences de la population et du développement",
+            "acronym": "ESPO/SPED"
+          },
+          {
+            "name": "Center for operations research and econometrics",
+            "acronym": "EUEN/CORE"
+          },
+          {
+            "name": "Faculté ouverte de politique économique et sociale",
+            "acronym": "EUEN/OPES"
+          },
+          {
+            "name": "Rattachement EUEN",
+            "acronym": "EUEN/REUE"
+          },
+          {
+            "name": "Institut de statistique",
+            "acronym": "EUEN/STAT"
+          },
+          {
+            "name": "Département d'archéologie et d'histoire de l'art",
+            "acronym": "FLTR/ARKE"
+          },
+          {
+            "name": "Département d'études germaniques",
+            "acronym": "FLTR/GERM"
+          },
+          {
+            "name": "Département d'études grecques, latines et orientales",
+            "acronym": "FLTR/GLOR"
+          },
+          {
+            "name": "Département d'histoire",
+            "acronym": "FLTR/HIST"
+          },
+          {
+            "name": "Département d'études romanes",
+            "acronym": "FLTR/ROM"
+          },
+          {
+            "name": "Département d'architecture, d'urbanisme et de génie civil environnemental",
+            "acronym": "FSA/AUCE"
+          },
+          {
+            "name": "Département d'électricité",
+            "acronym": "FSA/ELEC"
+          },
+          {
+            "name": "Département d'ingénierie informatique",
+            "acronym": "FSA/INGI"
+          },
+          {
+            "name": "Département d'ingénierie mathématique",
+            "acronym": "FSA/INMA"
+          },
+          {
+            "name": "Département des sciences des matériaux et des procédés",
+            "acronym": "FSA/MAPR"
+          },
+          {
+            "name": "Département de mécanique",
+            "acronym": "FSA/MECA"
+          },
+          {
+            "name": "Institut supérieur de philosophie",
+            "acronym": "ISP"
+          },
+          {
+            "name": "Logique et philosophie des sciences",
+            "acronym": "ISP/LOFS"
+          },
+          {
+            "name": "Orientations philosophiques fondamentales",
+            "acronym": "ISP/ORFI"
+          },
+          {
+            "name": "Sources et histoire de la philosophie",
+            "acronym": "ISP/SOFI"
+          },
+          {
+            "name": "Département de biochimie et de biologie cellulaire",
+            "acronym": "MD/BICL"
+          },
+          {
+            "name": "Département de chirurgie",
+            "acronym": "MD/CHIR"
+          },
+          {
+            "name": "Ecole de santé publique",
+            "acronym": "MD/ESP"
+          },
+          {
+            "name": "Ecole de pharmacie",
+            "acronym": "MD/FARM"
+          },
+          {
+            "name": "Unité de philosophie des sciences biomédicales",
+            "acronym": "MD/FIMD"
+          },
+          {
+            "name": "Département de physiologie et pharmacologie",
+            "acronym": "MD/FSIO"
+          },
+          {
+            "name": "Département de gynécologie, d'obstétrique et de pédiatrie",
+            "acronym": "MD/GYPE"
+          },
+          {
+            "name": "Institut d'éducation physique et de réadaptation",
+            "acronym": "MD/IEPR"
+          },
+          {
+            "name": "Ecole de médecine dentaire et de stomatologie",
+            "acronym": "MD/MDEN"
+          },
+          {
+            "name": "Département de microbiologie, d'immunologie et de génétique",
+            "acronym": "MD/MIGE"
+          },
+          {
+            "name": "Département de médecine interne",
+            "acronym": "MD/MINT"
+          },
+          {
+            "name": "Département de morphologie normale et pathologique",
+            "acronym": "MD/MNOP"
+          },
+          {
+            "name": "Département de neurologie et de psychiatrie",
+            "acronym": "MD/NOPS"
+          },
+          {
+            "name": "Département de radiologie et d'imagerie médicale",
+            "acronym": "MD/RAIM"
+          },
+          {
+            "name": "Centre académique de médecine générale",
+            "acronym": "MD/RMED/CAMG"
+          },
+          {
+            "name": "Faculté de psychologie et des sciences de l'éducation",
+            "acronym": "PSP/PSP"
+          },
+          {
+            "name": "Département de biologie",
+            "acronym": "SC/BIOL"
+          },
+          {
+            "name": "Département de chimie",
+            "acronym": "SC/CHIM"
+          },
+          {
+            "name": "Département de géologie et de géographie",
+            "acronym": "SC/GEO"
+          },
+          {
+            "name": "Département de mathématique",
+            "acronym": "SC/MATH"
+          },
+          {
+            "name": "Département de physique",
+            "acronym": "SC/PHYS"
+          },
+          {
+            "name": "Faculté de théologie",
+            "acronym": "TECO"
+          }
+        ]
+      },
+      {
+        "name": "Autre"
+      },
+      {
+        "name": "Cliniques Universitaires Saint-Luc",
+        "acronym": "SLuc",
+        "selectable": false,
+        "identifiers": [
+          {"type": "ror", "value": "https://ror.org/03s4khd80"},
+          {"type": "isni", "value": "http://isni.org/isni/0000000404616320"},
+          {"type": "crossrefid", "value": "https://api.crossref.org/funders/501100005042"}
+        ],
+        "children": [
+          {
+            "name": "(SLuc) Autre"
+          },
+          {
+            "name": "(SLuc) Centre de l'allergie"
+          },
+          {
+            "name": "(SLuc) Centre de lutte contre la douleur"
+          },
+          {
+            "name": "(SLuc) Centre de malformations vasculaires congénitales"
+          },
+          {
+            "name": "(SLuc) Centre de médecine forensique"
+          },
+          {
+            "name": "(SLuc) Centre de pathologie anorectale de l'enfant"
+          },
+          {
+            "name": "(SLuc) Centre de pathologie sexuelle masculine"
+          },
+          {
+            "name": "(SLuc) Centre de prise en charge (H.I.V.)"
+          },
+          {
+            "name": "(SLuc) Centre de revalidation neuropédiatrique et neuropsychologique infantile"
+          },
+          {
+            "name": "(SLuc) Centre de référence en infirmité motrice cérébrale"
+          },
+          {
+            "name": "(SLuc) Centre de référence en lésions congénitales de la moëlle épinière"
+          },
+          {
+            "name": "(SLuc) Centre de référence neuromusculaire"
+          },
+          {
+            "name": "(SLuc) Centre de référence pour l'épilepsie réfractaire"
+          },
+          {
+            "name": "(SLuc) Centre de référence pour la mucoviscidose"
+          },
+          {
+            "name": "(SLuc) Centre de thérapie tissulaire et cellulaire"
+          },
+          {
+            "name": "(SLuc) Centre de toxicologie clinique"
+          },
+          {
+            "name": "(SLuc) Centre de transplantation"
+          },
+          {
+            "name": "(SLuc) Centre des cardiopathies congénitales de l'adulte"
+          },
+          {
+            "name": "(SLuc) Centre des maladies neuro-cutanées congénitales"
+          },
+          {
+            "name": "(SLuc) Centre du cancer"
+          },
+          {
+            "name": "(SLuc) Centre labio-palatin Albert de Coninck"
+          },
+          {
+            "name": "(SLuc) Centre neurologique William Lennox"
+          },
+          {
+            "name": "(SLuc) Clinical Trial Center"
+          },
+          {
+            "name": "(SLuc) Département cardiovasculaire",
+            "children": [
+              {
+                "name": "(SLuc) Service de cardiologie"
+              },
+              {
+                "name": "(SLuc) Service de chirurgie cardiovasculaire et thoracique"
+              },
+              {
+                "name": "(SLuc) Service de pathologies cardiovasculaires intensives"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département d'imagerie médicale",
+            "children": [
+              {
+                "name": "(SLuc) Service de radiologie"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de biologie clinique et d'anatomie pathologique",
+            "children": [
+              {
+                "name": "(SLuc) Centre de génétique médicale UCL"
+              },
+              {
+                "name": "(SLuc) Service d'anatomie pathologique"
+              },
+              {
+                "name": "(SLuc) Service de biochimie médicale"
+              },
+              {
+                "name": "(SLuc) Service de biologie hématologique"
+              },
+              {
+                "name": "(SLuc) Service de microbiologie"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de cancérologie et d'hématologie",
+            "children": [
+              {
+                "name": "(SLuc) Centre de chirurgie oncologique"
+              },
+              {
+                "name": "(SLuc) Centre multidisciplinaire de cancérologie"
+              },
+              {
+                "name": "(SLuc) Service d'hématologie"
+              },
+              {
+                "name": "(SLuc) Service d'hématologie et d'oncologie pédiatrique"
+              },
+              {
+                "name": "(SLuc) Service d'oncologie médicale"
+              },
+              {
+                "name": "(SLuc) Service de radiothérapie oncologique"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de chirurgie et services associés",
+            "children": [
+              {
+                "name": "(SLuc) Service d'obstétrique"
+              },
+              {
+                "name": "(SLuc) Service d'orthopédie et de traumatologie de l'appareil locomoteur"
+              },
+              {
+                "name": "(SLuc) Service d'urologie"
+              },
+              {
+                "name": "(SLuc) Service de chirurgie et transplantation abdominale"
+              },
+              {
+                "name": "(SLuc) Service de chirurgie plastique"
+              },
+              {
+                "name": "(SLuc) Service de gynécologie et d'andrologie"
+              },
+              {
+                "name": "(SLuc) Service de neurochirurgie"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de médecine aiguë",
+            "children": [
+              {
+                "name": "(SLuc) Service d'anesthésiologie"
+              },
+              {
+                "name": "(SLuc) Service de soins intensifs"
+              },
+              {
+                "name": "(SLuc) Service des urgences"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de médecine dentaire et stomatologie",
+            "children": [
+              {
+                "name": "(SLuc) Service de dentisterie conservatrice et d'endodontie"
+              },
+              {
+                "name": "(SLuc) Service de dentisterie pédiatrique et de soins bucco-dentaires pour personnes à besoins particuliers"
+              },
+              {
+                "name": "(SLuc) Service de parodontologie"
+              },
+              {
+                "name": "(SLuc) Service de prothèse dentaire"
+              },
+              {
+                "name": "(SLuc) Service de stomatologie et de chirurgie maxillo-faciale"
+              },
+              {
+                "name": "(SLuc) Unité d'orthodontie et d'orthopédie dento-faciale"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de médecine interne et services associés",
+            "children": [
+              {
+                "name": "(SLuc) Service d'endocrinologie et de nutrition"
+              },
+              {
+                "name": "(SLuc) Service d'hépato-gastro-entérologie"
+              },
+              {
+                "name": "(SLuc) Service de dermatologie"
+              },
+              {
+                "name": "(SLuc) Service de gériatrie"
+              },
+              {
+                "name": "(SLuc) Service de médecine interne et maladies infectieuses (MIMI)"
+              },
+              {
+                "name": "(SLuc) Service de médecine nucléaire"
+              },
+              {
+                "name": "(SLuc) Service de néphrologie"
+              },
+              {
+                "name": "(SLuc) Service de pneumologie"
+              },
+              {
+                "name": "(SLuc) Service de rhumatologie"
+              },
+              {
+                "name": "(SLuc) Unité d'oncologie médicale"
+              },
+              {
+                "name": "(SLuc) Unité de soins continus"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de neuropsychiatrie et pathologies spéciales",
+            "children": [
+              {
+                "name": "(SLuc) Service d'ophtalmologie"
+              },
+              {
+                "name": "(SLuc) Service d'oto-rhino-laryngologie"
+              },
+              {
+                "name": "(SLuc) Service de médecine physique et de réadaptation motrice"
+              },
+              {
+                "name": "(SLuc) Service de neurologie"
+              },
+              {
+                "name": "(SLuc) Service de psychiatrie adulte"
+              },
+              {
+                "name": "(SLuc) Service de psychiatrie infanto-juvénile"
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Département de pharmacie"
+          },
+          {
+            "name": "(SLuc) Département de pédiatrie",
+            "children": [
+              {
+                "name": "(SLuc) Service de cardiologie pédiatrique"
+              },
+              {
+                "name": "(SLuc) Service de gastro-entérologie et hépatologie pédiatrique"
+              },
+              {
+                "name": "(SLuc) Service de neurologie pédiatrique"
+              },
+              {
+                "name": "(SLuc) Service de néonatologie"
+              },
+              {
+                "name": "(SLuc) Service de pédiatrie spécialisée",
+                "children": [
+                  {
+                    "name": "(SLuc) Service d'endocrinologie et diabétologie pédiatrique"
+                  },
+                  {
+                    "name": "(SLuc) Service d'infectiologie pédiatrique"
+                  },
+                  {
+                    "name": "(SLuc) Service de nutrition pédiatrique"
+                  },
+                  {
+                    "name": "(SLuc) Service de néphrologie pédiatrique"
+                  },
+                  {
+                    "name": "(SLuc) Service de pneumologie pédiatrique et mucoviscidose"
+                  },
+                  {
+                    "name": "(SLuc) Service du sommeil pédiatrique"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "(SLuc) Institut Albert 1er et Reine Elisabeth"
+          },
+          {
+            "name": "(SLuc) Institut des maladies rares"
+          },
+          {
+            "name": "(Sluc) Banques de matériel corporel humain",
+            "children": [
+              {
+                "name": "(SLuc) Banque de l'appareil locomoteur"
+              },
+              {
+                "name": "(SLuc) Banque de tissus et cellules reproducteurs"
+              },
+              {
+                "name": "(SLuc) Biobanque"
+              },
+              {
+                "name": "(SLuc) European homograph bank"
+              },
+              {
+                "name": "(SLuc) Unité de thérapie cellulaire endocrine"
+              },
+              {
+                "name": "(SLuc) Unité de thérapie cellulaire hématologique"
+              },
+              {
+                "name": "(SLuc) Unité de thérapie cellulaire hépatique"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Entités administratives UCL",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Administration des affaires étudiantes",
+            "acronym": "AC/ADAE"
+          },
+          {
+            "name": "Administration de l'enseignement et de la formation",
+            "acronym": "AC/ADEF",
+            "children": [
+              {
+                "name": "Institut des langues vivantes",
+                "acronym": "AC/ADEF/ILV"
+              }
+            ]
+          },
+          {
+            "name": "Administration des finances",
+            "acronym": "AC/ADFI"
+          },
+          {
+            "name": "Administration du patrimoine immobilier et des infrastructures",
+            "acronym": "AC/ADPI"
+          },
+          {
+            "name": "Administration de la recherche",
+            "acronym": "AC/ADRE"
+          },
+          {
+            "name": "Administration des relations internationales",
+            "acronym": "AC/ADRI"
+          },
+          {
+            "name": "Administration des relations extérieures et de la communication",
+            "acronym": "AC/AREC"
+          },
+          {
+            "name": "Service de gestion des ressources humaines",
+            "acronym": "AC/RHUM"
+          },
+          {
+            "name": "Service du personnel",
+            "acronym": "AC/SPER"
+          },
+          {
+            "name": "Les Bibliothèques de l'Université catholique de Louvain",
+            "acronym": "LS/BIUL"
+          },
+          {
+            "name": "Service général du système d'information",
+            "acronym": "LS/SGSI"
+          }
+        ]
+      },
+      {
+        "name": "Mont-Godinne",
+        "acronym": "MGD",
+        "selectable": false,
+        "identifiers": [
+          {"type": "ror", "value": "https://ror.org/00ntbvq76"}
+        ],
+        "children": [
+          {
+            "name": "(MGD) Autre"
+          },
+          {
+            "name": "(MGD) Centre de référence fatigue chronique"
+          },
+          {
+            "name": "(MGD) Centre de référence multidisciplinaire de la douleur chronique"
+          },
+          {
+            "name": "(MGD) Centre de transfusion sanguine"
+          },
+          {
+            "name": "(MGD) Centre de transplantation pulmonaire"
+          },
+          {
+            "name": "(MGD) Centre universitaire namurois du positron (CUNP- PET/CT)"
+          },
+          {
+            "name": "(MGD) Comité d'éthiqe"
+          },
+          {
+            "name": "(MGD) Dentisterie - stomatologie"
+          },
+          {
+            "name": "(MGD) Dermatologie"
+          },
+          {
+            "name": "(MGD) Dermatologie pédiatrique"
+          },
+          {
+            "name": "(MGD) Département de pharmacie"
+          },
+          {
+            "name": "(MGD) Equipe mobile de soutien oncologique et soins palliatifs"
+          },
+          {
+            "name": "(MGD) Laboratoire de biologie clinique"
+          },
+          {
+            "name": "(MGD) Médiation - gestion des plaintes"
+          },
+          {
+            "name": "(MGD) NARILIS"
+          },
+          {
+            "name": "(MGD) Neuropédiatrie"
+          },
+          {
+            "name": "(MGD) Pathologie infectieuse"
+          },
+          {
+            "name": "(MGD) Pédopsychiatrie"
+          },
+          {
+            "name": "(MGD) Service d'anatomie pathologique"
+          },
+          {
+            "name": "(MGD) Service d'anesthésiologie"
+          },
+          {
+            "name": "(MGD) Service d'endocrinologie"
+          },
+          {
+            "name": "(MGD) Service d'hématologie"
+          },
+          {
+            "name": "(MGD) Service d'oncologie médicale"
+          },
+          {
+            "name": "(MGD) Service d'ophtalmologie"
+          },
+          {
+            "name": "(MGD) Service d'oto-rhino-laryngologie"
+          },
+          {
+            "name": "(MGD) Service d'urologie"
+          },
+          {
+            "name": "(MGD) Service de cardiologie"
+          },
+          {
+            "name": "(MGD) Service de chirurgie"
+          },
+          {
+            "name": "(MGD) Service de chirurgie cardio-vasculaire et thoracique"
+          },
+          {
+            "name": "(MGD) Service de chirurgie orthopédique"
+          },
+          {
+            "name": "(MGD) Service de chirurgie plastique"
+          },
+          {
+            "name": "(MGD) Service de gastro-entérologie "
+          },
+          {
+            "name": "(MGD) Service de gynécologie - fécondation in vitro"
+          },
+          {
+            "name": "(MGD) Service de médecine gériatrique"
+          },
+          {
+            "name": "(MGD) Service de médecine interne générale"
+          },
+          {
+            "name": "(MGD) Service de médecine nucléaire"
+          },
+          {
+            "name": "(MGD) Service de médecine physique et revalidation"
+          },
+          {
+            "name": "(MGD) Service de médecine psychosomatique"
+          },
+          {
+            "name": "(MGD) Service de neurochirurgie"
+          },
+          {
+            "name": "(MGD) Service de neurologie"
+          },
+          {
+            "name": "(MGD) Service de néphrologie"
+          },
+          {
+            "name": "(MGD) Service de pneumologie"
+          },
+          {
+            "name": "(MGD) Service de pédiatrie"
+          },
+          {
+            "name": "(MGD) Service de radiologie - résonance magnétique"
+          },
+          {
+            "name": "(MGD) Service de radiothérapie"
+          },
+          {
+            "name": "(MGD) Service de rhumatologie"
+          },
+          {
+            "name": "(MGD) Services des soins intensifs"
+          },
+          {
+            "name": "(MGD) Services des urgences"
+          },
+          {
+            "name": "(MGD) Tabacologie"
+          },
+          {
+            "name": "(MGD) Unité de support scientifique"
+          }
+        ]
+      },
+      {
+        "name": "secteur des sciences humaines",
+        "acronym": "SSH",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Institute of Analysis of Change in Contemporary and Historical Societies",
+            "acronym": "SSH/IACS"
+          },
+          {
+            "name": "Institut Langage et Communication",
+            "acronym": "SSH/ILC",
+            "children": [
+              {
+                "name": "Pôle de recherche en communication",
+                "acronym": "SSH/ILC/PCOM"
+              },
+              {
+                "name": "Pôle de recherche en linguistique",
+                "acronym": "SSH/ILC/PLIN"
+              }
+            ]
+          },
+          {
+            "name": "Institut des civilisations, arts et lettres",
+            "acronym": "SSH/INCA"
+          },
+          {
+            "name": "Psychological Sciences Research Institute",
+            "acronym": "SSH/IPSY"
+          },
+          {
+            "name": "Institut de recherche interdisciplinaire Saint-Louis",
+            "acronym": "SSH/IRIS-L",
+            "children": [
+              {
+                "name": "Center for Applied Public Economics",
+                "acronym": "SSH/IRIS-L/CAPE"
+              },
+              {
+                "name": "Centre d'anthropologie,sociologie et psychologie : études et recherches",
+                "acronym": "SSH/IRIS-L/CASP"
+              },
+              {
+                "name": "Centre belge d'études bourguignonnes 1400-1600",
+                "acronym": "SSH/IRIS-L/CBEB"
+              },
+              {
+                "name": "Centre d'études du droit de l'environnement",
+                "acronym": "SSH/IRIS-L/CDRE"
+              },
+              {
+                "name": "Centre de recherche en économie",
+                "acronym": "SSH/IRIS-L/CERE"
+              },
+              {
+                "name": "Centre interdisciplinaire de recherches en droit constitutionnel et administratif",
+                "acronym": "SSH/IRIS-L/CIRC"
+              },
+              {
+                "name": "Centre de droit privé",
+                "acronym": "SSH/IRIS-L/CPRI"
+              },
+              {
+                "name": "Centre de recherche en histoire du droit, des institutions et de la société",
+                "acronym": "SSH/IRIS-L/CRID"
+              },
+              {
+                "name": "Centre de recherche en science politique",
+                "acronym": "SSH/IRIS-L/CRSP"
+              },
+              {
+                "name": "Centre de recherches et d'interventions sociologiques",
+                "acronym": "SSH/IRIS-L/CSIR"
+              },
+              {
+                "name": "Engage",
+                "acronym": "SSH/IRIS-L/ENGA"
+              },
+              {
+                "name": "Ecole des sciences philosophiques et religieuses",
+                "acronym": "SSH/IRIS-L/ESPR"
+              },
+              {
+                "name": "Groupe de recherche en matière pénale et criminelle",
+                "acronym": "SSH/IRIS-L/GREP"
+              },
+              {
+                "name": "Institut d'études européennes",
+                "acronym": "SSH/IRIS-L/IEE"
+              },
+              {
+                "name": "Institut de recherches interdisplinaires sur Bruxelles",
+                "acronym": "SSH/IRIS-L/IRIB"
+              },
+              {
+                "name": "Centre Prospéro",
+                "acronym": "SSH/IRIS-L/PROS"
+              },
+              {
+                "name": "Réseau Interdisplinaire et Société",
+                "acronym": "SSH/IRIS-L/RIS"
+              },
+              {
+                "name": "Séminaire interdisciplinaire d'études juridiques",
+                "acronym": "SSH/IRIS-L/SIEJ"
+              },
+              {
+                "name": "Séminaire des Sciences du Langage",
+                "acronym": "SSH/IRIS-L/SSLA"
+              },
+              {
+                "name": "Centre TranSphères (traduction/Interprétation MH) ",
+                "acronym": "SSH/IRIS-L/TRSF"
+              }
+            ]
+          },
+          {
+            "name": "Institut supérieur de philosophie",
+            "acronym": "SSH/ISP"
+          },
+          {
+            "name": "Fonds d'archives de littérature, de philosophie et des arts (plate-forme technologique)",
+            "acronym": "SSH/ISP/ALFA"
+          },
+          {
+            "name": "Institut pour la recherche interdisciplinaire en sciences juridiques",
+            "acronym": "SSH/JURI",
+            "children": [
+              {
+                "name": "Droit économique et social",
+                "acronym": "SSH/JURI/PJES"
+              },
+              {
+                "name": "Droit international et européen",
+                "acronym": "SSH/JURI/PJIE"
+              },
+              {
+                "name": "Droit pénal et criminologie",
+                "acronym": "SSH/JURI/PJPC"
+              },
+              {
+                "name": "Droit privé",
+                "acronym": "SSH/JURI/PJPR"
+              },
+              {
+                "name": "Droit public",
+                "acronym": "SSH/JURI/PJPU"
+              },
+              {
+                "name": "Théorie du droit",
+                "acronym": "SSH/JURI/PJTD"
+              }
+            ]
+          },
+          {
+            "name": "Louvain Institute of Data Analysis and Modeling in economics and statistics",
+            "acronym": "SSH/LIDAM",
+            "children": [
+              {
+                "name": "Center for operations research and econometrics",
+                "acronym": "SSH/LIDAM/CORE"
+              },
+              {
+                "name": "Institut de recherches économiques et sociales",
+                "acronym": "SSH/LIDAM/IRES"
+              },
+              {
+                "name": "Institut de Statistique, Biostatistique et Sciences Actuarielles",
+                "acronym": "SSH/LIDAM/ISBA"
+              },
+              {
+                "name": "Louvain Finance",
+                "acronym": "SSH/LIDAM/LFIN"
+              },
+              {
+                "name": "Support en méthodologie et calcul statistique (plate-forme technologique)",
+                "acronym": "SSH/LIDAM/SMCS"
+              }
+            ]
+          },
+          {
+            "name": "Louvain Research Institute in Management and Organizations",
+            "acronym": "SSH/LouRIM"
+          },
+          {
+            "name": "Institut de recherche Religions, spiritualités, cultures, sociétés",
+            "acronym": "SSH/RSCS",
+            "children": [
+              {
+                "name": "Archives du monde catholique",
+                "acronym": "SSH/RSCS/ARCA"
+              }
+            ]
+          },
+          {
+            "name": "Institut de sciences politiques Louvain-Europe",
+            "acronym": "SSH/SPLE"
+          },
+          {
+            "name": "Centre de traitement automatique du langage",
+            "acronym": "SSH/TALN"
+          }
+        ]
+      },
+      {
+        "name": "Secteur des sciences de la santé",
+        "acronym": "SSS",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Institut de Duve",
+            "acronym": "SSS/DDUV",
+            "children": [
+              {
+                "name": "Biochimie-Recherche métabolique",
+                "acronym": "SSS/DDUV/BCHM"
+              },
+              {
+                "name": "Computational Biology and Bioinformatics",
+                "acronym": "SSS/DDUV/CBIO"
+              },
+              {
+                "name": "Biologie cellulaire",
+                "acronym": "SSS/DDUV/CELL"
+              },
+              {
+                "name": "Génétique cellulaire",
+                "acronym": "SSS/DDUV/GECE"
+              },
+              {
+                "name": "Genetics of Autoimmune Diseases and Cancer",
+                "acronym": "SSS/DDUV/GEDI"
+              },
+              {
+                "name": "Génétique",
+                "acronym": "SSS/DDUV/GEHU"
+              },
+              {
+                "name": "Epigénétique",
+                "acronym": "SSS/DDUV/GEPI"
+              },
+              {
+                "name": "Liver and pancreas differentiation",
+                "acronym": "SSS/DDUV/LPAD"
+              },
+              {
+                "name": "Cellular Metabolism & Microenvironment",
+                "acronym": "SSS/DDUV/MEMI"
+              },
+              {
+                "name": "Médecine expérimentale",
+                "acronym": "SSS/DDUV/MEXP"
+              },
+              {
+                "name": "Protein phosphorylation",
+                "acronym": "SSS/DDUV/PHOS"
+              },
+              {
+                "name": "Stem Cell Biology and Development",
+                "acronym": "SSS/DDUV/SCBD"
+              },
+              {
+                "name": "Cell signalling",
+                "acronym": "SSS/DDUV/SIGN"
+              },
+              {
+                "name": "Médecine tropicale",
+                "acronym": "SSS/DDUV/TROP"
+              },
+              {
+                "name": "Virologie",
+                "acronym": "SSS/DDUV/VIRO"
+              }
+            ]
+          },
+          {
+            "name": "Institute of NeuroScience",
+            "acronym": "SSS/IONS",
+            "children": [
+              {
+                "name": "Pôle Cellulaire et moléculaire",
+                "acronym": "SSS/IONS/CEMO"
+              },
+              {
+                "name": "Systems & cognitive Neuroscience",
+                "acronym": "SSS/IONS/COSY"
+              },
+              {
+                "name": "Clinical Neuroscience",
+                "acronym": "SSS/IONS/NEUR"
+              }
+            ]
+          },
+          {
+            "name": "Institut de recherche expérimentale et clinique",
+            "acronym": "SSS/IREC",
+            "children": [
+              {
+                "name": "Pôle de recherche cardiovasculaire",
+                "acronym": "SSS/IREC/CARD"
+              },
+              {
+                "name": "Computer Assisted Robotic Surgery",
+                "acronym": "SSS/IREC/CARS"
+              },
+              {
+                "name": "Pôle de chirgurgie expérimentale et transplantation",
+                "acronym": "SSS/IREC/CHEX"
+              },
+              {
+                "name": "Centre de technologies moléculaires appliquées (plate-forme technologique)",
+                "acronym": "SSS/IREC/CTMA"
+              },
+              {
+                "name": "Pôle d'Essais cliniques",
+                "acronym": "SSS/IREC/ECLI"
+              },
+              {
+                "name": "Pôle d'endocrinologie, diabète et nutrition",
+                "acronym": "SSS/IREC/EDIN"
+              },
+              {
+                "name": "Pôle d'épidémiologie et biostatistique",
+                "acronym": "SSS/IREC/EPID"
+              },
+              {
+                "name": "Pôle de Pharmacologie et thérapeutique",
+                "acronym": "SSS/IREC/FATH"
+              },
+              {
+                "name": "Pôle d'Hépato-gastro-entérologie",
+                "acronym": "SSS/IREC/GAEN"
+              },
+              {
+                "name": "Pôle de Gynécologie",
+                "acronym": "SSS/IREC/GYNE"
+              },
+              {
+                "name": "Pôle d'imagerie médicale",
+                "acronym": "SSS/IREC/IMAG"
+              },
+              {
+                "name": "Louvain Centre for Toxicology and Applied Pharmacology",
+                "acronym": "SSS/IREC/LTAP"
+              },
+              {
+                "name": "Pôle pneumologie, ORL (airways) et dermatologie (skin)",
+                "acronym": "SSS/IREC/LUNS"
+              },
+              {
+                "name": "Pôle de Microbiologie médicale",
+                "acronym": "SSS/IREC/MBLG"
+              },
+              {
+                "name": "Pôle de médecine aiguë",
+                "acronym": "SSS/IREC/MEDA"
+              },
+              {
+                "name": "Pôle d'imagerie moléculaire, radiothérapie et oncologie",
+                "acronym": "SSS/IREC/MIRO"
+              },
+              {
+                "name": "Pôle Mont Godinne",
+                "acronym": "SSS/IREC/MONT"
+              },
+              {
+                "name": "Pôle de Morphologie",
+                "acronym": "SSS/IREC/MORF"
+              },
+              {
+                "name": "Pôle de Néphrologie",
+                "acronym": "SSS/IREC/NEFR"
+              },
+              {
+                "name": "Neuro-musculo-skeletal Lab",
+                "acronym": "SSS/IREC/NMSK"
+              },
+              {
+                "name": "Pôle de Pédiatrie",
+                "acronym": "SSS/IREC/PEDI"
+              },
+              {
+                "name": "Pôle de Recherche en Physiopathologie de la Reproduction",
+                "acronym": "SSS/IREC/REPR"
+              },
+              {
+                "name": "Pôle de Pathologies rhumatismales",
+                "acronym": "SSS/IREC/RUMA"
+              },
+              {
+                "name": "Pôle St.-Luc",
+                "acronym": "SSS/IREC/SLUC"
+              }
+            ]
+          },
+          {
+            "name": "Institut de recherche santé et société",
+            "acronym": "SSS/IRSS"
+          },
+          {
+            "name": "Louvain Drug Research Institute",
+            "acronym": "SSS/LDRI",
+            "children": [
+              {
+                "name": "Analyse clinique par spectrométrie de masse de métabolites et de composés d'intérêts pharmaceutique et biologique",
+                "acronym": "SSS/LDRI/MCPB"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Secteur des sciences et technologies",
+        "acronym": "SST",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Centre de ressources du cyclotron",
+            "acronym": "SST/CRC"
+          },
+          {
+            "name": "Earth and Life Institute",
+            "acronym": "SST/ELI",
+            "children": [
+              {
+                "name": "Agronomy",
+                "acronym": "SST/ELI/ELIA"
+              },
+              {
+                "name": "Biodiversity",
+                "acronym": "SST/ELI/ELIB"
+              },
+              {
+                "name": "Earth & Climate",
+                "acronym": "SST/ELI/ELIC"
+              },
+              {
+                "name": "Environmental Sciences",
+                "acronym": "SST/ELI/ELIE"
+              },
+              {
+                "name": "Applied Microbiology",
+                "acronym": "SST/ELI/ELIM"
+              }
+            ]
+          },
+          {
+            "name": "Institute of Information and Communication Technologies, Electronics and Applied Mathematics",
+            "acronym": "SST/ICTM",
+            "children": [
+              {
+                "name": "Pôle en ingénierie électrique",
+                "acronym": "SST/ICTM/ELEN"
+              },
+              {
+                "name": "Pôle en ingénierie informatique",
+                "acronym": "SST/ICTM/INGI"
+              },
+              {
+                "name": "Pôle en ingénierie mathématique",
+                "acronym": "SST/ICTM/INMA"
+              },
+              {
+                "name": "Wallonia Electronics and Communications Measurements (plate-forme technologique)",
+                "acronym": "SST/ICTM/WECM"
+              }
+            ]
+          },
+          {
+            "name": "Institute of Condensed Matter and Nanosciences",
+            "acronym": "SST/IMCN",
+            "children": [
+              {
+                "name": "Analyse structurale moléculaire (plate-forme technologique)",
+                "acronym": "SST/IMCN/ASM"
+              },
+              {
+                "name": "Bio and soft matter",
+                "acronym": "SST/IMCN/BSMA"
+              },
+              {
+                "name": "Lasers et optique (plate-forme technologique)",
+                "acronym": "SST/IMCN/LASO"
+              },
+              {
+                "name": "Modelling",
+                "acronym": "SST/IMCN/MODL"
+              },
+              {
+                "name": "Molecular Chemistry, Materials and Catalysis",
+                "acronym": "SST/IMCN/MOST"
+              },
+              {
+                "name": "Nanoscopic Physics",
+                "acronym": "SST/IMCN/NAPS"
+              }
+            ]
+          },
+          {
+            "name": "Institute of Mechanics, Materials and Civil Engineering",
+            "acronym": "SST/IMMC",
+            "children": [
+              {
+                "name": "Civil and environmental engineering",
+                "acronym": "SST/IMMC/GCE"
+              },
+              {
+                "name": "Materials and process engineering",
+                "acronym": "SST/IMMC/IMAP"
+              },
+              {
+                "name": "Mechatronic, Electrical Energy, and Dynamics Systems",
+                "acronym": "SST/IMMC/MEED"
+              },
+              {
+                "name": "Applied mechanics and mathematics",
+                "acronym": "SST/IMMC/MEMA"
+              },
+              {
+                "name": "Thermodynamics and fluid mechanics",
+                "acronym": "SST/IMMC/TFL"
+              }
+            ]
+          },
+          {
+            "name": "Institut de recherche en mathématique et physique",
+            "acronym": "SST/IRMP"
+          },
+          {
+            "name": "Louvain research institute for Landscape, Architecture, Built environment",
+            "acronym": "SST/LAB"
+          },
+          {
+            "name": "Louvain Institute of Biomolecular Science and Technology",
+            "acronym": "SST/LIBST"
+          },
+          {
+            "name": "Wallonia Infrastructure Nano Fabrication",
+            "acronym": "SST/WINF"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "acronym": "UNamur",
+    "name": "Université de Namur",
+    "selectable": false,
+    "type": "University",
+    "identifiers": [
+      {"type": "ror", "value": "https://ror.org/03d1maw17"},
+      {"type": "isni", "value": "http://isni.org/isni/0000000122428479"},
+      {"type": "crossrefid", "value": "https://api.crossref.org/funders/501100008136"}
+    ],
+    "children": [
+      {
+        "name": "Autre"
+      },
+      {
+        "name": "Départements",
+        "selectable": false,
+        "children": [
+          {
+            "name": "DRO_Centre Droits fondamentaux et Lien social (DF&amp;LS)"
+          },
+          {
+            "name": "DRO_Centre Protection juridique du citoyen (PROJUCIT)"
+          },
+          {
+            "name": "DRO_Centre de recherche Informatique et Droit (CRID)"
+          },
+          {
+            "name": "DRO_Département de Droit"
+          },
+          {
+            "name": "DRO_Département de sciences humaines"
+          },
+          {
+            "name": "DRO_Unité de Droit des obligations"
+          },
+          {
+            "name": "ECO_CERPE (Centre de recherche en économie régionale et politique économique)"
+          },
+          {
+            "name": "ECO_CRED (Centre de recherche en économie du développement)"
+          },
+          {
+            "name": "ECO_CeRCLe (Centre de recherche sur la consommation et les loisirs)"
+          },
+          {
+            "name": "ECO_CeReFIM (Centre de recherche en finance)"
+          },
+          {
+            "name": "ECO_Département de sciences politiques, sociales et de la communication"
+          },
+          {
+            "name": "ECO_Département des sciences de gestion"
+          },
+          {
+            "name": "ECO_Département des sciences économiques"
+          },
+          {
+            "name": "ECO_GRICI (groupe de recherche interdisciplinaire en communication &amp; internet)"
+          },
+          {
+            "name": "ECO_PRECISE-MI (Centre de recherche en systèmes d'information et gestion de l'information)"
+          },
+          {
+            "name": "ECO_ReCCCOM (Centre de recherche en gestion de crises)"
+          },
+          {
+            "name": "ECO_Unité Meuse-Moselle"
+          },
+          {
+            "name": "INF_Pôle aide à la décision"
+          },
+          {
+            "name": "INF_Pôle informatique, organisation et société (CITA)"
+          },
+          {
+            "name": "INF_Pôle ingénierie des systèmes d'information (PRECISE-IS)"
+          },
+          {
+            "name": "INF_Pôle interface homme-machine et communication multimédia"
+          },
+          {
+            "name": "INF_Pôle réseaux et sécurité"
+          },
+          {
+            "name": "INF_Pôle sémantique, logique et calcul"
+          },
+          {
+            "name": "LET_CEDOCEF (Centre d’études et de documentation pour l'enseignement du français)"
+          },
+          {
+            "name": "LET_Centre de recherches Nerval"
+          },
+          {
+            "name": "LET_Centre de recherches archéologiques en Italie (CRAI)"
+          },
+          {
+            "name": "LET_Histoire"
+          },
+          {
+            "name": "LET_Histoire de l'art et archéologie"
+          },
+          {
+            "name": "LET_Langues et littératures classiques"
+          },
+          {
+            "name": "LET_Langues et littératures françaises et romanes"
+          },
+          {
+            "name": "LET_Langues et littératures germaniques - Unité d'allemand"
+          },
+          {
+            "name": "LET_Langues et littératures germaniques - Unité d'anglais"
+          },
+          {
+            "name": "LET_Langues et littératures germaniques - Unité de néerlandais"
+          },
+          {
+            "name": "LET_Philosophie"
+          },
+          {
+            "name": "MED_Département de Pharmacie"
+          },
+          {
+            "name": "MED_Département de Psychologie"
+          },
+          {
+            "name": "MED_URPhyM (Unité de recherche en physiologie moléculaire)"
+          },
+          {
+            "name": "SBIO_URBC (unité de recherche en biologie cellulaire)"
+          },
+          {
+            "name": "SBIO_URBM (unité de recherche en biologie moléculaire)"
+          },
+          {
+            "name": "SBIO_URBO (unité de recherche en biologie des organismes)"
+          },
+          {
+            "name": "SBIO_URBV (unité de recherche en biologie végétale)"
+          },
+          {
+            "name": "SCHI_GCES (groupe de chimie et électrochimie de surface)"
+          },
+          {
+            "name": "SCHI_GCNM (groupe de chimie des nanomatériaux)"
+          },
+          {
+            "name": "SCHI_GCOBS (groupe de chimie organique et bioorganique supramoléculaire)"
+          },
+          {
+            "name": "SCHI_GCPTS (groupe de chimie physique, théorique et structurale)"
+          },
+          {
+            "name": "SCI_Interuniversity Scientific Computing Facility (ISCF)"
+          },
+          {
+            "name": "SGOG_Département de géographie"
+          },
+          {
+            "name": "SGOL_Département de géologie"
+          },
+          {
+            "name": "SMAT_Analyse Numérique"
+          },
+          {
+            "name": "SMAT_Contrôle et optimisation"
+          },
+          {
+            "name": "SMAT_Groupe d'applications mathématiques aux sciences du cosmos (GAMASCO)"
+          },
+          {
+            "name": "SMAT_Groupe de recherche sur les Transports (GRT)"
+          },
+          {
+            "name": "SMAT_Statistique"
+          },
+          {
+            "name": "SMAT_Systèmes dynamiques"
+          },
+          {
+            "name": "SPHY_LARN (laboratoire d’analyses par réactions nucléaires)"
+          },
+          {
+            "name": "SPHY_LISE (laboratoire interdépartemental de spectroscopie électronique)"
+          },
+          {
+            "name": "SPHY_LLS (laboratoire laser et spectroscopie)"
+          },
+          {
+            "name": "SPHY_LPME (laboratoire de physique des matériaux électroniques)"
+          },
+          {
+            "name": "SPHY_LPS (laboratoire de physique du solide)"
+          },
+          {
+            "name": "SSPS_CIDES (Centre interfacultaire droit, éthique et sciences de la santé)"
+          },
+          {
+            "name": "SSPS_Département de sciences, philosophies, société"
+          },
+          {
+            "name": "SVET_Anatomie animale et éthologie des animaux domestiques"
+          },
+          {
+            "name": "SVET_Physiologie animale"
+          },
+          {
+            "name": "SVET_Unité d'immunologie et de microbiologie"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Université Saint-Louis",
+    "acronym": "USL-B",
+    "selectable": false,
+    "type": "University",
+    "identifiers": [
+      {"type": "ror", "value": "https://ror.org/02ygek028"},
+      {"type": "isni", "value": "http://isni.org/isni/0000000109416203"},
+      {"type": "crossrefid", "value": "https://api.crossref.org/funders/501100008137"}
+    ],
+    "children": [
+      {
+        "name": "Anciennes dénominations",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Centre d'études sociologiques (CES)"
+          },
+          {
+            "name": "Pôle de recherches sur la communication et les médias (PReCoM)"
+          },
+          {
+            "name": "Séminaire de mathématiques appliquées aux sciences humaines (SMASH)"
+          }
+        ]
+      },
+      {
+        "name": "Autre"
+      },
+      {
+        "name": "Centres et des séminaires de recherche",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Center for Applied Public Economics (CAPE)"
+          },
+          {
+            "name": "Centre Anthropologie Sociologie Psychologie ; études et recherches (CASPER)"
+          },
+          {
+            "name": "Centre Innovation - Proprieté intellectuelle (CIPI)"
+          },
+          {
+            "name": "Centre Prospero - Langage, image et connaissance"
+          },
+          {
+            "name": "Centre belge d'études bourguignonnes 1400-1600"
+          },
+          {
+            "name": "Centre d'histoire religieuse (CHIREL)"
+          },
+          {
+            "name": "Centre d'étude de la littérature néérlandaise des Pays-Bas autrichiens"
+          },
+          {
+            "name": "Centre d'étude du droit de l'environnement (CEDRE)"
+          },
+          {
+            "name": "Centre d'études régionales bruxelloises (C.E.R.B.)"
+          },
+          {
+            "name": "Centre de droit privé"
+          },
+          {
+            "name": "Centre de philosophie politique"
+          },
+          {
+            "name": "Centre de recherche en Economie (CEREC)"
+          },
+          {
+            "name": "Centre de recherches en histoire du droit et des institutions (CRHIDI)"
+          },
+          {
+            "name": "Centre de recherches en science politique (CReSPo)"
+          },
+          {
+            "name": "Centre de recherches et d'interventions sociologiques (CESIR)"
+          },
+          {
+            "name": "Centre interdisciplinaire de recherches en droit constitutionnel et administratif (CIRC)"
+          },
+          {
+            "name": "Ecole des sciences philosophiques et religieuses"
+          },
+          {
+            "name": "Engage - Research Center for Publicness in Contemporary Communication"
+          },
+          {
+            "name": "Groupe de recherche en matière pénale et criminelle (GREPEC)"
+          },
+          {
+            "name": "Networks Ontology Data Epistemology Subjectivity (NODES)"
+          },
+          {
+            "name": "Observatoire du SIDA et des sexualités"
+          },
+          {
+            "name": "Séminaire des Sciences du Langage (SeSLa)"
+          },
+          {
+            "name": "Séminaire interdisciplinaire d'études juridiques (SIEJ)"
+          },
+          {
+            "name": "TranSphères. Centre de recherche en traduction et interprétation"
+          }
+        ]
+      },
+      {
+        "name": "Instituts fédérant des centres de recherche et des chercheurs",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Institut d'études européennes (IEE)"
+          },
+          {
+            "name": "Institut de recherche interdisciplinaire sur Bruxelles (IRIB)"
+          },
+          {
+            "name": "Réseau Interdisciplinarité et Société (RIS)"
+          }
+        ]
+      },
+      {
+        "name": "Pôle de recherche",
+        "selectable": false,
+        "children": [
+          {
+            "name": "Pôle de recherche en droit privé",
+            "acronym": "Séminaire interdisciplinaire d'études juridiques"
+          }
+        ]
+      }
+    ]
+  }
+]
