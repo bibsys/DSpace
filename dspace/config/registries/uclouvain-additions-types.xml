@@ -97,6 +97,12 @@
     </dc-type>
     <dc-type>
         <schema>dc</schema>
+        <element>relation</element>
+        <qualifier>journal</qualifier>
+        <scope-note/>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
         <element>subject</element>
         <qualifier>internal</qualifier>
         <scope-note/>
