@@ -479,4 +479,17 @@
         <qualifier>issn</qualifier>
         <scope_note>To specify a potential issn identifier for the serial</scope_note>
     </dc-type>
+    <!-- PERSON SCHEMA -->
+    <dc-type>
+        <schema>person</schema>
+        <element>affiliation</element>
+        <qualifier>institution</qualifier>
+        <scope_note>An institution for a person's affiliation</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>person</schema>
+        <element>affiliation</element>
+        <qualifier>department</qualifier>
+        <scope_note>A department for a person's affiliation</scope_note>
+    </dc-type>
 </dspace-dc-types>
