@@ -24,8 +24,6 @@ public class AffiliationEntityRestModel {
         this.type = model.type;
         this.isSelectable = model.isSelectable;
         this.parent = model.parent;
-        model.children.forEach(modelChild -> {
-            this.children.add(new AffiliationEntityRestModel(modelChild));
-        });
+        model.children.forEach(modelChild -> this.children.add(new AffiliationEntityRestModel(modelChild)));
     }
 }
