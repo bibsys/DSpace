@@ -162,6 +162,7 @@ METADATA_REGISTRIES=(
   "registries/oairecerif-types.xml"
   "registries/organization-types.xml"
   "registries/publication-types.xml"
+  "registries/person-types.xml"
 )
 for registry in "${METADATA_REGISTRIES[@]}"
 do

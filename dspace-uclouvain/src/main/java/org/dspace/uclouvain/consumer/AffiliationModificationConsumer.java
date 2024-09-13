@@ -20,16 +20,12 @@ import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
  * @Author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class AffiliationModificationConsumer implements Consumer {
-    private UCLouvainAffiliationEntityRestService affiliationEntityRestService;
-    private EntityTypeService entityTypeService;
-    private Logger logger;
+    private UCLouvainAffiliationEntityRestService affiliationEntityRestService = UCLouvainServiceFactory.getInstance().getAffiliationEntityRestService();
+    private EntityTypeService entityTypeService = ContentServiceFactory.getInstance().getEntityTypeService();
+    private Logger logger = LogManager.getLogger(AffiliationModificationConsumer.class);
 
     @Override
-    public void initialize() throws Exception {
-        this.affiliationEntityRestService = UCLouvainServiceFactory.getInstance().getAffiliationEntityRestService();
-        this.entityTypeService = ContentServiceFactory.getInstance().getEntityTypeService();
-        this.logger = LogManager.getLogger(AffiliationModificationConsumer.class);
-    }
+    public void initialize() {}
 
     @Override
     public void consume(Context context, Event event) throws SQLException {

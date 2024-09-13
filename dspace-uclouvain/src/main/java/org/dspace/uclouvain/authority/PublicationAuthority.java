@@ -6,6 +6,8 @@ import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.discovery.SearchService;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.utils.DSpace;
 
 import java.util.ArrayList;
@@ -35,6 +37,7 @@ public abstract class PublicationAuthority implements ChoiceAuthority {
     private static Logger logger = LogManager.getLogger(ItemAuthority.class);
     protected DSpace dspace = new DSpace();
     protected ItemService itemService = ContentServiceFactory.getInstance().getItemService();
+    protected ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
     protected SearchService searchService = dspace.getServiceManager().getServiceByName(
         "org.dspace.discovery.SearchService", SearchService.class);
 
@@ -59,7 +62,7 @@ public abstract class PublicationAuthority implements ChoiceAuthority {
      */
     protected Choices getMatches(String text, int start, int limit, String locale, boolean onlyExactMatches) {
         if (limit <= 0) {
-            limit = 20;
+            limit = this.configurationService.getIntProperty("uclouvain.authority.authorAuthority.default");
         }
 
         SolrClient solr = searchService.getSolrSearchCore().getSolr();
@@ -98,8 +101,7 @@ public abstract class PublicationAuthority implements ChoiceAuthority {
                     logger.error(e.getMessage(), e);
                 }
             }
-            Choice[] final_results = new Choice[choices.size()];
-            final_results = choices.toArray(final_results);
+            Choice[] final_results = choices.toArray(new Choice[choices.size()]);
             long numFound = queryResponse.getResults().getNumFound();
 
             return new Choices(final_results, 0, (int) numFound, Choices.CF_AMBIGUOUS, false, -1);
