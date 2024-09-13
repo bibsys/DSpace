@@ -50,7 +50,7 @@ public class AffiliationsRestController {
         @RequestParam(value = "parentUUID", required = false) UUID parentUUID,
         @RequestParam(value = "depth", required = false) Integer depth) throws IOException {
 
-        // Get the tree from the service. This tree automatically regenerated once an OrgUnit is modified so we are sure to be up to date.
+        // Get the tree from the service. This tree automatically regenerated once an OrgUnit is modified so we are sure to be up-to-date.
         List<AffiliationEntityRestModel> modelsList = this.deepCopy(this.uclouvainAffiliationEntityRestService.getAffiliationsEntities());
         // If nothing found return an empty list
         if (modelsList == null) {
@@ -73,16 +73,12 @@ public class AffiliationsRestController {
         }
 
         // Depth filtering
-        // TODO: Find a way to make it work without modifying the original list => Will need to use deep copy.
-        if (depth != null && depth < modelsList.size()) {
-            List<AffiliationEntityRestModel> filteredElements = dataToReturn;
-            if (depth >= 0) {
-                recursiveDepthRemover(filteredElements, depth, 0);
-            } else {
+        if (depth != null && depth < dataToReturn.size()) {
+            if (depth < 0) {
                 response.sendError(400, "Depth parameter invalid, it should be a positive integer");
                 return null;
             }
-            dataToReturn = filteredElements;
+            recursiveDepthRemover(dataToReturn, depth, 0);
         }
         return dataToReturn;
     }

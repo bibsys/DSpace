@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
@@ -84,7 +83,7 @@ public class UCLouvainAffiliationEntityRestServiceImpl implements UCLouvainAffil
             // Set the public property to the new affiliation tree
             this.setAffiliationsEntities(modelsList);
             endTime = System.currentTimeMillis();
-            this.logger.info("Refreshed affiliation tree in " + (endTime - startTime) + "ms");
+            this.logger.debug("Refreshed affiliation tree in " + (endTime - startTime) + "ms");
         } catch (Exception e) {
             this.logger.error("Error while processing affiliations entities: " + e);
         }
@@ -121,7 +120,6 @@ public class UCLouvainAffiliationEntityRestServiceImpl implements UCLouvainAffil
             model.type = itemService.getMetadataFirstValue(item, "dc", "type", null, Item.ANY);
 
             String selectable = itemService.getMetadataFirstValue(item, "organization", "isSelectable", null, Item.ANY);
-            // TODO: See if we set true by default if metadata not found.
             model.isSelectable = (selectable != null) ? selectable.equals("true"): true;
 
             // Extract parent UUID
@@ -154,8 +152,6 @@ public class UCLouvainAffiliationEntityRestServiceImpl implements UCLouvainAffil
         // Conversion from ReloadableEntity to Item
         return results.stream()
             .map(result -> result.getIndexedObject())
-            .filter(dso -> dso instanceof DSpaceObject)
-            .map(dso -> (DSpaceObject) dso)
             .filter(dso -> dso instanceof Item)
             .map(dso -> (Item) dso)
             .collect(Collectors.toList());
