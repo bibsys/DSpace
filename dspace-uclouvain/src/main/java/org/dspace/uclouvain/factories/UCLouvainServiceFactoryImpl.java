@@ -9,6 +9,7 @@ package org.dspace.uclouvain.factories;
 
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
+import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -22,6 +23,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainResourcePolicyService uclouvainResourcePolicyService;
     @Autowired(required = true)
     private UCLouvainEntityService uclouvainEntityService;
+    @Autowired(required = true)
+    private UCLouvainAffiliationEntityRestService uclouvainAffiliationEntityRestService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -30,6 +33,10 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public UCLouvainEntityService getEntityService() {
         return uclouvainEntityService;
+    }
+    @Override
+    public UCLouvainAffiliationEntityRestService getAffiliationEntityRestService() {
+        return uclouvainAffiliationEntityRestService;
     }
 
 }
