@@ -13,6 +13,7 @@ import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
 import org.dspace.uclouvain.services.DirectLinkService;
+import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
@@ -31,6 +32,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract CommentService getCommentService();
     public abstract DirectLinkService getDirectLinkService();
     public abstract MailMetadataParserService getMailMetadataParserService();
+    public abstract UCLouvainAffiliationEntityRestService getAffiliationEntityRestService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
