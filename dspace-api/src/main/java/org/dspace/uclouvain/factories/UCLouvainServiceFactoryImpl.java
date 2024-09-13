@@ -12,6 +12,7 @@ import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.services.DirectLinkService;
+import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private DirectLinkService uclouvainDirectLinkService;
     @Autowired
     private MailMetadataParserService mailMetadataParserService;
+    @Autowired
+    private UCLouvainAffiliationEntityRestService uclouvainAffiliationEntityRestService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -66,4 +69,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     public MailMetadataParserService getMailMetadataParserService() {
         return mailMetadataParserService;
     }
+    public UCLouvainAffiliationEntityRestService getAffiliationEntityRestService() {
+        return uclouvainAffiliationEntityRestService;
+    }
+
 }
