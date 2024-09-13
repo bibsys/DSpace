@@ -42,16 +42,21 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
 
         List<MetadataValue> institutions = this.itemService.getMetadata(item, "person", "affiliation", "institution", null);
         List<MetadataValue> departments = this.itemService.getMetadata(item, "person", "affiliation", "department", null);
-        if (institutions != null && institutions.size() == 1) {
-            extras.put("data-oairecerif_authors_orgunit", institutions.get(0).getValue());
-            if (isValidAuthority(institutions.get(0).getAuthority())) {
-                extras.put("authority-oairecerif_authors_orgunit", institutions.get(0).getAuthority());
+
+        // For institutions && department, we must return something only if there is only one value, else we cannot choose.
+        MetadataValue institution = (institutions.isEmpty() || institutions.size() != 1) ? null : institutions.get(0);
+        if (institution != null) {
+            extras.put("data-oairecerif_authors_orgunit", institution.getValue());
+            if (isValidAuthority(institution.getAuthority())) {
+                extras.put("authority-oairecerif_authors_orgunit", institution.getAuthority());
             }
         }
-        if (departments != null && departments.size() == 1) {
-            extras.put("data-oairecerif_authors_orgunitDepartement", departments.get(0).getValue());
-            if (isValidAuthority(departments.get(0).getAuthority())) {
-                extras.put("authority-oairecerif_authors_orgunitDepartement", departments.get(0).getAuthority());
+
+        MetadataValue department = (departments.isEmpty() || departments.size() != 1) ? null : departments.get(0);
+        if (department != null) {
+            extras.put("data-oairecerif_authors_orgunitDepartement", department.getValue());
+            if (isValidAuthority(department.getAuthority())) {
+                extras.put("authority-oairecerif_authors_orgunitDepartement", department.getAuthority());
             }
         }
         return extras;
@@ -59,7 +64,19 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
 
     @Override
     public String getLabel(String key, String locale) {
-        return "";
+        try {
+            Item person = this.itemService.find(getContext(), UUID.fromString(key));
+            if (person != null) {
+                String name =  this.itemService.getMetadataFirstValue(person, "dc", "title", null, null);
+                if (name != null) {
+                    return name;
+                }
+            }
+            return key;
+        } catch (SQLException e) {
+            return key;
+        }
+
     }
 
     public void setPluginInstanceName(String name) {

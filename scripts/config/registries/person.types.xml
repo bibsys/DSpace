@@ -1,0 +1,24 @@
+<dspace-dc-types>
+    <dspace-header>
+        <title>Additional metadata fields for the 'person' schema</title>
+        <contributor.author>Michaël Pourbaix</contributor.author>
+    </dspace-header>
+    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-schema>
+        <name>person</name>
+        <namespace>http://dspace.org/person</namespace>
+    </dc-schema>
+    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>person</schema>
+        <element>affiliation</element>
+        <qualifier>institution</qualifier>
+        <scope_note>An institution for a person's affiliation</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>person</schema>
+        <element>affiliation</element>
+        <qualifier>department</qualifier>
+        <scope_note>A department for a person's affiliation</scope_note>
+    </dc-type>
+</dspace-dc-types>
