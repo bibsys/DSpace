@@ -219,7 +219,7 @@
   </step-definitions>
   <submission-definitions>
     <submission-process name="master-thesis">
-      <step id="collection" />
+      <!--<step id="collection" />-->
       <step id="extractionstep" />
       <step id="upload" />
       <step id="master-thesis" />
