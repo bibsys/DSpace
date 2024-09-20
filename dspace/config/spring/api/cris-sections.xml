@@ -8,6 +8,8 @@
         <property name="components">
             <list>
                 <ref bean="sectionresearchoutputs" />
+                <!-- Browse section to display all browse possibilities -->
+                <ref bean="sectionbrowse"/>
                 <!-- <ref bean="sectionfundings_and_projects" /> -->
                 <!-- <ref bean="sectionresearcherprofiles" /> -->
                 <ref bean="sectionsite" />
@@ -21,25 +23,9 @@
         <constructor-arg name="sectionComponents">
             <list>
                 <list>
-                    <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
-                        <property name="browseNames">
-                            <list>
-                                <!--<value>rodept</value>-->
-                                <!--<value>author</value>-->
-                                <value>promoter</value>
-                                <!--<value>title</value>-->
-                                <!--<value>type</value>-->
-                                <value>dateissued</value>
-                                <!--<value>subject</value>-->
-                                <value>faculty</value>
-                                <value>degree</value>
-                            </list>
-                        </property>
-                        <property name="style" value="col-md-4"/>
-                    </bean>
                     <bean class="org.dspace.layout.CrisLayoutSearchComponent">
                         <property name="discoveryConfigurationName" value="researchoutputs" />
-                        <property name="style" value="col-md-8"/>
+                        <property name="style" value="col-md-12"/>
                     </bean>
                 </list>
                 <!--<list>
@@ -64,6 +50,32 @@
                         <property name="style" value="col-md-12"/>
                     </bean>
                 </list>-->
+            </list>
+        </constructor-arg>
+    </bean>
+    <bean class="org.dspace.layout.CrisLayoutSection" id="sectionbrowse">
+        <constructor-arg name="id" value="browse"/>
+        <constructor-arg name="visible" value="true"/>
+        <constructor-arg name="sectionComponents">
+            <list>
+                <list>
+                    <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
+                        <property name="browseNames">
+                            <list>
+                                <!--<value>rodept</value>-->
+                                <!--<value>author</value>-->
+                                <value>promoter</value>
+                                <!--<value>title</value>-->
+                                <!--<value>type</value>-->
+                                <value>dateissued</value>
+                                <!--<value>subject</value>-->
+                                <value>faculty</value>
+                                <value>degree</value>
+                            </list>
+                        </property>
+                        <property name="style" value="col-md-12"/>
+                    </bean>
+                </list>
             </list>
         </constructor-arg>
     </bean>
