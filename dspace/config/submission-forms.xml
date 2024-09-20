@@ -427,7 +427,7 @@
           <hint />
         </field>
       </row>
-      <row>
+      <!--<row>
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>rights</dc-element>
@@ -438,7 +438,7 @@
           <hint>License type: CC-BY, CC-BY-SA...</hint>
           <required>You must select a license for the file</required>
         </field>
-      </row>
+      </row>-->
       <!-- <row>
         <field>
           <dc-schema>dc</dc-schema>
