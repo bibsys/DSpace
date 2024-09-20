@@ -26,6 +26,7 @@
           <label>Email</label>
           <input-type>onebox</input-type>
           <hint>Enter the email where to contact the author</hint>
+          <required>You must enter a valid email address.</required>
         </field>
       </row>
       <row>
@@ -35,6 +36,7 @@
           <dc-qualifier>name</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Institution</label>
+          <style>col-6</style>
           <input-type>onebox</input-type>
           <hint>Choose the author institution affiliation</hint>
         </field>
@@ -44,6 +46,7 @@
           <dc-qualifier>fgs</dc-qualifier>
           <repeatable>false</repeatable>
           <label>FGS</label>
+          <style>col-6</style>
           <input-type>onebox</input-type>
           <hint>FGS Identifier</hint>
           <readonly>all</readonly>
@@ -54,7 +57,7 @@
           <dc-qualifier>noma</dc-qualifier>
           <repeatable>false</repeatable>
           <label>NOMA</label>
-          <input-type>onebox</input-type>
+          <input-type>hidden</input-type>
           <hint>NOMA Identifier</hint>
           <readonly>all</readonly>
         </field>
@@ -130,6 +133,7 @@
           <label>Email</label>
           <input-type>onebox</input-type>
           <hint>Enter the email where to contact the promoter</hint>
+          <required>You must enter a valid email address.</required>
         </field>
       </row>
       <row>
@@ -186,7 +190,7 @@
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
           <dc-qualifier>abstract</dc-qualifier>
-          <language value-pairs-name="common_iso_languages">true</language>
+          <!--<language value-pairs-name="common_iso_languages">true</language>-->
           <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
@@ -214,7 +218,6 @@
           <label>Subject Keywords</label>
           <input-type>tag</input-type>
           <hint>Enter appropriate subject keywords or phrases.</hint>
-          <required>You must enter some keywords for this item.</required>
         </field>
       </row>
       <row>
@@ -427,7 +430,7 @@
           <hint />
         </field>
       </row>
-      <row>
+      <!--<row>
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>rights</dc-element>
@@ -438,7 +441,7 @@
           <hint>License type: CC-BY, CC-BY-SA...</hint>
           <required>You must select a license for the file</required>
         </field>
-      </row>
+      </row>-->
       <!-- <row>
         <field>
           <dc-schema>dc</dc-schema>
@@ -2951,7 +2954,7 @@ it, please enter the types and the actual numbers or codes.</hint>
         <displayed-value>September</displayed-value>
         <stored-value>September</stored-value>
       </pair>
-    </value-pairs>    
+    </value-pairs>
     <value-pairs value-pairs-name="common_iso_languages_639_2" dc-term="common_iso_languages_639_2">
       <pair>
         <displayed-value>Dutch</displayed-value>
