@@ -248,6 +248,45 @@ public class CrisLayoutSectionRest extends BaseObjectRest<String> {
         }
     }
 
+    public static class CrisLayoutFacetFocusComponentRest implements CrisLayoutSectionComponentRest {
+
+        private String discoveryConfigurationName;
+
+        private String style;
+
+        private String targetFacet;
+
+        public String getDiscoveryConfigurationName() {
+            return discoveryConfigurationName;
+        }
+
+        public void setDiscoveryConfigurationName(String discoveryConfigurationName) {
+            this.discoveryConfigurationName = discoveryConfigurationName;
+        }
+
+        @Override
+        public String getComponentType() {
+            return "facet-focus";
+        }
+
+        @Override
+        public String getStyle() {
+            return this.style;
+        }
+
+        public void setStyle(String style) {
+            this.style = style;
+        }
+
+        public String getTargetFacet() {
+            return targetFacet;
+        }
+
+        public void setTargetFacet(String targetFacet) {
+            this.targetFacet = targetFacet;
+        }
+    }
+
     public static class CrisLayoutSearchComponentRest implements CrisLayoutSectionComponentRest {
 
         private String discoveryConfigurationName;

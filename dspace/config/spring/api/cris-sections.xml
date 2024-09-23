@@ -129,14 +129,12 @@
         <constructor-arg name="visible" value="false"/>
         <constructor-arg name="sectionComponents">
           <list>
-            <!-- <list>
-                <bean class="org.dspace.layout.CrisLayoutSearchComponent">
-                    <property name="discoveryConfigurationName" value="site" />
-                    <property name="style" value="col-md-12"/>
-                    <property name="searchType" value="basic"/>
-                    <property name="displayTitle" value="false"/>
+            <list>
+                <bean class="org.dspace.layout.CrisLayoutFacetFocusComponent">
+                    <property name="discoveryConfigurationName" value="commonConfiguration" />
+                    <property name="targetFacet" value="facultyname"/>
                 </bean>
-            </list> -->
+            </list>
             <!-- <list>
                 <bean class="org.dspace.layout.CrisLayoutCountersComponent">
                     <property name="style" value="col-md-12 py-4"/>
