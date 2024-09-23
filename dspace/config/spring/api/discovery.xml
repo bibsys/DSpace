@@ -2733,6 +2733,8 @@
                 <value>masterthesis.faculty.name</value>
             </list>
         </property>
+        <!-- Setting this to 100 to see all faculties (useful for the FacetFocusSection) -->
+        <property name="facetLimit" value="100"/>
     </bean>
 
     <bean id="searchFilterDiscoverable" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
