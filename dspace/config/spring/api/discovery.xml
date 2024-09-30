@@ -1075,8 +1075,12 @@
                 <property name="sortFields">
                     <list>
                         <ref bean="sortLastModified" />
-                        <ref bean="sortTitleAsc" />
-                        <ref bean="sortDateIssuedDesc" />
+                        <ref bean="sortNOMAAsc" />
+                        <ref bean="sortNOMADesc" />
+                        <ref bean="sortAuthorNameAsc" />
+                        <ref bean="sortAuthorNameDesc" />
+                        <!-- <ref bean="sortTitleAsc" />
+                        <ref bean="sortDateIssuedDesc" /> -->
                     </list>
                 </property>
             </bean>
@@ -3641,6 +3645,27 @@
     </bean>
 
     <!--Sort properties-->
+
+    <bean id="sortNOMAAsc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="authors.identifier.noma"/>
+        <property name="defaultSortOrder" value="asc"/>
+    </bean>
+
+    <bean id="sortNOMADesc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="authors.identifier.noma"/>
+        <property name="defaultSortOrder" value="desc"/>
+    </bean>
+
+    <bean id="sortAuthorNameAsc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="dc.contributor.author"/>
+        <property name="defaultSortOrder" value="asc"/>
+    </bean>
+
+    <bean id="sortAuthorNameDesc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="dc.contributor.author"/>
+        <property name="defaultSortOrder" value="desc"/>
+    </bean>
+
     <bean id="sortScore" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
         <property name="defaultSortOrder" value="desc"/>
     </bean>
