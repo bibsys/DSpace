@@ -18,31 +18,31 @@ import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 
 /**
- * Class representing the ChangeRequest email. This is email is to be sent when a manager requests a change
- * for a workflow item.
+ * Class representing the ChangeRequest email.
+ * This email is to be sent when a manager requests a change for a workflow item.
  * It will send the email along with the data to both the submitter and the promoters.
  * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class ThesisChangeRequestEmail extends GenericThesisEmail {
-    protected String changeRequest;
 
-    protected String promoterEmailField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email")
-    ).getFullString("_");
+    protected String changeRequest;
+    protected String promoterEmailField = new MetadataField(configService
+            .getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email"))
+            .getFullString("_");
 
     public ThesisChangeRequestEmail(Item item, String reason) {
         super(item);
-        this.changeRequest = reason;
+        changeRequest = reason;
     }
 
     /**
      * Get the author email addresses that will be used as recipients.
-     * @return The recipients addresses.
+     * @return The recipient addresses list.
      */
     protected List<String> getRecipientsEmails() {
-        List<String> recipients =  this.metadataMap.get(this.promoterEmailField);
-        recipients.add(this.item.getSubmitter().getEmail());
+        List<String> recipients = metadataMap.get(promoterEmailField);
+        recipients.add(item.getSubmitter().getEmail());
         return recipients;
     }
 
@@ -59,7 +59,7 @@ public class ThesisChangeRequestEmail extends GenericThesisEmail {
     /**
      * Fill the email with information: recipients, subjects and arguments for the template.
      * @param email the email to fill.
-     * @throws EmailGenerationException: If an error occurs while filling email information.
+     * @throws EmailGenerationException if an error occurs while filling email information.
      */
     @Override
     protected void generateEmail(Email email) throws EmailGenerationException {
