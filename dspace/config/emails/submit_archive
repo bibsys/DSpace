@@ -6,9 +6,19 @@
 ##
 #set($subject = "${config.get('dspace.name')}: Submission Approved and Archived")
 
-You submitted: ${params[0]}
+------ Version française (english version below) 
 
-To collection: ${params[1]}
+Votre dépôt intitulé '${params[0]}' à bien été accepté et est disponible sur dial.mem via le lien suivant:
+${params[2]}
+
+Merci d'utiliser cet URL si vous citez ce dépôt.
+
+Cordialement,
+L'équipe ${config.get('dspace.name')}.
+
+------ English version ------
+
+You submitted: ${params[0]}
 
 Your submission has been accepted and archived in ${config.get('dspace.name')},
 and it has been assigned the following identifier:
