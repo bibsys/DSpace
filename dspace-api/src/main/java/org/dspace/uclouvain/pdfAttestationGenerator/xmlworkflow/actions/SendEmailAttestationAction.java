@@ -88,17 +88,17 @@ public class SendEmailAttestationAction extends ProcessingAction {
                 }
 
                 try {
-                    // We need to use a `ByteArrayInputStream` to be able to reset the stream after sending the email
-                    // to the submitter(s).
+                    // We need to use a `ByteArrayInputStream` in order to be able to reset the stream after sending
+                    // the email to the submitter(s).
                     ByteArrayInputStream pdfAttestation = new ByteArrayInputStream(
                         IOUtils.toByteArray(handler.getAttestationAsInputStream(uuid))
                     );
                     // Mark the position to reset to
                     pdfAttestation.mark(pdfAttestation.available());
-                    // Email authors
+                    // Send email to authors
                     new ThesisAuthorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
-                    // Reset to the previously marked position. We need to do that because the stream has been consumed
-                    // by the previous email.
+                    // Reset to the previously marked position.
+                    // We need to do that because the stream has been consumed by the previous email.
                     pdfAttestation.reset();
                     // Email promoters
                     new ThesisSupervisorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
