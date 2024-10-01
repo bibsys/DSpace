@@ -36,26 +36,23 @@ import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 /**
 * Main action to generate a PDF attestation for the workflow item if his type is handled
 */
 public class SendEmailAttestationAction extends ProcessingAction {
 
+    private final Logger logger = LogManager.getLogger(SendEmailAttestationAction.class);
+
     @Autowired
     ItemService itemService;
 
     private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-    private String algorithm = configService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
-    private String encryptionKey = configService.getProperty("uclouvain.api.bitstream.download.secret", "");
+    private final String algorithm = configService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
+    private final String encryptionKey = configService.getProperty("uclouvain.api.bitstream.download.secret", "");
+    private final String authorEmailField;
+    private final String promoterEmailField;
 
-    private Logger logger = LogManager.getLogger(SendEmailAttestationAction.class);
-
-    // FIELD CONFIGURATION
-    private String authorEmailField;
-    private String promoterEmailField;
-
-    public SendEmailAttestationAction() throws Exception {
+    public SendEmailAttestationAction() {
         // Instantiate the metadata fields from the configuration
         authorEmailField = new MetadataField(configService.getProperty(
                 "uclouvain.global.metadata.authoremail.field", "authors.email")).getFullString("_");
@@ -92,24 +89,21 @@ public class SendEmailAttestationAction extends ProcessingAction {
                 }
 
                 try {
-                    // We need to use a `ByteArrayInputStream` to be able to reset the stream after sending the email
-                    // to the submitter(s).
+                    // We need to use a `ByteArrayInputStream` in order to be able to reset the stream after sending
+                    // the email to the submitter(s).
                     ByteArrayInputStream pdfAttestation = new ByteArrayInputStream(
                         IOUtils.toByteArray(handler.getAttestationAsInputStream(uuid))
                     );
                     // Mark the position to reset to
                     pdfAttestation.mark(pdfAttestation.available());
-                    // Email authors
+                    // Send email to authors
                     new ThesisAuthorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
-                    // Reset to the previously marked position. We need to do that because the stream has been consumed
-                    // by the previous email.
+                    // Reset to the previously marked position.
+                    // We need to do that because the stream has been consumed by the previous email.
                     pdfAttestation.reset();
-                    // Email promoters
-                    new ThesisPromoterAttestationEmail(
-                            dspaceItem,
-                            pdfAttestation,
-                            this.algorithm, this.encryptionKey
-                    ).sendEmail();
+                    // Send email to promoters
+                    new ThesisPromoterAttestationEmail(dspaceItem, pdfAttestation, this.algorithm, this.encryptionKey)
+                            .sendEmail();
                 } catch (Exception e) {
                     // Send an error email if something goes wrong
                     logger.error("An exception occurred while generating email attestation for uuid: " + uuid + ": "
