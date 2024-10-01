@@ -1,29 +1,60 @@
 ## Email sent to a DSpace User when his submission has be validated and entered the archive
 ## This email comes with an attachment: an attestation that confirms the submission.
 ## Parameters:  - {0} Date and time
-##              - {1} Type of the submission (ex: Thesis)
-##              - {2} Information about the submission (title, abstract...)
-##              - {3} List of urls to access the bitstreams
+##              - {1} Information about the submission (title, abstract...)
+##              - {2} List of urls to access the bitstreams
 #set($phone = ${config.get('mail.message.helpdesk.telephone')})
-
 -- ${params[0]} --
 
-Dear promoter,
+------ Version française (English version below) ------
 
-Since you are in charge, please find in attachment the ${params[1]} attestation for the following submission:
+Madame la Professeure,
+Monsieur le Professeur,
 
-${params[2]}
+Un mémoire dont vous êtes le promoteur / la promotrice vient d'être déposé en ligne dans le répertoire des mémoires de l'UCLouvain.
 
-#if(${params[3]})
-Here are your access urls for the attestation's bitstreams:
-#foreach($url in ${params[3]})
+Vous trouverez en annexe l'attestation de dépôt. Celle-ci indique le type de diffusion que l'auteur·e a choisi pour son mémoire; le détail est également reproduit ci-dessous avec les liens vous permettant de télécharger les fichiers déposés.
+
+La version électronique déposée par l'étudiant·e constitue la version officielle du mémoire défendu. Dans le cas d'un dépôt parallèle d'un ou plusieurs exemplaires imprimés pour le jury, l'étudiant·e s'engage à l'exacte conformité des deux versions. Néanmoins, le promoteur / la promotrice est invité·e à télécharger le ou les fichiers déposés pour vérifier qu'il n'y a pas eu d'erreur de dépôt de la part de l'étudiant·e et, éventuellement, pour les soumettre à un logiciel de détection de plagiat.
+
+Nous attirons en outre votre attention sur l’importance, en tant que promoteur·rice, de veiller à la pertinence du choix de diffusion effectué par l’étudiant·e. Il vous revient en particulier de sensibiliser l’étudiant·e au respect des éventuelles clauses de confidentialité qui le ou la lieraient à des tiers du fait d’une convention spécifique qu’il ou elle aurait signée (par ex. avec une entreprise dont les données sont citées dans le mémoire ou son/ses annexe(s)), des dispositions légales relatives au droit d’auteur (par ex. pour la reproduction d’images, de photographies ou de textes) et à la protection des données à caractère personnel (par ex. entretiens, données médicales).
+
+Pour ce faire, le promoteur / la promotrice est invité·e à communiquer à l'administration facultaire les restrictions qu'il ou elle souhaite voir appliquer.
+
+${params[1]}
+
+#if(${params[2]})
+Fichiers déposés:
+#foreach($url in ${params[2]})
     - ${url}
 #end
 #end
 
-If you need assistance, please email ${config.get("mail.helpdesk")}
-#if( $phone )
-or call us at ${phone}.
+L'équipe ${config.get('dspace.name')}.
+
+-- ${params[0]} --
+
+------ English version ------
+
+Dear Professor,
+
+A thesis that you are supervising has just been submitted online in the UClouvain electronic thesis repository.
+
+Attached, you will find the deposit certificate. This document indicates the type of access chosen by the author for their thesis; the details are also reproduced below, along with links allowing you to download the submitted files.
+
+The electronic version submitted by the student constitutes the official version of the defended thesis. In the case of a parallel submission of one or more printed copies for the jury, the student commits to ensuring the exact conformity of both versions. Nevertheless, the supervisor is encouraged to download the submitted files to verify that no errors have been made by the student during submission and, if necessary, to subject them to plagiarism detection software.
+
+Furthermore, we would like to draw your attention to the importance, as the supervisor, of ensuring the appropriateness of the access level chosen by the student. In particular, it is your responsibility to make the student aware of the need to respect any confidentiality clauses that may bind them to third parties under a specific agreement they may have signed (e.g., with a company whose data is cited in the thesis or its appendix/appendices), legal provisions related to copyright (e.g., for the reproduction of images, photographs, or texts), and personal data protection (e.g., interviews, medical data).
+
+To this end, the supervisor is invited to communicate to the faculty administration any restrictions they wish to see applied.
+
+${params[1]}
+
+#if(${params[2]})
+Files submitted:
+#foreach($url in ${params[2]})
+    - ${url}
+#end
 #end
 
-The ${config.get('dspace.name')} Team
+The ${config.get('dspace.name')} Team.
