@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.mail.MessagingException;
 
 import org.dspace.content.Item;
@@ -21,7 +22,7 @@ import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 
 /**
- * Generic class to extend to create a thesis email sending system.
+ * Generic class to create a thesis email.
  *
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
@@ -36,65 +37,62 @@ public abstract class GenericThesisEmail {
 
     protected abstract String getTemplatePath();
     protected abstract void generateEmail(Email email) throws EmailGenerationException;
-
     protected abstract String getConfigurationName();
 
     protected GenericThesisEmail(Item item) {
         this.item = item;
         this.metadataMap = MetadataUtils.getValuesHashMap(item.getMetadata());
-        this.mailSubject = this.getConfigurationAttribute("subject");
-        this.recipientsConfig = Arrays.asList(this.getConfigurationAttributes("recipients"));
+        this.mailSubject = getConfigurationAttribute("subject");
+        this.recipientsConfig = Arrays.asList(getConfigurationAttributes("recipients"));
     }
 
     protected String getConfigurationAttribute(String attribute) {
-        return configService.getProperty("uclouvain." + getConfigurationName() + ".mail." + attribute, null);
+        String[] properties = getConfigurationAttributes(attribute);
+        return (properties.length > 0)
+            ? properties[0]
+            : null;
     }
 
     protected String[] getConfigurationAttributes(String attribute) {
-        return configService
-                .getArrayProperty("uclouvain." + getConfigurationName() + ".mail." + attribute, new String[0]);
+        String propertyKey = "uclouvain." + getConfigurationName() + ".mail." + attribute;
+        return configService.getArrayProperty(propertyKey, new String[0]);
     }
 
     /**
      * Creates and sends an email base on the given configuration (through constructor).
-     * @throws IOException If the creation of the base email using the template was not a success.
-     * @throws EmailGenerationException If the addition of the email arguments failed.
-     * @throws MessagingException Failed to send the email to recipients.
+     * @throws IOException if the creation of the base email using the template was not a success.
+     * @throws EmailGenerationException if the addition of the email arguments failed.
+     * @throws MessagingException if errors occurred during email sent
      */
     public void sendEmail() throws IOException, EmailGenerationException, MessagingException {
         Email email = Email.getEmail(getTemplatePath());
-        this.generateEmail(email);
+        generateEmail(email);
         email.send();
     }
 
     /**
      * Used to add recipients to an Email object.
-     * 2 cases:
-     * -> use the configuration (if it exists) found for the 'uclouvain.pdf_attestation.mail.recipients' key and use
-     *    it as recipient;
-     * -> use a provided list of metadata keys that will be used to retrieve recipients;
-     * @param destinationEmails the list of recipient address emails
-     * @param email The email object to append the recipients to.
+     * Two cases exist:
+     *   -> use the configuration (if it exists) found for the 'uclouvain.pdf_attestation.mail.recipients'
+     *      key and use it as recipient;
+     *   -> use a provided list of a metadata key that will be used to retrieve recipients;
+     * @param recipients the list recipient email addresses
+     * @param email The email object
      */
-    protected void addRecipients(List<String> destinationEmails, Email email) {
-        if (this.recipientsConfig != null && !recipientsConfig.isEmpty()) {
-            for (String recipient: recipientsConfig) {
-                email.addRecipient(recipient);
-            }
-        } else {
-            for (String destinationEmail: destinationEmails) {
-                if (isValidAddress(destinationEmail)) {
-                    email.addRecipient(destinationEmail);
-                }
-            }
+    protected void addRecipients(List<String> recipients, Email email) {
+        List<String> filteredRecipients = (recipientsConfig != null && !recipientsConfig.isEmpty())
+                ? recipientsConfig
+                : recipients.stream().filter(this::isValidAddress).collect(Collectors.toList());
+        for (String recipient: filteredRecipients) {
+            email.addRecipient(recipient);
         }
     }
 
     /**
      * Checks the validity of an address.
      * An address is valid if it contains a configured suffix.
-     * @param address The address to validate.
-     * @return Returns 'true' if the address contains at least one of the configured suffix, 'false' if not.
+     * @param address the address to validate.
+     * @return 'true' if the address contains at least one of the configured suffixes, 'false' if not.
      */
     protected Boolean isValidAddress(String address) {
         for (String suffix: this.getConfigurationAttributes("suffixes")) {
