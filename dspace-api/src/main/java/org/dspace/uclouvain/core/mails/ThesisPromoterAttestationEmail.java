@@ -32,15 +32,16 @@ import org.dspace.uclouvain.exceptions.EmailGenerationException;
  */
 public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail {
 
-    protected String promoterEmailField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email")
-        ).getFullString("_");
+
+    private Logger logger = LogManager.getLogger(ThesisPromoterAttestationEmail.class);
+
+    protected String backendURL = configService.getProperty("dspace.server.url");
+    protected String promoterEmailField = new MetadataField(configService
+            .getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email"))
+            .getFullString("_");
     private String algorithm;
     private String encryptionKey;
 
-    protected String backendURL = configService.getProperty("dspace.server.url");
-
-    private Logger logger = LogManager.getLogger(ThesisPromoterAttestationEmail.class);
 
     public ThesisPromoterAttestationEmail(Item item, InputStream attachment, String algorithm, String encryptionKey) {
         super(item, attachment);
@@ -51,7 +52,7 @@ public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail
     @Override
     protected void generateEmail(Email email) throws EmailGenerationException {
         super.generateEmail(email);
-        this.appendUrlsToEmail(this.metadataMap, email, this.item);
+        appendUrlsToEmail(metadataMap, email, item);
     }
 
     /**
@@ -64,7 +65,7 @@ public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail
 
     /**
      * Get the promoter email addresses that will be used as recipients.
-     * @return The recipients addresses.
+     * @return the recipient addresses list.
      */
     @Override
     protected List<String> getRecipientsEmails() {
@@ -73,8 +74,8 @@ public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail
 
     /**
      * Used for supervisor emails, appends access URLs for the bitstreams to the email.
-     * @param metadata a HashMap containing all the metadata of the submission.
-     * @param email the email object to append the URLs to.
+     * @param metadata   a HashMap containing all the metadata of the submission.
+     * @param email      the email object to append the URLs to.
      * @param dspaceItem the DSpace item corresponding to the submission.
      */
     protected void appendUrlsToEmail(HashMap<String, List<String>> metadata, Email email, Item dspaceItem) {
@@ -85,7 +86,6 @@ public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail
                 return;
             }
             Hasher hasher = new Hasher(this.algorithm, this.encryptionKey);
-
             String promoter = metadata.get(this.promoterEmailField).get(0);
             if (promoter != null) {
                 String promoterHash = hasher.processHashAsString(promoter);
