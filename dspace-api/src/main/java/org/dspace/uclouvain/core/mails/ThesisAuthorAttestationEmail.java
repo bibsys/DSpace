@@ -32,14 +32,17 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
 
     protected String entityTypeField = new MetadataField("dspace.entity.type").getFullString("_");
     protected String authorNameField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.authorname.field", "dc.contributor.author")
-    ).getFullString("_");
+            configService
+                .getProperty("uclouvain.global.metadata.authorname.field", "dc.contributor.author"))
+                .getFullString("_");
     protected String authorEmailField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.authoremail.field", "authors.email")
-    ).getFullString("_");
+            configService
+                .getProperty("uclouvain.global.metadata.authoremail.field", "authors.email"))
+                .getFullString("_");
     protected String promoterNameField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.advisorname.field", "dc.contributor.advisor")
-    ).getFullString("_");
+            configService
+                .getProperty("uclouvain.global.metadata.advisorname.field", "dc.contributor.advisor"))
+                .getFullString("_");
 
     protected InputStream attachment;
 
@@ -64,17 +67,19 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
 
     /**
      * Generates a base email version with the given metadata that can be used for both the authors and the promoters.
-     * @param email the current email to modify.
-     * @throws EmailGenerationException if an error occurs while filling email information.
+     * @param email The current email to modify.
+     * @throws EmailGenerationException If an error occurs while filling email information.
      */
     protected void generateEmail(Email email) throws EmailGenerationException {
         try {
-            this.addRecipients(this.getRecipientsEmails(), email);
+            this.addRecipients(getRecipientsEmails(), email);
             email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
-            email.addArgument(this.metadataMap.get(entityTypeField).get(0).toLowerCase());
-            email.addArgument(generateSubmissionResume(this.metadataMap));
-            email.setSubject(this.mailSubject);
-            this.appendAttachmentToEmail(this.attachment, this.metadataMap, email);
+            email.addArgument(generateSubmissionResume(metadataMap));
+            email.setSubject(mailSubject);
+            email.addAttachment(
+                attachment,
+                metadataMap.get(entityTypeField).get(0) + "SubmissionAttestation.pdf", "application/pdf"
+            );
         } catch (Exception e) {
             throw new EmailGenerationException("An error occurred while filling email informations.", e);
         }
@@ -82,35 +87,35 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
 
     /**
      * Get the author email addresses that will be used as recipients.
-     * @return The recipients addresses.
+     * @return The recipient addresses list.
      */
     protected List<String> getRecipientsEmails() {
-        return this.metadataMap.get(this.authorEmailField);
+        return this.metadataMap.get(authorEmailField);
     }
 
     /**
      * Generates an abstract for the given submission containing the title, the abstract and the authors.
      * 
      * @param metadataMap The HashMap containing information about the submission.
-     * @return The abstract as a `String`.
+     * @return The abstract as a String.
+     * @throws ResumeGenerationException if any error occurred during abstract generation
     */
     protected String generateSubmissionResume(HashMap<String, List<String>> metadataMap)
             throws ResumeGenerationException {
         try {
             BinaryOperator<String> parser = (subtotal, element) -> subtotal + element + "; ";
             List<String> resultString = new ArrayList<>();
-
-            // Retrieve all required metadata && check if they are existing before adding them to the
-            // submission's abstract.
+            // Retrieve all required metadata && check if they are existing before adding them to the submission's
+            // abstract.
             List<String> title = metadataMap.get("dc_title");
             if (title != null && !title.isEmpty()) {
                 resultString.add("Title: " + title.get(0));
             }
-            List<String> authors = metadataMap.get(this.authorNameField);
+            List<String> authors = metadataMap.get(authorNameField);
             if (authors != null && !authors.isEmpty()) {
                 resultString.add("Authors: " + authors.stream().reduce("", parser));
             }
-            List<String> promoters = metadataMap.get(this.promoterNameField);
+            List<String> promoters = metadataMap.get(promoterNameField);
             if (promoters != null && !promoters.isEmpty()) {
                 resultString.add("Promoters: " + promoters.stream().reduce("", parser));
             }
@@ -125,19 +130,5 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
         } catch (Exception e) {
             throw new ResumeGenerationException("Submission mail generation failed :: " + e.getMessage());
         }
-    }
-
-    /**
-     * Take an Email object and append an InputStream to it. In this case, an attestation.
-     * @param attestation The attestation as an InputStream.
-     * @param metadata A HashMap containing all the metadata of the submission.
-     * @param email The email object to append the attachment to.
-     */
-    private void appendAttachmentToEmail(InputStream attestation, HashMap<String, List<String>> metadata, Email email) {
-        email.addAttachment(
-                attestation,
-                metadata.get(entityTypeField).get(0) + "SubmissionAttestation.pdf",
-                "application/pdf"
-        );
     }
 }
