@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.pdfAttestationGenerator.xmlworkflow.actions;
 
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,14 +15,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
-import org.dspace.uclouvain.core.mails.ThesisAuthorAttestationEmail;
-import org.dspace.uclouvain.core.mails.ThesisErrorAttestationEmail;
-import org.dspace.uclouvain.core.mails.ThesisPromoterAttestationEmail;
-import org.dspace.uclouvain.core.model.MetadataField;
-import org.dspace.uclouvain.core.utils.MetadataUtils;
-import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
-import org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactory;
-import org.dspace.uclouvain.pdfAttestationGenerator.handlers.PDFAttestationGeneratorHandler;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,29 +23,33 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.mails.ThesisAuthorAttestationEmail;
+import org.dspace.uclouvain.core.mails.ThesisErrorAttestationEmail;
+import org.dspace.uclouvain.core.mails.ThesisPromoterAttestationEmail;
+import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.utils.MetadataUtils;
+import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
+import org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactory;
+import org.dspace.uclouvain.pdfAttestationGenerator.handlers.PDFAttestationGeneratorHandler;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
 import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 /**
 * Main action to generate a PDF attestation for the workflow item if his type is handled
 */
 public class SendEmailAttestationAction extends ProcessingAction {
 
+    private Logger logger = LogManager.getLogger(SendEmailAttestationAction.class);
+
     @Autowired
     ItemService itemService;
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
-
-    private String algorithm = this.configurationService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
-    private String encryptionKey = this.configurationService.getProperty("uclouvain.api.bitstream.download.secret", "");
-
-    private Logger logger = LogManager.getLogger(SendEmailAttestationAction.class);
-
-    // FIELD CONFIGURATION
+    private String algorithm = configurationService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
+    private String encryptionKey = configurationService.getProperty("uclouvain.api.bitstream.download.secret", "");
     private String authorEmailField;
     private String promoterEmailField;
 
@@ -93,18 +90,21 @@ public class SendEmailAttestationAction extends ProcessingAction {
                     return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
                 }
                 try {
-                    // We need to use a `ByteArrayInputStream` in order to be able to reset the stream after sending the email to the submitter(s).
+                    // We need to use a `ByteArrayInputStream` in order to be able to reset the stream after sending
+                    // the email to the submitter(s).
                     ByteArrayInputStream pdfAttestation = new ByteArrayInputStream(
                         IOUtils.toByteArray(handler.getAttestationAsInputStream(uuid))
                     );
                     // Mark the position to reset to
                     pdfAttestation.mark(pdfAttestation.available());
-                    // Send an email to authors
+                    // Send email to authors
                     new ThesisAuthorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
-                    // Reset to the previously marked position. We need to do that because the stream has been consumed by the previous email.
+                    // Reset to the previously marked position.
+                    // We need to do that because the stream has been consumed by the previous email.
                     pdfAttestation.reset();
-                    // Send an email to promoters
-                    new ThesisPromoterAttestationEmail(dspaceItem, pdfAttestation, this.algorithm, this.encryptionKey).sendEmail();
+                    // Send email to promoters
+                    new ThesisPromoterAttestationEmail(dspaceItem, pdfAttestation, this.algorithm, this.encryptionKey)
+                            .sendEmail();
                 } catch (Exception e) {
                     // Send an error email if something goes wrong
                     logger.error("An exception occurred while generating email attestation for uuid: "

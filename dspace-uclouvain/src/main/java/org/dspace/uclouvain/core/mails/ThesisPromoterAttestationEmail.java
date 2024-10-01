@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core.mails;
 
 import java.io.InputStream;
@@ -18,20 +25,23 @@ import org.dspace.uclouvain.exceptions.mail.EmailGenerationException;
 
 /**
  * Main class to send an email for the submission attestation to the promoters of the item.
- * This mail is sent when someone makes a new submission and it enters the workflow validation system.
+ * This mail is sent when someone makes a new submission, and it enters the workflow validation system.
  * This class extends {@link ThesisAuthorAttestationEmail} and adds the generation of file access links for promoters.
  * 
- * @Authored-by: Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail {
 
-    protected String promoterEmailField = new MetadataField(this.configService.getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email")).getFullString("_");
+
+    private Logger logger = LogManager.getLogger(ThesisPromoterAttestationEmail.class);
+
+    protected String backendURL = configService.getProperty("dspace.server.url");
+    protected String promoterEmailField = new MetadataField(configService
+            .getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email"))
+            .getFullString("_");
     private String algorithm;
     private String encryptionKey;
 
-    protected String backendURL = this.configService.getProperty("dspace.server.url");
-
-    private Logger logger = LogManager.getLogger(ThesisPromoterAttestationEmail.class);
 
     public ThesisPromoterAttestationEmail(Item item, InputStream attachment, String algorithm, String encryptionKey) {
         super(item, attachment);
@@ -42,7 +52,7 @@ public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail
     @Override
     protected void generateEmail(Email email) throws EmailGenerationException {
         super.generateEmail(email);
-        this.appendUrlsToEmail(this.metadataMap, email, this.item);
+        appendUrlsToEmail(metadataMap, email, item);
     }
 
     /**
@@ -54,8 +64,8 @@ public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail
     }
 
     /**
-     * Get the promoter email adresses that will be used as recipients.
-     * @return The recipients adresses.
+     * Get the promoter email addresses that will be used as recipients.
+     * @return the recipient addresses list.
      */
     @Override
     protected List<String> getRecipientsEmails() {
@@ -63,26 +73,26 @@ public class ThesisPromoterAttestationEmail extends ThesisAuthorAttestationEmail
     }
 
     /**
-     * Used for promoters emails, appends access URLs for the bitstreams to the email.
-     * @param metadata: A HashMap containing all the metadata of the submission.
-     * @param email: The email object to append the URLs to.
-     * @param dspaceItem: The DSpace item corresponding to the submission.
+     * Used for supervisor emails, appends access URLs for the bitstreams to the email.
+     * @param metadata   a HashMap containing all the metadata of the submission.
+     * @param email      the email object to append the URLs to.
+     * @param dspaceItem the DSpace item corresponding to the submission.
      */
     protected void appendUrlsToEmail(HashMap<String, List<String>> metadata, Email email, Item dspaceItem) {
-        List<String> urls = new ArrayList<String>();
+        List<String> urls = new ArrayList<>();
         try {
             if (this.encryptionKey.isEmpty()) {
                 logger.error("!! NO ENCRYPTION KEY PROVIDED FOR BITSTREAM PROMOTER HASHING !!");
                 return;
             }
             Hasher hasher = new Hasher(this.algorithm, this.encryptionKey);
-    
             String promoter = metadata.get(this.promoterEmailField).get(0);
             if (promoter != null) {
                 String promoterHash = hasher.processHashAsString(promoter);
                 Bundle bitstreamBundle = dspaceItem.getBundles("ORIGINAL").get(0);
                 for (Bitstream bitstream: bitstreamBundle.getBitstreams()) {
-                    urls.add(bitstream.getName() + ": " + this.backendURL + "/api/uclouvain/bitstream/" + bitstream.getID() + "/content?hash=" + promoterHash);
+                    urls.add(bitstream.getName() + ": " + this.backendURL + "/api/uclouvain/bitstream/"
+                            + bitstream.getID() + "/content?hash=" + promoterHash);
                 }
                 email.addArgument(urls);
             } else {
