@@ -216,15 +216,22 @@
       <processing-class>org.dspace.app.rest.submit.step.ShowIdentifiersStep</processing-class>
       <type>identifiers</type>
     </step-definition>
+    <step-definition id="change-request" mandatory="true">
+      <heading>submit.progressbar.changerequest</heading>
+      <processing-class>org.dspace.app.rest.submit.step.ChangeRequestStep</processing-class>
+      <type>change-request</type>
+    </step-definition>
   </step-definitions>
   <submission-definitions>
     <submission-process name="master-thesis">
       <!--<step id="collection" />-->
       <step id="extractionstep" />
+      <step id="change-request" />
       <step id="upload" />
       <step id="master-thesis" />
       <step id="correction" />
       <step id="license" />
+      <step id="detect-duplicate"/>
     </submission-process>
     <submission-process name="master-thesis-edit">
       <step id="extractionstep" />
