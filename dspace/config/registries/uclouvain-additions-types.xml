@@ -147,6 +147,16 @@
         <qualifier/>
         <scope_note>Session when thesis was defended</scope_note>
     </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>changerequest</element>
+        <qualifier>active</qualifier>
+    </dc-type>
+    <dc-type>
+        <schema>masterthesis</schema>
+        <element>changerequest</element>
+        <qualifier>history</qualifier>
+    </dc-type>
     <!-- FEDORA SCHEMA -->
     <dc-schema>
         <name>fedora</name>
