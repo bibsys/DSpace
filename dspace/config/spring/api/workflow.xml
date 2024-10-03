@@ -36,9 +36,10 @@
     </bean>
     <!-- Master Theses Workflow -->
     <bean name="masterThesisWorkflow" class="org.dspace.xmlworkflow.state.Workflow">
-        <property name="firstStep" ref="generatepdfattestationstep"/>
+        <property name="firstStep" ref="clearThesisMetadataStep"/>
         <property name="steps">
             <util:list>
+                <ref bean="clearThesisMetadataStep"/>
                 <ref bean="generatepdfattestationstep" />
                 <ref bean="uclouvainthesisreviewstep"/>
             </util:list>
@@ -119,6 +120,21 @@
         <property name="actions">
             <list>
                 <ref bean="checkcorrectionaction"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean name="clearThesisMetadataStep" class="org.dspace.xmlworkflow.state.Step">
+        <property name="userSelectionMethod" ref="noUserSelectionAction"/>
+        <property name="outcomes">
+            <util:map>
+                <entry key="#{ T(org.dspace.xmlworkflow.state.actions.ActionResult).OUTCOME_COMPLETE}" 
+                       value-ref="generatepdfattestationstep"/>
+            </util:map>
+        </property>
+        <property name="actions">
+            <list>
+                <ref bean="clearchangerequestaction"/>
             </list>
         </property>
     </bean>
