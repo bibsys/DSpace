@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.util.Util;
@@ -30,6 +31,9 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
@@ -43,7 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Custom review action for master theses.
- * This Action contains 3 outputs: 'Accepted', 'Accepted without diffusion' and 'Rejected'.
+ * This Action contains three outputs: 'Accepted', 'Accepted without diffusion' and 'Rejected'.
  * In the case 'Accepted', we continue the workflow;
  * In the case 'Accepted without diffusion', same as 'Accepted' but we restrict bitstream && add a message to the
  * metadata;
@@ -54,11 +58,17 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class UCLouvainThesisReviewAction extends ReviewAction {
 
+    private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
+
     private static final String SUBMITTER_IS_DELETED_PAGE = "submitter_deleted";
     private static final String SUBMIT_APPROVE = "submit_confirm_approve";
     private static final String SUBMIT_APPROVE_WITHOUT_DIFFUSION = "submit_approve_no_diffusion";
     private static final String SUBMIT_WITHDRAW_REJECT = "submit_withdraw_reject";
     private static final String RETURN_TO_SUBMITTER = "submit_return_to_submitter";
+
+    // Active Request Field
+    private MetadataField activeRF = new MetadataField(configService.getProperty(
+            "uclouvain.global.metadata.activerequestchange.field"));
 
     @Autowired
     protected WorkflowItemRoleService workflowItemRoleService;
@@ -135,19 +145,24 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
                 this.restrictBitstream(ctx, bitstream, adminGroup);
             }
         }
-
         // 2. Add provenance with the name of the user that performed the action.
         addProvenance(ctx, currentItem, "Approved with no diffusion for entry into archive by user: '"
                 + ctx.getCurrentUser().getEmail() + "'");
         itemService.update(ctx, currentItem);
-
         return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
     }
 
     /**
      * Process result when option 'SUBMIT_WITHDRAW_REJECT' is selected:
-     * - Archive the item.
-     * - Once archived, withdrawn it.
+     * - First archive the item.
+     * - Once archived, withdrawn it, to be only visible by administrators.
+     *
+     * @param context The current DSpace context.
+     * @param wfi The workflow item that is being operated.
+     * @param request The current request object.
+     * @return An ActionResult object which represents the output of the action.
+     * @throws SQLException if any database exception occurred
+     * @throws AuthorizeException if any authorization occurred
      */
     @Override
     public ActionResult processRejectPage(Context context, XmlWorkflowItem wfi, HttpServletRequest request)
@@ -162,19 +177,35 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
         return new ActionResult(ActionResult.TYPE.TYPE_PAGE);
     }
 
-    public ActionResult processReturnToSubmitter(Context context, XmlWorkflowItem wfi, HttpServletRequest request)
-            throws SQLException, AuthorizeException {
-        // Return the item to the submitter && encode the required changes in a specific metadata field.
+    /**
+     * Process the action 'RETURN_TO_SUBMITTER' which can be performed by a manager and will:
+     *  -> Send the item back to the submitter for modifications.
+     *  -> Add a message (given by the manager) into a metadata field of the item.
+     *  -> The message will then be used to inform the submitter of the needed changes.
+     *
+     * @param context The current DSpace context.
+     * @param wfi The workflow item that is being operated.
+     * @param request The current request object.
+     * @return An ActionResult object which represents the output of the action.
+     */
+    public ActionResult processReturnToSubmitter(Context context, XmlWorkflowItem wfi, HttpServletRequest request) {
         try {
-            // TODO: Add a message to the metadata to explain the return.
             context.turnOffAuthorisationSystem();
+            // Send the item back to submission state.
             xmlWorkflowService.sendWorkflowItemBackSubmission(
-                context,
-                wfi,
-                context.getCurrentUser(),
-                "",
-                "Send back to submitter for modifications"
+                    context,
+                    wfi,
+                    context.getCurrentUser(),
+                    "",
+                    "Send back to submitter for modifications"
             );
+            // Get the mandatory reason from the request object
+            String reason = request.getParameter("reason");
+            if (StringUtils.isEmpty(reason)) {
+                return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
+            }
+            // Encode the reason in the metadata field
+            itemService.setMetadataSingleValue(context, wfi.getItem(), activeRF, null, reason);
             context.restoreAuthSystemState();
             return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
         } catch (Exception e) {
@@ -189,9 +220,8 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
      * @param context The current DSpace context.
      * @param wfi The workflow item to archive.
      * @return The archived item.
-     * @throws SQLException
-     * @throws IOException
-     * @throws AuthorizeException
+     * @throws SQLException if any database exception occurred
+     * @throws AuthorizeException if any authorization occurred
      */
     private Item archive(Context context, XmlWorkflowItem wfi) throws SQLException, AuthorizeException {
         Item item = wfi.getItem();
@@ -215,21 +245,21 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
      * @param context The current DSpace context.
      * @param bitstream The bitstream to restrict.
      * @param adminGroup: The administrator group to grant read rights to.
-     * @throws SQLException
-     * @throws AuthorizeException
+     * @throws SQLException if any database exception occurred
+     * @throws AuthorizeException if any authorization occurred
      */
     private void restrictBitstream(Context context, Bitstream bitstream, Group adminGroup)
             throws SQLException, AuthorizeException {
         authorizeService.removeAllPolicies(context, bitstream);
         authorizeService.createResourcePolicy(
-            context,
-            bitstream,
-            adminGroup,
-            null,
-            Constants.READ,
-            ResourcePolicy.TYPE_CUSTOM,
-            UCLouvainAccessStatusHelper.ADMINISTRATOR,
-            null, null, null
+                context,
+                bitstream,
+                adminGroup,
+                null,
+                Constants.READ,
+                ResourcePolicy.TYPE_CUSTOM,
+                UCLouvainAccessStatusHelper.ADMINISTRATOR,
+                null, null, null
         );
     }
 
@@ -239,17 +269,16 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
      * @param context The current DSpace context.
      * @param item The item to which the provenance information will be added to.
      * @param message The custom message to be added to the provenance information.
-     * @throws SQLException
-     * @throws AuthorizeException
+     * @throws SQLException if any database exception occurred
+     * @throws AuthorizeException if any authorization occurred
      */
-    public void addProvenance(Context context, Item item, String message) throws SQLException, AuthorizeException {
+    private void addProvenance(Context context, Item item, String message) throws SQLException, AuthorizeException {
         String now = DCDate.getCurrent().toString();
         String usersName = XmlWorkflowServiceFactory
                 .getInstance()
                 .getXmlWorkflowService()
                 .getEPersonName(context.getCurrentUser());
         String provDescription = getProvenanceStartId() + " " + message + " " + usersName + " on " + now + " (GMT) ";
-
         // Add provenance info in the 'dc.description.provenance' field
         context.turnOffAuthorisationSystem();
         itemService.addMetadata(
