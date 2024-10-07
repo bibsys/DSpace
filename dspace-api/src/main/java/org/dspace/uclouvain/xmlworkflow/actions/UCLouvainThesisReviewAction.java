@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
@@ -28,6 +30,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
+import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
 import org.dspace.xmlworkflow.state.Step;
@@ -52,7 +55,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UCLouvainThesisReviewAction extends ReviewAction {
 
     private static final String SUBMITTER_IS_DELETED_PAGE = "submitter_deleted";
+    private static final String SUBMIT_APPROVE = "submit_confirm_approve";
     private static final String SUBMIT_APPROVE_WITHOUT_DIFFUSION = "submit_approve_no_diffusion";
+    private static final String SUBMIT_WITHDRAW_REJECT = "submit_withdraw_reject";
+    private static final String RETURN_TO_SUBMITTER = "submit_return_to_submitter";
 
     @Autowired
     protected WorkflowItemRoleService workflowItemRoleService;
@@ -67,6 +73,8 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     @Autowired
     private ItemService itemService;
 
+    private Logger logger = LogManager.getLogger(UCLouvainThesisReviewAction.class);
+
     /**
      * Method executed to map each option to a specific action.
      * The option is extracted form the incoming request by splitting the submit button name.
@@ -80,10 +88,12 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
                     return processAccept(c, wfi);
                 case SUBMIT_APPROVE_WITHOUT_DIFFUSION:
                     return this.processAcceptWithoutDiffusion(c, wfi, request);
-                case SUBMIT_REJECT:
+                case SUBMIT_WITHDRAW_REJECT:
                     return this.processRejectPage(c, wfi, request);
                 case SUBMITTER_IS_DELETED_PAGE:
                     return processSubmitterIsDeletedPage(c, wfi, request);
+                case RETURN_TO_SUBMITTER:
+                    return processReturnToSubmitter(c, wfi, request);
                 default:
                     return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
             }
@@ -100,10 +110,11 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
         List<String> options = new ArrayList<>();
         options.add(SUBMIT_APPROVE);
         options.add(SUBMIT_APPROVE_WITHOUT_DIFFUSION);
-        options.add(SUBMIT_REJECT);
+        options.add(SUBMIT_WITHDRAW_REJECT);
+        options.add(RETURN_TO_SUBMITTER);
+        options.add(RETURN_TO_POOL);
         // Edit item button
         options.add(ProcessingAction.SUBMIT_EDIT_METADATA);
-        options.add(RETURN_TO_POOL);
         return options;
     }
 
@@ -116,7 +127,6 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     public ActionResult processAcceptWithoutDiffusion(Context ctx, XmlWorkflowItem wfi, HttpServletRequest request)
             throws SQLException, AuthorizeException {
         Item currentItem = wfi.getItem();
-        String reason = request.getParameter(REJECT_REASON);
         // 1. Change bitstreams access to admin only
         Group adminGroup = groupService.findByName(ctx, "Administrator");
         if (adminGroup != null) {
@@ -125,38 +135,57 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
                 this.restrictBitstream(ctx, bitstream, adminGroup);
             }
         }
-        // 2. Add provenance && a custom message tag for the item in "dc.description.diffusion"
-        addProvenance(ctx, currentItem, "Approved with no diffusion for entry into archive by");
-        itemService.addMetadata(ctx, currentItem, "dc", "description", "diffusion", null, reason);
+
+        // 2. Add provenance with the name of the user that performed the action.
+        addProvenance(ctx, currentItem, "Approved with no diffusion for entry into archive by user: '"
+                + ctx.getCurrentUser().getEmail() + "'");
         itemService.update(ctx, currentItem);
+
         return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
     }
 
     /**
-     * Process result when option 'SUBMIT_REJECT' is selected.
+     * Process result when option 'SUBMIT_WITHDRAW_REJECT' is selected:
      * - Archive the item.
      * - Once archived, withdrawn it.
-     * If reason is not given, then error
      */
     @Override
-    public ActionResult processRejectPage(Context c, XmlWorkflowItem wfi, HttpServletRequest request)
-            throws SQLException, AuthorizeException {
-        String reason = request.getParameter(REJECT_REASON);
-        if (reason == null || reason.isBlank()) {
-            addErrorField(request, REJECT_REASON);
-            return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
-        }
-        addProvenance(c, wfi.getItem(), "Rejected for entry into archive by");
-        c.turnOffAuthorisationSystem();
+    public ActionResult processRejectPage(Context context, XmlWorkflowItem wfi, HttpServletRequest request)
+            throws SQLException, AuthorizeException, IOException {
+        addProvenance(context, wfi.getItem(), "Rejected for entry into archive and placed into withdrawn state by " +
+                "user: '" + context.getCurrentUser().getEmail() + "'");
+        context.turnOffAuthorisationSystem();
         // Archive the item, then instantly withdraw it
-        Item archivedItem = this.archive(c, wfi);
-        itemService.withdraw(c, archivedItem);
-        c.restoreAuthSystemState();
+        Item archivedItem = archive(context, wfi);
+        itemService.withdraw(context, archivedItem);
+        context.restoreAuthSystemState();
         return new ActionResult(ActionResult.TYPE.TYPE_PAGE);
+    }
+
+    public ActionResult processReturnToSubmitter(Context context, XmlWorkflowItem wfi, HttpServletRequest request)
+            throws SQLException, AuthorizeException {
+        // Return the item to the submitter && encode the required changes in a specific metadata field.
+        try {
+            // TODO: Add a message to the metadata to explain the return.
+            context.turnOffAuthorisationSystem();
+            xmlWorkflowService.sendWorkflowItemBackSubmission(
+                context,
+                wfi,
+                context.getCurrentUser(),
+                "",
+                "Send back to submitter for modifications"
+            );
+            context.restoreAuthSystemState();
+            return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
+        } catch (Exception e) {
+            logger.error("Error while returning the item to the submitter: " + e.getMessage());
+            return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
+        }
     }
 
     /**
      * Used to archive an item and remove all metadata related to the workflow.
+     *
      * @param context The current DSpace context.
      * @param wfi The workflow item to archive.
      * @return The archived item.
@@ -182,6 +211,7 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
 
     /**
      * Take a bitstream and restricts the access to the administrator group only.
+     *
      * @param context The current DSpace context.
      * @param bitstream The bitstream to restrict.
      * @param adminGroup: The administrator group to grant read rights to.
@@ -191,11 +221,21 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     private void restrictBitstream(Context context, Bitstream bitstream, Group adminGroup)
             throws SQLException, AuthorizeException {
         authorizeService.removeAllPolicies(context, bitstream);
-        authorizeService.addPolicy(context, bitstream, Constants.READ, adminGroup, ResourcePolicy.TYPE_CUSTOM);
+        authorizeService.createResourcePolicy(
+            context,
+            bitstream,
+            adminGroup,
+            null,
+            Constants.READ,
+            ResourcePolicy.TYPE_CUSTOM,
+            UCLouvainAccessStatusHelper.ADMINISTRATOR,
+            null, null, null
+        );
     }
 
     /**
      * Add provenance information to the item using a custom message.
+     *
      * @param context The current DSpace context.
      * @param item The item to which the provenance information will be added to.
      * @param message The custom message to be added to the provenance information.
