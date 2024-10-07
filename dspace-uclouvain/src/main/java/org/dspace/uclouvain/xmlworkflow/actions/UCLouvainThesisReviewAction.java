@@ -22,6 +22,7 @@ import org.dspace.core.Context;
 import org.dspace.core.Constants;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
+import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
 import org.dspace.xmlworkflow.state.Step;
@@ -184,7 +185,7 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
      */
     private void restrictBitstream(Context ctx, Bitstream bs, Group adminGroup) throws SQLException, AuthorizeException {
         authorizeService.removeAllPolicies(ctx, bs);
-        authorizeService.addPolicy(ctx, bs, Constants.READ, adminGroup, ResourcePolicy.TYPE_CUSTOM);
+        authorizeService.createResourcePolicy(ctx, bs, adminGroup, null,  Constants.READ, ResourcePolicy.TYPE_CUSTOM, UCLouvainAccessStatusHelper.ADMINISTRATOR, null, null, null);
     }
 
     /**
