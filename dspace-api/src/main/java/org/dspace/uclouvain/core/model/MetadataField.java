@@ -18,7 +18,7 @@ import org.dspace.content.MetadataFieldName;
  */
 public class MetadataField extends MetadataFieldName {
 
-    public MetadataField(String metadataFieldName) throws Exception {
+    public MetadataField(String metadataFieldName) {
         super(metadataFieldName);
     }
 

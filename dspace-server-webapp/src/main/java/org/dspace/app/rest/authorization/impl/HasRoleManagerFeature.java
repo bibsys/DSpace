@@ -64,7 +64,7 @@ public class HasRoleManagerFeature implements AuthorizationFeature {
      */
     @Override
     public String[] getSupportedTypes() {
-        return new String[]{
+        return new String[] {
             EPersonRest.CATEGORY + "." + EPersonRest.NAME
         };
     }

@@ -49,8 +49,8 @@ public class EntitiesConfigurationFile extends AbstractConfigurationFile<Set<Ent
     /**
      * Recursively load an entity and all potential children entities
      *
-     * @param entityData : the entity json node data
-     * @param parent     : the parent entity (could be null)
+     * @param entityData the entity json node data
+     * @param parent     the parent entity (could be null)
      * @return the list of entities loaded from an entity node.
      */
     private static List<Entity> parseEntity(JsonNode entityData, @Nullable Entity parent) {

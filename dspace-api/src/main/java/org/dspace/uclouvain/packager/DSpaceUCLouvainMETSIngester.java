@@ -208,8 +208,8 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     /**
      * Find the dmdSec corresponding to a file from a METS Manifest
      *
-     * @param manifest : the METS manifest
-     * @param mfile : The file node to analyze
+     * @param manifest the METS manifest
+     * @param mfile    The file node to analyze
      * @return the XML element corresponding to the dmdSec related to the file; `null` if not found
      * @throws MetadataValidationException if any error occurs when parsing the METS manifest.
      */
@@ -221,7 +221,7 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     /**
      * Extract the bitstream metadata from a METS dmdSec using extraction stylesheet.
      *
-     * @param dmdSec: the dmdSec to analyze
+     * @param dmdSec the dmdSec to analyze
      * @return a list of DIM field element (that could contain DIM fields, ...); at least an empty list.
      * @throws MetadataValidationException if any error occurs when parsing the METS manifest.
      */
@@ -249,8 +249,8 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     /**
      * Extract the useful root XML element from a METS dmdSec
      *
-     * @param dmdSec : the METS dmdSec to analyze/
-     * @return : the root DC element or null if not found.
+     * @param dmdSec the METS dmdSec to analyze/
+     * @return the root DC element or null if not found.
      * @throws MetadataValidationException if dmdSec element failed to be parsed.
      */
     private Element getRootElement(Element dmdSec)  throws MetadataValidationException {
@@ -285,7 +285,7 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
                 transformer = factory.newTransformer(transformSource);
                 transformerLastModified = transformFile.lastModified();
             } catch (TransformerConfigurationException | FileNotFoundException e) {
-                log.error("Failed to initialize DSpaceUCLouvainMETSIngester : " + e.toString());
+                log.error("Failed to initialize DSpaceUCLouvainMETSIngester : " + e);
             }
         }
         return this.transformer;
@@ -293,9 +293,9 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
 
     /**
      * apply metadata values returned in DIM to the target bitstream.
-     * @param context: the application context
-     * @param dimList: the DIM element list to apply.
-     * @param bitstream: the targeted bitstream where the metadata will be added.
+     * @param context    the application context
+     * @param dimList    the DIM element list to apply.
+     * @param bitstream  the targeted bitstream where the metadata will be added.
      * @throws MetadataValidationException if any validation exception occurred
      * @throws SQLException if any database exception occurred
      */

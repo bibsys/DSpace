@@ -16,6 +16,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Represent a basic Http Response from java.net.http lib
  * Used to access the JSON response
+ *
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class GenericResponse {
 
@@ -30,10 +32,10 @@ public class GenericResponse {
      * Extract the JSON content to an instance of a class
      * Usually, in the OSIS API, the real content is at the "return" key in the JSON response
      *
-     * @param targetKey
-     * @param clazz
+     * @param targetKey the targeted key into the response
+     * @param clazz the class representation
      * @return T
-     * @throws IOException
+     * @throws IOException for any exception during response content access
      */
     public <T> T extractJsonResponseDataToClass(String targetKey, Class<T> clazz) throws IOException {
         this.objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);

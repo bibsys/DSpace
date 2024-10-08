@@ -58,10 +58,10 @@ public class UserAgreementManagement extends AbstractCLICommand {
             .hasArg(false)
             .desc("Invalidate the user agreement")
             .build();
-    protected static EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
     // CLASS ATTRIBUTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private final Context context = new Context();
+    protected static EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
     // CONSTRUCTOR & MAIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

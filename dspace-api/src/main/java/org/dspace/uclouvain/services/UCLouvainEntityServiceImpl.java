@@ -17,7 +17,7 @@ import org.dspace.uclouvain.core.model.Entity;
 import org.dspace.uclouvain.core.model.EntityType;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/** Implementation of UCLouvainEntityService : to search an UCLouvain entity */
+/** Implementation of UCLouvainEntityService: to search an UCLouvain entity */
 public class UCLouvainEntityServiceImpl implements UCLouvainEntityService {
 
     @Autowired

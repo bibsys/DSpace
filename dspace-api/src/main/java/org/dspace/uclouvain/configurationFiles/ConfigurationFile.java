@@ -7,7 +7,6 @@
  */
 package org.dspace.uclouvain.configurationFiles;
 
-
 import java.io.IOException;
 
 public interface ConfigurationFile<T> {

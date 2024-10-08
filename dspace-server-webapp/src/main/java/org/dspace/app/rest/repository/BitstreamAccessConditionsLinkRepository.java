@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-@Component(BitstreamRest.CATEGORY + "." + BitstreamRest.NAME + "." + BitstreamRest.ACCESS)
+@Component(BitstreamRest.CATEGORY + "." + BitstreamRest.PLURAL_NAME + "." + BitstreamRest.ACCESS)
 public class BitstreamAccessConditionsLinkRepository extends AbstractDSpaceRestRepository
         implements LinkRestRepository {
 

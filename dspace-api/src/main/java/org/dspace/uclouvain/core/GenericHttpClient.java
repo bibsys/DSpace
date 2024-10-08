@@ -40,15 +40,13 @@ public class GenericHttpClient {
      *
      * @param url The url to get.
      * @return The request response.
-     * @throws URISyntaxException
+     * @throws URISyntaxException for any error with URI syntax
      */
     public HttpResponse<String> get(String url) throws IOException, InterruptedException, URISyntaxException {
         String requestUrl = this.baseUrl + url;
-
         HttpRequest.Builder requestBuilder = this.generateHttpRequestBuilder(requestUrl);
         requestBuilder.setHeader("accept", "application/json");
         HttpRequest request = requestBuilder.build();
-
         return this.httpClient.send(request, BodyHandlers.ofString());
     }
 
@@ -60,18 +58,16 @@ public class GenericHttpClient {
      * @return The request response.
      * @throws IOException
      * @throws InterruptedException
-     * @throws URISyntaxException
+     * @throws URISyntaxException for any error with URI syntax
      */
     public HttpResponse<String> get(String url, HashMap<String, String> headers)
             throws IOException, InterruptedException, URISyntaxException {
         String requestUrl = this.baseUrl + url;
-
         HttpRequest.Builder requestBuilder = generateHttpRequestBuilder(requestUrl);
         for (Map.Entry<String, String> entry : headers.entrySet()) {
             requestBuilder.setHeader(entry.getKey(), entry.getValue());
         }
         HttpRequest request = requestBuilder.build();
-
         return this.httpClient.send(request, BodyHandlers.ofString());
     }
 
@@ -79,7 +75,6 @@ public class GenericHttpClient {
     public String getBaseUrl() {
         return this.baseUrl;
     }
-
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }
@@ -87,7 +82,6 @@ public class GenericHttpClient {
     public String getToken() {
         return token;
     }
-
     public void setToken(String token) {
         this.token = token;
     }

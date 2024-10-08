@@ -24,13 +24,12 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-
 /**
  * This is the repository responsible to manage BitstreamAccessConditions Rest object
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-@Component(BitstreamAccessConditionRest.CATEGORY + "." + BitstreamAccessConditionRest.NAME)
+@Component(BitstreamAccessConditionRest.CATEGORY + "." + BitstreamAccessConditionRest.PLURAL_NAME)
 public class BitstreamAccessConditionsRestRepository extends DSpaceRestRepository<BitstreamAccessConditionRest, UUID> {
 
     @Autowired
