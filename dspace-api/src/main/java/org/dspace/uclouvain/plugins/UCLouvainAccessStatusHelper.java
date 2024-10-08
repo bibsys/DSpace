@@ -136,7 +136,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
      * returns the "open.access" value.
      * Otherwise, if the policy start date is before the embargo threshold date,
      * returns the "embargo" value.
-     * Every other cases return the "restricted" value.
+     * Every other case returns the "restricted" value.
      *
      * @param context     the DSpace context
      * @param dso         the DSpace object
@@ -165,7 +165,8 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
     private String getAccessFromMetadata(DSpaceObject dso) {
         try {
             DSpaceObjectService<DSpaceObject> service = contentFactory.getDSpaceObjectService(dso);
-            return service.getMetadataFirstValue(dso, accessMetadataFieldName, "*");
+            String metadataValue = service.getMetadataFirstValue(dso, accessMetadataFieldName, "*");
+            return (StringUtils.isNotEmpty(metadataValue)) ? metadataValue : UNKNOWN;
         } catch (UnsupportedOperationException uoe){
             return UNKNOWN;
         }
@@ -193,6 +194,13 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
      * @return the converted access value.
      */
     public static String getControlledAccessValue(String initialValue) {
+        if (initialValue == null || StringUtils.isEmpty(initialValue)) {
+            // !!! It should never happen if access conditions are set using the submission form !!!
+            //     The submission form used the value from the select input field as rpName for a resource policy
+            //     Every select input field entry has a value. So if the value is empty, this is because an
+            //     admin use the resource policy editor 
+            return OPEN_ACCESS;
+        }
         switch (initialValue.trim().toLowerCase()) {
             case "openaccess": return OPEN_ACCESS;
             case "administrator": return ADMINISTRATOR;
