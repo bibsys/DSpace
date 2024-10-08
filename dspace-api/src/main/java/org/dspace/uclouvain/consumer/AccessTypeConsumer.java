@@ -2,6 +2,7 @@ package org.dspace.uclouvain.consumer;
 
 import java.sql.SQLException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.access.status.factory.AccessStatusServiceFactory;
@@ -71,7 +72,7 @@ public class AccessTypeConsumer implements Consumer {
         }
         // Retrieve the global access type for the item
         String accessType = this.accessStatusService.getAccessStatus(context, item);
-        if (accessType.equals(UCLouvainAccessStatusHelper.UNKNOWN)){
+        if (StringUtils.isEmpty(accessType) || accessType.equals(UCLouvainAccessStatusHelper.UNKNOWN)){
             // DELETE field values on the configured 'accessTypeField'.
             this.itemService.clearMetadata(context, item, accessTypeField.getSchema(), accessTypeField.getElement(), null, null);
             return;
