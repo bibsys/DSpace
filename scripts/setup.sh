@@ -301,12 +301,8 @@ done
 if ${INGEST_DATA}; then
   echo -e "📕 Ingesting object ..."
   ingest_package "/uclouvain/archives/thesis/thesis-4317.zip"
-  ingest_package "/uclouvain/archives/thesis/thesis-6615.zip"
   ingest_package "/uclouvain/archives/thesis/thesis-43615.zip"
-  ingest_package "/uclouvain/archives/thesis/thesis-44105.zip"
   ingest_package "/uclouvain/archives/thesis/thesis-44113.zip"
-  ingest_package "/uclouvain/archives/thesis/thesis-44271.zip"
-  ingest_package "/uclouvain/archives/thesis/thesis-44290.zip"
 fi
 
 # STEP#FINAL: Restart the container
