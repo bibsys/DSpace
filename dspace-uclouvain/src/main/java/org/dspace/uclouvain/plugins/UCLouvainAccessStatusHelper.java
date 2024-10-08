@@ -193,6 +193,13 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
      * @return the converted access value.
      */
     public static String getControlledAccessValue(String initialValue) {
+        if (initialValue == null || StringUtils.isEmpty(initialValue)) {
+            // !!! It should never happen if access conditions are set using the submission form !!!
+            //     The submission form used the value from the select input field as rpName for a resource policy
+            //     Every select input field entry has a value. So if the value is empty, this is because an
+            //     admin use the resource policy editor 
+            return OPEN_ACCESS;
+        }
         switch (initialValue.trim().toLowerCase()) {
             case "openaccess": return OPEN_ACCESS;
             case "administrator": return ADMINISTRATOR;
