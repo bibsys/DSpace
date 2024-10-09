@@ -48,6 +48,7 @@ public class ItemRest extends DSpaceObjectRest {
     public static final String THUMBNAIL = "thumbnail";
     public static final String SUBMITTER = "submitter";
 
+    private boolean changeRequested = false;
     private boolean inArchive = false;
     private boolean discoverable = false;
     private boolean withdrawn = false;
@@ -69,6 +70,14 @@ public class ItemRest extends DSpaceObjectRest {
     @Override
     public String getTypePlural() {
         return PLURAL_NAME;
+    }
+
+    public boolean getChangeRequested() {
+        return changeRequested;
+    }
+
+    public void setChangeRequested(boolean changeRequested) {
+        this.changeRequested = changeRequested;
     }
 
     public boolean getInArchive() {
