@@ -18,6 +18,7 @@ import org.dspace.content.security.service.MetadataSecurityService;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.discovery.IndexableObject;
+import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,9 +39,16 @@ public class ItemConverter
     @Autowired
     private MetadataSecurityService metadataSecurityService;
 
+    @Autowired
+    private ConfigurationService configService;
+
     @Override
     public ItemRest convert(Item obj, Projection projection) {
         ItemRest item = super.convert(obj, projection);
+        if (this.isChangeRequested(obj)){
+            // Set change requested to true
+            item.setChangeRequested(true);
+        }
         item.setInArchive(obj.isArchived());
         item.setDiscoverable(obj.isDiscoverable());
         item.setWithdrawn(obj.isWithdrawn());
@@ -78,6 +86,19 @@ public class ItemConverter
         return Optional.ofNullable(projection)
             .map(Projection::preventMetadataLevelSecurity)
             .orElse(false);
+    }
+
+    /**
+     * Checks if the item requires changes by looking at a specific metadata.
+     * @param item
+     * @return
+     */
+    private boolean isChangeRequested(Item item) {
+        return item.getMetadata().stream().anyMatch(
+            mv -> mv.getMetadataField()
+                .toString('.')
+                .equals(this.configService.getProperty("uclouvain.global.metadata.activerequestchange.field"))
+        );
     }
 
     @Override

@@ -74,6 +74,7 @@ public class ItemRest extends DSpaceObjectRest {
     public static final String METRICS = "metrics";
     public static final String THUMBNAIL = "thumbnail";
 
+    private boolean changeRequested = false;
     private boolean inArchive = false;
     private boolean discoverable = false;
     private boolean withdrawn = false;
@@ -90,6 +91,14 @@ public class ItemRest extends DSpaceObjectRest {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getType() {
         return NAME;
+    }
+
+    public boolean getChangeRequested() {
+        return changeRequested;
+    }
+
+    public void setChangeRequested(boolean changeRequested) {
+        this.changeRequested = changeRequested;
     }
 
     public boolean getInArchive() {
