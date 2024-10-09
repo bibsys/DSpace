@@ -10,10 +10,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>author</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Name</label>
+          <label>Nom</label>
           <input-type>onebox</input-type>
-          <hint>Enter the author name of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J]</hint>
-          <required>You must enter the author name</required>
+          <hint>Entrez le nom de l'auteur du mémoire sous la forme "Nom, Prénom" (Exemple: Dupont, Jean)</hint>
+          <required>Vous devez entrer le nom de l'auteur</required>
         </field>
       </row>
       <row>
@@ -23,8 +23,8 @@
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email where to contact the author</hint>
-          <required>You must enter a valid email address.</required>
+          <hint>Entrez l'adresse email à laquelle contacter l'auteur</hint>
+          <required>Vous devez entrer une adresse email valide</required>
         </field>
       </row>
       <row>
@@ -36,7 +36,7 @@
           <label>Institution</label>
           <style>col-6</style>
           <input-type>onebox</input-type>
-          <hint>Choose the author institution affiliation</hint>
+          <hint>Entrez le nom de l'institution de l'auteur</hint>
         </field>
         <field>
           <dc-schema>authors</dc-schema>
@@ -46,7 +46,7 @@
           <label>FGS</label>
           <style>col-6</style>
           <input-type>onebox</input-type>
-          <hint>FGS Identifier</hint>
+          <hint>Identifier FGS</hint>
           <readonly>all</readonly>
         </field>
         <field>
@@ -56,7 +56,7 @@
           <repeatable>false</repeatable>
           <label>NOMA</label>
           <input-type>hidden</input-type>
-          <hint>NOMA Identifier</hint>
+          <hint>Identifiant NOMA</hint>
           <readonly>all</readonly>
         </field>
       </row>
@@ -66,10 +66,10 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>code</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Degree</label>
+          <label>Diplôme</label>
           <input-type>degree_select</input-type>
-          <hint>Select a degree</hint>
-          <required>Select a degree. If empty no data could be retrieved from OSIS; check about author inscriptions.</required>
+          <hint>Selectionnez le diplôme associé à cet auteur</hint>
+          <required>Sélectionnez le diplôme associé à cet auteur. Si la liste reste vide, vérifiez que les inscriptions de l'auteur soient valides dans l'application OSIS</required>
           <visibility>submission</visibility>
         </field>
         <field>
@@ -77,10 +77,10 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>code</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Degree code</label>
+          <label>Code diplôme</label>
           <input-type>onebox</input-type>
-          <hint>Enter the degree code. Please be CAREFUL and consistent with degree label</hint>
-          <required>Enter the degree code</required>
+          <hint>Entrez le code du diplôme associé à cet auteur. Attention, soyez PRUDENT et consistant par rapport au libellé du diplôme</hint>
+          <required>Entrez le code du diplôme associé à cet auteur</required>
           <visibility>workflow</visibility>
         </field>
       </row>
@@ -90,7 +90,7 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>label</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>DegreeLabel</label>
+          <label>Libellé du diplôme</label>
           <input-type>hidden</input-type>
           <hint/>
           <visibility>submission</visibility>
@@ -100,10 +100,10 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>label</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>DegreeLabel</label>
+          <label>Libellé du diplôme</label>
           <input-type>onebox</input-type>
-          <hint>Enter the degree label. Please be CAREFUL and consistent with degree code</hint>
-          <required>Enter the degree label</required>
+          <hint>Entrez le libellé du diplôme associé à cet auteur. Attention, soyez PRUDENT et consistant par rapport au code du diplôme</hint>
+          <required>Entrez le libellé du diplôme associé à cet auteur</required>
           <visibility>workflow</visibility>
         </field>
       </row>
@@ -115,10 +115,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>advisor</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Name</label>
+          <label>Nom</label>
           <input-type>onebox</input-type>
-          <hint>Enter the promoter name of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J]</hint>
-          <required>You must enter at least the promoter</required>
+          <hint>Entrez le nom du promoteur sous la forme "Nom, Prénom" (exemple: Dupont, Jean)</hint>
+          <required>Vous devez entrer le nom du promoteur</required>
         </field>
       </row>
       <row>
@@ -128,8 +128,8 @@
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email where to contact the promoter</hint>
-          <required>You must enter a valid email address.</required>
+          <hint>Entrez l'adresse email à laquelle contacter le promoteur</hint>
+          <required>Vous devez entrer une adresse email valide</required>
         </field>
       </row>
       <row>
@@ -140,7 +140,7 @@
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
-          <hint>Choose the promoter institution affiliation</hint>
+          <hint>Entrez le nom de l'institution du promoteur</hint>
         </field>
       </row>
     </form>
@@ -151,10 +151,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>author</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Authors</label>
+          <label>Auteurs</label>
           <input-type>group</input-type>
-          <hint>Enter the names of the authors of this item.</hint>
-          <required>At least one author is required</required>
+          <hint>Entrez les auteurs de ce mémoire</hint>
+          <required>Vous devez spécifier au moins un auteur</required>
         </field>
       </row>
       <row>
@@ -163,10 +163,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>advisor</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Promoters</label>
+          <label>Promoteurs</label>
           <input-type>group</input-type>
-          <hint>Enter the names of the promoters of this item.</hint>
-          <required>At least one promoter is required</required>
+          <hint>Entrez les promoteurs de ce mémoire</hint>
+          <required>Vous devez spécifier au moins un promoteur</required>
         </field>
       </row>
       <row>
@@ -174,10 +174,10 @@
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
           <repeatable>false</repeatable>
-          <label>Title</label>
+          <label>Titre</label>
           <input-type>onebox</input-type>
-          <hint>Enter the main title of the item.</hint>
-          <required>You must enter a main title for this item.</required>
+          <hint>Entrez le titre du mémoire</hint>
+          <required>Vous devez spécifier un titre</required>
         </field>
       </row>
       <row>
@@ -185,12 +185,12 @@
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
           <dc-qualifier>abstract</dc-qualifier>
-          <!--<language value-pairs-name="common_iso_languages">true</language>-->
+          <language value-pairs-name="common_iso_languages">true</language>
           <repeatable>true</repeatable>
-          <label>Abstract</label>
+          <label>Résumé</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the item.</hint>
-          <required>You must enter an abstract for this item.</required>
+          <hint>Entrez le résumé du mémoire. Si vous désirez ajouter un second résumé dans une autre langue, utilisez le bouton "ajouter" ci-dessous.</hint>
+          <required>Vous devez spécifier un résumé</required>
         </field>
       </row>
       <row>
@@ -199,10 +199,10 @@
           <dc-element>language</dc-element>
           <dc-qualifier>iso-639-2</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Language</label>
+          <label>Langue</label>
           <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
-          <hint>Select the language of the main content of the item.</hint>
-          <required>You must choose a language for this item.</required>
+          <hint>Choisissez la langue dans laquelle a été rédigé le mémoire</hint>
+          <required>Vous devez spécifier une langue</required>
         </field>
       </row>
       <row>
@@ -210,9 +210,9 @@
           <dc-schema>dc</dc-schema>
           <dc-element>subject</dc-element>
           <repeatable>true</repeatable>
-          <label>Subject Keywords</label>
+          <label>Mots-clés</label>
           <input-type>tag</input-type>
-          <hint>Enter appropriate subject keywords or phrases.</hint>
+          <hint>Entrez des mots-clés permettant de décrire le mémoire</hint>
         </field>
       </row>
       <row>
@@ -222,18 +222,18 @@
           <repeatable>false</repeatable>
           <label>Session</label>
           <input-type value-pairs-name="masterthesis_session">dropdown</input-type>
-          <hint>Session period during which the thesis was submitted. (Confidential data : it will not be published)</hint>
-          <required>You must choose a session period for this item.</required>
+          <hint>Session durant laquelle le mémoire a été soumis. (Donnée confidentielle : ne sera pas affichée de façon publique)</hint>
+          <required>Vous devez choisir une session</required>
         </field>
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>date</dc-element>
           <dc-qualifier>issued</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Year</label>
+          <label>Année</label>
           <input-type>year</input-type>
           <hint/>
-          <required>You must choose a year period for this item.</required>
+          <required>Vous devez choisir une année</required>
         </field>
       </row>
     </form>
@@ -245,12 +245,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>author</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Name</label>
+          <label>Nom</label>
           <input-type>onebox</input-type>
-          <hint>
-            Enter the names of the authors of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
-          </hint>
-          <required>You must enter at least the author.</required>
+          <hint>Entrez le nom de l'auteur du mémoire sous la forme "Nom, Prénom" (Exemple: Dupont, Jean)</hint>
+          <required>Vous devez spécifier le nom de l'auteur</required>
         </field>
       </row>
       <row>
@@ -261,7 +259,7 @@
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
-          <hint>Choose the author institution affiliation</hint>
+          <hint>Entrez le nom de l'institution de l'auteur</hint>
         </field>
       </row>
     </form>
@@ -272,12 +270,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>advisor</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Name</label>
+          <label>Nom</label>
           <input-type>onebox</input-type>
-          <hint>
-            Enter the names of the promoters of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
-          </hint>
-          <required>You must enter at least the promoter.</required>
+          <hint>Entrez le nom du promoteur du mémoire sous la forme "Nom, Prénom" (Exemple: Dupont, Jean)</hint>
+          <required>Vous devez spécifier le nom du promoteur</required>
         </field>
       </row>
       <row>
@@ -288,7 +284,7 @@
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
-          <hint>Choose the promoter institution affiliation</hint>
+          <hint>Entrez le nom de l'institution du pomoteur</hint>
         </field>
       </row>
     </form>
@@ -299,10 +295,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>author</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Authors</label>
+          <label>Auteurs</label>
           <input-type>group</input-type>
-          <hint>Enter the names of the authors of this item.</hint>
-          <required>At least one author is required</required>
+          <hint>Entrez les auteurs de ce mémoire</hint>
+          <required>Vous devez spécifier au moins un auteur</required>
         </field>
       </row>
       <row>
@@ -311,10 +307,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>advisor</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Promoters</label>
+          <label>Promoteurs</label>
           <input-type>group</input-type>
-          <hint>Enter the names of the promoters of this item.</hint>
-          <required>At least one promoter is required</required>
+          <hint>Entrez les promoteurs de ce mémoire</hint>
+          <required>Vous devez spécifier au moins un promoteur</required>
         </field>
       </row>
       <row>
@@ -322,11 +318,10 @@
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
           <repeatable>false</repeatable>
-          <label>Title</label>
+          <label>Titre</label>
           <input-type>onebox</input-type>
-          <hint>Enter the main title of the item.</hint>
-          <!--<hint>&lt;br/&gt;&lt;a href=&quot;www.google.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;</hint>-->
-          <required>You must enter a main title for this item.</required>
+          <hint>Entrez le titre principal du mémoire</hint>
+          <required>Vous devez spécifier un titre</required>
         </field>
       </row>
       <row>
@@ -336,10 +331,10 @@
           <dc-qualifier>abstract</dc-qualifier>
           <language value-pairs-name="common_iso_languages">true</language>
           <repeatable>true</repeatable>
-          <label>Abstract</label>
+          <label>Résumé</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the item.</hint>
-          <required>You must enter an abstract for this item.</required>
+          <hint>Entrez le résumé du mémoire</hint>
+          <required>Vous devez spécifier un résumé</required>
         </field>
       </row>
       <row>
@@ -348,10 +343,10 @@
           <dc-element>language</dc-element>
           <dc-qualifier>iso-639-2</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Language</label>
+          <label>Langue</label>
           <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
-          <hint>Select the language of the main content of the item.</hint>
-          <required>You must choose a language for this item.</required>
+          <hint>Selectionnez la langue principale dans laquelle le mémoire a été rédigé</hint>
+          <required>Vous devez spécifier une langue</required>
         </field>
       </row>
       <row>
@@ -359,10 +354,10 @@
           <dc-schema>dc</dc-schema>
           <dc-element>subject</dc-element>
           <repeatable>true</repeatable>
-          <label>Subject Keywords</label>
+          <label>Mots-clés</label>
           <input-type>tag</input-type>
-          <hint>Enter appropriate subject keywords or phrases.</hint>
-          <required>You must enter some keywords for this item.</required>
+          <hint>Entrez des mots-clés permettant de décrire le mémoire</hint>
+          <required>Vous devez spécifier un résumé</required>
         </field>
       </row>
       <row>
@@ -371,10 +366,10 @@
           <dc-element>date</dc-element>
           <dc-qualifier>issued</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Year</label>
+          <label>Année</label>
           <input-type>year</input-type>
-          <hint>Year during which the thesis was submitted.</hint>
-          <required>You must choose a year period for this item.</required>
+          <hint>Choisissez l'année pour laquelle le mémoire a été soumis</hint>
+          <required>Vous devez choisir une année</required>
         </field>
       </row>
       <row>
@@ -383,10 +378,10 @@
           <dc-element>faculty</dc-element>
           <dc-qualifier>code</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Faculty name</label>
+          <label>Nom de la faculté</label>
           <input-type value-pairs-name="faculty_codes">dropdown</input-type>
-          <hint>Faculty name related to this master thesis.</hint>
-          <required>You must choose a faculty for this item.</required>
+          <hint>Choisissez la ou les facultés reliées au mémoire</hint>
+          <required>Vous devez spécifier au moins une faculté</required>
         </field>
       </row>
       <row>
@@ -395,10 +390,10 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>label</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Degree label</label>
+          <label>Diplôme</label>
           <input-type>onebox</input-type>
-          <hint>Enter degree labels related to this master thesis.</hint>
-          <required>You must choose a degree label for this item.</required>
+          <hint>Entrez le ou les noms des diplômes reliés à ce mémoire. (Exemple: "Master [120] en imagerie médicale")</hint>
+          <required>Vous devez spécifier un diplôme</required>
         </field>
       </row>
     </form>
@@ -407,10 +402,10 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
-          <label>Enter the name of the file</label>
+          <label>Nom du fichier</label>
           <input-type>onebox</input-type>
           <repeatable>false</repeatable>
-          <required>You must enter a title for the file.</required>
+          <required>Vous devez spécifier un nom de fichier</required>
           <hint />
         </field>
       </row>
@@ -418,7 +413,7 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
-          <label>Enter a description for the file</label>
+          <label>Description</label>
           <input-type>textarea</input-type>
           <repeatable>false</repeatable>
           <required />
@@ -2938,37 +2933,37 @@ it, please enter the types and the actual numbers or codes.</hint>
   <form-value-pairs>
     <value-pairs value-pairs-name="masterthesis_session" dc-term="masterthesis_session">
       <pair>
-        <displayed-value>January</displayed-value>
+        <displayed-value>Janvier</displayed-value>
         <stored-value>January</stored-value>
       </pair>
       <pair>
-        <displayed-value>June</displayed-value>
+        <displayed-value>Juin</displayed-value>
         <stored-value>June</stored-value>
       </pair>
       <pair>
-        <displayed-value>September</displayed-value>
+        <displayed-value>Septembre</displayed-value>
         <stored-value>September</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="common_iso_languages_639_2" dc-term="common_iso_languages_639_2">
       <pair>
-        <displayed-value>Dutch</displayed-value>
+        <displayed-value>Néerlandais</displayed-value>
         <stored-value>dut</stored-value>
       </pair>
       <pair>
-        <displayed-value>English</displayed-value>
+        <displayed-value>Anglais</displayed-value>
         <stored-value>eng</stored-value>
       </pair>
       <pair>
-        <displayed-value>French</displayed-value>
+        <displayed-value>Français</displayed-value>
         <stored-value>fre</stored-value>
       </pair>
       <pair>
-        <displayed-value>Italian</displayed-value>
+        <displayed-value>Italien</displayed-value>
         <stored-value>ita</stored-value>
       </pair>
       <pair>
-        <displayed-value>German</displayed-value>
+        <displayed-value>Allemand</displayed-value>
         <stored-value>ger</stored-value>
       </pair>
       <!--<pair>
@@ -2976,11 +2971,11 @@ it, please enter the types and the actual numbers or codes.</hint>
         <stored-value>mul</stored-value>
       </pair>-->
       <pair>
-        <displayed-value>Spanish</displayed-value>
+        <displayed-value>Espagnol</displayed-value>
         <stored-value>spa</stored-value>
       </pair>
       <pair>
-        <displayed-value>(Other)</displayed-value>
+        <displayed-value>(Autre)</displayed-value>
         <stored-value>other</stored-value>
       </pair>
     </value-pairs>
