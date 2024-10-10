@@ -1,4 +1,4 @@
-package org.dspace.uclouvain.pdfAttestationGenerator.exceptions;
+package org.dspace.uclouvain.exceptions.mail;
 
 
 public class ResumeGenerationException extends Exception {
