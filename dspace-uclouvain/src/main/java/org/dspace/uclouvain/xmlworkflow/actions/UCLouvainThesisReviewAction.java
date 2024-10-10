@@ -33,6 +33,7 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.mails.ThesisChangeRequestEmail;
 import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
@@ -44,7 +45,6 @@ import org.dspace.xmlworkflow.state.actions.processingaction.ReviewAction;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.dspace.xmlworkflow.storedcomponents.service.WorkflowItemRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 /**
  * Custom review action for master theses.
@@ -202,6 +202,8 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             }
             // Encode the reason in the metadata field
             this.itemService.setMetadataSingleValue(context, wfi.getItem(), activeRequestField, null, reason);
+            // Send an email to submitter to notify for the change request.
+            new ThesisChangeRequestEmail(wfi.getItem(), reason).sendEmail();
             context.restoreAuthSystemState();
             return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
         } catch (Exception e) {
