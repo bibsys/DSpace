@@ -285,7 +285,7 @@
     <dc-type>
         <schema>oairecerif</schema>
         <element>affiliation</element>
-        <qualifier>orgunitDepartement</qualifier>
+        <qualifier>orgunitDepartment</qualifier>
         <scope_note></scope_note>
     </dc-type>
     <dc-type>
@@ -303,7 +303,7 @@
     <dc-type>
         <schema>oairecerif</schema>
         <element>authors</element>
-        <qualifier>orgunitDepartement</qualifier>
+        <qualifier>orgunitDepartment</qualifier>
         <scope_note></scope_note>
     </dc-type>
     <!-- ORGANIZATION SCHEMA -->
