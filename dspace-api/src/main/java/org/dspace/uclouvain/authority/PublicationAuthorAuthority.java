@@ -9,12 +9,10 @@ package org.dspace.uclouvain.authority;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.dspace.content.Item;
-import org.dspace.content.MetadataValue;
 
 /**
  * Simple authority to search for Persons.
@@ -42,31 +40,11 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
         String orcid = this.itemService.getMetadataFirstValue(item, "person", "identifier", "orcid", null);
         if (email != null) {
             extras.put("data-authors_email", email);
+            extras.put("authority-authors_email", item.getID().toString());
         }
         if (orcid != null) {
             extras.put("data-authors_identifier_orcid", orcid);
-        }
-
-        List<MetadataValue> institutions =
-            this.itemService.getMetadata(item, "person", "affiliation", "institution", null);
-        List<MetadataValue> departments =
-            this.itemService.getMetadata(item, "person", "affiliation", "department", null);
-
-        // For institutions/department we must return something only if there is only one value, else we cannot choose.
-        MetadataValue institution = (institutions.isEmpty() || institutions.size() != 1) ? null : institutions.get(0);
-        if (institution != null) {
-            extras.put("data-oairecerif_authors_orgunit", institution.getValue());
-            if (isValidAuthority(institution.getAuthority())) {
-                extras.put("authority-oairecerif_authors_orgunit", institution.getAuthority());
-            }
-        }
-
-        MetadataValue department = (departments.isEmpty() || departments.size() != 1) ? null : departments.get(0);
-        if (department != null) {
-            extras.put("data-oairecerif_authors_orgunitDepartement", department.getValue());
-            if (isValidAuthority(department.getAuthority())) {
-                extras.put("authority-oairecerif_authors_orgunitDepartement", department.getAuthority());
-            }
+            extras.put("authority-authors_identifier_orcid", item.getID().toString());
         }
         return extras;
     }
@@ -95,14 +73,5 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
     @Override
     public String getPluginInstanceName() {
         return authorityName;
-    }
-
-    private boolean isValidAuthority(String authority) {
-        try {
-            UUID.fromString(authority);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
     }
 }
