@@ -108,6 +108,11 @@
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
     </step-definition>
+    <step-definition id="publication-authors" mandatory="true">
+      <heading>submit.progressbar.describe.publication_authors</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
     <step-definition id="publication-base" mandatory="true">
       <heading>submit.progressbar.describe.publication_base</heading>
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
@@ -212,6 +217,7 @@
       <step id="upload" />
       <step id="publication-type" />
       <step id="publication-identifiers" />
+      <step id="publication-authors" />
       <step id="publication-base" />
       <step id="publication-specific" />
       <step id="publication-funding" />
@@ -224,6 +230,7 @@
       <step id="upload" />
       <step id="publication-type" />
       <step id="publication-identifiers" />
+      <step id="publication-authors" />
       <step id="publication-base" />
       <step id="publication-specific" />
       <step id="publication-funding" />
