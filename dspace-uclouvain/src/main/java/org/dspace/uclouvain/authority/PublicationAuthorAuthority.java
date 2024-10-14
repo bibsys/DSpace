@@ -54,9 +54,9 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
 
         MetadataValue department = (departments.isEmpty() || departments.size() != 1) ? null : departments.get(0);
         if (department != null) {
-            extras.put("data-oairecerif_authors_orgunitDepartement", department.getValue());
+            extras.put("data-oairecerif_authors_orgunitDepartment", department.getValue());
             if (isValidAuthority(department.getAuthority())) {
-                extras.put("authority-oairecerif_authors_orgunitDepartement", department.getAuthority());
+                extras.put("authority-oairecerif_authors_orgunitDepartment", department.getAuthority());
             }
         }
         return extras;
