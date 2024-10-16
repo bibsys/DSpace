@@ -61,32 +61,6 @@
       </row> -->
     </form>
 
-    <form name="publication-base-dc-contributor-author">
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>contributor</dc-element>
-          <dc-qualifier>author</dc-qualifier>
-          <label>Author</label>
-          <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required>You must enter at least the author.</required>
-          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>oairecerif</dc-schema>
-          <dc-element>author</dc-element>
-          <dc-qualifier>affiliation</dc-qualifier>
-          <label>Affiliation</label>
-          <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required />
-          <hint>Enter the affiliation of the author as stated on the publication.</hint>
-        </field>
-      </row>
-    </form>
     <form name="person-oairecerif-person-affiliation">
       <row>
         <field>
@@ -288,6 +262,32 @@
         </field>
       </row>
     </form>
+    <form name="person-person-affiliation-institution">
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>institution</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Institution</label>
+          <style>col-3</style>
+          <input-type>institution-affiliation-select</input-type>
+          <hint>Enter the name of the institution of the affiliation.</hint>
+          <required>Please enter an affiliation institution for this profile.</required>
+        </field>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>departement</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Department</label>
+          <style>col-9</style>
+          <input-type>department-affiliation-select</input-type>
+          <hint>Enter the department of the affiliation.</hint>
+          <required>Please enter an affiliation department for this profile.</required>
+        </field>
+      </row>
+    </form>
     <form name="person">
       <row>
         <field>
@@ -389,12 +389,11 @@
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
-          <dc-qualifier>name</dc-qualifier>
+          <dc-qualifier>institution</dc-qualifier>
           <label>Main Affiliation</label>
-          <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required />
-          <hint />
+          <input-type>group</input-type>
+          <repeatable>true</repeatable>
+          <hint>Give information about your affiliations (institution and department).</hint>
         </field>
       </row>
       <row>
@@ -893,6 +892,178 @@
         </field>
       </row>
     </form>
+    <form name="publication-base-dc-contributor-author">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>author</dc-qualifier>
+          <label>Author</label>
+          <input-type>onebox</input-type>
+          <repeatable>false</repeatable>
+          <required>You must enter at least the author.</required>
+          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>email</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's email</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the email of the author.</hint>
+          <required>Please provide an email for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>orcid</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Author's ORCID</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the ORCID of the author.</hint>
+        </field>
+      </row>
+      <!-- The role depends on the selected main document type -->
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's role</label>
+          <type-bind>text::journal-article</type-bind>
+          <input-type value-pairs-name="publication_roles_journal_article">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's role</label>
+          <type-bind>text::conference-speech</type-bind>
+          <input-type value-pairs-name="publication_roles_conference_speech">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's role</label>
+          <type-bind>text::book</type-bind>
+          <input-type value-pairs-name="publication_roles_book">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's role</label>
+          <type-bind>text::book-part</type-bind>
+          <input-type value-pairs-name="publication_roles_book_chapter">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's role</label>
+          <type-bind>text::working-paper</type-bind>
+          <input-type value-pairs-name="publication_roles_working_paper">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's role</label>
+          <type-bind>text::report</type-bind>
+          <input-type value-pairs-name="publication_roles_report">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's role</label>
+          <type-bind>text::patent</type-bind>
+          <input-type value-pairs-name="publication_roles_patent">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>authors</dc-element>
+          <dc-qualifier>orgunit</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Institution</label>
+          <style>col-3</style>
+          <input-type>institution-affiliation-select</input-type>
+          <hint>Enter the institution of the author.</hint>
+          <required>Please enter an affiliation institution for this author.</required>
+        </field>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>authors</dc-element>
+          <dc-qualifier>orgunitDepartement</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Department</label>
+          <style>col-9</style>
+          <input-type>department-affiliation-select</input-type>
+          <hint>Enter the department of the author.</hint>
+          <required>Please enter an affiliation department for this author.</required>
+        </field>
+      </row>
+    </form>
+    <!-- TODO: Try to invert in order to show the department instead of the institution in the badge (maybe both ???) -->
+    <form name="publication-base-oairecerif-affiliation-orgunit">
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>orgunit</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Institution</label>
+          <style>col-3</style>
+          <input-type>institution-affiliation-select</input-type>
+          <hint>Enter the name of the institution of the affiliation.</hint>
+          <required>Please enter an institution for this additional affiliation.</required>
+        </field>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>orgunitDepartement</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Department</label>
+          <style>col-9</style>
+          <input-type>department-affiliation-select</input-type>
+          <hint>Enter the department of the affiliation.</hint>
+          <required>Please enter a department for this additional affiliation.</required>
+        </field>
+      </row>
+    </form>
     <form name="publication-base">
       <row>
         <field>
@@ -915,6 +1086,18 @@
           <input-type>group</input-type>
           <hint>Enter the names of the authors of this item.</hint>
           <required>You must enter at least one author</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>etal</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>et.al</label>
+          <input-type>checkbox</input-type>
+          <hint>This publication has additional authors than those mentionned above</hint>
+          <required>Please indicate if there are additional non-mentionned authors.</required>
         </field>
       </row>
       <row>
@@ -981,7 +1164,7 @@
           <dc-qualifier>orgunit</dc-qualifier>
           <repeatable>true</repeatable>
           <label>Additional affiliations</label>
-          <input-type>onebox</input-type>
+          <input-type>group</input-type>
           <hint>Enter additional affiliation not yet linked to any author's affiliation.</hint>
         </field>
       </row>
@@ -2968,6 +3151,131 @@
         <stored-value>n/a</stored-value>
       </pair>
     </value-pairs>
-
+    <value-pairs value-pairs-name="publication_roles_journal_article" dc-term="publication_roles_journal_article">
+      <pair>
+        <displayed-value>Author</displayed-value>
+        <stored-value>author</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Collaborator</displayed-value>
+        <stored-value>collaborator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Translator</displayed-value>
+        <stored-value>translator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Scientific Director/Editor</displayed-value>
+        <stored-value>scientific_director_editor</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Co-first author</displayed-value>
+        <stored-value>co_first_author</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Co-last author</displayed-value>
+        <stored-value>co_last_author</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_roles_conference_speech" dc-term="publication_roles_conference_speech">
+      <pair>
+        <displayed-value>Author</displayed-value>
+        <stored-value>author</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Collaborator</displayed-value>
+        <stored-value>collaborator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Translator</displayed-value>
+        <stored-value>translator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Scientific Director/Editor</displayed-value>
+        <stored-value>scientific_director_editor</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Preface writter</displayed-value>
+        <stored-value>preface_writter</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_roles_book" dc-term="publication_roles_book">
+      <pair>
+        <displayed-value>Author</displayed-value>
+        <stored-value>author</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Collaborator</displayed-value>
+        <stored-value>collaborator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Translator</displayed-value>
+        <stored-value>translator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Scientific Director/Editor</displayed-value>
+        <stored-value>scientific_director_editor</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Preface writter</displayed-value>
+        <stored-value>preface_writter</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_roles_book_chapter" dc-term="publication_roles_book_chapter">
+      <pair>
+        <displayed-value>Author</displayed-value>
+        <stored-value>author</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Collaborator</displayed-value>
+        <stored-value>collaborator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Translator</displayed-value>
+        <stored-value>translator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Scientific Director/Editor</displayed-value>
+        <stored-value>scientific_director_editor</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Preface writter</displayed-value>
+        <stored-value>preface_writter</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_roles_working_paper" dc-term="publication_roles_working_paper">
+      <pair>
+        <displayed-value>Author</displayed-value>
+        <stored-value>author</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Collaborator</displayed-value>
+        <stored-value>collaborator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Translator</displayed-value>
+        <stored-value>translator</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_roles_report" dc-term="publication_roles_report">
+      <pair>
+        <displayed-value>Author</displayed-value>
+        <stored-value>author</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Collaborator</displayed-value>
+        <stored-value>collaborator</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Translator</displayed-value>
+        <stored-value>translator</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_roles_patent" dc-term="publication_roles_patent">
+      <pair>
+        <displayed-value>Inventor</displayed-value>
+        <stored-value>inventor</stored-value>
+      </pair>
+    </value-pairs>
   </form-value-pairs>
 </input-forms>
