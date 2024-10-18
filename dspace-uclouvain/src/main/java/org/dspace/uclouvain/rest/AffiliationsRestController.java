@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.core.Context;
-import org.dspace.uclouvain.consumer.AffiliationModificationConsumer;
 import org.dspace.uclouvain.core.model.AffiliationEntityRestModel;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
@@ -39,7 +38,7 @@ public class AffiliationsRestController {
 
     public AffiliationsRestController(){
         this.uclouvainAffiliationEntityRestService = UCLouvainServiceFactory.getInstance().getAffiliationEntityRestService();
-        this.logger = LogManager.getLogger(AffiliationModificationConsumer.class);
+        this.logger = LogManager.getLogger(AffiliationsRestController.class);
     }
 
     /** 
@@ -51,7 +50,8 @@ public class AffiliationsRestController {
         @RequestParam(value = "depth", required = false) Integer depth) throws IOException {
 
         // Get the tree from the service. This tree automatically regenerated once an OrgUnit is modified so we are sure to be up-to-date.
-        List<AffiliationEntityRestModel> modelsList = this.deepCopy(this.uclouvainAffiliationEntityRestService.getAffiliationsEntities());
+        List<AffiliationEntityRestModel> modelsList = this.uclouvainAffiliationEntityRestService.getAffiliationsEntities(context);
+
         // If nothing found return an empty list
         if (modelsList == null) {
             this.logger.warn("No affiliation tree found from 'UCLouvainAffiliationEntityRestService' service.");
@@ -98,11 +98,5 @@ public class AffiliationsRestController {
             // We have not yet reached the desired depth, so we continue the recursion.
             models.forEach(model -> recursiveDepthRemover(model.children, maxDepth, currentDepth + 1));
         }
-    }
-
-    private List<AffiliationEntityRestModel> deepCopy(List<AffiliationEntityRestModel> models) {
-        List<AffiliationEntityRestModel> copiedList = new ArrayList<AffiliationEntityRestModel>();
-        models.forEach(model -> copiedList.add(new AffiliationEntityRestModel(model)));
-        return copiedList;
     }
 }
