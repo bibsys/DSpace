@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.consumer;
 
 import java.sql.SQLException;
@@ -8,9 +15,9 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.access.status.factory.AccessStatusServiceFactory;
 import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Bitstream;
-import org.dspace.content.service.BitstreamService;
 import org.dspace.content.Item;
 import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.event.Consumer;
@@ -55,11 +62,11 @@ public class AccessTypeConsumer implements Consumer {
      * Consume the event and update the access type metadata of the item.
      * Only update the metadata if the access type has changed or did not exist.
      * 
-     * Note that all the events that enters this method are pre-filtered and we only deal with bitstream events.
+     * Note that all the events that enter this method are pre-filtered, and we only deal with bitstream events.
      * This is configured in "event.consumer.accesstype.filters" field.
      * 
-     * @param context: The current DSpace context.
-     * @param event: The event to consume that deals with a bitstream.
+     * @param context  The current DSpace context.
+     * @param event    The event to consume that deals with a bitstream.
      * @throws SQLException
      */
     @Override
@@ -67,18 +74,20 @@ public class AccessTypeConsumer implements Consumer {
         // Check that the subject is a bitstream.
         Item item = this.getItem(context, event);
         if (item == null) {
-            logger.warn("Could not retrieve the item from the bitstream with an event type of: " + event.getEventTypeAsString());
+            logger.warn("Could not retrieve the item from the bitstream with an event type of: " +
+                    event.getEventTypeAsString());
             return;
         }
         // Retrieve the global access type for the item
         String accessType = this.accessStatusService.getAccessStatus(context, item);
-        if (StringUtils.isEmpty(accessType) || accessType.equals(UCLouvainAccessStatusHelper.UNKNOWN)){
+        if (StringUtils.isEmpty(accessType) || accessType.equals(UCLouvainAccessStatusHelper.UNKNOWN)) {
             // DELETE field values on the configured 'accessTypeField'.
-            this.itemService.clearMetadata(context, item, accessTypeField.getSchema(), accessTypeField.getElement(), null, null);
+            this.itemService.clearMetadata(
+                    context, item, accessTypeField.getSchema(), accessTypeField.getElement(), null, null);
             return;
         }
         String previousMetadata = this.itemService.getMetadataFirstValue(item, accessTypeField, null);
-        if(!accessType.equals(previousMetadata)) {
+        if (!accessType.equals(previousMetadata)) {
             this.itemService.setMetadataSingleValue(context, item, accessTypeField, null, accessType);
         }
     }
@@ -91,17 +100,17 @@ public class AccessTypeConsumer implements Consumer {
 
     /**
      * Retrieve the item linked to a bitstream event.
-     * If the event type is DELETE, the item is extracted from the event object.
+     * If the event type is 'DELETE', the item is extracted from the event object.
      * Otherwise, the item is retrieved from the bitstream parent object.
      * This is done because a deleted bitstream does not have a parent object anymore.
      * 
-     * @param context: The current DSpace context.
-     * @param event: The event to consume.
-     * @return Item: The item linked to the bitstream event.
-     * @throws SQLException
+     * @param context The current DSpace context.
+     * @param event   The event to consume.
+     * @return The item linked to the bitstream event.
+     * @throws SQLException if any database exception occurred
      */
     private Item getItem(Context context, Event event) throws SQLException {
-        return (event.getEventType() == Event.DELETE) 
+        return (event.getEventType() == Event.DELETE)
             ? ((Item) event.getObject(context))
             : ((Item) this.bitstreamService.getParentObject(context, (Bitstream) event.getSubject(context)));
     }

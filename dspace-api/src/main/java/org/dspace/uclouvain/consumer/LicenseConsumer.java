@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.consumer;
 
 import java.util.Arrays;
@@ -40,8 +47,10 @@ public class LicenseConsumer implements Consumer {
         this.bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
         this.configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-        this.defaultLicenseUrl = this.configurationService.getProperty("uclouvain.global.metadata.license.default", "https://creativecommons.org/licenses/by/4.0/");
-        String fieldName = this.configurationService.getProperty("uclouvain.global.metadata.license.field", "dc.rights.license");
+        this.defaultLicenseUrl = this.configurationService.getProperty("uclouvain.global.metadata.license.default",
+                "https://creativecommons.org/licenses/by/4.0/");
+        String fieldName = this.configurationService.getProperty("uclouvain.global.metadata.license.field",
+                "dc.rights.license");
         this.licenseMetadataFieldName = new MetadataFieldName(fieldName);
     }
 
@@ -51,7 +60,8 @@ public class LicenseConsumer implements Consumer {
         if (event.getSubjectType() == Constants.BITSTREAM && acceptedEvents.contains(event.getEventType())) {
             Bitstream bitstream = (Bitstream) event.getSubject(context);
             if (bitstreamService.getMetadataFirstValue(bitstream, this.licenseMetadataFieldName, null) == null) {
-                bitstreamService.setMetadataSingleValue(context, bitstream, this.licenseMetadataFieldName, null, defaultLicenseUrl);
+                bitstreamService.setMetadataSingleValue(context, bitstream, this.licenseMetadataFieldName, null,
+                        defaultLicenseUrl);
             }
         }
     }

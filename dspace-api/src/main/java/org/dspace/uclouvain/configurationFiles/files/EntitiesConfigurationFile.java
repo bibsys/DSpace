@@ -1,4 +1,18 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.configurationFiles.files;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,13 +21,9 @@ import org.dspace.uclouvain.configurationFiles.AbstractConfigurationFile;
 import org.dspace.uclouvain.core.model.Entity;
 import org.dspace.uclouvain.core.model.EntityType;
 
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.util.*;
-
 public class EntitiesConfigurationFile extends AbstractConfigurationFile<Set<Entity>> {
 
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(EntitiesConfigurationFile.class);
+    private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(EntitiesConfigurationFile.class);
 
     // CONSTRUCTOR ============================================================
     public EntitiesConfigurationFile(String filePath) throws IOException {
@@ -39,8 +49,8 @@ public class EntitiesConfigurationFile extends AbstractConfigurationFile<Set<Ent
     /**
      * Recursively load an entity and all potential children entities
      *
-     * @param entityData : the entity json node data
-     * @param parent     : the parent entity (could be null)
+     * @param entityData the entity json node data
+     * @param parent     the parent entity (could be null)
      * @return the list of entities loaded from an entity node.
      */
     private static List<Entity> parseEntity(JsonNode entityData, @Nullable Entity parent) {

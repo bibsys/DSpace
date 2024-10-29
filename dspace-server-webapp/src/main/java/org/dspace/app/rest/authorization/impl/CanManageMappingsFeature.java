@@ -72,7 +72,8 @@ public class CanManageMappingsFeature implements AuthorizationFeature {
                 return false;
             }
             try {
-                Integer limit = configurationService.getIntProperty("core.authorization.collection-mapping.solr.limit", 10000);
+                Integer limit = configurationService
+                        .getIntProperty("core.authorization.collection-mapping.solr.limit", 10000);
                 Optional<Collection> collections = collectionService.findCollectionsWithSubmit(StringUtils.EMPTY,
                                                  context, null, null, 0, limit)
                                                 .stream()

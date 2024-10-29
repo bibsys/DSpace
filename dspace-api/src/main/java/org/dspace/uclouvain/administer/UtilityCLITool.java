@@ -1,4 +1,14 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
+
+import java.sql.SQLException;
+import java.util.List;
 
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
@@ -8,15 +18,16 @@ import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 
-import java.sql.SQLException;
-import java.util.List;
-
 public class UtilityCLITool {
+
+    protected UtilityCLITool() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Find an ePerson based either on email, either on UUID (aka. NetID)
      *
-     * @param userID: the user's identifier
+     * @param userID the user's identifier
      * @return the corresponding ePerson
      * @throws IllegalStateException if a database exception occurred or no ePerson is found.
      */
@@ -34,17 +45,17 @@ public class UtilityCLITool {
             if (eperson != null) {
                 return eperson;
             }
-        } catch(SQLException e) {
-            throw new IllegalStateException("User not found :: "+e.getMessage());
+        } catch (SQLException e) {
+            throw new IllegalStateException("User not found :: " + e.getMessage());
         }
         throw new IllegalStateException("User not found");
     }
 
     /**
-     * Allows to combine multiple CLI options group into a single options set.
+     * Allows combining a multiple CLI options group into a single options set.
      * This is useful to format CLI command usage string.
      *
-     * @param optionsGroupList: the options group to merge together.
+     * @param optionsGroupList the options group to merge together.
      * @return the merged options list.
      */
     public static Options combineOptions(List<Options> optionsGroupList) {
@@ -60,9 +71,9 @@ public class UtilityCLITool {
     /**
      * Display the usage of a command line with all possible arguments.
      *
-     * @param cls: the CLI class to manage
-     * @param description: a human-readable description for the CLI.
-     * @param optionsGroupList: All options available for the CLI.
+     * @param cls              the CLI class to manage
+     * @param description      a human-readable description for the CLI.
+     * @param optionsGroupList all options available for the CLI.
      */
     public static void usage(Class<?> cls, String description, List<Options> optionsGroupList) {
         String header = "\n" + description + "\n\n";
