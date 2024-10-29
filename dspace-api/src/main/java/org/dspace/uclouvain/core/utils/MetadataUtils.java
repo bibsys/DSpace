@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core.utils;
 
 import java.util.ArrayList;
@@ -10,14 +17,20 @@ import org.dspace.content.MetadataValue;
 * Set of util methods for `MetadataValues`
 */
 public class MetadataUtils {
+
+    protected MetadataUtils() {
+        throw new UnsupportedOperationException();  // required by "(design) HideUtilityClassConstructor" code checker
+    }
+
     /** 
     * Recovers the value for a specific field of a `MetadataValue` list.
     * 
-    * @param metadataValues: The list of `MetadataValue` to search from.
-    * @param fieldId: The field to recover the value of.
+    * @param metadataValues The list of `MetadataValue` to search from.
+    * @param fieldId The field to recover the value of.
     * @return Value for the given metadata field (empty string if not found).
     */
-    public static String getMetadataFieldValueByFieldId(List<MetadataValue> metadataValues, String fieldId, String defaultValue){
+    public static String getMetadataFieldValueByFieldId(
+            List<MetadataValue> metadataValues, String fieldId, String defaultValue) {
         for (MetadataValue metadataValue: metadataValues) {
             if (metadataValue.getMetadataField().toString().equals(fieldId)) {
                 return metadataValue.getValue();
@@ -26,19 +39,19 @@ public class MetadataUtils {
         return defaultValue;
     }
 
-    public static String getMetadataFieldValueByFieldId(List<MetadataValue> metadataValues, String fieldId){
+    public static String getMetadataFieldValueByFieldId(List<MetadataValue> metadataValues, String fieldId) {
         return getMetadataFieldValueByFieldId(metadataValues, fieldId, "");
     }
 
     /** 
     * Recovers a list of all the values for a specific field of a 'MetadataValue' list.
     * 
-    * @param metadataValues: The list of `MetadataValue` to search from.
-    * @param fieldId: The field to recover values of.
+    * @param metadataValues The list of `MetadataValue` to search from.
+    * @param fieldId The field to recover values of.
     * @return List of values for the given metadata field (empty list if no found).
     */
-    public static List<String> getAllMetadataFieldValuesByFieldId(List<MetadataValue> metadataValues, String fieldId){
-        List<String> values = new ArrayList<String>();
+    public static List<String> getAllMetadataFieldValuesByFieldId(List<MetadataValue> metadataValues, String fieldId) {
+        List<String> values = new ArrayList<>();
         for (MetadataValue metadataValue: metadataValues) {
             if (metadataValue.getMetadataField().toString().equals(fieldId)) {
                 values.add(metadataValue.getValue());
@@ -48,27 +61,27 @@ public class MetadataUtils {
     }
 
     /** 
-    * This method is used to extract the real type of a DSpace item.
+    * This method is used to extract the real type about a DSpace item.
     * 
-    * @param inputType: Type of a DSpace item of form "xx::xx::xx"
-    * @return The last element of the string splitted by "::"
+    * @param inputType DSpace item type on "xx::xx::xx" format
+    * @return The last element of the string split by "::"
     */
     public static String extractItemType(String inputType) {
-        String[] splitted = inputType.split("::");
-        return splitted[splitted.length - 1];
+        String[] parts = inputType.split("::");
+        return parts[parts.length - 1];
     }
 
     /** 
-    * Converts a list of metadataValues into an HashMap for easier data access.
+    * Converts a list of metadataValues into a ``java.util.HashMap`` for easier data access.
     * 
-    * @param metadataValues: The list of `MetadataValue` to insert into the HashMap.
+    * @param metadataValues The list of `MetadataValue` to insert into the HashMap.
     * @return The HashMap with all the values (key=fieldName, value= List of strings values).
     */
-    public static HashMap<String, List<String>> getValuesHashMap(List<MetadataValue> metadataValues){
+    public static HashMap<String, List<String>> getValuesHashMap(List<MetadataValue> metadataValues) {
         HashMap<String, List<String>> hashMap = new HashMap<>();
         for (MetadataValue metadataValue: metadataValues) {
             String metadataField = metadataValue.getMetadataField().toString();
-            List<String> currentValueForFieldId = hashMap.getOrDefault(metadataField, new ArrayList<String>());
+            List<String> currentValueForFieldId = hashMap.getOrDefault(metadataField, new ArrayList<>());
             currentValueForFieldId.add(metadataValue.getValue());
             // If the field id is not in the hashMap yet
             hashMap.putIfAbsent(metadataField, currentValueForFieldId);

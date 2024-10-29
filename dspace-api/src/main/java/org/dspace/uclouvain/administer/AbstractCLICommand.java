@@ -1,10 +1,22 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
-
-import org.apache.commons.cli.*;
-import org.dspace.core.Context;
 
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.dspace.core.Context;
 
 /**
  * Abstract class representing a basic DSpace CLI command. This class provides
@@ -41,12 +53,16 @@ public abstract class AbstractCLICommand {
         try {
             if (infoOptions != null) {
                 cl = parser.parse(infoOptions, args, true);
-                if (cl.hasOption("help")) throw new ParseException("");
+                if (cl.hasOption("help")) {
+                    throw new ParseException("");
+                }
             }
             cl = parser.parse(serviceOptions, args, true);
             this.extraValidationCLIArgument(cl);
         } catch (ParseException pe) {
-            if (!pe.getMessage().isEmpty()) System.err.println(pe.getMessage());
+            if (!pe.getMessage().isEmpty()) {
+                System.err.println(pe.getMessage());
+            }
             usage(Arrays.asList(infoOptions, serviceOptions));
             System.exit(1);
         }
@@ -70,9 +86,9 @@ public abstract class AbstractCLICommand {
      */
     protected void usage(List<Options> optionsGroupList) {
         UtilityCLITool.usage(
-          this.getClass(),
-          this.getUsageDescription(),
-          optionsGroupList
+            this.getClass(),
+            this.getUsageDescription(),
+            optionsGroupList
         );
     }
 

@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core.model;
 
 import java.util.ArrayList;
@@ -8,6 +15,8 @@ import org.dspace.content.MetadataFieldName;
 
 /**
  * Little class that extends a metadata field reference string.
+ *
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class MetadataField extends MetadataFieldName {
 
@@ -30,11 +39,12 @@ public class MetadataField extends MetadataFieldName {
     /**
      * Retrieve the full string for the metadata field name based on a given separator.
      * 
-     * @param separator: The symbol used to recreate the string.
-     * @return The full string containing the schema, element and qualifier.
+     * @param separator The symbol used to recreate the string.
+     * @return The full string containing the schema, element, and qualifier.
      */
     public String getFullString(String separator) {
-        // We need to use `new ArrayList<>()` for the instantiation since it will allow us to use the `add()` method on the list.
+        // We need to use `new ArrayList<>()` for the instantiation since it will allow us to use the `add()` method
+        // on the list.
         List<String> sections = new ArrayList<>(Arrays.asList(this.schema, this.element));
         if (this.qualifier != null) {
             sections.add(this.qualifier);
@@ -45,7 +55,7 @@ public class MetadataField extends MetadataFieldName {
     /**
      * @return The full string containing the schema, element and qualifier linked with a dot.
      */
-    public String getFullString(){
+    public String getFullString() {
         return this.getFullString(".");
     }
 

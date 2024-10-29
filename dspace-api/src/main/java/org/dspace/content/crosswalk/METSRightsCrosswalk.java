@@ -7,6 +7,8 @@
  */
 package org.dspace.content.crosswalk;
 
+import static org.dspace.authorize.ResourcePolicy.TYPE_CUSTOM;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -37,8 +39,6 @@ import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
-
-import static org.dspace.authorize.ResourcePolicy.TYPE_CUSTOM;
 
 /**
  * METSRights Ingestion and Dissemination Crosswalk
