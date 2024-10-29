@@ -1,4 +1,15 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.MissingArgumentException;
@@ -13,16 +24,16 @@ import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.core.Context;
 import org.dspace.utils.DSpace;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.UUID;
-
 /**
  * A command-line tool for manager item metadata.
  * With this command, we can set, add or remove any item metadata.
  *
  * USAGE:
- *   dspace dsrun org.dspace.uclouvain.administer.MetadataManagement -t [objUUID] -a [set|add|delete] -f [schema.element.qualifier] -v [value]
+ *   dspace dsrun org.dspace.uclouvain.administer.MetadataManagement
+ *       -t [objUUID]
+ *       -a [set|add|delete]
+ *       -f [schema.element.qualifier]
+ *       -v [value]
  *
  * ARGUMENTS:
  *   -t, --target: the item uuid that will be affected.
@@ -85,8 +96,8 @@ public class MetadataManagement extends AbstractCLICommand {
     /**
      * For invoking via the command line.
      *
-     * @param argv: the command line arguments given
-     * @throws MissingArgumentException : If a required argument is missing.
+     * @param argv the command line arguments given
+     * @throws MissingArgumentException if a required argument is missing.
      */
     public static void main(String[] argv) throws Exception {
         MetadataManagement cli = new MetadataManagement();
@@ -111,14 +122,21 @@ public class MetadataManagement extends AbstractCLICommand {
         UUID uuid = UUID.fromString(targetUUID);
         DSpaceObject dso = dsoUtils.findDSpaceObject(context, uuid);
         if (dso == null) {
-            throw new IllegalArgumentException("object "+uuid+" not found!");
+            throw new IllegalArgumentException("object " + uuid + " not found!");
         }
         MetadataFieldName field = new MetadataFieldName(fieldName);
         switch (action) {
-            case ACTION_ADD: addMetadata(dso, field, fieldValue); break;
-            case ACTION_SET: setMetadata(dso, field, fieldValue); break;
-            case ACTION_DELETE: delMetadata(dso, field); break;
-            default: throw new IllegalArgumentException("invalid action");
+            case ACTION_ADD:
+                addMetadata(dso, field, fieldValue);
+                break;
+            case ACTION_SET:
+                setMetadata(dso, field, fieldValue);
+                break;
+            case ACTION_DELETE:
+                delMetadata(dso, field);
+                break;
+            default:
+                throw new IllegalArgumentException("invalid action");
         }
         context.complete();
     }

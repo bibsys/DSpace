@@ -1,4 +1,13 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
+
+import java.sql.SQLException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.MissingArgumentException;
@@ -18,12 +27,10 @@ import org.dspace.utils.DSpace;
 import org.dspace.workflow.WorkflowService;
 import org.dspace.workflow.factory.WorkflowServiceFactory;
 
-import java.sql.SQLException;
-
 /**
- * A command-line tool to manage permissions about a DSpace collection. It allows to
- * add/remove permission for a roleType for a ePerson group. To give an ePerson some
- * management option on this group, this ePerson must be member of the previous-named group.
+ * A command-line tool to manage permissions about a DSpace collection. It allows
+ * adding/remove permission for a roleType for an ePerson group. To give an ePerson some
+ * management option on this group, this ePerson must be a member of the previous-named group.
  *
  * USAGE:
  *   dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement -c [collection_name] \
@@ -88,8 +95,8 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
     /**
      * For invoking via the given command line arguments.
      *
-     * @param argv: the command line arguments given
-     * @throws MissingArgumentException : If a required argument is missing.
+     * @param argv the command line arguments given
+     * @throws MissingArgumentException  If any required argument is missing.
      */
     public static void main(String[] argv) throws Exception {
         CollectionPermissionManagement cpm = new CollectionPermissionManagement();
@@ -123,7 +130,7 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
 
     // PRIVATE METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private void managePermissions(String collectionName, String workflowRole, String groupName, String action)
-    throws Exception {
+        throws Exception {
         context.turnOffAuthorisationSystem();
         Collection c = findCollectionByName(collectionName);
         Group workflowGroup = findWorkflowGroup(c, workflowRole);
@@ -138,7 +145,7 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
     /**
      * Find a ``org.dspace.content.Collection`` object by its name
      *
-     * @param collectionName: The collection name
+     * @param collectionName The collection name
      * @return The corresponding collection
      * @throws IllegalStateException if none or multiple collections are found.
      * @throws NotUniqueResultException: if multiple collections are found for this name.
@@ -150,18 +157,19 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
         dq.setQuery(String.format("search.resourcetype:Collection AND dc.title_sort:\"%s\"", collectionName));
 
         DiscoverResult result = searchService.search(context, dq);
-        if (result.getTotalSearchResults() == 0)
+        if (result.getTotalSearchResults() == 0) {
             throw new IllegalStateException(String.format("No collection found for %s", collectionName));
-        else if (result.getTotalSearchResults() > 1)
+        } else if (result.getTotalSearchResults() > 1) {
             throw new NotUniqueResultException(String.format("%d collection found", result.getTotalSearchResults()));
+        }
         return (Collection)result.getIndexableObjects().get(0).getIndexedObject();
     }
 
     /**
      * Find the collection workflow group based on its name. If the group doesn't yet exist, it will be created
      *
-     * @param collection: the collection to analyze
-     * @param workflowRole: the workflow role name to find (submitter, reviewer, editor or finaleditor)
+     * @param collection   the collection to analyze
+     * @param workflowRole the workflow role name to find (submitter, reviewer, editor or finaleditor)
      * @return the requested workflow group
      * @throws Exception if any exception occurred during the process.
      */
@@ -177,14 +185,16 @@ public class CollectionPermissionManagement extends AbstractCLICommand {
                     group = workflowService.createWorkflowRoleGroup(context, collection, workflowRole);
                 }
                 return group;
+            default:
+                throw new IllegalArgumentException(
+                        String.format("Unable to manage \"%s\" group permissions", workflowRole));
         }
-        throw new IllegalArgumentException(String.format("Unable to manage \"%s\" group permissions", workflowRole));
     }
 
     /**
      * Get a user group by its name
      *
-     * @param groupName: the group name to search
+     * @param groupName the group name to search
      * @return the corresponding group (if exists)
      * @throws SQLException if exception occurred during requesting database
      * @throws IllegalStateException if no corresponding group could be found.

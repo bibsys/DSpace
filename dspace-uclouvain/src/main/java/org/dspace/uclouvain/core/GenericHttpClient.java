@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core;
 
 import java.io.IOException;
@@ -11,7 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GenericHttpClient {
-    private HttpClient httpClient; 
+    private HttpClient httpClient;
     private String baseUrl;
     private String token;
 
@@ -21,55 +28,50 @@ public class GenericHttpClient {
 
     private HttpRequest.Builder generateHttpRequestBuilder(String url) {
         HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder().uri(URI.create(url));
-        if(!(this.token == null) && !(this.token.isEmpty())){
+        if (!(this.token == null) && !(this.token.isEmpty())) {
             httpRequestBuilder.setHeader("Authorization", this.token);
-        }                                 
+        }
         return httpRequestBuilder;
     }
 
     /** 
      * Makes a GET Http Request on the given url and returns the response.
      * 
-     * @param url: The url to get.
-     * @return: The request response.
-     * @throws URISyntaxException
+     * @param url The url to get.
+     * @return The request response.
+     * @throws URISyntaxException for any error with URI syntax
      */
     public HttpResponse<String> get(String url) throws IOException, InterruptedException, URISyntaxException {
         String requestUrl = this.baseUrl + url;
-
         HttpRequest.Builder requestBuilder = this.generateHttpRequestBuilder(requestUrl);
         requestBuilder.setHeader("accept", "application/json");
         HttpRequest request = requestBuilder.build();
-
-        return this.httpClient.send(request, BodyHandlers.ofString()); 
+        return this.httpClient.send(request, BodyHandlers.ofString());
     }
 
     /** 
      * Makes a GET Http Request on the given url with the given headers and returns the response.
      * 
-     * @param url: The url to get.
-     * @param headers: The headers to add to the request.
-     * @return: The request response.
-     * @throws URISyntaxException
+     * @param url The url to get.
+     * @param headers The headers to add to the request.
+     * @return The request response.
+     * @throws URISyntaxException for any error with URI syntax
      */
-    public HttpResponse<String> get(String url, HashMap<String, String> headers) throws IOException, InterruptedException, URISyntaxException {
+    public HttpResponse<String> get(String url, HashMap<String, String> headers)
+            throws IOException, InterruptedException, URISyntaxException {
         String requestUrl = this.baseUrl + url;
-
         HttpRequest.Builder requestBuilder = generateHttpRequestBuilder(requestUrl);
-        for (Map.Entry<String, String> entry: headers.entrySet()){
+        for (Map.Entry<String, String> entry: headers.entrySet()) {
             requestBuilder.setHeader(entry.getKey(), entry.getValue());
         }
         HttpRequest request = requestBuilder.build();
-
-        return this.httpClient.send(request, BodyHandlers.ofString()); 
+        return this.httpClient.send(request, BodyHandlers.ofString());
     }
 
     // Getter && Setters
-
     public String getBaseUrl() {
         return this.baseUrl;
     }
-
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
     }
@@ -77,7 +79,6 @@ public class GenericHttpClient {
     public String getToken() {
         return token;
     }
-
     public void setToken(String token) {
         this.token = token;
     }

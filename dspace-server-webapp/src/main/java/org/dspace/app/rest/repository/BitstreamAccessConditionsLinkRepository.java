@@ -1,4 +1,16 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.repository;
+
+import java.sql.SQLException;
+import java.util.UUID;
+import javax.annotation.Nullable;
+import javax.servlet.http.HttpServletRequest;
 
 import org.dspace.app.rest.model.BitstreamAccessConditionRest;
 import org.dspace.app.rest.model.BitstreamAccessConditions;
@@ -10,14 +22,9 @@ import org.dspace.core.Context;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
-import java.sql.SQLException;
-import java.util.UUID;
 
 /** Link repository for "access" subresource of an individual bitstream.
  *

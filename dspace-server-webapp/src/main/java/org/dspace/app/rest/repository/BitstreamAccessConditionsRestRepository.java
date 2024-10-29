@@ -1,4 +1,14 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.repository;
+
+import java.sql.SQLException;
+import java.util.UUID;
 
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
 import org.dspace.app.rest.model.BitstreamAccessConditionRest;
@@ -13,10 +23,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-
-import java.sql.SQLException;
-import java.util.UUID;
-
 
 /**
  * This is the repository responsible to manage BitstreamAccessConditions Rest object
@@ -39,10 +45,8 @@ public class BitstreamAccessConditionsRestRepository extends DSpaceRestRepositor
             if (bitstream == null) {
                 throw new ResourceNotFoundException("No such bitstream: " + uuid);
             }
-
             BitstreamAccessConditions bac = new BitstreamAccessConditions();
             bac.setPolicies(uclouvainResourcePolicyService.find(context, bitstream));
-
             return converter.toRest(bac, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e);

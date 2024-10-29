@@ -1,20 +1,30 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core;
 
 import java.io.IOException;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /** 
-* Represent a basic Http Response from java.net.http lib
-* Used to access the JSON response
-*/
+ * Represent a basic Http Response from java.net.http lib
+ * Used to access the JSON response
+ *
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ */
 public class GenericResponse {
 
     private String responseBody;
-    // From Jackson, used to deserialize JSON to java 
+    // From Jackson, used to deserialize JSON to java
     private ObjectMapper objectMapper = new ObjectMapper();
-    
+
     /** 
      * Base GenericResponse constructor
      */
@@ -26,10 +36,10 @@ public class GenericResponse {
      * Extract the json content to an instance of a class
      * Usually, in the OSIS API, the real content is at the "return" key in the JSON response
      * 
-     * @param targetKey
-     * @param clazz
+     * @param targetKey the targeted key into the response
+     * @param clazz the class representation
      * @return T
-     * @throws IOException
+     * @throws IOException for any exception during response content access
      */
     public <T> T extractJsonResponseDataToClass(String targetKey, Class<T> clazz) throws IOException {
         this.objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
