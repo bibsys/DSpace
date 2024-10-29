@@ -1,15 +1,28 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.plugins;
+
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.access.status.AccessStatusHelper;
 import org.dspace.authorize.ResourcePolicy;
-import org.dspace.content.factory.ContentServiceFactory;
-import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataFieldName;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
@@ -17,11 +30,6 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
-import javax.validation.constraints.NotNull;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 /**
  * UCLouvain plugin implementation of the access status helper.
@@ -36,6 +44,8 @@ import java.util.Objects;
  * The `getEmbargoInformationFromItem` method provides a simple logic to
  * retrieve embargo information of bitstreams from an item based on the policies of
  * the primary or the first bitstream in the original bundle.
+ *
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
     public static final String ADMINISTRATOR = "administrator";
@@ -48,18 +58,20 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
 
     protected ContentServiceFactory contentFactory = ContentServiceFactory.getInstance();
     protected ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
-    protected UCLouvainResourcePolicyService uclouvainResourcePolicyService = UCLouvainServiceFactory.getInstance().getResourcePolicyService();
+    protected UCLouvainResourcePolicyService uclouvainResourcePolicyService =
+            UCLouvainServiceFactory.getInstance().getResourcePolicyService();
 
 
     public UCLouvainAccessStatusHelper() {
-        String fieldName = configurationService.getProperty("uclouvain.global.metadata.accesstype.field", "dcterms.accessRights");
+        String fieldName = configurationService
+                .getProperty("uclouvain.global.metadata.accesstype.field", "dcterms.accessRights");
         this.accessMetadataFieldName = new MetadataFieldName(fieldName);
     }
 
     /**
      * Look at the item's policies to determine an access status value.
      * It is also considering a date threshold for embargoes and restrictions.
-     * If the item is null, simply returns the "unknown" value.
+     * If the item is null, return the "unknown" value.
      *
      * @param context     the DSpace context
      * @param item        the item to check for embargoes
@@ -98,15 +110,16 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
             return null;
         }
         Date embargoDate = this.retrieveEmbargo(context, masterBitstream);
-        return (embargoDate != null) ? embargoDate.toString() : null;
+        return (embargoDate != null)
+            ? embargoDate.toString()
+            : null;
     }
 
     /**
      * Get the master bitstream for an Item. Master bitstream is either the
-     * defined item primary bitstream, either the first bitstream of default
-     * bundle.
+     * defined item primary bitstream, either the first bitstream of the default bundle.
      *
-     * @param item: the item to analyze
+     * @param item the item to analyze
      * @return the master item bitstream if exists, otherwise return null.
      */
     private Bitstream getMasterBitstreamForItem(@NotNull Item item) {
@@ -130,7 +143,6 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
 
     /**
      * Look at the DSpace object's policies to determine an access status value.
-     *
      * If the object is null, returns the "metadata.only" value.
      * If any policy attached to the object is valid for the anonymous group,
      * returns the "open.access" value.
@@ -159,7 +171,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
     /**
      * Get the first access rights value into DSpaceObject metadata list.
      *
-     * @param dso: The DspaceObject to analyze
+     * @param dso The DspaceObject to analyze
      * @return the corresponding access right metadata value, or null if not find.
      */
     private String getAccessFromMetadata(DSpaceObject dso) {
@@ -167,7 +179,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
             DSpaceObjectService<DSpaceObject> service = contentFactory.getDSpaceObjectService(dso);
             String metadataValue = service.getMetadataFirstValue(dso, accessMetadataFieldName, "*");
             return (StringUtils.isNotEmpty(metadataValue)) ? metadataValue : UNKNOWN;
-        } catch (UnsupportedOperationException uoe){
+        } catch (UnsupportedOperationException uoe) {
             return UNKNOWN;
         }
     }
@@ -178,7 +190,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
      * @param context    the DSpace context
      * @param bitstream  the DSpace bitstream to analyze
      * @return the corresponding embargo start date if bitstream is embargoed.
-     * @throws SQLException
+     * @throws SQLException for any database exception
      */
     private Date retrieveEmbargo(Context context, Bitstream bitstream) throws SQLException {
         List<ResourcePolicy> policies = uclouvainResourcePolicyService.find(context, bitstream);
@@ -188,7 +200,8 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
             : null;
     }
 
-    /** Convert a access value string to a controlled vocabulary entry
+    /**
+     * Convert a access value string to a controlled vocabulary entry
      *
      * @param initialValue the access value to convert.
      * @return the converted access value.
@@ -198,7 +211,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
             // !!! It should never happen if access conditions are set using the submission form !!!
             //     The submission form used the value from the select input field as rpName for a resource policy
             //     Every select input field entry has a value. So if the value is empty, this is because an
-            //     admin use the resource policy editor 
+            //     admin uses the resource policy editor
             return OPEN_ACCESS;
         }
         switch (initialValue.trim().toLowerCase()) {

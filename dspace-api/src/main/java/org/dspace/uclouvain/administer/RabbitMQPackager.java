@@ -1,6 +1,27 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
@@ -24,25 +45,11 @@ import org.dspace.discovery.SearchServiceException;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
-import com.rabbitmq.client.Channel;
 import org.dspace.uclouvain.exceptions.UserNotFoundException;
 import org.dspace.utils.DSpace;
 import org.dspace.workflow.WorkflowException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 /**
  * A command-line tool to batch ingest some SIP in METS packager format from Fedora.
@@ -80,7 +87,8 @@ public class RabbitMQPackager extends AbstractCLICommand {
             .hasArg(true)
             .desc("RabbitMQ queue name where publish the message if errors occurred during ingestion")
             .build();
-    public static final String USAGE_DESCRIPTION = "A command-line tool to batch ingest some METS SIP archive from Fedora.";
+    public static final String USAGE_DESCRIPTION = "A command-line tool to batch ingest some METS SIP archive " +
+            "from Fedora.";
 
     // CLASS ATTRIBUTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     protected EPersonService ePersonService;
@@ -96,7 +104,7 @@ public class RabbitMQPackager extends AbstractCLICommand {
 
         String ePersonEmail = cl.getOptionValue('e');
         String queueName = cl.getOptionValue('q');
-        String errorQueueName = cl.getOptionValue('E', queueName+"_error");
+        String errorQueueName = cl.getOptionValue('E', queueName + "_error");
         while (true) {
             try {
                 packager.run(ePersonEmail, queueName, errorQueueName);
@@ -147,8 +155,9 @@ public class RabbitMQPackager extends AbstractCLICommand {
         // Create a new context and populate it with required data.
         Context context = new Context();
         EPerson ePerson = ePersonService.findByEmail(context, email);
-        if (ePerson == null)
+        if (ePerson == null) {
             throw new UserNotFoundException(email);
+        }
         context.setCurrentUser(ePerson);
 
         // Create connection with RabbitMQ server and consumer queue.
@@ -162,13 +171,13 @@ public class RabbitMQPackager extends AbstractCLICommand {
             logger.info(" [*] Received '" + message + "'...");
             try {
                 ingestBatch(context, getIngester(), message);
-            } catch(Exception ex) {
+            } catch (Exception ex) {
                 logErrorIntoRabbitQueue(errorQueueName, message, ex);
             } finally {
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             }
         };
-        channel.basicConsume(queueName, false, deliverCallback, consumerTag -> {});
+        channel.basicConsume(queueName, false, deliverCallback, consumerTag -> { });
         // Block to keep the application running.
         //     As `basicConsume` is an asynchronous method, we need to simulate
         //     this method keeps running otherwise it will directly after queue
@@ -203,13 +212,14 @@ public class RabbitMQPackager extends AbstractCLICommand {
     /**
      * Ingests/replaces a METS SIP archive into DSpace repository.
      *
-     * @param context: The application context.
-     * @param sip: The SIP ingester to use to ingest object into repository
-     * @param archivePath: The file path of the SIP archive to ingest/replace
+     * @param context     The application context.
+     * @param sip         The SIP ingester to use to ingest object into repository
+     * @param archivePath The file path of the SIP archive to ingest/replace
      * @throws PackageException if any ingestion problem occurred.
      * @throws SQLException if any database exception occurred.
      */
-    private void ingestBatch(Context context, AbstractMETSIngester sip, String archivePath) throws PackageException, SQLException {
+    private void ingestBatch(Context context, AbstractMETSIngester sip, String archivePath)
+            throws PackageException, SQLException {
         File workingFile = null;
         context.setMode(Context.Mode.BATCH_EDIT);
         try {
@@ -222,8 +232,9 @@ public class RabbitMQPackager extends AbstractCLICommand {
             }
             // Get the PID from METS manifest && check if PID already exists into the system.
             String fedoraPid = manifest.getID();
-            if (fedoraPid == null)
+            if (fedoraPid == null) {
                 throw new PackageException("Unable to find original PID");
+            }
             fedoraPid = fedoraPid.replace("-", ":");
             logger.info("\tFedora pid is :: " + fedoraPid);
             DSpaceObject objectToReplace = getObjectFromIdentifier(context, "fedora.pid", fedoraPid);
@@ -236,7 +247,8 @@ public class RabbitMQPackager extends AbstractCLICommand {
                 PackageParameters pkgParams = new PackageParameters();
                 pkgParams.setWorkflowEnabled(false);
                 if (objectToReplace != null) {
-                    logger.info("\tObject already exists ? [TRUE] --> [" + Constants.typeText[objectToReplace.getType()] + "#" + objectToReplace.getID() + "]");
+                    logger.info("\tObject already exists ? [TRUE] --> [" +
+                            Constants.typeText[objectToReplace.getType()] + "#" + objectToReplace.getID() + "]");
                     pkgParams.setRestoreModeEnabled(true);
                     pkgParams.setReplaceModeEnabled(true);
                     ingestedObject = sip.replace(context, objectToReplace, workingFile, pkgParams);
@@ -244,7 +256,8 @@ public class RabbitMQPackager extends AbstractCLICommand {
                     logger.info("\tObject already exists ? [FALSE]");
                     ingestedObject = sip.ingest(context, null, workingFile, pkgParams, null);
                 }
-                logger.info("\tObject [" + Constants.typeText[ingestedObject.getType()] + "#" + ingestedObject.getID() + "] ingested");
+                logger.info("\tObject [" + Constants.typeText[ingestedObject.getType()] + "#" +
+                        ingestedObject.getID() + "] ingested");
             } catch (CrosswalkException | WorkflowException ex) {
                 throw new PackageException(ex.getClass().getSimpleName() + "::" + ex.getMessage());
             }
@@ -263,11 +276,12 @@ public class RabbitMQPackager extends AbstractCLICommand {
     }
 
 
-    /** Log any error occurring during a batch ingestion process into the RabbitMQ error queue.
+    /**
+     * Log any error occurring during a batch ingestion process into the RabbitMQ error queue.
      *
-     * @param queueName: The RabbitMQ queue name where the message must be published.
-     * @param archivePath: The archive filename generating the error.
-     * @param cause: The exception causing the error.
+     * @param queueName   The RabbitMQ queue name where the message must be published.
+     * @param archivePath The archive filename generating the error.
+     * @param cause       The exception causing the error.
      * @throws IOException if any errors occur during RabbitMQ connection.
      */
     private void logErrorIntoRabbitQueue(String queueName, String archivePath, Exception cause) throws IOException {
@@ -287,7 +301,9 @@ public class RabbitMQPackager extends AbstractCLICommand {
             logger.error("!! Error when trying to ingest '" + archivePath + "' :: " + cause.getMessage(), cause);
             channel.close();
             conn.close();
-        } catch (Exception ignored) { }
+        } catch (Exception ignored) {
+            // do nothing
+        }
     }
 
 
@@ -295,22 +311,25 @@ public class RabbitMQPackager extends AbstractCLICommand {
      * Load a packer file to determine if this file exists;
      * Rename the file to avoid paralleling ingest problems.
      *
-     * @param archivePath: the original packager file to load.
+     * @param archivePath the original packager file to load.
      * @return the archive file to ingest (!! different that original archive path)
      */
     private File getWorkingFileFromSource(String archivePath) throws IOException {
         File sourceFile = new File(archivePath);
-        if (!sourceFile.exists())
+        if (!sourceFile.exists()) {
             throw new FileNotFoundException();
-        if (!sourceFile.isFile())
+        }
+        if (!sourceFile.isFile()) {
             throw new IOException(archivePath + "isn't a regular file");
+        }
         // At this time, we know the file exists.
         // We will rename it to avoid that another ingester process uses the same file
         // because the rabbit queue contains some duplicates.
         Path inProgressPath = Paths.get(sourceFile.getParentFile().getPath(), "inProgress_" + sourceFile.getName());
         File workingSpace = inProgressPath.toFile();
-        if (!sourceFile.renameTo(workingSpace))
+        if (!sourceFile.renameTo(workingSpace)) {
             throw new IOException("Error to rename '" + sourceFile.getName() + "' to '" + workingSpace.getName() + "'");
+        }
         return workingSpace;
     }
 
@@ -322,9 +341,11 @@ public class RabbitMQPackager extends AbstractCLICommand {
      * @throws PackageException if ingester cannot be found
      */
     private AbstractMETSIngester getIngester() throws PackageException {
-        AbstractMETSIngester sip = (AbstractMETSIngester) pluginService.getNamedPlugin(PackageIngester.class, packageType);
-        if (sip == null)
+        AbstractMETSIngester sip =
+                (AbstractMETSIngester) pluginService.getNamedPlugin(PackageIngester.class, packageType);
+        if (sip == null) {
             throw new PackageException("Unknown package type: " + packageType);
+        }
         return sip;
     }
 
@@ -332,13 +353,13 @@ public class RabbitMQPackager extends AbstractCLICommand {
     /**
      * Get any DspaceObject that already exists into the system referencing an identifier value.
      *
-     * @param context: the application context
-     * @param key: the identifier key to search (the key in `Solr.search` core)
-     * @param value: the identifier value to search.
+     * @param context the application context
+     * @param key     the identifier key to search (the key in `Solr.search` core)
+     * @param value   the identifier value to search.
      * @return the DSpaceObject referencing the identifier; return `null` if no object is found.
      */
     private DSpaceObject getObjectFromIdentifier(Context context, String key, String value) {
-       DiscoverQuery dq = new DiscoverQuery();
+        DiscoverQuery dq = new DiscoverQuery();
         dq.setMaxResults(1);
         dq.setQuery(String.format("%s:\"%s\"", key, value));
         try {
@@ -364,7 +385,9 @@ public class RabbitMQPackager extends AbstractCLICommand {
             Files.createDirectories(errorDirectory);
             Path errorFilePath = Paths.get(parentDirectory.getAbsolutePath(), "errors", fileToMove.getName());
             Files.move(fileToMove.toPath(), errorFilePath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ignored) { }
+        } catch (IOException ignored) {
+            // do nothing
+        }
     }
 
 

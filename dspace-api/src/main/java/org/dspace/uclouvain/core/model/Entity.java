@@ -1,10 +1,17 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core.model;
 
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
-import java.util.TreeSet;
-import java.util.Set;
 
 public class Entity implements Comparable<Entity> {
 
@@ -24,20 +31,40 @@ public class Entity implements Comparable<Entity> {
         this(code, null, type);
     }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name;}
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getCode() { return code; }
-    public void setCode(String code) { this.code = code;}
+    public String getCode() {
+        return code;
+    }
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-    public EntityType getType() { return type; }
-    public void setType(EntityType type) { this.type = type; }
+    public EntityType getType() {
+        return type;
+    }
+    public void setType(EntityType type) {
+        this.type = type;
+    }
 
-    public Set<Entity> getChildren() { return children; }
-    public void addChild(Entity child) { this.children.add(child); }
+    public Set<Entity> getChildren() {
+        return children;
+    }
+    public void addChild(Entity child) {
+        this.children.add(child);
+    }
 
-    public Entity getParent() { return this.parent; }
-    public void setParent(Entity parent) { this.parent = parent; }
+    public Entity getParent() {
+        return this.parent;
+    }
+    public void setParent(Entity parent) {
+        this.parent = parent;
+    }
 
     @Override
     public String toString() {
@@ -59,10 +86,12 @@ public class Entity implements Comparable<Entity> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (o == null || getClass() != o.getClass())
+        }
+        if (o == null || getClass() != o.getClass()) {
             return false;
+        }
         Entity entity = (Entity) o;
         return entity.getCode().equals(code) && entity.getType().equals(type);
     }
@@ -70,6 +99,5 @@ public class Entity implements Comparable<Entity> {
     @Override
     public int compareTo(@NotNull Entity o) {
         return code.compareTo(o.getCode());
-
     }
 }

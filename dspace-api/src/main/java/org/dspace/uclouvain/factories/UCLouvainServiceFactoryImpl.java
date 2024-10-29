@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.factories;
 
 import org.dspace.uclouvain.services.UCLouvainEntityService;
@@ -17,8 +24,12 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainEntityService uclouvainEntityService;
 
     @Override
-    public UCLouvainResourcePolicyService getResourcePolicyService() { return uclouvainResourcePolicyService; }
+    public UCLouvainResourcePolicyService getResourcePolicyService() {
+        return uclouvainResourcePolicyService;
+    }
     @Override
-    public UCLouvainEntityService getEntityService(){ return uclouvainEntityService; }
+    public UCLouvainEntityService getEntityService() {
+        return uclouvainEntityService;
+    }
 
 }

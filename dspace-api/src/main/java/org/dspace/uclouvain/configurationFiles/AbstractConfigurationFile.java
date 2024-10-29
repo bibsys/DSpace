@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.configurationFiles;
 
 import java.io.File;
@@ -5,10 +12,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /** Base abstract class for the `ConfigurationFile` interface. */
 public abstract class AbstractConfigurationFile<T> implements ConfigurationFile<T> {
@@ -32,7 +37,7 @@ public abstract class AbstractConfigurationFile<T> implements ConfigurationFile<
             path
         );
         this.configFile = fullPath.toFile();
-        if (!this.configFile.exists() || !this.configFile.canRead()){
+        if (!this.configFile.exists() || !this.configFile.canRead()) {
             throw new IOException("Could not read the file because it does not exist or it cannot be read.");
         }
         this.lastModified = -1;

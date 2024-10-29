@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
 
 import org.apache.commons.cli.CommandLine;
@@ -61,7 +68,7 @@ public class GroupManagement extends AbstractCLICommand {
     /**
      * For invoking via the command line.
      *
-     * @param argv: the command line arguments given
+     * @param argv the command line arguments given
      * @throws MissingArgumentException : If a required argument is missing.
      */
     public static void main(String[] argv) throws Exception {
@@ -112,7 +119,7 @@ public class GroupManagement extends AbstractCLICommand {
                 //TODO :: create the delete action (using `force` argument)
                 throw new UnsupportedOperationException();
             default:
-                throw new IllegalArgumentException("Unknown action :: "+action);
+                throw new IllegalArgumentException("Unknown action :: " + action);
         }
         context.complete();
     }

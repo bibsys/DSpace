@@ -1,4 +1,15 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
+
+import java.io.File;
+import java.sql.SQLException;
+import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,11 +36,6 @@ import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.uclouvain.exceptions.NotUniqueResultException;
-
-import java.io.File;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * A command-line tool to import entities from configuration file as OrgUnit DSpace item.
@@ -80,8 +86,10 @@ public class OrgUnitImporter extends AbstractCLICommand {
     // CLASS ATTRIBUTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private final Context context;
     private static final ItemService itemService = ContentServiceFactory.getInstance().getItemService();
-    private static final WorkspaceItemService workspaceItemService = ContentServiceFactory.getInstance().getWorkspaceItemService();
-    private static final MetadataFieldService metadataFieldService = ContentServiceFactory.getInstance().getMetadataFieldService();
+    private static final WorkspaceItemService workspaceItemService =
+            ContentServiceFactory.getInstance().getWorkspaceItemService();
+    private static final MetadataFieldService metadataFieldService =
+            ContentServiceFactory.getInstance().getMetadataFieldService();
     private static final SearchService searchService = SearchUtils.getSearchService();
     private static final EPersonService epersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
@@ -92,7 +100,7 @@ public class OrgUnitImporter extends AbstractCLICommand {
     /**
      * For invoking via the command line.
      *
-     * @param argv: the command line arguments given
+     * @param argv the command line arguments given
      * @throws MissingArgumentException : If a required argument is missing.
      */
     public static void main(String[] argv) throws Exception {
@@ -121,8 +129,8 @@ public class OrgUnitImporter extends AbstractCLICommand {
     // PRIVATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private void run(String filePath, String userEmail) throws Exception {
         context.turnOffAuthorisationSystem();
-        EPerson user = epersonService.findByEmail(this.context, userEmail);
-        this.context.setCurrentUser(user);
+        EPerson user = epersonService.findByEmail(context, userEmail);
+        context.setCurrentUser(user);
         Collection parentCollection = getOrgUnitCollection();
         List<Entity> entities = readInputFile(filePath);
         for (Entity entity : entities) {
@@ -134,7 +142,7 @@ public class OrgUnitImporter extends AbstractCLICommand {
 
     /**
      * Read the input JSON file containing the entities tree to create.
-     * @param filePath: The full file path to read
+     * @param filePath The full file path to read
      * @return The list of entities to load
      * @throws Exception If any exception occurred during the input file analysis.
      */
@@ -145,10 +153,10 @@ public class OrgUnitImporter extends AbstractCLICommand {
 
     /**
      * Create a new OrgUnit Dspace object for an entity.
-     * @param entity: the entity data to create
-     * @param parent: the parent DSO object for this entity (could be null)
-     * @param collection: the 'OrgUnit' holding collection
-     * @param entityLevel: the depth of this entity is the entities tree.
+     * @param entity       the entity data to create
+     * @param parent       the parent DSO object for this entity (could be null)
+     * @param collection   the 'OrgUnit' holding collection
+     * @param entityLevel  the depth of this entity is the entities tree.
      * @throws Exception If any exception occurred during entity creation.
      */
     private void createEntity(Entity entity, Item parent, Collection collection, int entityLevel) throws Exception {
@@ -163,11 +171,12 @@ public class OrgUnitImporter extends AbstractCLICommand {
         addEntityMetadata(item, entity, parent);
         item.setDiscoverable(entity.discoverable);
         WorkspaceItem wsi = workspaceItemService.findByItem(context, item);
-        if (wsi != null)
+        if (wsi != null) {
             PackageUtils.finishCreateItem(context, wsi, null, params);
+        }
         // Update the object to make sure all changes are committed and commit item creation
         PackageUtils.updateDSpaceObject(context, item);
-        this.context.commit();
+        context.commit();
 
         // If this entity has some children, then create an entity for each one (recursively)
         if (entity.children != null && !entity.children.isEmpty()) {
@@ -179,40 +188,40 @@ public class OrgUnitImporter extends AbstractCLICommand {
 
     /**
      * Adds entity metadata on the newly created DSpace item.
-     * @param item: The Dspace item on which add metadata
-     * @param entity: The entity (from config file) to analyze
-     * @param parent: (optional) the parent Dspace item (to create parent-child relation)
+     * @param item   The Dspace item on which add metadata
+     * @param entity The entity (from config file) to analyze
+     * @param parent (optional) the parent Dspace item (to create parent-child relation)
      * @throws SQLException if any database exception occurred during the process.
      */
     private void addEntityMetadata(Item item, Entity entity, Item parent) throws SQLException {
         MetadataField mdField = null;
         // Adds `entity.name` into `dc.title` metadata field.
-        mdField = metadataFieldService.findByString(this.context, "dc.title", '.');
-        itemService.addMetadata(this.context, item, mdField, null, entity.name);
+        mdField = metadataFieldService.findByString(context, "dc.title", '.');
+        itemService.addMetadata(context, item, mdField, null, entity.name);
         // Adds `entity.acronym` into `oairecerif.acronym` metadata field.
         if (entity.acronym != null) {
-            mdField = metadataFieldService.findByString(this.context, "oairecerif.acronym", '.');
-            itemService.addMetadata(this.context, item, mdField, null, entity.acronym);
+            mdField = metadataFieldService.findByString(context, "oairecerif.acronym", '.');
+            itemService.addMetadata(context, item, mdField, null, entity.acronym);
         }
         // Adds `entity.type` into `dc.type` metadata field.
-        mdField = metadataFieldService.findByString(this.context, "dc.type", '.');
-        String mdValue = (entity.type != null) ? entity.type : this.defaultEntityType;
-        itemService.addMetadata(this.context, item, mdField, null, mdValue);
+        mdField = metadataFieldService.findByString(context, "dc.type", '.');
+        String mdValue = (entity.type != null) ? entity.type : defaultEntityType;
+        itemService.addMetadata(context, item, mdField, null, mdValue);
         // Adds `entity.selectable` into `organization.isSelectable` metadata field.
-        mdField = metadataFieldService.findByString(this.context, "organization.isSelectable", '.');
-        itemService.addMetadata(this.context, item, mdField, null, String.valueOf(entity.selectable));
+        mdField = metadataFieldService.findByString(context, "organization.isSelectable", '.');
+        itemService.addMetadata(context, item, mdField, null, String.valueOf(entity.selectable));
         // Adds `entity.identifiers` into `organization.identifier.xxx`
         if (entity.identifiers != null && !entity.identifiers.isEmpty()) {
             for (Identifier identifier : entity.identifiers) {
                 String mdString = String.format("organization.identifier.%s", identifier.type);
-                mdField = metadataFieldService.findByString(this.context, mdString, '.');
-                itemService.addMetadata(this.context, item, mdField, null, identifier.value);
+                mdField = metadataFieldService.findByString(context, mdString, '.');
+                itemService.addMetadata(context, item, mdField, null, identifier.value);
             }
         }
         // Creates relation to parent if exists
         if (parent != null) {
-            mdField = metadataFieldService.findByString(this.context, "organization.parentOrganization", '.');
-            itemService.addMetadata(this.context, item, mdField, null, parent.getName(), parent.getID().toString(), 600);
+            mdField = metadataFieldService.findByString(context, "organization.parentOrganization", '.');
+            itemService.addMetadata(context, item, mdField, null, parent.getName(), parent.getID().toString(), 600);
         }
     }
 
@@ -224,16 +233,15 @@ public class OrgUnitImporter extends AbstractCLICommand {
     private Collection getOrgUnitCollection() throws Exception {
         DiscoverQuery dq = new DiscoverQuery();
         dq.setMaxResults(1);
-        dq.setQuery(String.format("search.resourcetype:Collection AND dc.title_sort:\"%s\"", this.owningCollectionName));
+        dq.setQuery(String.format("search.resourcetype:Collection AND dc.title_sort:\"%s\"", owningCollectionName));
         DiscoverResult result = searchService.search(context, dq);
-        if (result.getTotalSearchResults() == 0)
+        if (result.getTotalSearchResults() == 0) {
             throw new IllegalStateException("No parent collection found");
-        else if (result.getTotalSearchResults() > 1)
+        } else if (result.getTotalSearchResults() > 1) {
             throw new NotUniqueResultException(String.format(
-                    "Multiple '%s' collection found :: %d",
-                    this.owningCollectionName,
-                    result.getTotalSearchResults()
+                    "Multiple '%s' collection found :: %d", owningCollectionName, result.getTotalSearchResults()
             ));
+        }
         return (Collection)result.getIndexableObjects().get(0).getIndexedObject();
     }
 
@@ -249,9 +257,9 @@ class Entity {
     public String type;
 
     public String toString() {
-        return (this.acronym != null)
-            ? String.format("[Entity::%s - %s]", this.acronym, this.name)
-            : String.format("[Entity::%s]", this.name);
+        return (acronym != null)
+            ? String.format("[Entity::%s - %s]", acronym, name)
+            : String.format("[Entity::%s]", name);
     }
 }
 

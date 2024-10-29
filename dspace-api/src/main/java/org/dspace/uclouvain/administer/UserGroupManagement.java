@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.administer;
 
 import org.apache.commons.cli.CommandLine;
@@ -72,7 +79,7 @@ public class UserGroupManagement extends AbstractCLICommand {
      * For invoking via the command line. If called with no command line arguments,
      * it will negotiate with the user for the administrator details
      *
-     * @param argv: the command line arguments given
+     * @param argv the command line arguments given
      * @throws MissingArgumentException: If a required argument is missing.
      */
     public static void main(String[] argv) throws Exception {
@@ -106,7 +113,7 @@ public class UserGroupManagement extends AbstractCLICommand {
      * @param groupName: the group name to manage.
      * @throws Exception if any exceptions occurred during process.
      */
-    private void manageGroupMembership(String action, String userID, String groupName, boolean force) throws Exception{
+    private void manageGroupMembership(String action, String userID, String groupName, boolean force) throws Exception {
         context.turnOffAuthorisationSystem();
         EPerson eperson = UtilityCLITool.findUser(context, userID);
         Group group = getGroup(groupName, force);
@@ -118,7 +125,7 @@ public class UserGroupManagement extends AbstractCLICommand {
                 groupService.removeMember(context, group, eperson);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown action :: "+action);
+                throw new IllegalArgumentException("Unknown action :: " + action);
         }
         groupService.update(context, group);
         context.complete();

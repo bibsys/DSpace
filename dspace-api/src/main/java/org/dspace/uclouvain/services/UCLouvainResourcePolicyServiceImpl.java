@@ -1,4 +1,18 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.services;
+
+import static org.dspace.authorize.ResourcePolicy.TYPE_CUSTOM;
+
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.service.ResourcePolicyService;
@@ -8,13 +22,6 @@ import org.dspace.core.Context;
 import org.dspace.uclouvain.core.model.ResourcePolicyPriority;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.dspace.authorize.ResourcePolicy.TYPE_CUSTOM;
 
 /**
  * Implementation of {@link UCLouvainResourcePolicyService}.
@@ -57,7 +64,7 @@ public class UCLouvainResourcePolicyServiceImpl implements UCLouvainResourcePoli
     public ResourcePolicy getMasterPolicy(List<ResourcePolicy> policies) {
         ResourcePolicy masterPolicy = null;
         int currentMaxWeight = Integer.MIN_VALUE;
-        for(ResourcePolicy policy : policies) {
+        for (ResourcePolicy policy : policies) {
             int policyWeight = getPolicyWeight(policy);
             if (policyWeight > currentMaxWeight) {
                 currentMaxWeight = policyWeight;

@@ -1,4 +1,29 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.packager;
+
+import static org.dspace.content.crosswalk.XSLTCrosswalk.DIM_NS;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
@@ -27,29 +52,13 @@ import org.jdom2.Element;
 import org.jdom2.transform.JDOMResult;
 import org.jdom2.transform.JDOMSource;
 
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.dspace.content.crosswalk.XSLTCrosswalk.DIM_NS;
-
 public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(AbstractMETSIngester.class);
-    private static final String bitstreamExtractorStylesheetConfigKey = "uclouvain.ingester.bitstreamMetadataExtractor.stylesheet";
-    private static final MetadataFieldService metadataFieldService = ContentServiceFactory.getInstance().getMetadataFieldService();
+    private static final String bitstreamExtractorStylesheetConfigKey =
+            "uclouvain.ingester.bitstreamMetadataExtractor.stylesheet";
+    private static final MetadataFieldService metadataFieldService =
+            ContentServiceFactory.getInstance().getMetadataFieldService();
     private static final BitstreamService bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
 
     private long transformerLastModified = 0;
@@ -62,7 +71,8 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
         String filename = configurationService.getProperty(bitstreamExtractorStylesheetConfigKey);
         if (filename == null) {
-            log.warn("Unable to load stylesheet to extract bitstream metadata from '" + bitstreamExtractorStylesheetConfigKey + "'");
+            log.warn("Unable to load stylesheet to extract bitstream metadata from '" +
+                    bitstreamExtractorStylesheetConfigKey + "'");
             return;
         }
         String parent = configurationService.getProperty("dspace.dir") + File.separator + "config" + File.separator;
@@ -145,8 +155,9 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         if (dso.getType() == Constants.ITEM && !params.workflowEnabled()) { // Only applied for ITEM
             Item item = (Item) dso;
             String fedoraPid = manifest.getMets().getAttributeValue("ID");
-            if (fedoraPid == null || fedoraPid.isEmpty())
+            if (fedoraPid == null || fedoraPid.isEmpty()) {
                 return;
+            }
             fedoraPid = fedoraPid.replace("-", ":"); // ID attribute use dash, but we want to use the original pattern
             itemService.addMetadata(context, item, "fedora", "pid", null, null, fedoraPid);
         }
@@ -168,7 +179,8 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
      * @throws AuthorizeException          if authorization error
      */
     @Override
-    public void finishBitstream(Context context, Bitstream bs, Element mfile, METSManifest manifest, PackageParameters params)
+    public void finishBitstream(Context context, Bitstream bs, Element mfile, METSManifest manifest,
+                                PackageParameters params)
             throws MetadataValidationException, SQLException, AuthorizeException, IOException {
         // First of all, call super method...
         super.finishBitstream(context, bs, mfile, manifest, params);
@@ -195,8 +207,8 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     /**
      * Find the dmdSec corresponding to a file from a METS Manifest
      *
-     * @param manifest : the METS manifest
-     * @param mfile : The file node to analyze
+     * @param manifest the METS manifest
+     * @param mfile    The file node to analyze
      * @return the XML element corresponding to the dmdSec related to the file; `null` if not found
      * @throws MetadataValidationException if any error occurs when parsing the METS manifest.
      */
@@ -208,16 +220,17 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     /**
      * Extract the bitstream metadata from a METS dmdSec using extraction stylesheet.
      *
-     * @param dmdSec: the dmdSec to analyze
+     * @param dmdSec the dmdSec to analyze
      * @return a list of DIM field element (that could contain DIM fields, ...); at least an empty list.
      * @throws MetadataValidationException if any error occurs when parsing the METS manifest.
      */
-    private List<Element> extractBitstreamMetadata(Element dmdSec) throws MetadataValidationException{
+    private List<Element> extractBitstreamMetadata(Element dmdSec) throws MetadataValidationException {
         Element rootElement = getRootElement(dmdSec);
-        if (rootElement == null)
+        if (rootElement == null) {
             throw new MetadataValidationException("Bitstream metadata could only be extracted");
+        }
         Transformer xform = getTransformer();
-        try{
+        try {
             JDOMResult result = new JDOMResult();
             xform.transform(new JDOMSource(rootElement), result);
             List<Content> contentList = result.getResult();
@@ -235,21 +248,24 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     /**
      * Extract the useful root XML element from a METS dmdSec
      *
-     * @param dmdSec : the METS dmdSec to analyze/
-     * @return : the root DC element or null if not found.
+     * @param dmdSec the METS dmdSec to analyze/
+     * @return the root DC element or null if not found.
      * @throws MetadataValidationException if dmdSec element failed to be parsed.
      */
     private Element getRootElement(Element dmdSec)  throws MetadataValidationException {
         List<Element> mdc = dmdSec.getChildren();
         String exceptionPrefixMessage = "Cannot parse dmdSec[@ID=" + dmdSec.getAttributeValue("ID") + "] :: ";
-        if (mdc.size() > 1)
+        if (mdc.size() > 1) {
             throw new MetadataValidationException(exceptionPrefixMessage + "Only one mdWrap child is allowed");
+        }
         Element mdWrap = dmdSec.getChild("mdWrap", METSManifest.metsNS);
-        if (mdWrap == null)
+        if (mdWrap == null) {
             throw new MetadataValidationException(exceptionPrefixMessage + "mdWrap child is required");
+        }
         Element xmlData = mdWrap.getChild("xmlData", METSManifest.metsNS);
-        if (xmlData == null)
+        if (xmlData == null) {
             throw new MetadataValidationException(exceptionPrefixMessage + "xmlData child is required");
+        }
         return xmlData.getChildren().stream().findFirst().orElse(null);
     }
 
@@ -261,13 +277,14 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     private Transformer getTransformer() {
         if (transformer == null || transformFile.lastModified() > transformerLastModified) {
             try {
-                log.debug((transformer == null ? "Loading" : "Relaoding") + " XSLT stylesheet from " + transformFile.toString());
+                log.debug((transformer == null ? "Loading" : "Relaoding") + " XSLT stylesheet from " +
+                        transformFile.toString());
                 Source transformSource = new StreamSource(new FileInputStream(transformFile));
                 TransformerFactory factory = TransformerFactory.newInstance();
                 transformer = factory.newTransformer(transformSource);
                 transformerLastModified = transformFile.lastModified();
             } catch (TransformerConfigurationException | FileNotFoundException e) {
-                log.error("Failed to initialize DSpaceUCLouvainMETSIngester : " + e.toString());
+                log.error("Failed to initialize DSpaceUCLouvainMETSIngester : " + e);
             }
         }
         return this.transformer;
@@ -275,9 +292,9 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
 
     /**
      * apply metadata values returned in DIM to the target bitstream.
-     * @param context: the application context
-     * @param dimList: the DIM element list to apply.
-     * @param bitstream: the targeted bitstream where the metadata will be added.
+     * @param context    the application context
+     * @param dimList    the DIM element list to apply.
+     * @param bitstream  the targeted bitstream where the metadata will be added.
      * @throws MetadataValidationException if any validation exception occurred
      * @throws SQLException if any database exception occurred
      */
@@ -312,14 +329,16 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         MetadataField metadataField = metadataFieldService.findByElement(context, schema, element, qualifier);
         if (metadataField == null) {
             String fieldName = schema + '.' + element;
-            if (qualifier != null)
+            if (qualifier != null) {
                 fieldName += '.' + qualifier;
+            }
             throw new MetadataValidationException("Unable to find metadata field for " + fieldName);
         }
         // Add the metadata
         if ((authority != null && !authority.isEmpty()) || (sconf != null && !sconf.isEmpty())) {
             int confidence = (sconf != null && !sconf.isEmpty()) ? Choices.getConfidenceValue(sconf) : Choices.CF_UNSET;
-            bitstreamService.addMetadata(context, bitstream, metadataField, lang, field.getText(), authority, confidence);
+            bitstreamService.addMetadata(context, bitstream, metadataField, lang, field.getText(), authority,
+                    confidence);
         } else {
             bitstreamService.addMetadata(context, bitstream, metadataField, lang, field.getText());
         }

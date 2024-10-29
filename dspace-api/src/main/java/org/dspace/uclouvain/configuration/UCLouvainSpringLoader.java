@@ -1,12 +1,19 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.configuration;
-
-import org.dspace.kernel.config.SpringLoader;
-import org.dspace.services.ConfigurationService;
 
 import java.io.File;
 import java.net.MalformedURLException;
 
-public class UCLouvainSpringLoader  implements SpringLoader {
+import org.dspace.kernel.config.SpringLoader;
+import org.dspace.services.ConfigurationService;
+
+public class UCLouvainSpringLoader implements SpringLoader {
 
     @Override
     public String[] getResourcePaths(ConfigurationService configurationService) {
@@ -21,7 +28,7 @@ public class UCLouvainSpringLoader  implements SpringLoader {
         filePath.append(File.separator);
 
         try {
-            return new String[] {new File(filePath.toString()).toURI().toURL().toString() + XML_SUFFIX};
+            return new String[] {new File(filePath.toString()).toURI().toURL() + XML_SUFFIX};
         } catch (MalformedURLException e) {
             return new String[0];
         }
