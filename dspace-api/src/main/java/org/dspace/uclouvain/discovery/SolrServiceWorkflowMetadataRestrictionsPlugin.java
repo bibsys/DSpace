@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.discovery;
 
 import java.sql.SQLException;
@@ -35,19 +42,20 @@ public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServic
     @Autowired
     ResearcherProfileService researcherProfileService;
 
-    private String degreeMetadataFilterFieldName = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.solr.plugin.workflow.degree.field.filter", "degreecode_keyword");
-    private String degreeMetadataFieldName = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.solr.plugin.workflow.degree.field.metadata", "crisrp.workgroup");
+    private String degreeMetadataFilterFieldName = DSpaceServicesFactory.getInstance().getConfigurationService()
+            .getProperty("uclouvain.solr.plugin.workflow.degree.field.filter", "degreecode_keyword");
+    private String degreeMetadataFieldName = DSpaceServicesFactory.getInstance().getConfigurationService()
+            .getProperty("uclouvain.solr.plugin.workflow.degree.field.metadata", "crisrp.workgroup");
 
     /**
-     * The name of the discover configuration used to search for workflow tasks in the myDspace
+     * The name of the 'discover configuration' used to search for workflow tasks in the myDspace
      */
     public static final String DISCOVER_WORKFLOW_CONFIGURATION_NAME = "workflow";
 
 
     @Override
-    public void additionalSearchParameters(
-            Context context, DiscoverQuery discoveryQuery, SolrQuery solrQuery
-    ) throws SearchServiceException {
+    public void additionalSearchParameters(Context context, DiscoverQuery discoveryQuery, SolrQuery solrQuery)
+            throws SearchServiceException {
         try {
             boolean isWorkflow = StringUtils.startsWith(
                 discoveryQuery.getDiscoveryConfigurationName(),
@@ -55,29 +63,33 @@ public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServic
             );
 
             EPerson currentUser = context.getCurrentUser();
-            if (currentUser != null && isWorkflow) {          
+            if (currentUser != null && isWorkflow) {
                 // Retrieve the current user's researcher profile that can contain metadata about the degree codes
                 ResearcherProfile currentProfile = researcherProfileService.findById(context, currentUser.getID());
                 StringBuilder controllerQuery = new StringBuilder();
 
-                List<MetadataValue> degreeCodes = (currentProfile != null) ? itemService.getMetadataByMetadataString(currentProfile.getItem(), degreeMetadataFieldName) : new ArrayList<>();
+                List<MetadataValue> degreeCodes = (currentProfile != null)
+                        ? itemService.getMetadataByMetadataString(currentProfile.getItem(), degreeMetadataFieldName)
+                        : new ArrayList<>();
                 // If the profile has no degree codes, just return nothing in the solr search
                 if (degreeCodes == null || degreeCodes.isEmpty()) {
                     controllerQuery.append("dc.title:(\"\")");
+                } else { // Else add a filter argument for each code
+                    String degreeQuery = degreeCodes
+                            .stream()
+                            .map(x -> x.getValue().trim())
+                            .collect(Collectors.joining(" OR ")
+                    );
+                    String fqTerm = this.degreeMetadataFilterFieldName + ":(" + degreeQuery + ")";
+                    controllerQuery.append(fqTerm);
                 }
-                // Else add a filter argument for each code
-                else {
-                    String degreeQuery = String.join(" OR ", degreeCodes.stream().map(x -> x.getValue().trim()).collect(Collectors.toList()));
-                    controllerQuery.append(this.degreeMetadataFilterFieldName + ":(" + degreeQuery + ")");
-                }
-                    
                 solrQuery.addFilterQuery(controllerQuery.toString());
             }
         } catch (SQLException e) {
             throw new SearchServiceException("SQL error occurred while searching for the profile", e);
         } catch (AuthorizeException e) {
             throw new SearchServiceException("Not authorized to access a resource", e);
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new SearchServiceException(e);
         }
     }

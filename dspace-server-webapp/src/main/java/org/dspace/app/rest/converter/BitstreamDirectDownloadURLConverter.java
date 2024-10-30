@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.converter;
 
 import org.dspace.app.rest.model.BitstreamDirectDownloadURL;
@@ -9,11 +16,12 @@ import org.springframework.stereotype.Component;
  * This is the converter from/to the BitstreamDownloadURL in the DSpace API data model and
  * the REST data model.
  * 
- * @Author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 @Component
-public class BitstreamDirectDownloadURLConverter implements DSpaceConverter<BitstreamDirectDownloadURL, BitstreamDirectDownloadURLRest> {
-    
+public class BitstreamDirectDownloadURLConverter
+        implements DSpaceConverter<BitstreamDirectDownloadURL, BitstreamDirectDownloadURLRest> {
+
     @Override
     public BitstreamDirectDownloadURLRest convert(BitstreamDirectDownloadURL bdu, Projection projection) {
         BitstreamDirectDownloadURLRest response = new BitstreamDirectDownloadURLRest();
@@ -23,7 +31,7 @@ public class BitstreamDirectDownloadURLConverter implements DSpaceConverter<Bits
     }
 
     @Override
-    public Class<BitstreamDirectDownloadURL> getModelClass(){
+    public Class<BitstreamDirectDownloadURL> getModelClass() {
         return BitstreamDirectDownloadURL.class;
     }
 }

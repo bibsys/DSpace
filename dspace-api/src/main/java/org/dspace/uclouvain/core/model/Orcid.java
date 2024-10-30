@@ -1,8 +1,13 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core.model;
 
-/** 
-* Class that represent an Orcid
-*/
+/** Class that represent an Orcid ID */
 public class Orcid {
 
     private String orcidLink;
@@ -12,19 +17,19 @@ public class Orcid {
     }
 
     /** 
-    * Extract the id from the orcid link
+    * Extract the id from an Orcid link
     * 
-    * @return: The id contained in the orcid full link
+    * @return The id contained in the Orcid full link
     */
-    public String getID(){
+    public String getID() {
         return orcidLink.replace("https://orcid.org/", "");
     }
 
-    public String getOrcid(){
+    public String getOrcid() {
         return orcidLink;
     }
 
-    public void setOrcid(String orcid){
+    public void setOrcid(String orcid) {
         this.orcidLink = orcid;
     }
 }

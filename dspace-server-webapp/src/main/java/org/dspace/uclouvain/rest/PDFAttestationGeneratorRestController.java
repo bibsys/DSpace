@@ -1,16 +1,19 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.rest;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.UUID;
-
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.transform.TransformerException;
 
-import org.apache.fop.apps.FOPException;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
@@ -40,19 +43,21 @@ public class PDFAttestationGeneratorRestController {
     /** 
      * Generates and returns a PDF attestation with a template depending on the targeted DSpace object type
      * 
-     * @param uuid: The uuid of the target DSpace Item from the request
+     * @param uuid The uuid of the target DSpace Item from the request
      */
     @RequestMapping(method = RequestMethod.GET)
     public void attestation(
         HttpServletResponse response,
         HttpServletRequest request,
         @PathVariable UUID uuid
-    ) throws FileNotFoundException, IOException, FOPException, TransformerConfigurationException, TransformerException, SAXException, SQLException {
+    ) throws IOException, TransformerException, SAXException, SQLException {
         try {
-            if(this.checkAuthorization(request, uuid)) {
-                // If the authorization check passes, handler cannot be null.
+            if (this.checkAuthorization(request, uuid)) {
+                // If the authorization check passes, the handler cannot be null.
                 // See why in 'AttestationAuthorizationService.isItemValidForAttestation'
-                PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory.getInstance().getHandlerInstance(uuid);
+                PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory
+                        .getInstance()
+                        .getHandlerInstance(uuid);
                 try {
                     response.setContentType("application/pdf");
                     handler.getAttestation(response.getOutputStream(), uuid);
@@ -60,27 +65,25 @@ public class PDFAttestationGeneratorRestController {
                 } catch (PDFGenerationException e) {
                     response.sendError(500, "An error occurred while generating the attestation");
                 }
-            }
-            else {
+            } else {
                 response.sendError(401, "You are not authorize to access this resource");
             }
-        } catch (SQLException e){
+        } catch (SQLException e) {
             response.sendError(404, "Object not found");
-        } 
-        catch (HandlerNotFoundException e) {
+        } catch (HandlerNotFoundException e) {
             response.sendError(404, "No handler configured for this type of item");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     private Boolean checkAuthorization(HttpServletRequest request, UUID uuid) throws SQLException {
-        Context ctx = ContextUtil.obtainContext(request);
-        Item dsItem = itemService.find(ctx, uuid);
-        if (dsItem == null) return false;
-
-        return attestationAuthorizationService.isItemValidForAttestation(dsItem, ctx) 
-            && attestationAuthorizationService.isUserAuthorized(dsItem, ctx);
+        Context context = ContextUtil.obtainContext(request);
+        Item dsItem = itemService.find(context, uuid);
+        if (dsItem == null) {
+            return false;
+        }
+        return attestationAuthorizationService.isItemValidForAttestation(dsItem, context)
+            && attestationAuthorizationService.isUserAuthorized(dsItem, context);
     }
 }
