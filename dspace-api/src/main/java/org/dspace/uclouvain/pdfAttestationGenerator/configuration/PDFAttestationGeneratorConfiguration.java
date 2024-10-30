@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.pdfAttestationGenerator.configuration;
 
 import java.util.List;
@@ -12,12 +19,14 @@ public class PDFAttestationGeneratorConfiguration {
     /** 
      * Search for a specific configuration based on the itemType.
      * 
-     * @param itemType: The type of the item to search for the config.
+     * @param itemType The type of the item to search for the config.
      * @return Handler object or null if not found.
      */
     public Handler getConfigForItemType(String itemType) {
         for (Handler handler: this.handlersConfiguration) {
-            if (handler.itemType.equals(itemType)) return handler;
+            if (handler.itemType.equals(itemType)) {
+                return handler;
+            }
         }
         return null;
     }
@@ -30,14 +39,12 @@ public class PDFAttestationGeneratorConfiguration {
     public List<String> getAllHandledTypes() {
         return this.handlersConfiguration
             .stream()
-            // Could maybe be changed to 'Handler::getItemType' ??? Not sure
-            .map(handler -> handler.getItemType())
+            .map(Handler::getItemType)
             .distinct()
             .collect(Collectors.toList());
     }
 
     // GETTERS && SETTERS
-
     public List<Handler> getHandlersConfiguration() {
         return this.handlersConfiguration;
     }

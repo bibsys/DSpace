@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.pdfAttestationGenerator.factory;
 
 import java.sql.SQLException;
@@ -14,26 +21,27 @@ import org.dspace.uclouvain.pdfAttestationGenerator.model.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PDFAttestationGeneratorFactoryImpl implements PDFAttestationGeneratorFactory {
-    
+
     @Autowired
     ItemService itemService;
-    
+
     @Autowired
     PDFAttestationGeneratorConfiguration pdfAttestationGeneratorConfiguration;
 
     /** 
-     * Returns an handler instance for a dspace item to handle PDF attestation generation.
+     * Returns a handler instance for a dspace item to handle PDF attestation generation.
      * 
-     * @param uuid: Target DSpace Item's UUID.
-     * @return An handler or null if not found.
+     * @param uuid Target DSpace Item's UUID.
+     * @return A handler or null if not found.
      */
     @Override
     public PDFAttestationGeneratorHandler getHandlerInstance(UUID uuid) throws SQLException, HandlerNotFoundException {
         Context DSpaceContext = new Context();
         Item item = itemService.find(DSpaceContext, uuid);
-        if (item == null) throw new SQLException("Object not found");
+        if (item == null) {
+            throw new SQLException("Object not found");
+        }
         String itemType = MetadataUtils.getMetadataFieldValueByFieldId(item.getMetadata(), "dspace_entity_type");
-
         Handler handler = this.pdfAttestationGeneratorConfiguration.getConfigForItemType(itemType);
         if (handler != null) {
             return handler.handlerClass;

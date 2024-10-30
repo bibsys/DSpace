@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.pdfAttestationGenerator.model;
 
 import java.time.LocalDate;
@@ -5,37 +12,38 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dspace.services.factory.DSpaceServicesFactory;
-
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
-
+import org.dspace.services.factory.DSpaceServicesFactory;
 
 /** 
-* Main model used for generating an input data file in order to feed a template.
+* The Main model used for generating an input data file to feed a template.
 */
 @XStreamAlias("data")
 public class MasterThesisPDFAttestationModel {
 
-    
     public String today = LocalDate
         .now()
         .format(
-            DateTimeFormatter.ofPattern(DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.pdf_attestation.date_format"))
+            DateTimeFormatter.ofPattern(DSpaceServicesFactory
+                    .getInstance()
+                    .getConfigurationService()
+                    .getProperty("uclouvain.pdf_attestation.date_format")
+            )
         );
-    public List<Author> authors = new ArrayList<Author>();
+    public List<Author> authors = new ArrayList<>();
     public String title;
-    public List<Advisor> advisors = new ArrayList<Advisor>();
-    public List<Program> programs = new ArrayList<Program>();
+    public List<Advisor> advisors = new ArrayList<>();
+    public List<Program> programs = new ArrayList<>();
     public String submitter;
     public String handle;
-    public List<File> files = new ArrayList<File>();
+    public List<File> files = new ArrayList<>();
     @XStreamAlias("abstract")
     public String abstractText;
     public String imagePath;
 
-    
-    public String getRenderedXML(){
+
+    public String getRenderedXML() {
         XStream xStream = new XStream();
         xStream.processAnnotations(this.getClass());
         return xStream.toXML(this);

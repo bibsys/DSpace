@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.submit.step;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
@@ -18,23 +25,28 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.MetadataField;
 
 /**
- * Section step class for the Change Request section. It searches for a change request value and returns it in a DataChangeRequest form.
+ * Section step class for the Change Request section. It searches for a change request value and returns it
+ * in a DataChangeRequest form.
  * 
- * @Authored: Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class ChangeRequestStep extends AbstractProcessingStep {
 
     private ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-    // Active Request Field
-    private MetadataField activeRF = new MetadataField(configService.getProperty("uclouvain.global.metadata.activerequestchange.field"));
+    private MetadataField activeRequestField = new MetadataField(
+            configService.getProperty("uclouvain.global.metadata.activerequestchange.field"));
 
     @Override
-    public DataChangeRequest getData(SubmissionService submissionService, InProgressSubmission obj, SubmissionStepConfig config) throws Exception {
+    public DataChangeRequest getData(
+            SubmissionService submissionService,
+            InProgressSubmission obj,
+            SubmissionStepConfig config
+    ) throws Exception {
         DataChangeRequest result = new DataChangeRequest();
         Item item = obj.getItem();
         ItemService itemService = obj.getItem().getItemService();
         // Get the change request metadata value from the item.
-        String requiredChanges = itemService.getMetadataFirstValue(item, activeRF, null);
+        String requiredChanges = itemService.getMetadataFirstValue(item, activeRequestField, null);
         if (!isEmpty(requiredChanges)) {
             result.setChangeData(requiredChanges);
         }
@@ -43,5 +55,11 @@ public class ChangeRequestStep extends AbstractProcessingStep {
 
     // Empty method since no specific operation can be done with the ChangeRequestStep.
     @Override
-    public void doPatchProcessing(Context context, HttpServletRequest currentRequest, InProgressSubmission source, Operation op, SubmissionStepConfig stepConf) throws Exception {}
+    public void doPatchProcessing(
+            Context context,
+            HttpServletRequest currentRequest,
+            InProgressSubmission source,
+            Operation op,
+            SubmissionStepConfig stepConf
+    ) throws Exception {}
 }
