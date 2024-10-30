@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.rest;
 
 import java.util.ArrayList;
@@ -9,13 +16,12 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.MetadataSelectFieldValuesGenerator;
 import org.dspace.uclouvain.external.osis.client.OSISClientImpl;
 import org.dspace.uclouvain.external.osis.model.OSISStudentDegree;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /** 
 * Main Controller for uclouvain/osis endpoint
@@ -23,6 +29,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/uclouvain/osis")
 public class OSISController {
+
     @Autowired
     private OSISClientImpl osisClient;
 
@@ -35,8 +42,8 @@ public class OSISController {
      * When calling /api/uclouvain/osis/student/{fgs}/info/all with a given FGS identifier,
      * returns all information about the corresponding student studies.
      * 
-     * @param fgs: The fgs identifier of the student
-     * @return: A list of containing student's degree information
+     * @param fgs The fgs identifier of the student
+     * @return A list of containing student's degree information
      */
     @RequestMapping(method = RequestMethod.GET, value = "/student/{fgs}/info/all")
     public OSISStudentDegree[] getAllStudentInfoByFGS(@PathVariable String fgs) {
@@ -47,17 +54,17 @@ public class OSISController {
      * When calling /api/uclouvain/osis/student/{fgs}/info/degree with a given FGS,
      * returns the degree information of the corresponding student.
      * 
-     * @param fgs: The fgs identifier of the student
-     * @return: A list containing all the degree codes for given FGSs
+     * @param fgs The fgs identifier of the student
+     * @return A list containing all the degree codes for given FGSs
      */
     @RequestMapping(method = RequestMethod.GET, value = "/student/{fgs}/info/degree")
     public List<HashMap<String, String>> getStudentDegreeCodesByFGS(@PathVariable String fgs) {
-        List<HashMap<String, String>> returnValueArray  = new ArrayList<HashMap<String, String>>();
+        List<HashMap<String, String>> returnValueArray  = new ArrayList<>();
         OSISStudentDegree[] osisStudentDegreeResponse = this.osisClient.getOSISStudentDegreeByFGS(fgs);
-        for (OSISStudentDegree degree: osisStudentDegreeResponse){
+        for (OSISStudentDegree degree: osisStudentDegreeResponse) {
             HashMap<String, String> returnValueMap = new HashMap<>();
             returnValueMap.put("fgs", fgs);
-            if(!degree.isError()){
+            if (!degree.isError()) {
                 String degreeCode = degree.getSigleOffreRacine();
                 String degreeLabel = degree.getIntitOffreComplet();
                 returnValueMap.put("category", degree.getCategorieDecret());
@@ -66,27 +73,27 @@ public class OSISController {
                 returnValueMap.put("degreeDisplayValue",
                         String.join(DEGREE_PART_SEPARATOR, Arrays.asList(degreeCode, degreeLabel)));
                 returnValueArray.add(returnValueMap);
-            } 
+            }
         }
         return returnValueArray;
     }
 
-    /** 
+    /**
      * Generate a List that contains the metadata value to be modified and its value/options
      * 
-     * @param fgs: The fgs identifier of the student
-     * @param degreeTypeFilter: Precise the type of the degree to retrieve 
+     * @param fgs The fgs identifier of the student
+     * @param degreeTypeFilter Precise the type of the degree to retrieve
      * @return List<HashMap<String, String>>
      */
     @RequestMapping(method = RequestMethod.GET, value = "/students/info/degree")
     public HashMap<String, MetadataSelectFieldValuesGenerator.OSISStudentMetadataContent>
-           getStudentsDegreeCodesByFGS(@RequestParam List<String> fgs, @RequestParam String degreeTypeFilter){
+           getStudentsDegreeCodesByFGS(@RequestParam List<String> fgs, @RequestParam String degreeTypeFilter) {
 
         MetadataSelectFieldValuesGenerator selectFieldValues =
                 new MetadataSelectFieldValuesGenerator("data-" + DEGREE_CODE_FIELD);
-        for(String fgs_id: fgs){
+        for (String fgs_id: fgs) {
             OSISStudentDegree[] osisStudentDegreeResponse = this.getAllStudentInfoByFGS(fgs_id);
-            for (OSISStudentDegree studentDegree: osisStudentDegreeResponse){
+            for (OSISStudentDegree studentDegree: osisStudentDegreeResponse) {
                 String degreeCode = studentDegree.getSigleOffreCompletN();
                 String degreeLabel = studentDegree.getIntitOffreComplet();
                 String category = studentDegree.getCategorieDecret();

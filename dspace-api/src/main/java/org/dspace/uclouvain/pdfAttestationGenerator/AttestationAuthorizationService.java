@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.pdfAttestationGenerator;
 
 import java.sql.SQLException;
@@ -32,10 +39,10 @@ public class AttestationAuthorizationService {
 
     /**
      * Check if the item is valid for the current attestation configuration.
-     * @param item: The item to check.
-     * @param context: The current DSpace context.
-     * @return True if the item is valid for at least one of the configured attestation.
-     * @throws SQLException
+     * @param item The item to check.
+     * @param context The current DSpace context.
+     * @return True if the item is valid for at least one of the configured attestations.
+     * @throws SQLException for any database exception
      */
     public boolean isItemValidForAttestation(Item item, Context context) throws SQLException {
         // Check that the item is not in the workspace
@@ -44,10 +51,10 @@ public class AttestationAuthorizationService {
                 .getAllHandledTypes()
                 .contains(
                     this.itemService.getMetadataFirstValue(
-                        item, 
-                        "dspace", 
-                        "entity", 
-                        "type", 
+                        item,
+                        "dspace",
+                        "entity",
+                        "type",
                         Item.ANY
                     )
                 );
@@ -56,19 +63,21 @@ public class AttestationAuthorizationService {
     /**
      * Check if the user is authorized to download the attestation.
      * Authorized if:
-     * - the item can be handled by one of the available handler AND (
+     * - the item can be handled by one of the available handlers AND (
      *     - the user is an admin OR
      *     - the user is the submitter of the item OR
      *     - the user is a manager
      * )
-     * @param dsItem: The item to check permission for.
-     * @param ctx: The current DSpace context.
-     * @return True if the user is validates one of the above conditions.
-     * @throws SQLException
+     * @param dsItem The item to check permission for.
+     * @param ctx    The current DSpace context.
+     * @return True if the user validates one of the above conditions.
+     * @throws SQLException for any database exception
      */
     public boolean isUserAuthorized(Item dsItem, Context ctx) throws SQLException {
         EPerson currentUser = ctx.getCurrentUser();
-        if (currentUser == null) return false; 
+        if (currentUser == null) {
+            return false;
+        }
         return (this.authorizeService.isAdmin(ctx, dsItem))
             || (dsItem.getSubmitter() == currentUser)
             || (this.authUtils.isManagerOfItem(ctx, dsItem, currentUser));

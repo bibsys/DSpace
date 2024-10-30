@@ -72,8 +72,10 @@ public class ItemConverter
     public MetadataValueList getPermissionFilteredMetadata(Context context, Item item, Projection projection) {
         boolean preventSecurityCheck = preventSecurityCheck(projection);
         return (projection.isAllLanguages())
-            ? new MetadataValueList(metadataSecurityService.getPermissionFilteredMetadataValues(context, item, preventSecurityCheck))
-            : new MetadataValueList(metadataSecurityService.getPermissionAndLangFilteredMetadataFields(context, item, preventSecurityCheck));
+            ? new MetadataValueList(metadataSecurityService.getPermissionFilteredMetadataValues(
+                    context, item, preventSecurityCheck))
+            : new MetadataValueList(metadataSecurityService.getPermissionAndLangFilteredMetadataFields(
+                    context, item, preventSecurityCheck));
     }
 
     public boolean checkMetadataFieldVisibility(Context context, Item item, MetadataField metadataField) {
@@ -107,7 +109,8 @@ public class ItemConverter
      * @return True if any active changes are requested for this item; False otherwise
      */
     private boolean isChangeRequested(Item item) {
-        String activeChangeRequestedFieldName = this.configService.getProperty("uclouvain.global.metadata.activerequestchange.field");
+        String activeChangeRequestedFieldName =
+                this.configService.getProperty("uclouvain.global.metadata.activerequestchange.field");
         MetadataFieldName metadataField = new MetadataFieldName(activeChangeRequestedFieldName);
         return item
                 .getMetadata()

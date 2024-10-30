@@ -34,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
         ),
         @LinkRest(
                 name = BitstreamRest.DOWNLOAD_URL,
-                method= "getDownloadURL"
+                method = "getDownloadURL"
         )
 })
 public class BitstreamRest extends DSpaceObjectRest {

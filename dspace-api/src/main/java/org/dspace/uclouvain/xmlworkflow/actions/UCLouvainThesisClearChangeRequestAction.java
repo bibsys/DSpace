@@ -1,8 +1,14 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.xmlworkflow.actions;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
@@ -23,22 +29,19 @@ import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
  * Before being deleted, the value can be stored in a request history field.
  * This is determined by a configuration property 'uclouvain.feature.send_back_to_submitter.store_reason'.
  * 
- * @Authored: Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
 
-
-    private ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-
-    // Active Request Field
-    private MetadataField activeRF = new MetadataField(this.configService.getProperty("uclouvain.global.metadata.activerequestchange.field"));
-    // Request Field History
-    private MetadataField RFHistory = new MetadataField(this.configService.getProperty("uclouvain.global.metadata.requestchangehistory.field"));
-    // Indicates if we need to store the reason in history before deleting it ? 
-    private Boolean storeInHistory = this.configService.getBooleanProperty("uclouvain.feature.send_back_to_submitter.store_reason", false);
-
     private Logger logger = LogManager.getLogger(UCLouvainThesisClearChangeRequestAction.class);
 
+    private ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
+    private MetadataField activeRequestField = new MetadataField(configService
+            .getProperty("uclouvain.global.metadata.activerequestchange.field"));
+    private MetadataField requestFieldHistory = new MetadataField(configService
+            .getProperty("uclouvain.global.metadata.requestchangehistory.field"));
+    private Boolean storeInHistory = configService
+            .getBooleanProperty("uclouvain.feature.send_back_to_submitter.store_reason", false);
 
     @Override
     public void activate(Context context, XmlWorkflowItem wfItem) {}
@@ -48,13 +51,28 @@ public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
         Item item = wfi.getItem();
         try {
             // Retrieve the value of the active request field
-            String value = this.itemService.getMetadataFirstValue(item, activeRF, Item.ANY);
+            String value = this.itemService.getMetadataFirstValue(item, activeRequestField, Item.ANY);
             if (value != null) {
                 // If any value is found, we store it in the history field if desired and then we delete it.
                 if (this.storeInHistory) {
-                    this.itemService.addMetadata(context, item, RFHistory.getSchema(), RFHistory.getElement(), RFHistory.getQualifier(), null, value);
+                    this.itemService.addMetadata(
+                            context,
+                            item,
+                            requestFieldHistory.getSchema(),
+                            requestFieldHistory.getElement(),
+                            requestFieldHistory.getQualifier(),
+                            null,
+                            value
+                    );
                 }
-                this.itemService.clearMetadata(context, item, activeRF.getSchema(), activeRF.getElement(), activeRF.getQualifier(), Item.ANY);
+                this.itemService.clearMetadata(
+                        context,
+                        item,
+                        activeRequestField.getSchema(),
+                        activeRequestField.getElement(),
+                        activeRequestField.getQualifier(),
+                        Item.ANY
+                );
             }
             return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
         } catch (Exception e) {
@@ -66,6 +84,6 @@ public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
 
     @Override
     public List<String> getOptions() {
-        return new ArrayList<String>();
+        return new ArrayList<>();
     }
 }
