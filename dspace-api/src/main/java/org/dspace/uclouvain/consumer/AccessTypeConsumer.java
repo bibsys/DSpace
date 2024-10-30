@@ -109,9 +109,8 @@ public class AccessTypeConsumer implements Consumer {
         }
     }
 
-
     @Override
-    public void finish(Context context) throws Exception {}
+    public void finish(Context context) {}
 
     @Override
     public void end(Context context) throws Exception {}
