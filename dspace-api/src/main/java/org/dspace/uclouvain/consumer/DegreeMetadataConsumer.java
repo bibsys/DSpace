@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.consumer;
 
 import java.sql.SQLException;
@@ -39,7 +46,7 @@ public class DegreeMetadataConsumer implements Consumer {
     private String rootDegreeLabelFieldName;
     private String facultyCodeFieldName;
     private String facultyNameFieldName;
-    
+
     private ItemService itemService;
     private MetadataFieldService metadataFieldService;
     private UCLouvainEntityService uclouvainEntityService;
@@ -51,11 +58,16 @@ public class DegreeMetadataConsumer implements Consumer {
         this.uclouvainEntityService = UCLouvainServiceFactory.getInstance().getEntityService();
 
         ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
-        this.degreeCodeFieldName = configurationService.getProperty("uclouvain.global.metadata.degreecode.field", "masterthesis.degree.code");
-        this.rootDegreeCodeFieldName = configurationService.getProperty("uclouvain.global.metadata.rootdegreecode.field", "masterthesis.rootdegree.code");
-        this.rootDegreeLabelFieldName = configurationService.getProperty("uclouvain.global.metadata.rootdegreelabel.field", "masterthesis.rootdegree.label");
-        this.facultyCodeFieldName = configurationService.getProperty("uclouvain.global.metadata.facultycode.field", "masterthesis.faculty.code");
-        this.facultyNameFieldName = configurationService.getProperty("uclouvain.global.metadata.facultyname.field", "masterthesis.faculty.name");
+        this.degreeCodeFieldName = configurationService
+                .getProperty("uclouvain.global.metadata.degreecode.field", "masterthesis.degree.code");
+        this.rootDegreeCodeFieldName = configurationService
+                .getProperty("uclouvain.global.metadata.rootdegreecode.field", "masterthesis.rootdegree.code");
+        this.rootDegreeLabelFieldName = configurationService
+                .getProperty("uclouvain.global.metadata.rootdegreelabel.field", "masterthesis.rootdegree.label");
+        this.facultyCodeFieldName = configurationService
+                .getProperty("uclouvain.global.metadata.facultycode.field", "masterthesis.faculty.code");
+        this.facultyNameFieldName = configurationService
+                .getProperty("uclouvain.global.metadata.facultyname.field", "masterthesis.faculty.name");
     }
 
     @Override
@@ -66,12 +78,13 @@ public class DegreeMetadataConsumer implements Consumer {
         }
         Item item = (Item) event.getSubject(context);
         // 1) Clear all previously stored faculty names into the object.
-        this.clearPreviousMetadata(context, item);
+        clearPreviousMetadata(context, item);
 
         // 2) Retrieve entities related to degree codes stored into the item.
         //    For each entity found, store the hierarchical ancestors into the item (degree/faculty entityType only)
-        Set<MetadataValue> dbDegreeCodes = new HashSet<>(itemService.getMetadataByMetadataString(item, degreeCodeFieldName));
-        for(MetadataValue degreeCode : dbDegreeCodes) {
+        Set<MetadataValue> dbDegreeCodes =
+                new HashSet<>(itemService.getMetadataByMetadataString(item, degreeCodeFieldName));
+        for (MetadataValue degreeCode : dbDegreeCodes) {
             Entity entity = uclouvainEntityService.findFirst(degreeCode.getValue(), EntityType.DEGREE);
             if (entity != null) {
                 addEntityMetadata(context, item, entity.getParent());
@@ -89,15 +102,15 @@ public class DegreeMetadataConsumer implements Consumer {
 
     /**
      * Check if an event is modifying the degree code metadata field.
-     * 
-     * @param context: The current DSpace context.
-     * @param event  : The event to evaluate.
+     * @param context The current DSpace context.
+     * @param event   The event to evaluate.
      * @return True if the event is relevant for this consumer, False otherwise
      */
-    private Boolean canBeProcessed(Context context, Event event) throws SQLException{
+    private Boolean canBeProcessed(Context context, Event event) throws SQLException {
         // First, we need to check the subject item exists and is an `Item`
         if (event.getSubjectType() != Constants.ITEM) {
-            log.warn("DegreeMetadataConsumer should not have been given this kind of subject in an event, skipping: " + event);
+            log.warn("DegreeMetadataConsumer should not have been given this kind of subject in an event, skipping: "
+                    + event);
             return false;
         }
         Item item = (Item)event.getSubject(context);
@@ -108,8 +121,9 @@ public class DegreeMetadataConsumer implements Consumer {
         // If the modified fields list is null or empty, it could be because we delete the last "degree"
         // In this case, we need to execute this consumer to delete old metadata fields derived from
         // previously encoded degrees.
-        if (event.getDetail() == null || event.getDetail().trim().isEmpty())
+        if (event.getDetail() == null || event.getDetail().trim().isEmpty()) {
             return true;
+        }
         // Check event details to determine if the consumer can be processed.
         // Two cases exist:
         //   * Either the event details are `null` (when an author is removed and there are none remaining)
@@ -165,10 +179,12 @@ public class DegreeMetadataConsumer implements Consumer {
                 return;
         }
         // At this time, we are sure `codeField` and `nameField` have values, so add metadata into item.
-        if (entity.getCode() != null)
+        if (entity.getCode() != null) {
             itemService.addMetadata(context, item, codeField, null, entity.getCode());
-        if (entity.getName() != null)
+        }
+        if (entity.getName() != null) {
             itemService.addMetadata(context, item, nameField, null, entity.getName());
+        }
         // Recursively add potential parent ancestor entity
         addEntityMetadata(context, item, entity.getParent());
     }
