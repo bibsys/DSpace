@@ -1,4 +1,17 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.consumer;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Collection;
@@ -25,18 +38,12 @@ import org.dspace.workflow.WorkflowItemService;
 import org.dspace.workflow.factory.WorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Consumer to generate additional metadata from the faculty code ONLY for "catareto" collection.
  *
  * @version $Revision$
  *
- * @author Renaud Michotte <renaud.michotte@uclouvain.be>
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public class CataretroFacultyMetadataConsumer implements Consumer {
 
@@ -62,8 +69,10 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
         uclouvainEntityService = UCLouvainServiceFactory.getInstance().getEntityService();
 
         ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
-        facultyCodeFieldName = configurationService.getProperty("uclouvain.global.metadata.facultycode.field", "masterthesis.faculty.code");
-        facultyNameFieldName = configurationService.getProperty("uclouvain.global.metadata.facultyname.field", "masterthesis.faculty.name");
+        facultyCodeFieldName = configurationService
+                .getProperty("uclouvain.global.metadata.facultycode.field", "masterthesis.faculty.code");
+        facultyNameFieldName = configurationService
+                .getProperty("uclouvain.global.metadata.facultyname.field", "masterthesis.faculty.name");
     }
 
     @Override
@@ -77,7 +86,14 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
         MetadataField fnField = metadataFieldService.findByString(context, facultyNameFieldName, '.');
 
         // 1) Clear all previously stored faculty names into the object.
-        itemService.clearMetadata(context, item, fnField.getMetadataSchema().getName(), fnField.getElement(), fnField.getQualifier(), null);
+        itemService.clearMetadata(
+                context,
+                item,
+                fnField.getMetadataSchema().getName(),
+                fnField.getElement(),
+                fnField.getQualifier(),
+                null
+        );
 
         // 2) Retrieve faculty entities corresponding to faculty codes stored into the item.
         //    For each entity found, store the faculty entity name into the item.
@@ -96,54 +112,57 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
     public void end(Context context) throws Exception {}
 
     @Override
-    public void finish(Context context) throws Exception {}
+    public void finish(Context context) {}
 
     /**
      * Check if an event should be processed by this consumer.
      * 
-     * @param context: The current DSpace context.
-     * @param event: The event to evaluate.
+     * @param context The current DSpace context.
+     * @param event   The event to evaluate.
      * @return True if the event is relevant for this consumer, False otherwise
      */
     private Boolean canBeProcessed(Context context, Event event) throws SQLException {
         if (event.getSubjectType() != Constants.ITEM) {
-            log.warn("CataretroMetadataConsumer should not have been given this kind of subject in an event, skipping: " + event);
+            log.warn("CataretroMetadataConsumer should not have been given this kind of subject in an event, skipping: "
+                    + event);
             return false;
         }
         Item item = (Item)event.getSubject(context);
         return item != null && isRelevantCollection(context, item) && isRelevantMetadataModified(event.getDetail());
     }
-    /** Check if one modified metadata match faculty code metadata field */
 
+    /** Check if one modified metadata match faculty code metadata field */
     private Boolean isRelevantMetadataModified(String modifiedMetadataFields) {
         // If the modified fields list is null or empty, it could be because we delete the last "faculty code"
         // In this case, we need to execute this consumer to delete old faculty names derived from previously
         // encoded faculty codes.
-        if (modifiedMetadataFields == null || modifiedMetadataFields.trim().isEmpty())
+        if (modifiedMetadataFields == null || modifiedMetadataFields.trim().isEmpty()) {
             return true;
+        }
         // Otherwise, check that any of the modified fields is a faculty code.
         return Arrays.stream(modifiedMetadataFields.split(","))
                 .map(String::trim)
                 .map(m -> m.replaceAll("_", "."))
                 .anyMatch(x -> x.equals(this.facultyCodeFieldName));
     }
-    /** Check if the modified item is a member of a "Cataretro" collection */
 
+    /** Check if the modified item is a member of a "Cataretro" collection */
     private Boolean isRelevantCollection(Context context, Item item) {
         return getItemCollection(context, item)
                 .stream()
-                .anyMatch(c -> {
-                    List<MetadataValue> metadata = collectionService.getMetadataByMetadataString(c, "dcterms.provenance");
-                    return metadata.stream().map(MetadataValue::getValue).anyMatch(v -> v.equals("cataretro"));
-                });
+                .anyMatch(c -> collectionService
+                        .getMetadataByMetadataString(c, "dcterms.provenance")
+                        .stream()
+                        .map(MetadataValue::getValue)
+                        .anyMatch(v -> v.equals("cataretro")));
     }
 
     /**
      * Get collections related to an item.
      * Depending on item life-cycle, the item collection should be retrieved differently.
      *
-     * @param context: The DSpace context
-     * @param item: the DSpace Item to analyze.
+     * @param context the DSpace context
+     * @param item    the DSpace Item to analyze.
      * @return the list of collection to which the item belongs.
      */
     private List<Collection> getItemCollection(Context context, Item item) {

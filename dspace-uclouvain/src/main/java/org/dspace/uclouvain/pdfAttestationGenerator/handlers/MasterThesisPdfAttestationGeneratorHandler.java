@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.pdfAttestationGenerator.handlers;
 
 import java.io.ByteArrayInputStream;
@@ -12,7 +19,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -66,47 +72,44 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     /** 
     * Recovers data about the object and uses it to construct the PDF file.
     * 
-    * @param out: The response object from the controller. The PDF file will be passed to it.
-    * @param uuid: UUID of the targeted DSpace object.
+    * @param out The response object from the controller. The PDF file will be passed to it.
+    * @param uuid UUID of the targeted DSpace object.
     */
     public void getAttestation(OutputStream out, UUID uuid) throws PDFGenerationException {
         try {
             Context context = new Context();
             File templateFile = new File(this.source + templateDir + this.templateName);
-            
-            // Generate the input xml with item data 
+
+            // Generate the input xml with item data
             String renderedXml = this.generatePDFMasterThesisAttestationFromObjectId(context, uuid);
 
-            // Load rendered data input XML into template 
+            // Load rendered data input XML into template
             //1. Inject input data into stream
             InputStream xmlDataInputStream = new ByteArrayInputStream(renderedXml.getBytes());
             StreamSource xmlDataSource = new StreamSource(xmlDataInputStream);
 
-            //2. Instantiate FOP Factory 
+            //2. Instantiate FOP Factory
             FopFactory fopFactory = FopFactory.newInstance(new File(".").toURI());
             FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
 
             //3. Use transformer to create the final PDF
-            try {
-                // Construct FOP 
-                Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
-                TransformerFactory factory = TransformerFactory.newInstance();
-                Transformer transformer = factory.newTransformer(new StreamSource(templateFile));
-                Result res = new SAXResult(fop.getDefaultHandler());
-                transformer.transform(xmlDataSource, res);
-            } finally {}
+            Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
+            TransformerFactory factory = TransformerFactory.newInstance();
+            Transformer transformer = factory.newTransformer(new StreamSource(templateFile));
+            Result res = new SAXResult(fop.getDefaultHandler());
+            transformer.transform(xmlDataSource, res);
         } catch (Exception e) {
             throw new PDFGenerationException(e.getMessage());
         }
     };
 
-    
+
     /** 
-     * From an uuid, generates a PDF attestation for the given object an write it to an InputStream 
+     * From an uuid, generates a PDF attestation for the given object and write it to an InputStream
      * 
-     * @param uuid: The uuid of the targeted object
+     * @param uuid The uuid of the targeted object
      * @return InputStream; The input stream containing the PDF Attestation
-     * @throws PDFGenerationException
+     * @throws PDFGenerationException of any exception occurred during PDF generation
      */
     public InputStream getAttestationAsInputStream(UUID uuid) throws PDFGenerationException {
         try {
@@ -124,10 +127,10 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     }
 
     /** 
-    * Generates a XML containing data to feed the template file.
+    * Generates an XML containing data to feed the template file.
     *
-    * @param uuid: UUID of the targeted DSpace object.
-    * @param context: The current DSpace context, used to recover the DSpace object from UUID.
+    * @param uuid UUID of the targeted DSpace object.
+    * @param context The current DSpace context, used to recover the DSpace object from UUID.
     */
     private String generatePDFMasterThesisAttestationFromObjectId(Context context, UUID uuid) throws SQLException {
         // 1. Retrieve DSpace item's metadata
@@ -148,15 +151,15 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         for (String advisorName: map.get("dc_contributor_advisor")) {
             pdfModel.addAdvisor(advisorName);
         }
-        // Add programs to model 
+        // Add programs to model
         for (String programName: map.get("masterthesis_degree_code")) {
             pdfModel.addProgram(programName);
         }
 
         pdfModel.submitter = dspaceItem.getSubmitter().getFullName();
         // TODO: Manage Handle recovery
-        pdfModel.handle = "http://handle.net/";
-        
+        pdfModel.handle = "https://handle.net/";
+
         // Add files to model
         for (Bitstream bitstream: ItemUtils.extractItemFiles(dspaceItem)) {
             pdfModel.addFile(
@@ -166,17 +169,16 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         }
 
         pdfModel.abstractText = map.get("dc_description_abstract").get(0);
-        pdfModel.imagePath = this.source + "/assets/images/dial_mem.png"; 
-
+        pdfModel.imagePath = this.source + "/assets/images/dial_mem.png";
         return pdfModel.getRenderedXML();
     }
 
     /** 
      * Utils method to convert a ByteArrayOutputStream to an InputStream
      * 
-     * @param out: A ByteArrayOutputStream that contains the data to put in the inputStream
+     * @param out A ByteArrayOutputStream that contains the data to put in the inputStream
      * @return InputStream or null
-     * @throws IOException
+     * @throws IOException if any IOError occurred
      */
     private static InputStream convertOutputStreamToInputStream(ByteArrayOutputStream out) throws IOException {
         // We use pipes to transfer data from one type of stream to the other
@@ -184,16 +186,18 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         PipedInputStream pipeIn = new PipedInputStream(pipeOut);
 
         try {
-            // Using both Input and Output stream pipes in the same thread isn't recommended (deadlock risks) so we create a new one
+            // Using both Input and Output stream pipes in the same thread isn't recommended (deadlock risks) so we
+            // create a new one
             new Thread(() -> {
                 try {
                     out.writeTo(pipeOut);
                     pipeOut.close();
-                } catch (IOException e) {}
+                } catch (IOException e) {
+                    // do nothing
+                }
             }).start();
             return pipeIn;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }

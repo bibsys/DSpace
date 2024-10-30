@@ -32,8 +32,7 @@ import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
  * This consumer is triggered by bitstream events and refreshes, if necessary, the global item's access type.
  *
  * @version $Revision$
- *
- * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class AccessTypeConsumer implements Consumer {
 
@@ -46,16 +45,16 @@ public class AccessTypeConsumer implements Consumer {
 
     @Override
     public void initialize() throws Exception {
-        this.configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
-        this.accessStatusService = AccessStatusServiceFactory.getInstance().getAccessStatusService();
-        this.itemService = ContentServiceFactory.getInstance().getItemService();
-        this.bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
+        configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        accessStatusService = AccessStatusServiceFactory.getInstance().getAccessStatusService();
+        itemService = ContentServiceFactory.getInstance().getItemService();
+        bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
 
         // The field where the access type metadata needs to be stored
-        this.accessTypeField = new MetadataField(
-            this.configurationService.getProperty("uclouvain.global.metadata.accesstype.field", "dcterms.accessRights")
+        accessTypeField = new MetadataField(
+            configurationService.getProperty("uclouvain.global.metadata.accesstype.field", "dcterms.accessRights")
         );
-        this.logger = LogManager.getLogger(AccessTypeConsumer.class);
+        logger = LogManager.getLogger(AccessTypeConsumer.class);
     }
 
     /**
@@ -67,7 +66,7 @@ public class AccessTypeConsumer implements Consumer {
      * 
      * @param context  The current DSpace context.
      * @param event    The event to consume that deals with a bitstream.
-     * @throws SQLException
+     * @throws SQLException for any database exception
      */
     @Override
     public void consume(Context context, Event event) throws SQLException {
@@ -83,7 +82,13 @@ public class AccessTypeConsumer implements Consumer {
         if (StringUtils.isEmpty(accessType) || accessType.equals(UCLouvainAccessStatusHelper.UNKNOWN)) {
             // DELETE field values on the configured 'accessTypeField'.
             this.itemService.clearMetadata(
-                    context, item, accessTypeField.getSchema(), accessTypeField.getElement(), null, null);
+                    context,
+                    item,
+                    accessTypeField.getSchema(),
+                    accessTypeField.getElement(),
+                    null,
+                    null
+            );
             return;
         }
         String previousMetadata = this.itemService.getMetadataFirstValue(item, accessTypeField, null);
@@ -93,7 +98,7 @@ public class AccessTypeConsumer implements Consumer {
     }
 
     @Override
-    public void finish(Context context) throws Exception {}
+    public void finish(Context context) {}
 
     @Override
     public void end(Context context) throws Exception {}

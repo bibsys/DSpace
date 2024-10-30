@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.core.utils;
 
 import java.sql.SQLException;
@@ -15,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Utility class for authorization checks.
  * 
- * @Author: Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class AuthorizationUtils {
 
@@ -27,20 +34,24 @@ public class AuthorizationUtils {
 
     private MetadataField promoterField;
 
-    public AuthorizationUtils() throws Exception {
+    public AuthorizationUtils() {
         this.promoterField = new MetadataField(
-            DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email")
+            DSpaceServicesFactory
+                    .getInstance()
+                    .getConfigurationService()
+                    .getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email")
         );
     }
 
     /**
      * Checks if the current user is a manager of the item's collection.
-     * Retrieve the group for the collection that corresponds to the reviewer role and check if the current user is a member.
-     * @param item: The item to check permission for.
-     * @param currentUser: The current logged user.
-     * @param context: The current DSpace context.
-     * @return True if the user is a manager of the item's collection else false.
-     * @throws SQLException
+     * Retrieve the group for the collection that corresponds to the reviewer role and check if the current user is
+     * a member.
+     * @param item        The item to check permission for.
+     * @param currentUser The current logged user.
+     * @param context     The current DSpace context.
+     * @return True, if the user is a manager of the item's collection else false.
+     * @throws SQLException for any database exception
      */
     public boolean isManagerOfItem(Context context, Item item, EPerson currentUser) throws SQLException {
         return this.itemUtils.getManagersOfItem(context, item).contains(currentUser);
@@ -48,15 +59,16 @@ public class AuthorizationUtils {
 
     /**
      * Checks if the given user is a promoter of the item.
-     * @param item: The item to check permission for.
-     * @param person: The user to test for promoter membership.
+     * @param item The item to check permission for.
+     * @param person The user to test for promoter membership.
      * @return True if the user is a promoter of the item, false otherwise.
      */
     public boolean isPromoterOfItem(Item item, EPerson person) {
-        List<String> promoters = this.itemService.getMetadata(
-            item, this.promoterField.getSchema(), this.promoterField.getElement(), null, null
-        ).stream().map(metadataValue -> metadataValue.getValue()).collect(Collectors.toList());
-    
+        List<String> promoters = this.itemService
+                .getMetadata(item, this.promoterField.getSchema(), this.promoterField.getElement(), null, null)
+                .stream()
+                .map(metadataValue -> metadataValue.getValue())
+                .collect(Collectors.toList());
         return promoters.contains(person.getEmail());
     }
 }
