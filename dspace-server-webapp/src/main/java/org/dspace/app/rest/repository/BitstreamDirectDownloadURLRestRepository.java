@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.repository;
 
 import java.sql.SQLException;
@@ -17,12 +24,12 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-@Component(BitstreamDirectDownloadURLRest.CATEGORY + "." + BitstreamDirectDownloadURLRest.NAME)
-public class BitstreamDirectDownloadURLRestRepository extends DSpaceRestRepository<BitstreamDirectDownloadURLRest, UUID>{
-    
+@Component(BitstreamDirectDownloadURLRest.CATEGORY + "." + BitstreamDirectDownloadURLRest.PLURAL_NAME)
+public class BitstreamDirectDownloadURLRestRepository
+        extends DSpaceRestRepository<BitstreamDirectDownloadURLRest, UUID> {
+
     @Autowired
     private BitstreamService bitstreamService;
-
     @Autowired
     private BitstreamDirectDownloadURLService bitstreamDirectDownloadURLService;
 
@@ -30,8 +37,8 @@ public class BitstreamDirectDownloadURLRestRepository extends DSpaceRestReposito
      * Main method called when GET on 'api/core/bitstreamdirectdownloadurl/{uuid}' route.
      * We recover the bitstream and generate a download URL for it.
      * 
-     * @param context The current DSpace context.
-     * @param bitstreamId The UUID of the bitstream to generate url for.
+     * @param context the current DSpace context.
+     * @param id      the requested bitstream UUID.
      */
     @PreAuthorize("hasPermission(#id, 'BITSTREAM', 'DOWNLOAD_URL')")
     public BitstreamDirectDownloadURLRest findOne(Context context, UUID id) {
@@ -40,12 +47,10 @@ public class BitstreamDirectDownloadURLRestRepository extends DSpaceRestReposito
             Bitstream bitstream = this.bitstreamService.find(context, id);
             if (bitstream == null) {
                 throw new ResourceNotFoundException("No such bitstream: " + id);
-            } 
-
+            }
             BitstreamDirectDownloadURL bdu = new BitstreamDirectDownloadURL();
             bdu.setBitstreamId(id);
             bdu.setUrl(this.bitstreamDirectDownloadURLService.getURL(bitstream, context.getCurrentUser()));
-
             return converter.toRest(bdu, utils.obtainProjection());
         } catch (SQLException e) {
             throw new RuntimeException(e.getMessage(), e);
