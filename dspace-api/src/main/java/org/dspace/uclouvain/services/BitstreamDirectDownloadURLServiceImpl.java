@@ -1,10 +1,16 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.uclouvain.services;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotNull;
 
 import org.dspace.content.Bitstream;
@@ -15,24 +21,24 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.Hasher;
 
 public class BitstreamDirectDownloadURLServiceImpl implements BitstreamDirectDownloadURLService {
-    private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
+    private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
     private String algorithm;
     private String encryptionKey;
     private String backendURL;
-
     private Hasher hasher;
 
     public BitstreamDirectDownloadURLServiceImpl() throws NoSuchAlgorithmException {
         this.algorithm =  this.configurationService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
         this.encryptionKey = this.configurationService.getProperty("uclouvain.api.bitstream.download.secret", "");
         this.backendURL = this.configurationService.getProperty("dspace.server.url");
-        
         this.hasher = new Hasher(this.algorithm, this.encryptionKey);
     }
 
     public String getURL(Bitstream bitstream, EPerson ePerson) {
-        return ePerson != null ? this.getURL(bitstream, ePerson.getEmail()): null;
+        return (ePerson != null)
+            ? this.getURL(bitstream, ePerson.getEmail())
+            : null;
     }
 
     public String getURL(Bitstream bitstream, String email) {
@@ -40,7 +46,9 @@ public class BitstreamDirectDownloadURLServiceImpl implements BitstreamDirectDow
     }
 
     public List<String> getURLs(Bundle bundle, EPerson ePerson) {
-        return ePerson != null ? this.getURLs(bundle, ePerson.getEmail()) : new ArrayList<String>();
+        return (ePerson != null)
+                ? this.getURLs(bundle, ePerson.getEmail())
+                : new ArrayList<>();
     }
 
     public List<String> getURLs(@NotNull Bundle bundle, @NotNull String email) {
