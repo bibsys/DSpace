@@ -94,6 +94,9 @@ public class DiscoverFacetResultsConverter {
 
         facetResultsRest.setSearchFilters(searchFilters);
 
+        DiscoverySearchFilterFacet field = configuration.getSidebarFacet(facetName);
+        facetResultsRest.setExposeFilter(field.exposeFilter());
+
         for (SearchFilter searchFilter : CollectionUtils.emptyIfNull(searchFilters)) {
             facetResultsRest
                 .addAppliedFilter(searchFilterToAppliedFilterConverter.convertSearchFilter(context, searchFilter));
