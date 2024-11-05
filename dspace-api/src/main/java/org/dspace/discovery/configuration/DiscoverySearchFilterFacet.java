@@ -27,6 +27,7 @@ public class DiscoverySearchFilterFacet extends DiscoverySearchFilter {
     private boolean exposeTotalElements = false;
     private boolean fillDateGaps = false;
     private boolean inverseDirection = false;
+    private boolean exposeFilter = true;
 
     public int getFacetLimit() {
         if (facetLimit == -1) {
@@ -118,5 +119,13 @@ public class DiscoverySearchFilterFacet extends DiscoverySearchFilter {
 
     public void setInverseDirection(boolean inverseDirection) {
         this.inverseDirection = inverseDirection;
+    }
+
+    public void setExposeFilter(boolean exposeFilter) {
+        this.exposeFilter = exposeFilter;
+    }
+
+    public boolean exposeFilter() {
+        return this.exposeFilter;
     }
 }
