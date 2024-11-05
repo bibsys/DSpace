@@ -50,6 +50,8 @@ public class SearchFacetEntryRest extends RestAddressableModel {
     private List<SearchFacetValueRest> values = new LinkedList<>();
     private boolean exposeMore;
     private boolean exposeMissing;
+    private boolean exposeFilter;
+    private boolean openByDefault;
 
     public SearchFacetEntryRest(final String name) {
         this.name = name;
@@ -199,5 +201,21 @@ public class SearchFacetEntryRest extends RestAddressableModel {
 
     public void setExposeMissing(boolean exposeMissing) {
         this.exposeMissing = exposeMissing;
+    }
+
+    public boolean getExposeFilter() {
+        return exposeFilter;
+    }
+
+    public void setExposeFilter(boolean exposeFilter) {
+        this.exposeFilter = exposeFilter;
+    }
+
+    public boolean getOpenByDefault() {
+        return openByDefault;
+    }
+
+    public void setOpenByDefault(boolean openByDefault) {
+        this.openByDefault = openByDefault;
     }
 }
