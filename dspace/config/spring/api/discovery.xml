@@ -3253,6 +3253,8 @@
         class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
         <property name="indexFieldName" value="namedresourcetype" />
         <property name="type" value="authority" />
+        <property name="isOpenByDefault" value="true" />
+        <property name="exposeFilter" value="false" />
         <property name="metadataFields">
             <list>
                 <value>placeholder.placeholder.placeholder</value>

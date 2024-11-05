@@ -32,6 +32,8 @@ public abstract class DiscoveryResultsRest extends BaseObjectRest<String> {
     @JsonIgnore
     private List<SearchFilter> searchFilters;
     private String configuration;
+    private boolean exposeFilter;
+    private boolean openByDefault;
 
     public String getCategory() {
         return CATEGORY;
@@ -122,5 +124,19 @@ public abstract class DiscoveryResultsRest extends BaseObjectRest<String> {
         return searchFilters;
     }
 
+    public boolean getExposeFilter() {
+        return exposeFilter;
+    }
 
+    public void setExposeFilter(boolean exposeFilter) {
+        this.exposeFilter = exposeFilter;
+    }
+
+    public boolean getOpenByDefault() {
+        return openByDefault;
+    }
+
+    public void setOpenByDefault(boolean openByDefault) {
+        this.openByDefault = openByDefault;
+    }
 }
