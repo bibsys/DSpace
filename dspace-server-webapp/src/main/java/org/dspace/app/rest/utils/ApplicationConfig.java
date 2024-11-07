@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 // the parent, it won't be so configured in this context and you may have
 // trouble.  Be careful what you add here.
 @ComponentScan( {
+    "org.dspace.uclouvain.rest",
     "org.dspace.app.rest.converter",
     "org.dspace.app.rest.repository",
     "org.dspace.app.rest.utils",
