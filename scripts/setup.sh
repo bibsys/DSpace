@@ -255,25 +255,6 @@ then
 fi
 echo -e "\033[K✅ Community and collection created"
 
-# STEP#5: Register specific schemas & metadata registries ~~~~~~~~~~~~~~~~~~~~~
-echo -e "📘 Registering schemas & metadata fields..."
-METADATA_REGISTRIES=(
-  "registries/dc-types.xml"
-  "registries/authors-types.xml"
-  "registries/fedora-types.xml"
-)
-for registry in "${METADATA_REGISTRIES[@]}"
-do
-  docker exec ${BACKEND} sh -c "\
-      /dspace/bin/dspace registry-loader -metadata \
-      /uclouvain/config/${registry}" >> "${LOG_PATH}"
-  if [ $? -ne 0 ]
-  then
-      error_msg+exit "❌ Error during ${registry} creation !"
-  fi
-  echo -e "\t${CYAN}${registry}${NC} registered"
-done
-
 # STEP#5: Permissions management ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo -e "🔒 Permissions management..."
 collection_length=$(jq '.collections | length' "${PERMISSIONS_FILE}")
