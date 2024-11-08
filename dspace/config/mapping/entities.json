@@ -1,121 +1,3302 @@
-[{
-  "code": "DRT",
-  "name": "Faculté de droit et de criminologie",
-  "type": "faculty",
-  "children": [{
-    "code": "DROI2M",
-    "name": "Master [120] en droit",
-    "type": "degree",
-    "children": [{
-      "code": "DROI2MS/ET",
-      "name": "Master [120] en droit, à finalité spécialisée: Etat et Europe",
-      "type": "degree"
-    }]
-  }]
-}, {
-  "code": "EPL",
-  "name": "Ecole polytechnique de Louvain",
-  "type": "faculty",
-  "children": [{
-    "code": "ELME2M",
-    "name": "Master [120] : ingénieur civil électromécanicien",
-    "type": "degree"
-  }, {
-    "code": "MAP2M",
-    "name": "Master [120] : ingénieur civil en mathématiques appliquées",
-    "type": "degree"
-  }]
-}, {
-  "code": "ESPO",
-  "name": "Faculté des sciences économiques, sociales, politiques et de communication",
-  "type": "faculty",
-  "children": [{
-    "code": "CORP2M",
-    "name": "Master [120] en communication",
-    "type": "degree"
-  }, {
-    "code": "EJL2M",
-    "name": "Master [120] en journalisme",
-    "type": "degree"
-  }, {
-    "code": "EURO2M",
-    "name": "Master [120] en études européennes (UCLouvain / USL-B)",
-    "type": "degree"
-  }, {
-    "code": "TRAV2M1",
-    "name": "Master [60] en sciences du travail (horaire décalé)",
-    "type": "degree"
-  }]
-}, {
-  "code": "FIAL",
-  "name": "Faculté de philosophie, arts et lettres",
-  "type": "faculty",
-  "children": [{
-    "code": "GERM2M",
-    "name": "Master [120] en langues et lettres modernes, orientation germaniques",
-    "type": "degree"
-  }, {
-    "code": "HIST2M",
-    "name": "Master [120] en histoire",
-    "type": "degree"
-  }, {
-    "code": "THEA2M",
-    "name": "Master [120] en arts du spectacle",
-    "type": "degree"
-  }]
-}, {
-  "code": "LSM",
-  "name": "Louvain School of Management",
-  "type": "faculty",
-  "children": [{
-    "code": "INGE2M",
-    "name": "Master [120] : ingénieur de gestion",
-    "type": "degree",
-    "children": [{
-      "code": "INGE2MS/G",
-      "name": "Master [120] : ingénieur de gestion, à finalité spécialisée",
-      "type": "degree"
-    }]
-  }, {
-    "code": "GEST2M",
-    "name": "Master [120] en sciences de gestion",
-    "type": "degree",
-    "children": [{
-      "code": "GEST2MS/GE",
-      "name": "Master [120] en sciences de gestion, à finalité spécialisée",
-      "type": "degree"
-    }]
-  }]
-}, {
-  "code": "MEDE",
-  "name": "Faculté de médecine et médecine dentaire",
-  "type": "faculty",
-  "children": [{
-    "code": "MD2M",
-    "name": "Master [180] en médecine",
-    "type": "degree",
-    "children": [{
-      "code": "MD2MS/G",
-      "name": "Master [180] en médecine, à finalité spécialisée",
-      "type": "degree"
-    }]
-  }]
-}, {
-  "code": "PSP",
-  "name": "Faculté de psychologie et des sciences de l'éducation",
-  "type": "faculty",
-  "children": [{
-    "code": "FOPA2M",
-    "name": "Master [120] en sciences de l'éducation",
-    "type": "degree",
-    "children": [{
-      "code": "FOPA2MS/G",
-      "name": "Master [120] en sciences de l'éducation, à finalité spécialisée",
-      "type": "degree"
-    }]
-  }, {
-    "code": "PSY2M",
-    "name": "Master [120] en sciences psychologiques",
-    "type": "degree"
-  }]
-}]
+[
+  {
+    "code": "DRT",
+    "name": "Faculté de droit et de criminologie",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "CRIM2M",
+        "name": "Master [120] en criminologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "CRIM2MA",
+            "name": "Master [120] en criminologie, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "CRIM2MS/CC",
+            "name": "Master [120] en criminologie, à finalité spécialisée: interdisciplinaire en criminologie critique",
+            "type": "degree"
+          },
+          {
+            "code": "CRIM2MS/CI",
+            "name": "Master [120] en criminologie, à finalité spécialisée: criminologie de l'intervention",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DREF2MC",
+        "name": "Master de spécialisation en approche interdisciplinaire des droits de l'enfant",
+        "type": "degree"
+      },
+      {
+        "code": "DREU2MC",
+        "name": "Master de spécialisation en droit européen",
+        "type": "degree"
+      },
+      {
+        "code": "DRHD2M",
+        "name": "Master [120] en droit (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "DRHD2MS/G",
+            "name": "Master [120] en droit, à finalité spécialisée (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DRIF2MC",
+        "name": "Master de spécialisation en droit fiscal",
+        "type": "degree"
+      },
+      {
+        "code": "DRIN2MC",
+        "name": "Master de spécialisation en droit international",
+        "type": "degree"
+      },
+      {
+        "code": "DRLN2M",
+        "name": "Master [120] en droit (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "DRLN2MS/GE",
+        "name": "Master [120] en droit, à finalité spécialisée (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "DROI2M",
+        "name": "Master [120] en droit",
+        "type": "degree",
+        "children": [
+          {
+            "code": "DROI2MS/ET",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit public",
+            "type": "degree"
+          },
+          {
+            "code": "DROI2MS/EU",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit européen",
+            "type": "degree"
+          },
+          {
+            "code": "DROI2MS/FI",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit de l'entreprise",
+            "type": "degree"
+          },
+          {
+            "code": "DROI2MS/IU",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit civil et pénal",
+            "type": "degree"
+          },
+          {
+            "code": "DROI2MS/KE",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit économique - Economish Recht",
+            "type": "degree"
+          },
+          {
+            "code": "DROI2MS/KI",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit privé et pénal - Privaatrecht en strafrecht",
+            "type": "degree"
+          },
+          {
+            "code": "DROI2MS/KU",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit public - Publiekrecht",
+            "type": "degree"
+          },
+          {
+            "code": "DROI2MS/TR",
+            "name": "Master [120] en droit, à finalité spécialisée: Droit transnational, comparé et étranger",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DROI2MS/GE",
+        "name": "Master [120] en droit, à finalité spécialisée",
+        "type": "degree"
+      },
+      {
+        "code": "DRT IN",
+        "name": "Mobilité entrante en droit",
+        "type": "degree"
+      },
+      {
+        "code": "DRT IS",
+        "name": "Unité(s) d'enseignement isolée(s) en droit",
+        "type": "degree"
+      },
+      {
+        "code": "ECRI IN",
+        "name": "Mobilité entrante en criminologie",
+        "type": "degree"
+      },
+      {
+        "code": "ECRI IS",
+        "name": "Unité(s) d'enseignement isolée(s) en criminologie",
+        "type": "degree"
+      },
+      {
+        "code": "NOTA2MC",
+        "name": "Master de spécialisation en notariat",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "DRTB",
+    "name": "Faculté de droit Saint-Louis",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "DPIB2MC",
+        "name": "Master de spécialisation en droit de l'environnement et droit public immobilier (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "DRHB2MC",
+        "name": "Master de spécialisation en droits humains (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "DROB BS",
+        "name": "Bachelier supplémentaire en droit",
+        "type": "degree"
+      },
+      {
+        "code": "DRTB IN",
+        "name": "Mobilité entrante en droit (Saint-Louis - Bruxelles)",
+        "type": "degree"
+      },
+      {
+        "code": "DRTB IS",
+        "name": "Cours isolé(s) de la Faculté de droit Saint-Louis",
+        "type": "degree"
+      },
+      {
+        "code": "KULB IS",
+        "name": "Cours isolé(s) - Trajet bilingue en droit pour les étudiants KULeuven",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "EDUC",
+    "name": "Faculté des sciences de l'éducation",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "CAPA2CE",
+        "name": "Certificat d'aptitude pédagogique approprié à l'enseignement supérieur en hautes écoles",
+        "type": "degree"
+      },
+      {
+        "code": "EDUC2MC",
+        "name": "Master de spécialisation en pédagogie universitaire et de l'enseignement supérieur (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "FOPA2M",
+        "name": "Master [120] en sciences de l'éducation (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "FOPA2MA",
+            "name": "Master [120] en sciences de l'éducation, à finalité approfondie (horaire décalé)",
+            "type": "degree"
+          },
+          {
+            "code": "FOPA2MS/G",
+            "name": "Master [120] en sciences de l'éducation, à finalité spécialisée (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "FOPA IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "MSFE2MC",
+        "name": "Master de spécialisation en formation d'enseignants",
+        "type": "degree"
+      },
+      {
+        "code": "PSP2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences psychologiques et sciences de l'éducation)",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "ESPB",
+    "name": "Faculté des sciences économiques, sociales, politiques et de la communication Saint-Louis",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "COMB2M",
+        "name": "Master [120] en stratégie de la communication et culture numérique (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "COMB2MA",
+            "name": "Master [120] en stratégie de la communication et culture numérique (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "COMB BS",
+        "name": "Bachelier supplémentaire en information et communication",
+        "type": "degree"
+      },
+      {
+        "code": "ECGB BS",
+        "name": "Bachelier supplémentaire en sciences économiques et de gestion",
+        "type": "degree"
+      },
+      {
+        "code": "ESPB IN",
+        "name": "Mobilité entrante en sciences économiques, sociales, politiques et de la communication (Saint-Louis - Bruxelles)",
+        "type": "degree"
+      },
+      {
+        "code": "ESPB IS",
+        "name": "Cours isolé(s) de la Faculté des sciences économiques, sociales, politiques et de la communication Saint-Louis",
+        "type": "degree"
+      },
+      {
+        "code": "GRFB2MC",
+        "name": "Master de spécialisation en gestion des risques financiers (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "SOCB BS",
+        "name": "Bachelier supplémentaire en sociologie et anthropologie",
+        "type": "degree"
+      },
+      {
+        "code": "SPOB BS",
+        "name": "Bachelier supplémentaire en sciences politiques, orientation générale",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "ESPO",
+    "name": "Faculté des sciences économiques, sociales, politiques et de communication",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "ADPM2M",
+        "name": "Master [120] en administration publique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ADPM2MS/IP",
+            "name": "Master [120] en administration publique, à finalité spécialisée: insertion professionnelle",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ADPU2M",
+        "name": "Master [120] en administration publique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ADPU2MS/G",
+            "name": "Master [120] en administration publique, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ANTR2M",
+        "name": "Master [120] en anthropologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ANTR2MA",
+            "name": "Master [120] en anthropologie, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ANTR2MD",
+        "name": "Master [120] en anthropologie, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "APHM2M",
+        "name": "Master [120] en administration publique (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "APHM2MS/G",
+            "name": "Master [120] en administration publique, à finalité spécialisée: management public et politiques publiques (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ASSO2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sociologie, sciences politiques, anthropologie)",
+        "type": "degree"
+      },
+      {
+        "code": "CAEM2M",
+        "name": "Master [120] en communication appliquée spécialisée - éducation aux médias",
+        "type": "degree",
+        "children": [
+          {
+            "code": "CAEM2MS/G",
+            "name": "Master [120] en communication appliquée spécialisée - éducation aux médias, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "COAM2M",
+        "name": "Master [120] en communication stratégique (horaire décalé - en alternance)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "COAM2MS/G",
+            "name": "Master [120] en communication stratégique, à finalité spécialisée (horaire décalé - en alternance)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "COHM2M",
+        "name": "Master [120] en communication (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "COHM2MS/G",
+            "name": "Master [120] en communication, à finalité spécialisée (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "COHM2MS/CC",
+        "name": "Master [120] en communication, à finalité spécialisée (horaire décalé): culture et communication",
+        "type": "degree"
+      },
+      {
+        "code": "COHM2MS/CI",
+        "name": "Master [120] en communication, à finalité spécialisée (horaire décalé): communication interne et ressources humaines",
+        "type": "degree"
+      },
+      {
+        "code": "COIN9CE",
+        "name": "Certificat d'université en communication interne",
+        "type": "degree"
+      },
+      {
+        "code": "COMM2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (information et communication) (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "COMM2M",
+        "name": "Master [120] en communication",
+        "type": "degree",
+        "children": [
+          {
+            "code": "COMM2MS/CC",
+            "name": "Master [120] en communication, à finalité spécialisée: culture et communication",
+            "type": "degree"
+          },
+          {
+            "code": "COMM2MS/CW",
+            "name": "Master [120] en communication, à finalité spécialisée: stratégie et communication Web",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "COMM2M1",
+        "name": "Master [60] en information et communication",
+        "type": "degree"
+      },
+      {
+        "code": "COMM2MS/MN",
+        "name": "Master [120] en communication, à finalité spécialisée: médias et stratégies numériques",
+        "type": "degree"
+      },
+      {
+        "code": "COMU2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (information et communication)",
+        "type": "degree"
+      },
+      {
+        "code": "COMU2M1",
+        "name": "Master [60] en information et communication",
+        "type": "degree"
+      },
+      {
+        "code": "COMU IN",
+        "name": "Mobilité entrante en communication",
+        "type": "degree"
+      },
+      {
+        "code": "COMU IS",
+        "name": "Unité(s) d'enseignement isolée(s) en communication",
+        "type": "degree"
+      },
+      {
+        "code": "CORP2M",
+        "name": "Master [120] en communication",
+        "type": "degree",
+        "children": [
+          {
+            "code": "CORP2MA",
+            "name": "Master [120] en communication, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "CORP2MS/CS",
+            "name": "Master [120] en communication , à finalité spécialisée: communication stratégique des organisations",
+            "type": "degree"
+          },
+          {
+            "code": "CORP2MS/IC",
+            "name": "Master [120] en communication, à finalité spécialisée: étude des industries culturelles",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "CORP2MS/G",
+        "name": "Master [120] en communication, à finalité spécialisée: gestion de la communication d'organisation et des relations publiques",
+        "type": "degree"
+      },
+      {
+        "code": "ECGE2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences économiques, orientation générale)",
+        "type": "degree"
+      },
+      {
+        "code": "ECGE IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences économiques et de gestion",
+        "type": "degree"
+      },
+      {
+        "code": "ECON2M",
+        "name": "Master [120] en sciences économiques, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ECON2MA",
+            "name": "Master [120] en sciences économiques, orientation générale, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "ECON2MS/G",
+            "name": "Master [120] en sciences économiques, orientation générale, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ECON2M1",
+        "name": "Master [60] en sciences économiques, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "ECON2MC",
+        "name": "Master de spécialisation en économie internationale et du développement - Specialized master in international and development economics",
+        "type": "degree"
+      },
+      {
+        "code": "ECON2MD",
+        "name": "Master [120] en sciences économiques, orientation générale, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "ECON IN",
+        "name": "Mobilité entrante en sciences économiques",
+        "type": "degree"
+      },
+      {
+        "code": "ECON IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences économiques",
+        "type": "degree"
+      },
+      {
+        "code": "ECSO2MC",
+        "name": "Master de spécialisation en économie sociale",
+        "type": "degree"
+      },
+      {
+        "code": "EJL2M",
+        "name": "Master [120] en journalisme",
+        "type": "degree",
+        "children": [
+          {
+            "code": "EJL2MA",
+            "name": "Master [120] en journalisme, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "EJL2MS/G",
+            "name": "Master [120]  en journalisme, à finalité spécialisée: \"Ecole de journalisme de Louvain\"",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ESPO IN",
+        "name": "Mobilité entrante en sciences économiques, sociales, politiques et de communication",
+        "type": "degree"
+      },
+      {
+        "code": "ETES9CE",
+        "name": "Certificat d'université en éthique et société",
+        "type": "degree"
+      },
+      {
+        "code": "ETRI2M",
+        "name": "Master [120] en sciences économiques, orientation économétrie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ETRI2MA",
+            "name": "Master [120] en sciences économiques, orientation économétrie, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "EURO2M",
+        "name": "Master [120] en études européennes",
+        "type": "degree",
+        "children": [
+          {
+            "code": "EURO2MS/G",
+            "name": "Master [120] en études européennes, à finalité spécialisée: gouvernance et sociétés européennes",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "EURO IN",
+        "name": "Mobilité entrante en études européennes",
+        "type": "degree"
+      },
+      {
+        "code": "EURO IS",
+        "name": "Unité(s) d'enseignement isolée(s) en études européennes",
+        "type": "degree"
+      },
+      {
+        "code": "GESM2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences de gestion) (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "GRH2M",
+        "name": "Master [120] en gestion des ressources humaines",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GRH2MS/G",
+            "name": "Master [120] en gestion des ressources humaines, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "HUMA2MC",
+        "name": "Master de spécialisation en action humanitaire internationale",
+        "type": "degree"
+      },
+      {
+        "code": "LMQS2MC",
+        "name": "Master de spécialisation en méthodes quantitatives en sciences sociales",
+        "type": "degree"
+      },
+      {
+        "code": "MAJV2M",
+        "name": "Master [120] en jeu vidéo",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MAJV2MS/GI",
+            "name": "Master [120] en jeu vidéo, à finalité spécialisée : Video Game Industry",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "OPES2M",
+        "name": "Master [120] en politique économique et sociale (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "OPES2MS/ES",
+            "name": "Master [120] en politique économique et sociale, à finalité spécialisée (horaire décalé): analyse et évaluation des politiques",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "OPES IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "POLS IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences politiques",
+        "type": "degree"
+      },
+      {
+        "code": "POSM2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences politiques) (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "PRIM2M",
+        "name": "Master [120] en sciences politiques, orientation relations internationales",
+        "type": "degree",
+        "children": [
+          {
+            "code": "PRIM2MS/GG",
+            "name": "Master [120] en sciences politiques, orientation relations internationales, à finalité spécialisée: enjeux contemporains de la gouvernance globale",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "PSAD IN",
+        "name": "Mobilité entrante en sciences politiques et sociales",
+        "type": "degree"
+      },
+      {
+        "code": "SESP IN",
+        "name": "Mobilité entrante en 1er cycle en sciences économiques, sociales, politiques et de communication",
+        "type": "degree"
+      },
+      {
+        "code": "SESP IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences économiques, sociales, politiques et communication",
+        "type": "degree"
+      },
+      {
+        "code": "SOC2M",
+        "name": "Master [120] en sociologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SOC2MA",
+            "name": "Master [120] en sociologie, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SOC2MD",
+        "name": "Master [120] en sociologie, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "SOCA2M1",
+        "name": "Master [60] en sociologie et anthropologie",
+        "type": "degree"
+      },
+      {
+        "code": "SPED2M",
+        "name": "Master [120] en sciences de la population et du développement",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SPED2MS/DM",
+            "name": "Master [120] en sciences de la population et du développement, à finalité spécialisée: démographie",
+            "type": "degree"
+          },
+          {
+            "code": "SPED2MS/DV",
+            "name": "Master [120] en sciences de la population et du développement, à finalité spécialisée: développement",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SPHM2M",
+        "name": "Master [120] en sciences politiques, orientation générale (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SPHM2MS/G",
+            "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: les échelles du politique (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SPHM2M1",
+        "name": "Master [60] en sciences politiques, orientation générale (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "SPOL2M",
+        "name": "Master [120] en sciences politiques, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SPOL2MA",
+            "name": "Master [120] en sciences politiques, orientation générale, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SPOL2M1",
+        "name": "Master [60] en sciences politiques, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "SPOL2MD",
+        "name": "Master [120] en sciences politiques, orientation générale, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "SPOL2MS/BC",
+        "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: belgian and comparative politics",
+        "type": "degree"
+      },
+      {
+        "code": "SPOL2MS/DI",
+        "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: democratic innovations and transformations",
+        "type": "degree"
+      },
+      {
+        "code": "SPOM2M1",
+        "name": "Master [60] en sciences politiques, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "SPRI2M",
+        "name": "Master [120] en sciences politiques, orientation relations internationales",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SPRI2MS/DI",
+            "name": "Master [120] en sciences politiques, orientation relations internationales, à finalité spécialisée: diplomatie et résolution des conflits",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "STIC2M",
+        "name": "Master [120] en sciences et technologies de l'information et de la communication",
+        "type": "degree",
+        "children": [
+          {
+            "code": "STIC2MS/CE",
+            "name": "Master [120] en sciences et technologies de l'information et de la communication, à finalité spécialisée: conception et évaluation de médias éducatifs",
+            "type": "degree"
+          },
+          {
+            "code": "STIC2MS/GI",
+            "name": "Master [120] en sciences et technologies de l'information et de la communication, à finalité spécialisée: gestion de l'information numérique",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "STIC2MS/G",
+        "name": "Master [120] en sciences et technologies de l'information et de la communication, à finalité spécialisée: ingénierie et technologies de la connaissance",
+        "type": "degree"
+      },
+      {
+        "code": "TIS2M",
+        "name": "Master [120] en transitions et innovations sociales",
+        "type": "degree",
+        "children": [
+          {
+            "code": "TIS2MS/G",
+            "name": "Master [120] en transitions et innovations sociales, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "TRAV2M",
+        "name": "Master [120] en sciences du travail (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "TRAV2MS/G",
+            "name": "Master [120] en sciences du travail, à finalité spécialisée (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "TRAV2M1",
+        "name": "Master [60] en sciences du travail (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "TRAV IN",
+        "name": "Mobilité entrante en sciences du travail",
+        "type": "degree"
+      },
+      {
+        "code": "TRAV IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences du travail",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "FIAL",
+    "name": "Faculté de philosophie, arts et lettres",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "ARGD2MC",
+        "name": "Master de spécialisation en archivistique, gestion et droit des données",
+        "type": "degree"
+      },
+      {
+        "code": "ARKE2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (histoire de l'art et archéologie, orientation générale)",
+        "type": "degree"
+      },
+      {
+        "code": "ARKE2M",
+        "name": "Master [120] en histoire de l'art et archéologie, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ARKE2MS/IV",
+            "name": "Master [120] en histoire de l'art et archéologie, orientation générale, à finalité spécialisée: iconologie et études des cultures visuelles",
+            "type": "degree"
+          },
+          {
+            "code": "ARKE2MS/TG",
+            "name": "Master [120] en histoire de l'art et archéologie, orientation générale, à finalité spécialisée: théories, gestion et sciences de l'archéologie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ARKE2M1",
+        "name": "Master [60] en histoire de l'art et archéologie, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "ARKE2MD",
+        "name": "Master [120] en histoire de l'art et archéologie, orientation générale, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "CLAS2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (langues et lettres anciennes, orientation classiques)",
+        "type": "degree"
+      },
+      {
+        "code": "CLAS2M",
+        "name": "Master [120] en langues et lettres anciennes, orientation classiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "CLAS2MA",
+            "name": "Master [120] en langues et lettres anciennes, orientation classiques, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "CLAS2M1",
+        "name": "Master [60] en langues et lettres anciennes, orientation classiques",
+        "type": "degree"
+      },
+      {
+        "code": "CLAS2MD",
+        "name": "Master [120] en langues et lettres anciennes, orientation classiques, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "ELAT9CE",
+        "name": "Certificat universitaire en langue, littérature et civilisation latines",
+        "type": "degree"
+      },
+      {
+        "code": "ETHI2M",
+        "name": "Master [120] en éthique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ETHI2MA",
+            "name": "Master [120] en éthique, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ETHI2MS/NS",
+        "name": "Master [120] en éthique, à finalité spécialisée: éthique, normes et sociétés",
+        "type": "degree"
+      },
+      {
+        "code": "FIAL IN",
+        "name": "Mobilité entrante en philosophie, arts et lettres",
+        "type": "degree"
+      },
+      {
+        "code": "FIAL IS",
+        "name": "Unité(s) d'enseignement isolée(s) en philosophie, arts et lettres",
+        "type": "degree"
+      },
+      {
+        "code": "FILA9CE",
+        "name": "Certificat universitaire en philosophie (approfondissement)",
+        "type": "degree"
+      },
+      {
+        "code": "FILO2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (philosophie)",
+        "type": "degree"
+      },
+      {
+        "code": "FILO2M",
+        "name": "Master [120] en philosophie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "FILO2MA",
+            "name": "Master [120] en philosophie, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "FILO2M1",
+        "name": "Master [60] en philosophie",
+        "type": "degree"
+      },
+      {
+        "code": "FILO2MD",
+        "name": "Master [120] en philosophie, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "FILO2MS/AF",
+        "name": "Master [120] en philosophie, à finalité spécialisée: philosophies allemandes et françaises : enjeux contemporains",
+        "type": "degree"
+      },
+      {
+        "code": "FILO9CE",
+        "name": "Certificat universitaire en philosophie (fondements)",
+        "type": "degree"
+      },
+      {
+        "code": "FLE2M",
+        "name": "Master [120] en langues et lettres françaises et romanes, orientation français langue étrangère",
+        "type": "degree",
+        "children": [
+          {
+            "code": "FLE2MS/G",
+            "name": "Master [120] en langues et lettres françaises et romanes, orientation français langue étrangère, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "FLE2MA",
+        "name": "Master [120] en langues et lettres françaises et romanes, orientation français langue étrangère, à finalité approfondie",
+        "type": "degree"
+      },
+      {
+        "code": "GENR2MC",
+        "name": "Master de spécialisation en études de genre",
+        "type": "degree"
+      },
+      {
+        "code": "GERM2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (langues et lettres modernes, orientation germaniques)",
+        "type": "degree"
+      },
+      {
+        "code": "GERM2M",
+        "name": "Master [120] en langues et lettres modernes, orientation germaniques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GERM2MS/AL",
+            "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité spécialisée: approches linguistiques et littéraires d'une société plurielle",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GERM2M1",
+        "name": "Master [60] en langues et lettres modernes, orientation germaniques",
+        "type": "degree"
+      },
+      {
+        "code": "GERM2MA",
+        "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité approfondie",
+        "type": "degree"
+      },
+      {
+        "code": "GERM2MD",
+        "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "GERM2MS/AF",
+        "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité spécialisée: langues des affaires",
+        "type": "degree"
+      },
+      {
+        "code": "HIST2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (histoire)",
+        "type": "degree"
+      },
+      {
+        "code": "HIST2M",
+        "name": "Master [120] en histoire",
+        "type": "degree",
+        "children": [
+          {
+            "code": "HIST2MA",
+            "name": "Master [120] en histoire, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "HIST2MS/CO",
+            "name": "Master [120] en histoire, à finalité spécialisée: communication de l'histoire",
+            "type": "degree"
+          },
+          {
+            "code": "HIST2MS/HA",
+            "name": "Master [120] en histoire, à finalité spécialisée: histoire et archives",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "HIST2M1",
+        "name": "Master [60] en histoire",
+        "type": "degree"
+      },
+      {
+        "code": "HIST2MD",
+        "name": "Master [120] en histoire, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "HIST9CE",
+        "name": "Certificat universitaire en histoire",
+        "type": "degree"
+      },
+      {
+        "code": "HORI2M",
+        "name": "Master [120] en langues et lettres anciennes, orientation orientales",
+        "type": "degree",
+        "children": [
+          {
+            "code": "HORI2MA",
+            "name": "Master [120] en langues et lettres anciennes, orientation orientales, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "HORI2MS/EO",
+            "name": "Master [120] en langues et lettres anciennes, orientation orientales, à finalité spécialisée: l'Europe et l'Orient",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "HORI2M1",
+        "name": "Master [60] en langues et lettres anciennes, orientation orientales",
+        "type": "degree"
+      },
+      {
+        "code": "INTP2M",
+        "name": "Master [120] en interprétation",
+        "type": "degree",
+        "children": [
+          {
+            "code": "INTP2MS/IC",
+            "name": "Master [120] en interprétation, à finalité spécialisée: interprétation de conférence",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "LAFR2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (langues et lettres anciennes et modernes)",
+        "type": "degree"
+      },
+      {
+        "code": "LAFR2M",
+        "name": "Master [120] en langues et lettres anciennes et modernes",
+        "type": "degree",
+        "children": [
+          {
+            "code": "LAFR2MS/CL",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: cultures latine et française à travers le temps",
+            "type": "degree"
+          },
+          {
+            "code": "LAFR2MS/ME",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: métiers du livre",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "LAFR2M1",
+        "name": "Master [60] en langues et lettres anciennes et modernes",
+        "type": "degree"
+      },
+      {
+        "code": "LAFR2MD",
+        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "LAFR2MS/LF",
+        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: cultures latine et française du Moyen Age et des Temps Modernes",
+        "type": "degree"
+      },
+      {
+        "code": "LAFR2MS/ML",
+        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: sciences et métiers du livre",
+        "type": "degree"
+      },
+      {
+        "code": "LAFR2MS/RF",
+        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: civilisation romaine et études françaises contemporaines",
+        "type": "degree"
+      },
+      {
+        "code": "LING2M",
+        "name": "Master [120] en linguistique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "LING2MS/LA",
+            "name": "Master [120] en linguistique, à finalité spécialisée: traitement automatique du langage",
+            "type": "degree"
+          },
+          {
+            "code": "LING2MS/LR",
+            "name": "Master [120] en linguistique, à finalité spécialisée: Empirical Linguistics Research",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "LING2MS/LM",
+        "name": "Master [120] en linguistique, à finalité spécialisée: Linguistics and its Applications for a Multilingual Society",
+        "type": "degree"
+      },
+      {
+        "code": "LITT9CE",
+        "name": "Certificat universitaire en littérature",
+        "type": "degree"
+      },
+      {
+        "code": "MULT2M",
+        "name": "Master [120] en communication multilingue",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MULT2MS/AF",
+            "name": "Master [120] en communication multilingue, à finalité spécialisée: langues des affaires",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "MUSA9CE",
+        "name": "Certificat universitaire en musicologie (approfondissement)",
+        "type": "degree"
+      },
+      {
+        "code": "MUSI2M",
+        "name": "Master [120] en histoire de l'art et archéologie, orientation musicologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MUSI2MS/AN",
+            "name": "Master [120] en histoire de l'art et archéologie, orientation musicologie, à finalité spécialisée: animation, gestion et musique",
+            "type": "degree"
+          },
+          {
+            "code": "MUSI2MS/AR",
+            "name": "Master [120] en histoire de l'art et archéologie, orientation musicologie, à finalité spécialisée: art et musique",
+            "type": "degree"
+          },
+          {
+            "code": "MUSI2MS/IN",
+            "name": "Master [120] en histoire de l'art et archéologie, orientation musicologie, à finalité spécialisée: interuniversitaire en musicologie historique et systématique",
+            "type": "degree"
+          },
+          {
+            "code": "MUSI2MS/MU",
+            "name": "Master [120] en histoire de l'art et archéologie, orientation musicologie, à finalité spécialisée: musique-musicologie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "MUSI2M1",
+        "name": "Master [60] en histoire de l'art et archéologie, orientation musicologie",
+        "type": "degree"
+      },
+      {
+        "code": "MUSI9CE",
+        "name": "Certificat universitaire en musicologie (fondements)",
+        "type": "degree"
+      },
+      {
+        "code": "PATR2MC",
+        "name": "Master de spécialisation conjoint en conservation-restauration du patrimoine culturel immobilier",
+        "type": "degree"
+      },
+      {
+        "code": "ROGE2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (langues et lettres modernes, orientation générale)",
+        "type": "degree"
+      },
+      {
+        "code": "ROGE2M",
+        "name": "Master [120] en langues et lettres modernes, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ROGE2MS/AL",
+            "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: approches linguitiques et littéraires d'une société plurielle",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ROGE2M1",
+        "name": "Master [60] en langues et lettres modernes, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "ROGE2MA",
+        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité approfondie",
+        "type": "degree"
+      },
+      {
+        "code": "ROGE2MD",
+        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "ROGE2MS/AF",
+        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: langues des affaires",
+        "type": "degree"
+      },
+      {
+        "code": "ROGE2MS/ML",
+        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
+        "type": "degree"
+      },
+      {
+        "code": "ROM2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (langues et lettres françaises et romanes)",
+        "type": "degree"
+      },
+      {
+        "code": "ROM2M",
+        "name": "Master [120] en langues et lettres françaises et romanes, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ROM2MA",
+            "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "ROM2MS/ME",
+            "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité spécialisée: métiers du livre",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ROM2M1",
+        "name": "Master [60] en langues et lettres françaises et romanes, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "ROM2MD",
+        "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "ROM2MS/ML",
+        "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
+        "type": "degree"
+      },
+      {
+        "code": "THEA2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (arts du spectacle)",
+        "type": "degree"
+      },
+      {
+        "code": "THEA2M",
+        "name": "Master [120] en arts du spectacle",
+        "type": "degree",
+        "children": [
+          {
+            "code": "THEA2MS/PM",
+            "name": "Master [120] en arts du spectacle, à finalité spécialisée: pratiques et métiers du théâtre",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "THEA2MD",
+        "name": "Master [120] en arts du spectacle, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "TRAD2M",
+        "name": "Master [120] en traduction",
+        "type": "degree",
+        "children": [
+          {
+            "code": "TRAD2MA",
+            "name": "Master [120] en traduction, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "TRAD2MS/AL",
+            "name": "Master [120] en traduction, à finalité spécialisée: traduction éditoriale",
+            "type": "degree"
+          },
+          {
+            "code": "TRAD2MS/IE",
+            "name": "Master [120] en traduction, à finalité spécialisée: affaires internationales et européennes",
+            "type": "degree"
+          },
+          {
+            "code": "TRAD2MS/TA",
+            "name": "Master [120] en traduction, à finalité spécialisée: traduction et audiovisuel",
+            "type": "degree"
+          },
+          {
+            "code": "TRAD2MS/TL",
+            "name": "Master [120] en traduction, à finalité spécialisée: terminologie et localisation",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "TRAD2MD",
+        "name": "Master [120] en traduction, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "VISU2MC",
+        "name": "Master de spécialisation en cultures visuelles",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "IEEB",
+    "name": "Institut d'études européennes Saint-Louis",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "EGOB2MC",
+        "name": "Master de spécialisation en EU Environmental Governance (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "EUAB2M",
+        "name": "Master [120] in EU Studies",
+        "type": "degree"
+      },
+      {
+        "code": "EUAB2MS/G",
+        "name": "Master [120] in EU Studies, Professional Focus",
+        "type": "degree"
+      },
+      {
+        "code": "EUHB2MC",
+        "name": "Master de spécialisation interdisciplinaire en études européennes (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "EUPB2MC",
+        "name": "Advanced Master in EU Environmental Governance (POLLEN)",
+        "type": "degree"
+      },
+      {
+        "code": "IEEB IS",
+        "name": "Cours isolé(s) de l'Institut d'études européennes Saint-Louis",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "LSM",
+    "name": "Louvain School of Management",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "EBEP2MC",
+        "name": "Master de spécialisation en entreprises et politiques économiques européennes",
+        "type": "degree"
+      },
+      {
+        "code": "ECFA2M",
+        "name": "Master [120] en expertise comptable et fiscale (en alternance)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ECFA2MS/G",
+            "name": "Master [120] en expertise comptable, à finalité spécialisée (en alternance)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ELHD IS",
+        "name": "Elève libre horaire décalé",
+        "type": "degree"
+      },
+      {
+        "code": "ELLI IS",
+        "name": "Elève libre",
+        "type": "degree"
+      },
+      {
+        "code": "EXCA9CE",
+        "name": "Certificat d'université en expertise comptable approfondie",
+        "type": "degree"
+      },
+      {
+        "code": "EXCO9CE",
+        "name": "Certificat d'université en expertise comptable",
+        "type": "degree"
+      },
+      {
+        "code": "FEHC2M",
+        "name": "Master [120] en sciences de gestion (horaire décalé 2)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "FEHC2MS/G",
+            "name": "Master [120] en sciences de gestion, à finalité spécialisée (horaire décalé 2)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "FISE9CE",
+        "name": "Certificat d'université en fiscalité des entreprises",
+        "type": "degree"
+      },
+      {
+        "code": "FISP9CE",
+        "name": "Certificat d'université en fiscalité des personnes",
+        "type": "degree"
+      },
+      {
+        "code": "GEHC2M",
+        "name": "Master [120] en sciences de gestion (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GEHC2MS/G",
+            "name": "Master [120] en sciences de gestion, à finalité spécialisée (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GEHC2M1",
+        "name": "Master [60] en sciences de gestion (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "GEHD2M1",
+        "name": "Master [60] en sciences de gestion (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "GEHM2M",
+        "name": "Master [120] en sciences de gestion (horaire décalé)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GEHM2MS/G",
+            "name": "Master [120] en sciences de gestion, à finalité spécialisée (horaire décalé)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GEHM2M1",
+        "name": "Master [60] en sciences de gestion (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "GENT2M",
+        "name": "Master [120] en gestion de l'entreprise",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GENT2MS/G",
+            "name": "Master [120] en gestion de l'entreprise, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GESA2M",
+        "name": "Master [120] en sciences de gestion  (en alternance)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GESA2MS/TD",
+            "name": "Master [120] en sciences de gestion, à finalité spécialisée: transformation digitale de l'entreprise (en alternance)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GESM2M",
+        "name": "Master [120] en sciences de gestion",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GESM2MS/G",
+            "name": "Master [120] en sciences de gestion, à finalité spécialisée ",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GESM2M1",
+        "name": "Master [60] en sciences de gestion",
+        "type": "degree"
+      },
+      {
+        "code": "GEST2M",
+        "name": "Master [120] en sciences de gestion",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GEST2MA",
+            "name": "Master [120] en sciences de gestion, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "GEST2MS/GE",
+            "name": "Master [120] en sciences de gestion, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GEST2M1",
+        "name": "Master [60] en sciences de gestion",
+        "type": "degree"
+      },
+      {
+        "code": "INGE2M",
+        "name": "Master [120] : ingénieur de gestion",
+        "type": "degree",
+        "children": [
+          {
+            "code": "INGE2MS/G",
+            "name": "Master [120] : ingénieur de gestion, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "INGM2M",
+        "name": "Master [120] : ingénieur de gestion",
+        "type": "degree",
+        "children": [
+          {
+            "code": "INGM2MS/G",
+            "name": "Master [120] : ingénieur de gestion, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "LSM IN",
+        "name": "Mobilité entrante en management",
+        "type": "degree"
+      },
+      {
+        "code": "LSM IS",
+        "name": "Unité(s) d'enseignement isolée(s) LSM",
+        "type": "degree"
+      },
+      {
+        "code": "MONS IN",
+        "name": "Mobilité entrante en sciences de gestion, sociales, politiques et de communication (Mons)",
+        "type": "degree"
+      },
+      {
+        "code": "REC9CE",
+        "name": "Certificat en révisorat et expertise comptable",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "PHLB",
+    "name": "Faculté de philosophie, lettres et sciences humaines Saint-Louis",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "FILB BS",
+        "name": "Bachelier supplémentaire en philosophie",
+        "type": "degree"
+      },
+      {
+        "code": "HIAB BS",
+        "name": "Bachelier supplémentaire en histoire bilingue",
+        "type": "degree"
+      },
+      {
+        "code": "HISB BS",
+        "name": "Bachelier supplémentaire en histoire",
+        "type": "degree"
+      },
+      {
+        "code": "PHLB IN",
+        "name": "Mobilité entrante en philosophie, lettres et sciences humaines (Saint-Louis - Bruxelles)",
+        "type": "degree"
+      },
+      {
+        "code": "PHLB IS",
+        "name": "Cours isolé(s) de la Faculté de philosophie, lettres et sciences humaines Saint-Louis",
+        "type": "degree"
+      },
+      {
+        "code": "ROGB BS",
+        "name": "Bachelier supplémentaire en langues et lettres modernes, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "ROMB BS",
+        "name": "Bachelier supplémentaire en langues et lettres françaises et romanes, orientation générale",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "PSP",
+    "name": "Faculté de psychologie, logopédie, sexologie et des sciences de la famille",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "CPI2MC",
+        "name": "Master de spécialisation en cliniques psycho-thérapeutiques intégrées (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "GRB2MC",
+        "name": "Master de spécialisation en gestion des risques et bien-être au travail",
+        "type": "degree"
+      },
+      {
+        "code": "LOGO2M",
+        "name": "Master [120] en logopédie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "LOGO2MS/LO",
+            "name": "Master [120] en logopédie, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "LOGO IS",
+        "name": "Unité(s) d'enseignement isolée(s) en logopédie",
+        "type": "degree"
+      },
+      {
+        "code": "PREL9CE",
+        "name": "Certificat approfondi en psychologie de la religion",
+        "type": "degree"
+      },
+      {
+        "code": "PSP IN",
+        "name": "Mobilité entrante en psychologie et des sciences de l'éducation",
+        "type": "degree"
+      },
+      {
+        "code": "PSP IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "PSY2M",
+        "name": "Master [120] en sciences psychologiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "PSY2MA",
+            "name": "Master [120] en sciences psychologiques, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "PSY2MS/SP",
+            "name": "Master [120] en sciences psychologiques, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "PSY9CE",
+        "name": "Certificat universitaire en sciences psychologiques",
+        "type": "degree"
+      },
+      {
+        "code": "SEX2M",
+        "name": "Master [120] en sciences de la famille et de la sexualité",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SEX2MS/FC",
+            "name": "Master [120] en sciences de la famille et de la sexualité, à finalité spécialisée: approche interdisciplinaire de la famille et du couple",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SEX2MS/SE",
+        "name": "Master [120] en sciences de la famille et de la sexualité, à finalité spécialisée: sexologie",
+        "type": "degree"
+      },
+      {
+        "code": "SEX IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "SEXO2M",
+        "name": "Master [120] en sexologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SEXO2MS/SC",
+            "name": "Master [120] en sexologie, à finalité spécialisée: sexologie clinique",
+            "type": "degree"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "code": "TECO",
+    "name": "Faculté de théologie et d'étude des religions",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "EBIB2M",
+        "name": "Master [120] en études bibliques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "EBIB2MA",
+            "name": "Master [120] en études bibliques, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "EBIB2MD",
+        "name": "Master [120] en études bibliques, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "EBIB9CE",
+        "name": "Certificat universitaire en études bibliques",
+        "type": "degree"
+      },
+      {
+        "code": "SREL2M",
+        "name": "Master [120] en sciences des religions",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SREL2MA",
+            "name": "Master [120] en sciences des religions, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SREL9CE",
+        "name": "Certificat universitaire en sciences des religions",
+        "type": "degree"
+      },
+      {
+        "code": "TECA9CE",
+        "name": "Certificat universitaire en théologie (fondements)",
+        "type": "degree"
+      },
+      {
+        "code": "TECB9CE",
+        "name": "Certificat universitaire en théologie (approfondissement)",
+        "type": "degree"
+      },
+      {
+        "code": "TECO IN",
+        "name": "Mobilité entrante en théologie",
+        "type": "degree"
+      },
+      {
+        "code": "TECO IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "THEO2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (théologie)",
+        "type": "degree"
+      },
+      {
+        "code": "THEO2M",
+        "name": "Master [120] en théologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "THEO2MA",
+            "name": "Master [120] en théologie, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "THEO2M1",
+        "name": "Master [60] en théologie",
+        "type": "degree"
+      },
+      {
+        "code": "THEO2MD",
+        "name": "Master [120] en théologie, à finalité didactique",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "TIMB",
+    "name": "Faculté de traduction et d'interprétation Marie Haps Saint-Louis",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "TIMB IN",
+        "name": "Mobilité entrante en traduction et interprétation (Saint-Louis - Bruxelles)",
+        "type": "degree"
+      },
+      {
+        "code": "TIMB IS",
+        "name": "Cours isolé(s) de la Faculté de traduction et interprétation Marie Haps Saint-Louis",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "FASB",
+    "name": "Faculté de pharmacie et des sciences biomédicales",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "BICL2MC",
+        "name": "Master de spécialisation en biologie clinique",
+        "type": "degree"
+      },
+      {
+        "code": "FACL9CE",
+        "name": "Certificat universitaire en pharmacie clinique",
+        "type": "degree"
+      },
+      {
+        "code": "FAIN9CE",
+        "name": "Certificat universitaire en ingénierie pharmaceutique et technologie industrielle",
+        "type": "degree"
+      },
+      {
+        "code": "FARI2MC",
+        "name": "Master de spécialisation en pharmacie d'industrie",
+        "type": "degree"
+      },
+      {
+        "code": "FARM2M",
+        "name": "Master [120] en sciences pharmaceutiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "FARM2MA",
+            "name": "Master [120] en sciences pharmaceutiques, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "FARM2MS/G",
+            "name": "Master [120] en sciences pharmaceutiques, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "FARM9CE",
+        "name": "Certificat universitaire en sciences pharmaceutiques",
+        "type": "degree"
+      },
+      {
+        "code": "FARM IN",
+        "name": "Mobilité entrante en sciences pharmaceutiques",
+        "type": "degree"
+      },
+      {
+        "code": "FARM IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "HOPI2MC",
+        "name": "Master de spécialisation en pharmacie hospitalière",
+        "type": "degree"
+      },
+      {
+        "code": "NUTR2MC",
+        "name": "Master de spécialisation en nutrition et transition alimentaire",
+        "type": "degree"
+      },
+      {
+        "code": "PHAM2M",
+        "name": "Master [120]  en sciences pharmaceutiques (en codiplomation avec l'UNamur)",
+        "type": "degree",
+        "children": [
+          {
+            "code": "PHAM2MA",
+            "name": "Master [120] en sciences pharmaceutiques, à finalité approfondie (en codiplomation avec l'UNamur)",
+            "type": "degree"
+          },
+          {
+            "code": "PHAM2MS/G",
+            "name": "Master [120] en sciences pharmaceutiques, à finalité spécialisée (en codiplomation avec l'UNamur)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "PMTX2MC",
+        "name": "Advanced Master of pharmacometrics",
+        "type": "degree"
+      },
+      {
+        "code": "SBIM2M",
+        "name": "Master [120] en sciences biomédicales",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SBIM2MA",
+            "name": "Master [120] en sciences biomédicales, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "SBIM2MS/CL",
+            "name": "Master [120] en sciences biomédicales, à finalité spécialisée: sciences biomédicales cliniques",
+            "type": "degree"
+          },
+          {
+            "code": "SBIM2MS/NU",
+            "name": "Master [120] en sciences biomédicales, à finalité spécialisée: nutrition humaine",
+            "type": "degree"
+          },
+          {
+            "code": "SBIM2MS/TO",
+            "name": "Master [120] en sciences biomédicales, à finalité spécialisée: toxicologie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SBIM2M1",
+        "name": "Master [60] en sciences biomédicales",
+        "type": "degree"
+      },
+      {
+        "code": "SBIM IN",
+        "name": "Mobilité entrante en sciences biomédicales",
+        "type": "degree"
+      },
+      {
+        "code": "SBIM IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "FSM",
+    "name": "Faculté des sciences de la motricité",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "EDPH2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (éducation physique)",
+        "type": "degree"
+      },
+      {
+        "code": "EDPH2M",
+        "name": "Master [120] en sciences de la motricité, orientation éducation physique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "EDPH2MS/EA",
+            "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité spécialisée: entrainement, activité physique et santé",
+            "type": "degree"
+          },
+          {
+            "code": "EDPH2MS/MN",
+            "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité spécialisée: management du sport",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "EDPH2MA",
+        "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité approfondie",
+        "type": "degree"
+      },
+      {
+        "code": "EDPH2MD",
+        "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "EDPH2MS/MO",
+        "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité spécialisée: management des organisations sportives",
+        "type": "degree"
+      },
+      {
+        "code": "FSM IN",
+        "name": "Mobilité entrante en sciences de la motricité",
+        "type": "degree"
+      },
+      {
+        "code": "FSM IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "KINE2M1",
+        "name": "Master [60] en kinésithérapie et réadaptation",
+        "type": "degree"
+      },
+      {
+        "code": "MOTR2M",
+        "name": "Master [120] en sciences de la motricité, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MOTR2MA",
+            "name": "Master [120] en sciences de la motricité, orientation générale, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "MOTR2MS/KN",
+            "name": "Master [120] en sciences de la motricité, orientation générale, à finalité spécialisée: kinésithérapie en neurologie adulte",
+            "type": "degree"
+          },
+          {
+            "code": "MOTR2MS/MS",
+            "name": "Master [120] en sciences de la motricité, orientation générale, à finalité spécialisée: kinésithérapie musculo-squelettique",
+            "type": "degree"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "code": "FSP",
+    "name": "Faculté de santé publique",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "ESP2M",
+        "name": "Master [120] en sciences de la santé publique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ESP2MS/G",
+            "name": "Master [120] en sciences de la santé publique, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "FSP IN",
+        "name": "Mobilité entrante en santé publique",
+        "type": "degree"
+      },
+      {
+        "code": "FSP IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "MDTR2MC",
+        "name": "Master de spécialisation en médecine du travail",
+        "type": "degree"
+      },
+      {
+        "code": "METR2MC",
+        "name": "Master de spécialisation en médecine du travail",
+        "type": "degree"
+      },
+      {
+        "code": "MPHM2MC",
+        "name": "Master de spécialisation en méthodologie de la santé publique - Specialized master in public health methodology",
+        "type": "degree"
+      },
+      {
+        "code": "MSSP2MC",
+        "name": "Master de spécialisation en sciences de la santé publique - Méthodes de recherche appliquées à la santé globale",
+        "type": "degree"
+      },
+      {
+        "code": "SINB2M",
+        "name": "Master [120] en sciences infirmières/Bruxelles",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SINB2MS/G",
+            "name": "Master [120] en sciences infirmières, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SINN2M",
+        "name": "Master [120] en sciences infirmières/Namur",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SINN2MS/G",
+            "name": "Master [120] en sciences infirmières, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SPIN2MC",
+        "name": "Master de spécialisation en santé publique - analyse et évaluation des politiques, programmes et systèmes de santé internationale",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "MEDE",
+    "name": "Faculté de médecine et médecine dentaire",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "AIGU2MC",
+        "name": "Master de spécialisation en médecine aiguë",
+        "type": "degree"
+      },
+      {
+        "code": "ANAP2MC",
+        "name": "Master de spécialisation en anatomie pathologique",
+        "type": "degree"
+      },
+      {
+        "code": "ANES2MC",
+        "name": "Master de spécialisation en anesthésie-réanimation",
+        "type": "degree"
+      },
+      {
+        "code": "BCMM2MC",
+        "name": "Master de spécialisation en biologie clinique",
+        "type": "degree"
+      },
+      {
+        "code": "CARD2MC",
+        "name": "Master de spécialisation en cardiologie",
+        "type": "degree"
+      },
+      {
+        "code": "CHG2MC",
+        "name": "Master de spécialisation en chirurgie",
+        "type": "degree"
+      },
+      {
+        "code": "CHPL2MC",
+        "name": "Master de spécialisation en chirurgie plastique, reconstructrice et esthétique",
+        "type": "degree"
+      },
+      {
+        "code": "DEGE2MC",
+        "name": "Master de spécialisation en dentisterie générale",
+        "type": "degree"
+      },
+      {
+        "code": "DENT2M",
+        "name": "Master [120] en sciences dentaires",
+        "type": "degree",
+        "children": [
+          {
+            "code": "DENT2MS/G",
+            "name": "Master [120] en sciences dentaires, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DENT IN",
+        "name": "Mobilité entrante en sciences dentaires",
+        "type": "degree"
+      },
+      {
+        "code": "DENT IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "DEPE9CE",
+        "name": "Certificat universitaire en dentisterie pédiatrique",
+        "type": "degree"
+      },
+      {
+        "code": "DEPR9CE",
+        "name": "Certificat universitaire en prothèse dentaire",
+        "type": "degree"
+      },
+      {
+        "code": "DERM2MC",
+        "name": "Master de spécialisation en dermato-vénéréologie",
+        "type": "degree"
+      },
+      {
+        "code": "DETR9CE",
+        "name": "Certificat universitaire en dentisterie conservatrice et endodontie",
+        "type": "degree"
+      },
+      {
+        "code": "ENDO9CE",
+        "name": "Certificat universitaire de compétence en endocrinologie-diabétologie",
+        "type": "degree"
+      },
+      {
+        "code": "GAEN2MC",
+        "name": "Master de spécialisation en gastro-entérologie",
+        "type": "degree"
+      },
+      {
+        "code": "GENE2MC",
+        "name": "Master de spécialisation en génétique clinique",
+        "type": "degree"
+      },
+      {
+        "code": "GERI2MC",
+        "name": "Master de spécialisation en gériatrie",
+        "type": "degree"
+      },
+      {
+        "code": "HEMA9CE",
+        "name": "Certificat universitaire de compétence en hématologie",
+        "type": "degree"
+      },
+      {
+        "code": "INTR2MC",
+        "name": "Master de spécialisation en médecine interne",
+        "type": "degree"
+      },
+      {
+        "code": "MD2M",
+        "name": "Master [180] en médecine",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MD2MS/G",
+            "name": "Master [180] en médecine, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "MED IN",
+        "name": "Mobilité entrante en médecine",
+        "type": "degree"
+      },
+      {
+        "code": "MED IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "MEFY2MC",
+        "name": "Master de spécialisation en médecine physique et en réadaptation",
+        "type": "degree"
+      },
+      {
+        "code": "MEGE9CE",
+        "name": "Certificat universitaire préparatoire au master de spécialisation en médecine générale",
+        "type": "degree"
+      },
+      {
+        "code": "MG2MC",
+        "name": "Master de spécialisation en médecine générale",
+        "type": "degree"
+      },
+      {
+        "code": "MGN2MC",
+        "name": "Master de spécialisation en médecine générale (en codiplomation avec l'UNamur)",
+        "type": "degree"
+      },
+      {
+        "code": "MLEG2MC",
+        "name": "Master de spécialisation en médecine légale",
+        "type": "degree"
+      },
+      {
+        "code": "MNUC2MC",
+        "name": "Master de spécialisation en médecine nucléaire",
+        "type": "degree"
+      },
+      {
+        "code": "MSC9CE",
+        "name": "Certificat universitaire de formation médicale spécialisée complémentaire",
+        "type": "degree"
+      },
+      {
+        "code": "MSP9CE",
+        "name": "Certificat universitaire de formation médicale spécialisée partielle",
+        "type": "degree"
+      },
+      {
+        "code": "MURG2MC",
+        "name": "Master de spécialisation en médecine d'urgence",
+        "type": "degree"
+      },
+      {
+        "code": "MURG9CE",
+        "name": "Certificat universitaire de compétence en médecine d'urgence",
+        "type": "degree"
+      },
+      {
+        "code": "NECH2MC",
+        "name": "Master de spécialisation en neurochirurgie",
+        "type": "degree"
+      },
+      {
+        "code": "NEFR9CE",
+        "name": "Certificat universitaire de compétence en néphrologie",
+        "type": "degree"
+      },
+      {
+        "code": "NEPE9CE",
+        "name": "Certificat universitaire de compétence en neurologie pédiatrique",
+        "type": "degree"
+      },
+      {
+        "code": "NEUR2MC",
+        "name": "Master de spécialisation en neurologie",
+        "type": "degree"
+      },
+      {
+        "code": "OBST2MC",
+        "name": "Master de spécialisation en gynécologie-obstétrique",
+        "type": "degree"
+      },
+      {
+        "code": "OFTA2MC",
+        "name": "Master de spécialisation en ophtalmologie",
+        "type": "degree"
+      },
+      {
+        "code": "ONCO2MC",
+        "name": "Master de spécialisation en oncologie médicale",
+        "type": "degree"
+      },
+      {
+        "code": "ONDI9CE",
+        "name": "Certificat universitaire de compétence en oncologie digestive",
+        "type": "degree"
+      },
+      {
+        "code": "ONTO9CE",
+        "name": "Certificat universitaire de compétence en oncologie thoracique",
+        "type": "degree"
+      },
+      {
+        "code": "ORL2MC",
+        "name": "Master de spécialisation en oto-rhino-laryngologie",
+        "type": "degree"
+      },
+      {
+        "code": "ORTD2MC",
+        "name": "Master de spécialisation en orthodontie",
+        "type": "degree"
+      },
+      {
+        "code": "ORTO2MC",
+        "name": "Master de spécialisation en chirurgie orthopédique",
+        "type": "degree"
+      },
+      {
+        "code": "PARO2MC",
+        "name": "Master de spécialisation en parodontologie",
+        "type": "degree"
+      },
+      {
+        "code": "PEDI2MC",
+        "name": "Master de spécialisation en pédiatrie",
+        "type": "degree"
+      },
+      {
+        "code": "PNEU2MC",
+        "name": "Master de spécialisation en pneumologie",
+        "type": "degree"
+      },
+      {
+        "code": "PSAD2MC",
+        "name": "Master de spécialisation en psychiatrie, orientation psychiatrie de l'adulte",
+        "type": "degree"
+      },
+      {
+        "code": "PSIN2MC",
+        "name": "Master de spécialisation en psychiatrie, orientation psychiatrie infanto juvénile",
+        "type": "degree"
+      },
+      {
+        "code": "RDGN2MC",
+        "name": "Master de spécialisation en radiodiagnostic",
+        "type": "degree"
+      },
+      {
+        "code": "RDTH2MC",
+        "name": "Master de spécialisation en radiothérapie-oncologie",
+        "type": "degree"
+      },
+      {
+        "code": "REAN9CE",
+        "name": "Certificat universitaire de compétence en soins intensifs",
+        "type": "degree"
+      },
+      {
+        "code": "RFAR9CE",
+        "name": "Certificat universitaire en radiopharmacie",
+        "type": "degree"
+      },
+      {
+        "code": "RMDT9CE",
+        "name": "Certificat universitaire  en radioprotection pour les médecins du travail",
+        "type": "degree"
+      },
+      {
+        "code": "RPHY9CE",
+        "name": "Certificat universitaire en physique d'hôpital",
+        "type": "degree"
+      },
+      {
+        "code": "RUMA2MC",
+        "name": "Master de spécialisation en rhumatologie",
+        "type": "degree"
+      },
+      {
+        "code": "RXU2CE",
+        "name": "Certificat de compétence pour l'utilisation des rayons X en diagnostic médical",
+        "type": "degree"
+      },
+      {
+        "code": "STOC9CE",
+        "name": "Certificat universitaire de compétence en chirurgie orale et maxillo-faciale",
+        "type": "degree"
+      },
+      {
+        "code": "STOM2MC",
+        "name": "Master de spécialisation en stomatologie",
+        "type": "degree"
+      },
+      {
+        "code": "TRSF2MC",
+        "name": "Master de spécialisation en médecine transfusionnelle",
+        "type": "degree"
+      },
+      {
+        "code": "URO2MC",
+        "name": "Master de spécialisation en urologie",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "AGRO",
+    "name": "Faculté des bioingénieurs",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "AGRO IN",
+        "name": "Mobilité entrante en bioingénieur",
+        "type": "degree"
+      },
+      {
+        "code": "AGRO IS",
+        "name": "Unité(s) d'enseignement isolée(s) en agronomie",
+        "type": "degree"
+      },
+      {
+        "code": "BIRA2M",
+        "name": "Master [120] : bioingénieur en sciences agronomiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "BIRA2MS/G",
+            "name": "Master [120] : bioingénieur en sciences agronomiques, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "BIRC2M",
+        "name": "Master [120] : bioingénieur en chimie et bioindustries",
+        "type": "degree",
+        "children": [
+          {
+            "code": "BIRC2MS/G",
+            "name": "Master [120] : bioingénieur en chimie et bioindustries, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "BIRE2M",
+        "name": "Master [120] : bioingénieur en sciences et technologies de l'environnement",
+        "type": "degree",
+        "children": [
+          {
+            "code": "BIRE2MS/G",
+            "name": "Master [120] : bioingénieur en sciences et technologies de l'environnement, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "BIRF2M",
+        "name": "Master [120] : bioingénieur en gestion des forêts et des espaces naturels",
+        "type": "degree",
+        "children": [
+          {
+            "code": "BIRF2MS/G",
+            "name": "Master [120] : bioingénieur en gestion des forêts et des espaces naturels, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "BRAS2MC",
+        "name": "Master de spécialisation en génie brassicole",
+        "type": "degree"
+      },
+      {
+        "code": "ENVI2MC",
+        "name": "Master de spécialisation interdisciplinaire en sciences et gestion de l'environnement et du développement durable",
+        "type": "degree"
+      },
+      {
+        "code": "ENVI IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences gestion de l'environnement",
+        "type": "degree"
+      },
+      {
+        "code": "NEEA2MC",
+        "name": "Master de spécialisation en Nexus Eau-Energie-Alimentation",
+        "type": "degree"
+      },
+      {
+        "code": "RURA2M",
+        "name": "Master [120] en Smart Rurality",
+        "type": "degree",
+        "children": [
+          {
+            "code": "RURA2MS/EM",
+            "name": "Master [120] en Smart Rurality, à finalité spécialisée: enjeux et méthodes géographiques",
+            "type": "degree"
+          },
+          {
+            "code": "RURA2MS/MT",
+            "name": "Master [120] en Smart Rurality, à finalité spécialisée: médiations et transitions environnementales",
+            "type": "degree"
+          },
+          {
+            "code": "RURA2MS/NC",
+            "name": "Master [120] en Smart Rurality, à finalité spécialisée: nouvelles agricultures et circuits cours",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SAIV2M",
+        "name": "Master [120] en sciences agronomiques et industries du vivant",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SAIV2MS/A",
+            "name": "Master [120] en sciences agronomiques et industries du vivant, à finalité spécialisée: Agricultural, Food and Environmental Policy Analysis",
+            "type": "degree"
+          },
+          {
+            "code": "SAIV2MS/GM",
+            "name": "Master [120] en sciences agronomiques et industries du vivant, à finalité spécialisée: Geo-Information Science and Earth Observation for Environmental Modelling and Management",
+            "type": "degree"
+          },
+          {
+            "code": "SAIV2MS/S",
+            "name": "Master [120] en sciences agronomiques et industries du vivant, à finalité spécialisée: sciences du sol",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SAIV2MS/U",
+        "name": "Master [120] en sciences agronomiques et industries du vivant , à finalité spécialisée: aménagement du territoire, urbanisme et développement territorial",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "EPL",
+    "name": "Ecole polytechnique de Louvain",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "CYSE2M",
+        "name": "Master [120] en cybersécurité",
+        "type": "degree",
+        "children": [
+          {
+            "code": "CYSE2MS/CA",
+            "name": "Master [120] en cybersécurité, à finalité spécialisée: conception et analyse de systèmes",
+            "type": "degree"
+          },
+          {
+            "code": "CYSE2MS/SE",
+            "name": "Master [120] en cybersécurité, à finalité spécialisée: stratégies en entreprise",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DATE2M",
+        "name": "Master [120] : ingénieur civil en science des données",
+        "type": "degree",
+        "children": [
+          {
+            "code": "DATE2MS/AD",
+            "name": "Master [120] : ingénieur civil en science des données, à finalité spécialisée: analyse de données",
+            "type": "degree"
+          },
+          {
+            "code": "DATE2MS/CS",
+            "name": "Master [120] : ingénieur civil en science des données, à finalité spécialisée: cybersécurité",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DATI2M",
+        "name": "Master [120] en science des données, orientation technologies de l'information",
+        "type": "degree",
+        "children": [
+          {
+            "code": "DATI2MS/AD",
+            "name": "Master [120] en science des données, orientation technologies de l'information, à finalité spécialisée: analyse de données",
+            "type": "degree"
+          },
+          {
+            "code": "DATI2MS/CS",
+            "name": "Master [120] en science des données, orientation technologies de l'information, à finalité spécialisée: cybersécurité",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DATI2MS/G",
+        "name": "Master [120] en science des données, orientation technologies de l'information, à finalité spécialisée",
+        "type": "degree"
+      },
+      {
+        "code": "ELEC2M",
+        "name": "Master [120] : ingénieur civil électricien",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ELEC2MS/G",
+            "name": "Master [120] : ingénieur civil électricien, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ELME2M",
+        "name": "Master [120] : ingénieur civil électromécanicien",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ELME2MS/M",
+            "name": "Master [120] : ingénieur civil électromécanicien, à finalité spécialisée: mécatronique",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ELME2MS/E",
+        "name": "Master [120] : ingénieur civil électromécanicien, à finalité spécialisée: énergie",
+        "type": "degree"
+      },
+      {
+        "code": "EPL IN",
+        "name": "Mobilité entrante en sciences de l'ingénieur",
+        "type": "degree"
+      },
+      {
+        "code": "EPL IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences appliquées",
+        "type": "degree"
+      },
+      {
+        "code": "FYAP2M",
+        "name": "Master [120] : ingénieur civil physicien",
+        "type": "degree",
+        "children": [
+          {
+            "code": "FYAP2MS/G",
+            "name": "Master [120] : ingénieur civil physicien, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GBIO2M",
+        "name": "Master [120] : ingénieur civil biomédical",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GBIO2MS/G",
+            "name": "Master [120] : ingénieur civil biomédical, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GCE2M",
+        "name": "Master [120] : ingénieur civil des constructions",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GCE2MS/G",
+            "name": "Master [120] : ingénieur civil des constructions, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GNUC2MC",
+        "name": "Master de spécialisation en génie nucléaire",
+        "type": "degree"
+      },
+      {
+        "code": "INFO2M",
+        "name": "Master [120] : ingénieur civil en informatique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "INFO2MS/G",
+            "name": "Master [120] : ingénieur civil en informatique, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "KIMA2M",
+        "name": "Master [120] : ingénieur civil en chimie et science des matériaux",
+        "type": "degree",
+        "children": [
+          {
+            "code": "KIMA2MS/G",
+            "name": "Master [120] : ingénieur civil en chimie et science des matériaux, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "MAP2M",
+        "name": "Master [120] : ingénieur civil en mathématiques appliquées",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MAP2MS/G",
+            "name": "Master [120] : ingénieur civil en mathématiques appliquées, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "MECA2M",
+        "name": "Master [120] : ingénieur civil mécanicien",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MECA2MS/G",
+            "name": "Master [120] : ingénieur civil mécanicien, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "NANO2MC",
+        "name": "Master de spécialisation en nanotechnologies",
+        "type": "degree"
+      },
+      {
+        "code": "NRGY2M",
+        "name": "Master [120] : ingénieur civil en génie de l'énergie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "NRGY2MS/G",
+            "name": "Master [120] : ingénieur civil en génie de l'énergie , à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SINF2M",
+        "name": "Master [120] en sciences informatiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "SINF2MS/G",
+            "name": "Master [120] en sciences informatiques, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "SINF2M1",
+        "name": "Master [60] en sciences informatiques",
+        "type": "degree"
+      },
+      {
+        "code": "SINF IS",
+        "name": "Unité(s) d'enseignement isolée(s) en informatique",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "LOCI",
+    "name": "Faculté d'architecture, d'ingénierie architecturale, d'urbanisme",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "ARCB2M",
+        "name": "Master [120] en architecture/BXL",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ARCB2MS/G",
+            "name": "Master [120] en architecture, à finalité spécialisée (Bruxelles)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ARCB IN",
+        "name": "Mobilité entrante en architecture (Bruxelles)",
+        "type": "degree"
+      },
+      {
+        "code": "ARCB IS",
+        "name": "Unité(s) d'enseignement isolée(s) en architecture (Bruxelles)",
+        "type": "degree"
+      },
+      {
+        "code": "ARCH2M",
+        "name": "Master [120] : ingénieur civil architecte",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ARCH2MS/G",
+            "name": "Master [120] : ingénieur civil architecte, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ARCH IN",
+        "name": "Mobilité entrante en ingénieur civil architecte",
+        "type": "degree"
+      },
+      {
+        "code": "ARCH IS",
+        "name": "Unité(s) d'enseignement isolée(s) en architecture",
+        "type": "degree"
+      },
+      {
+        "code": "ARCT2M",
+        "name": "Master [120] en architecture/TRN",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ARCT2MS/G",
+            "name": "Master [120] en architecture, à finalité spécialisée (Tournai)",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ARCT IN",
+        "name": "Mobilité entrante en architecture (Tournai)",
+        "type": "degree"
+      },
+      {
+        "code": "ARCT IS",
+        "name": "Unité(s) d'enseignement isolée(s) en architecture (Tournai)",
+        "type": "degree"
+      },
+      {
+        "code": "URBA2M",
+        "name": "Master [120] en urbanisme et développement territorial",
+        "type": "degree",
+        "children": [
+          {
+            "code": "URBA2MS/CE",
+            "name": "Master [120] en urbanisme et développement territorial, à finalité spécialisée : conception des éco-territoires",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "URBA2MC",
+        "name": "Master de spécialisation en urbanisme et aménagement du territoire",
+        "type": "degree"
+      }
+    ]
+  },
+  {
+    "code": "SC",
+    "name": "Faculté des sciences",
+    "type": "faculty",
+    "children": [
+      {
+        "code": "ACTU2M",
+        "name": "Master [120] en sciences actuarielles",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ACTU2MS/SA",
+            "name": "Master [120] en sciences actuarielles, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "ACTU IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences actuarielles",
+        "type": "degree"
+      },
+      {
+        "code": "BBMC2M",
+        "name": "Master [120] en biochimie et biologie moléculaire et cellulaire",
+        "type": "degree",
+        "children": [
+          {
+            "code": "BBMC2MA",
+            "name": "Master [120] en biochimie et biologie moléculaire et cellulaire, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "BBMC2MS/BT",
+            "name": "Master [120] en biochimie et biologie moléculaire et cellulaire, à finalité spécialisée: biotechnologie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "BBMC2MD",
+        "name": "Master [120] en biochimie et biologie moléculaire et cellulaire, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "BIOL2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences biologiques)",
+        "type": "degree"
+      },
+      {
+        "code": "BIOL2M1",
+        "name": "Master [60] en sciences biologiques",
+        "type": "degree"
+      },
+      {
+        "code": "BIOL IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences biologiques",
+        "type": "degree"
+      },
+      {
+        "code": "BOE2M",
+        "name": "Master [120] en biologie des organismes et écologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "BOE2MA",
+            "name": "Master [120] en biologie des organismes et écologie, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "BOE2MD",
+        "name": "Master [120] en biologie des organismes et écologie, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "BOE2MS/BE",
+        "name": "Master [120] en biologie des organismes et écologie, à finalité spécialisée: biologie environnementale",
+        "type": "degree"
+      },
+      {
+        "code": "BSTA2M",
+        "name": "Master [120] en statistique, orientation biostatistiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "BSTA2MS/G",
+            "name": "Master [120] en statistique, orientation biostatistiques, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "CHIM2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences chimiques)",
+        "type": "degree"
+      },
+      {
+        "code": "CHIM2M",
+        "name": "Master [120] en sciences chimiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "CHIM2MA",
+            "name": "Master [120] en sciences chimiques, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "CHIM2MS/CI",
+            "name": "Master [120] en sciences chimiques, à finalité spécialisée: chimie de l'industrie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "CHIM2M1",
+        "name": "Master [60] en sciences chimiques",
+        "type": "degree"
+      },
+      {
+        "code": "CHIM2MD",
+        "name": "Master [120] en sciences chimiques, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "CHIM IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences chimiques",
+        "type": "degree"
+      },
+      {
+        "code": "CLIM2M",
+        "name": "Master [120] en sciences géographiques, orientation climatologie",
+        "type": "degree",
+        "children": [
+          {
+            "code": "CLIM2MA",
+            "name": "Master [120] en sciences géographiques, orientation climatologie, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "DATS2M",
+        "name": "Master [120] en science des données, orientation statistique",
+        "type": "degree",
+        "children": [
+          {
+            "code": "DATS2MS/G",
+            "name": "Master [120] en science des données, orientation statistique, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GEO2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences géographiques)",
+        "type": "degree"
+      },
+      {
+        "code": "GEOG2M",
+        "name": "Master [120] en sciences géographiques, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "GEOG2MA",
+            "name": "Master [120] en sciences géographiques, orientation générale, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "GEOG2M1",
+        "name": "Master [60] en sciences géographiques, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "GEOG2MD",
+        "name": "Master [120] en sciences géographiques, orientation générale, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "GEOG IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences géographiques",
+        "type": "degree"
+      },
+      {
+        "code": "MATH2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences mathématiques)",
+        "type": "degree"
+      },
+      {
+        "code": "MATH2M",
+        "name": "Master [120] en sciences mathématiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "MATH2MA",
+            "name": "Master [120] en sciences mathématiques, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "MATH2M1",
+        "name": "Master [60] en sciences mathématiques",
+        "type": "degree"
+      },
+      {
+        "code": "MATH2MD",
+        "name": "Master [120] en sciences mathématiques, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "MATH IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences mathématiques",
+        "type": "degree"
+      },
+      {
+        "code": "PHMD2M",
+        "name": "Master [120] in Medical Physics",
+        "type": "degree",
+        "children": [
+          {
+            "code": "PHMD2MS/G",
+            "name": "Master [120] in Medical Physics, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "PHYS2A",
+        "name": "Agrégation de l'enseignement secondaire supérieur (sciences physiques)",
+        "type": "degree"
+      },
+      {
+        "code": "PHYS2M",
+        "name": "Master [120] en sciences physiques",
+        "type": "degree",
+        "children": [
+          {
+            "code": "PHYS2MA",
+            "name": "Master [120] en sciences physiques, à finalité approfondie",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "PHYS2M1",
+        "name": "Master [60] en sciences physiques",
+        "type": "degree"
+      },
+      {
+        "code": "PHYS2MD",
+        "name": "Master [120] en sciences physiques, à finalité didactique",
+        "type": "degree"
+      },
+      {
+        "code": "PHYS2MS/PM",
+        "name": "Master [120] en sciences physiques, à finalité spécialisée: physique médicale",
+        "type": "degree"
+      },
+      {
+        "code": "PHYS IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences physiques",
+        "type": "degree"
+      },
+      {
+        "code": "SC IN",
+        "name": "Mobilité entrante en sciences",
+        "type": "degree"
+      },
+      {
+        "code": "SC IS",
+        "name": "Unité(s) d'enseignement isolée(s) en sciences",
+        "type": "degree"
+      },
+      {
+        "code": "STAT2M",
+        "name": "Master [120] en statistique, orientation générale",
+        "type": "degree",
+        "children": [
+          {
+            "code": "STAT2MS/G",
+            "name": "Master [120] en statistique, orientation générale, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
+        "code": "STAT IS",
+        "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      }
+    ]
+  }
+]
