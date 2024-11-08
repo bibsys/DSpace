@@ -20,6 +20,19 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>email</dc-element>
+          <dc-qualifier>official</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Email officiel</label>
+          <input-type>onebox</input-type>
+          <hint>Cette adresse sera utilisée pour communiquer les documents officiels avec l'auteur (attestation, notification, ...)</hint>
+          <required>Vous devez entrer une adresse email valide</required>
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>email</dc-element>
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
@@ -34,7 +47,7 @@
           <dc-qualifier>name</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Institution</label>
-          <style>col-6</style>
+          <style>col-12</style>
           <input-type>onebox</input-type>
           <hint>Entrez le nom de l'institution de l'auteur</hint>
           <required>Vous devez entrer le nom de l'instutution de l'auteur</required>
@@ -45,8 +58,7 @@
           <dc-qualifier>fgs</dc-qualifier>
           <repeatable>false</repeatable>
           <label>FGS</label>
-          <style>col-6</style>
-          <input-type>onebox</input-type>
+          <input-type>hidden</input-type>
           <hint>Identifier FGS</hint>
           <readonly>all</readonly>
         </field>
@@ -69,8 +81,8 @@
           <repeatable>false</repeatable>
           <label>Programme d'études</label>
           <input-type>degree_select</input-type>
-          <hint>Selectionnez le programme d'étude associé à cet auteur</hint>
-          <required>Sélectionnez un programme d'étude à cet auteur</required>
+          <hint>Selectionnez le programme d'étude associé pour cet auteur</hint>
+          <required>Sélectionnez un programme d'étude pour cet auteur</required>
           <visibility>submission</visibility>
         </field>
         <field>
@@ -80,8 +92,8 @@
           <repeatable>false</repeatable>
           <label>Code diplôme</label>
           <input-type>onebox</input-type>
-          <hint>Entrez le code du diplôme associé à cet auteur. Attention, soyez PRUDENT et consistant par rapport au libellé du diplôme</hint>
-          <required>Entrez le code du diplôme associé à cet auteur</required>
+          <hint>Entrez le code du diplôme associé pour cet auteur. Attention, soyez PRUDENT et consistant par rapport au libellé du diplôme</hint>
+          <required>Entrez le code du diplôme associé pour cet auteur</required>
           <visibility>workflow</visibility>
         </field>
       </row>
@@ -129,7 +141,7 @@
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <hint>Entrez l'adresse email à laquelle contacter le promoteur</hint>
+          <hint>Entrez l'adresse email du promoteur</hint>
           <required>Vous devez entrer une adresse email valide</required>
         </field>
       </row>
@@ -178,8 +190,8 @@
           <repeatable>false</repeatable>
           <label>Titre</label>
           <input-type>onebox</input-type>
-          <hint>Entrez le titre complet du mémoire, y compris le sous-titre. Séparer le titre et le sous-titre par un deux-points (sauf si le dernier caractère du titre est un point d'interrogation).</hint>
-          <required>Vous devez remplir un titre</required>
+          <hint>Séparer le titre et le sous-titre par un deux-points (sauf si le dernier caractère du titre est un point d'interrogation).</hint>
+          <required>Vous devez spécifier un titre</required>
         </field>
       </row>
       <row>
@@ -214,7 +226,7 @@
           <repeatable>true</repeatable>
           <label>Mots-clés</label>
           <input-type>tag</input-type>
-          <hint>Séparer les mots-clés par une virgule.</hint>
+          <hint>Séparez les mots-clés par une virgule.</hint>
         </field>
       </row>
       <row>
@@ -236,6 +248,11 @@
           <input-type>year</input-type>
           <hint/>
           <required>Vous devez choisir une année</required>
+          <settings>
+            <setting name="useCurrentYearAsDefault">true</setting>
+            <setting name="maxYearDelta">2</setting>
+            <setting name="minYear">1900</setting>
+          </settings>
         </field>
       </row>
     </form>
@@ -372,6 +389,9 @@
           <input-type>year</input-type>
           <hint>Choisissez l'année pour laquelle le mémoire a été soumis</hint>
           <required>Vous devez choisir une année</required>
+          <settings>
+            <setting name="maxYearDelta">2</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -411,7 +431,7 @@
           <hint />
         </field>
       </row>
-      <row>
+      <!--<row>
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
@@ -421,7 +441,7 @@
           <required />
           <hint />
         </field>
-      </row>
+      </row>-->
       <!--<row>
         <field>
           <dc-schema>dc</dc-schema>
