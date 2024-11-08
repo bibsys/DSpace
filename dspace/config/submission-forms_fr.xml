@@ -178,8 +178,8 @@
           <repeatable>false</repeatable>
           <label>Titre</label>
           <input-type>onebox</input-type>
-          <hint>Entrez le titre complet du mémoire, y compris le sous-titre. Séparer le titre et le sous-titre par un deux-points (sauf si le dernier caractère du titre est un point d'interrogation).</hint>
-          <required>Vous devez remplir un titre</required>
+          <hint>Séparer le titre et le sous-titre par un deux-points (sauf si le dernier caractère du titre est un point d'interrogation).</hint>
+          <required>Vous devez spécifier un titre</required>
         </field>
       </row>
       <row>
