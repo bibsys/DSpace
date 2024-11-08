@@ -178,7 +178,7 @@
           <repeatable>false</repeatable>
           <label>Title</label>
           <input-type>onebox</input-type>
-          <hint>Enter the whole title and subtitle of the thesis. Use a colon between title and subtitle (unless title ends with a question mark).</hint>
+          <hint>Use a colon between title and subtitle (unless title ends with a question mark).</hint>
           <required>You must enter a title.</required>
         </field>
       </row>
