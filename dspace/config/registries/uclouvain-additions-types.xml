@@ -42,6 +42,12 @@
     </dc-type>
     <dc-type>
         <schema>authors</schema>
+        <element>email</element>
+        <qualifier>official</qualifier>
+        <scope_note>Author official email</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
         <element>identifier</element>
         <qualifier>fgs</qualifier>
         <scope_note>UCLouvain global ID (aka FGS number)</scope_note>
