@@ -1,20 +1,37 @@
 <dspace-dc-types>
-    <!-- HEADER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <dspace-header>
-        <title>Document author specific metadata</title>
+        <title>UCLouvain specific metadata definitions</title>
         <contributor.author>Renaud Michotte</contributor.author>
-        <contributor.editor>Mickaël Pourbaix</contributor.editor>
+        <contributor.editor>Michaël Pourbaix</contributor.editor>
     </dspace-header>
-    <!-- SCHEMA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- DUBLIN CORE SCHEMA -->
+    <dc-type>
+        <schema>dc</schema>
+        <element>language</element>
+        <qualifier>iso-639-2</qualifier>
+        <scope_note>ISO 639-2 code language</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>description</element>
+        <qualifier>tag</qualifier>
+        <scope_note>Custom tag placed on a publication [ie: accepted, submitted, ...]</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>fedora</qualifier>
+        <scope_note>To store original FedoraCommons PID</scope_note>
+    </dc-type>
+    <!-- AUTHORS SCHEMA -->
     <dc-schema>
         <name>authors</name>
         <namespace>https://uclouvain.be/ontology/persons</namespace>
     </dc-schema>
-    <!-- FIELDS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <dc-type>
         <schema>authors</schema>
         <element>email</element>
-        <qualifier/>
+        <qualifier />
         <scope_note>Author email</scope_note>
     </dc-type>
     <dc-type>
@@ -45,12 +62,28 @@
         <schema>authors</schema>
         <element>institution</element>
         <qualifier>name</qualifier>
-        <scope_note>Author institution full-name at the publication datetime (i.e. 'Université catholique de Louvain')</scope_note>
+        <scope_note>Author institution full-name at the publication datetime (i.e. 'Université
+            catholique de Louvain')</scope_note>
     </dc-type>
     <dc-type>
         <schema>authors</schema>
         <element>role</element>
-        <qualifier/>
+        <qualifier />
         <scope_note>Author role in this publication</scope_note>
     </dc-type>
- </dspace-dc-types>
+    <!-- FEDORA SCHEMA -->
+    <dc-schema>
+        <name>fedora</name>
+        <namespace>https://fedora.lyrasis.org/resources/schema</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>fedora</schema>
+        <element>pid</element>
+        <scope_note>FedoraCommons object pid</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>fedora</schema>
+        <element>contentmodels</element>
+        <scope_note>FedoraCommons object content model</scope_note>
+    </dc-type>
+</dspace-dc-types>
