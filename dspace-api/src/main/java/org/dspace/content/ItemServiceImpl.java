@@ -104,6 +104,7 @@ import org.dspace.orcid.service.OrcidTokenService;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.qaevent.dao.QAEventsDAO;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.versioning.Version;
 import org.dspace.versioning.VersionHistory;
 import org.dspace.versioning.service.VersionHistoryService;
@@ -216,6 +217,9 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
     @Autowired
     private List<ItemSearcherByMetadata> itemSearcherByMetadata;
+
+    @Autowired(required = true)
+    private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
 
     protected ItemServiceImpl() {
     }
@@ -1081,6 +1085,9 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         if (configurationService.getBooleanProperty("item-deletion.authority-cleanup.enabled", false)) {
             removeAuthorityReferences(context, item);
         }
+
+        // Clear any enhancement scheduled for this item.
+        clearItemEnhancers(context, item);
 
         // Finally remove item row
         itemDAO.delete(context, item);
@@ -2414,4 +2421,14 @@ prevent the generation of resource policy entry values with null dspace_object a
         return this.itemDAO.exists(context, Item.class, id);
     }
 
+    /**
+     * Cancel the scheduled enhancement for a specific item.
+     * It basically deletes all the planned enhancement where an item is present as either a target or a source.
+     *
+     * @param context The current DSpace context.
+     * @param item The item to clear the enhancement for.
+     */
+    private void clearItemEnhancers(Context context, Item item) {
+        uclouvainItemEnhancerService.cleanForItem(context, item.getID());
+    }
 }
