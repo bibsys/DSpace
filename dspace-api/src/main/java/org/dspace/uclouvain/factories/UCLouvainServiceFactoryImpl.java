@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.factories;
 
+import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainResourcePolicyService uclouvainResourcePolicyService;
     @Autowired(required = true)
     private UCLouvainEntityService uclouvainEntityService;
+    @Autowired(required = true)
+    private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -31,5 +34,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     public UCLouvainEntityService getEntityService() {
         return uclouvainEntityService;
     }
-
+    @Override
+    public UCLouvainItemEnhancerService getItemEnhancerService() {
+        return uclouvainItemEnhancerService;
+    }
 }
