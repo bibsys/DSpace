@@ -140,6 +140,22 @@
             </DefaultRolloverStrategy>
         </Appender>
 
+        <!-- A7 is for the custom metadata enhancer -->
+        <Appender name='A7'
+                filePattern="${log.dir}/item-enhancer.log%d{yyyy-MM-dd}"
+                type='RollingFile'
+                fileName='${log.dir}/item-enhancer.log'>
+            <Layout type='PatternLayout' pattern='%d %-5p -- %c :: %m%n'/>
+            <policies>
+                <policy type='TimeBasedTriggeringPolicy'>yyyy-MM-dd</policy>
+            </policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath='${log.dir}'>
+                    <IfFileName glob='item-enhancer.log-*'/>
+                    <IfAccumulatedFileCount exceeds='${logging.server.retention-accumulated-to-keep}'/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </Appender>
     </Appenders>
 
     <Loggers>
@@ -177,6 +193,13 @@
                 level='TRACE'
                 additivity='false'>
             <AppenderRef ref='A6'/>
+        </Logger>
+
+        <!-- Custom Item Enhancer -->
+        <Logger name='org.dspace.uclouvain.itemEnhancer'
+                level='INFO'
+                additivity='false'>
+            <AppenderRef ref='A7'/>
         </Logger>
 
         <!--
