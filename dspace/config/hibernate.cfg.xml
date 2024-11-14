@@ -127,5 +127,7 @@
         <mapping class="org.dspace.app.ldn.LDNMessageEntity"/>
         <mapping class="org.dspace.app.ldn.NotifyPatternToTrigger"/>
 
+        <!-- UCLouvain additions -->
+        <mapping class="org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance"/>
     </session-factory>
 </hibernate-configuration>
