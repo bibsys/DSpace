@@ -98,6 +98,7 @@ public class SubmissionFormConverter implements DSpaceConverter<DCInputSet, Subm
         inputField.setMandatory(dcinput.isRequired());
         inputField.setVisibility(getVisibility(dcinput));
         inputField.setRepeatable(dcinput.isRepeatable());
+        inputField.setHelp(dcinput.getHelp());
         if (dcinput.getLanguage()) {
             int idx = 1;
             //list contains: at even position the code, at odd position the label
