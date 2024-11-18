@@ -7,19 +7,26 @@
  */
 package org.dspace.uclouvain.itemEnhancer;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration;
+import org.dspace.uclouvain.itemEnhancer.exceptions.WrongEntityTypeException;
 import org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance;
 
 public interface UCLouvainItemEnhancerService {
     public List<ItemEnhancerConfiguration> getValidConfigurationsForItem(Item item);
+    public List<ItemEnhancerConfiguration> getValidConfigurationsForSourceAndTarget(Item source, Item target)
+        throws WrongEntityTypeException;
     public void addRelatedItemsForEnhancement(
         Context context, Item item, List<ItemEnhancerConfiguration> validConfigurations
     );
-    public List<ItemToEnhance> retrieveAllItemsToUpdate(Context context);
+    public List<ItemToEnhance> getItemsToEnhance(Context context);
+    public List<ItemToEnhance> getItemsToEnhance(Context context, Integer limit);
+    public Integer countItemsToEnhance(Context context);
     public Integer cleanForItem(Context context, UUID uuid);
+    public Integer cleanForDateRange(Context context, Date startDate, Date endDate);
 }
