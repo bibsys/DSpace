@@ -65,6 +65,14 @@ public class ItemEnhancerConfiguration {
         return targetMetadataFields;
     }
 
+    /**
+     * At instantiation, checks that each field given in the xml configuration is valid.
+     * A field is valid if it can be retrieved by the {@link MetadataFieldService}.
+     * If a field is not valid, it triggers an exception.
+     * 
+     * @param fields A list of fields to test.
+     * @throws SQLException
+     */
     private void validateMetadataFields(List<String> fields) throws SQLException {
         Context context = new Context();
         for (String field: fields) {
@@ -75,5 +83,16 @@ public class ItemEnhancerConfiguration {
             }
         }
         context.complete();
+    }
+
+    /**
+     * Checks the validity of the configuration depending on the given types.
+     * @param sourceEntityType The entity type of the source item.
+     * @param targetEntityType The entity type of the target item.
+     * @return True if the current configuration is valid for the given types. False otherwise.
+     */
+    public boolean isValidForEntityTypes(String sourceEntityType, String targetEntityType) {
+        return this.getSourceEntityType().equals(sourceEntityType)
+            && this.getTargetEntityType().equals(targetEntityType);
     }
 }
