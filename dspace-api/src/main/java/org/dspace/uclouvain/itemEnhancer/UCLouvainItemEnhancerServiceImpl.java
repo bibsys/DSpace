@@ -7,7 +7,9 @@
  */
 package org.dspace.uclouvain.itemEnhancer;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import org.dspace.content.service.MetadataFieldService;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.itemEnhancer.dao.UCLouvainItemEnhancerDAO;
 import org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration;
+import org.dspace.uclouvain.itemEnhancer.exceptions.WrongEntityTypeException;
 import org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -37,6 +40,10 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
     // The full list of metadata enhancers configuration. See 'uclouvain-metadata-enhancers.xml' for full config.
     private List<ItemEnhancerConfiguration> enhancers = new ArrayList<ItemEnhancerConfiguration>();
     private Logger logger = LogManager.getLogger(UCLouvainItemEnhancerServiceImpl.class);
+
+    // Defines the maximum number of items to retrieve at the same time from the database using
+    // the 'getItemsToEnhance' method.
+    private Integer pullLimit = 1000;
 
     @Autowired
     private ItemService itemService;
@@ -56,6 +63,7 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
      * @param item The source item to use in order to find applicable configurations.
      * @return A list of applicable configurations, which could be empty if none found.
      */
+    @Override
     public List<ItemEnhancerConfiguration> getValidConfigurationsForItem(Item item) {
         // First get entity type of the item.
         String itemEntityType = itemService.getEntityType(item);
@@ -86,6 +94,38 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
     }
 
     /**
+     * Get all the applicable configurations for specific source && target item.
+     * To be considered applicable the following conditions must be met:
+     * - The source item has the same entity type as provided by the configuration,
+     * - The target item has the same entity type as provided by the configuration.
+     * Returns an empty list if no configuration is matching.
+     * 
+     * @param source The source item to use in order to find applicable configurations.
+     * @param target The target item to use in order to find applicable configurations.
+     * @return A list of applicable configurations, which could be empty if none found.
+     */
+    @Override
+    public List<ItemEnhancerConfiguration> getValidConfigurationsForSourceAndTarget(Item source, Item target)
+        throws WrongEntityTypeException {
+        String sourceEntityType = this.itemService.getEntityType(source);
+        if (sourceEntityType == null) {
+            throw new WrongEntityTypeException("No entity type found for given source item " + source.getID());
+        }
+        String targetEntityType = this.itemService.getEntityType(target);
+        if (targetEntityType == null) {
+            throw new WrongEntityTypeException("No entity type found for given target item " + target.getID());
+        }
+
+        // Loop over all the configurations and find valid ones.
+        List<ItemEnhancerConfiguration> validConfigurations =
+            this.enhancers.stream()
+            .filter(enhancer -> enhancer.isValidForEntityTypes(sourceEntityType, targetEntityType))
+            .collect(Collectors.toList());
+
+        return validConfigurations;
+    }
+
+    /**
      * Given a list of applicable configurations and a source item, this method will add an entry
      * into the database for each related target item.
      * Target items are found by searching for items holding the corresponding authority on the
@@ -99,6 +139,7 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
      * @param sourceItem The source item to get the correct value from.
      * @param validConfigurations A list of all the valid configuration used to search for valid target item.
      */
+    @Override
     public void addRelatedItemsForEnhancement(
         Context context, Item sourceItem, List<ItemEnhancerConfiguration> validConfigurations
     ) {
@@ -207,15 +248,47 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
      * @param context The current DSpace context.
      * @return A list of {@link ItemToEnhance} classes which might be empty.
      */
-    public List<ItemToEnhance> retrieveAllItemsToUpdate(Context context) {
+    @Override
+    public List<ItemToEnhance> getItemsToEnhance(Context context) {
+        return getItemsToEnhance(context, pullLimit);
+    }
+
+    /**
+     * Retrieve all the entries in the 'uclouvain_item_authority_metadata_enhancement' database table.
+     * Can return an empty list if nothing found or if an error occurred.
+     * 
+     * @param context The current DSpace context.
+     * @param limit The limit amount of object that can be returned.
+     * @return A list of {@link ItemToEnhance} classes which might be empty.
+     */
+    @Override
+    public List<ItemToEnhance> getItemsToEnhance(Context context, Integer limit) {
         try {
             // Call the DAO to get all entries from the database table.
-            return uclouvainItemEnhancerDAO.pollItemsToUpdate(context);
+            return uclouvainItemEnhancerDAO.getItemsToEnhance(context, limit);
         } catch (Exception e) {
             logger.error(
                 "An error occurred while retrieving the ItemToEnhance entries from the database DAO.", e
             );
             return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Returns the total number of items that needs to be enhanced.
+     * 
+     * @param context The current DSpace context.
+     * @return The amount of items that need to be enhanced as an int.
+     */
+    @Override
+    public Integer countItemsToEnhance(Context context) {
+        try {
+            return uclouvainItemEnhancerDAO.countItemsToEnhance(context);
+        } catch (SQLException e) {
+            logger.error(
+                "An error occurred while retrieving the number of ItemToEnhance entries from the database DAO.", e
+            );
+            return -1;
         }
     }
 
@@ -227,14 +300,42 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
      * @param uuid The uuid of the item to delete entries for.
      * @return An integer giving the number of rows that were deleted.
      */
+    @Override
     public Integer cleanForItem(Context context, UUID uuid) {
         try {
             return uclouvainItemEnhancerDAO.cleanTableEntriesForItem(context, uuid);
         } catch (Exception e) {
-            logger.error("An error occured while cleaning entries for specific UUID: " + uuid + " exception: " + e);
+            logger.error("An error occurred while cleaning entries for specific UUID: " + uuid + " exception: " + e);
             return -1;
         }
     }
+
+    /**
+     * Clean all the scheduled metadata enhancement for a given time period.
+     * 
+     * @param context The current DSpace context.
+     * @param startDate The start of the selected period to delete.
+     * @param endDate The end of the selected period to delete.
+     * @return The number of cleaned metadata enhancement entries. Set -1 if any error occurred.
+     */
+    @Override
+    public Integer cleanForDateRange(Context context, Date startDate, Date endDate) {
+        try {
+            Integer deletedEntries = uclouvainItemEnhancerDAO.cleanTableEntries(context, startDate, endDate);
+            logger.debug(
+                "Deleted " + deletedEntries + " entries from the database from date "
+                + startDate + " to " + endDate
+            );
+            return deletedEntries;
+        } catch (Exception e) {
+            logger.error(
+                "An error occurred while trying to clean entries for the specified date range = "
+                + "'startDate:' " + startDate + " 'endDate': " + endDate
+            );
+            return -1;
+        }
+    }
+
 
     // GETTERS && SETTERS
     public void setEnhancers(List<ItemEnhancerConfiguration> enhancers) {
@@ -243,5 +344,13 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
 
     public List<ItemEnhancerConfiguration> getEnhancers() {
         return enhancers;
+    }
+
+    public void setPullLimit(Integer limit) {
+        pullLimit = limit;
+    }
+
+    public Integer getPullLimit() {
+        return pullLimit;
     }
 }

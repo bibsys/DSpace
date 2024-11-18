@@ -7,7 +7,9 @@
  */
 package org.dspace.uclouvain.itemEnhancer.dao;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -87,13 +89,40 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
      * @return A list of 'ItemToEnhance' objects which can be empty.
      */
     @Override
-    public List<ItemToEnhance> pollItemsToUpdate(Context context) throws Exception {
+    public List<ItemToEnhance> getItemsToEnhance(Context context, Integer limit) throws Exception {
         Session session = getHibernateSession();
         String sql = "SELECT source_uuid, target_uuid, date_queued"
                 + " FROM uclouvain_item_authority_metadata_enhancement"
-                + " ORDER BY date_queued ASC";
+                + " ORDER BY date_queued ASC"
+                + " LIMIT :limit";
         NativeQuery<ItemToEnhance> query = session.createNativeQuery(sql, ItemToEnhance.class);
+        query.setParameter("limit", limit);
         return query.getResultList();
+    }
+
+    /**
+     * Retrieve the total amount of entries for the database table.
+     * Note that depending on the used driver, the response will be cast to either BigInt or Long.
+     * 
+     * @param context The current DSpace context.
+     * @return The total number of entries for the table so the total number of item to enhance.
+     * 
+     * @throws Exception
+     */
+    @Override
+    public Integer countItemsToEnhance(Context context) throws SQLException {
+        Session session = getHibernateSession();
+        String sql = "SELECT count(*)"
+                + " FROM uclouvain_item_authority_metadata_enhancement";
+        NativeQuery<?> query = session.createNativeQuery(sql);
+        // count(*) result is mapped by hibernate to the BigInteger or Long type in java.
+        // For h2 (test env), it is mapped to BigInteger so we need to convert to BigInteger.
+        if ("org.h2.Driver".equals(configurationService.getProperty("db.driver"))) {
+            return ((BigInteger) query.getSingleResult()).intValue();
+        // For hibernate in classic DSpace env, convert to Long.
+        } else {
+            return ((Long) query.getSingleResult()).intValue();
+        }
     }
 
     /**
@@ -137,13 +166,13 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
                 + " FROM metadatavalue as mv"
                 + " JOIN metadatafieldregistry as mf on mv.metadata_field_id = mf.metadata_field_id"
                 + " JOIN metadataschemaregistry as ms on mf.metadata_schema_id = ms.metadata_schema_id"
-                + " WHERE ms.short_id = :schema and mf.element = :element"
+                + " WHERE ms.short_id = :schema AND mf.element = :element"
                 + (
                     metadataField.getQualifier() != null
-                        ? (" and mf.qualifier = '" + metadataField.getQualifier().toString() + "'")
+                        ? (" AND mf.qualifier = '" + metadataField.getQualifier().toString() + "'")
                         : ""
                 )
-                + " and mv.authority = :authority"
+                + " AND mv.authority = :authority"
                 + " GROUP BY mv.dspace_object_id) as result_uuids,"
             + " (SELECT * FROM item) as result_item"
             + " WHERE result_uuids.dspace_object_id = result_item.uuid";
@@ -156,6 +185,24 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
         return query.getResultList();
     }
 
+    /**
+     * Delete all the entries in the table that have a date evaluated between the given 'startDate' and 'endDate'.
+     * 
+     * @param context   The current DSpace context.
+     * @param startDate The start date to delete the correct entries.
+     * @param endDate   The end date to delete the correct entries.
+     * @return An integer to indicate the number of deleted entries.
+     */
+    @Override
+    public Integer cleanTableEntries(Context context, Date startDate, Date endDate) throws Exception {
+        Session session = getHibernateSession();
+        String sql = "DELETE FROM uclouvain_item_authority_metadata_enhancement"
+            + " WHERE date_queued BETWEEN :start_date AND :end_date";
+        NativeQuery<?> query = session.createNativeQuery(sql);
+        query.setParameter("start_date", startDate);
+        query.setParameter("end_date", endDate);
+        return query.executeUpdate();
+    }
 
     /**
      * Returns the Hibernate Session currently opened.
