@@ -12,7 +12,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertTrue;
@@ -30,6 +29,7 @@ import org.dspace.builder.CommunityBuilder;
 import org.dspace.builder.ItemBuilder;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
@@ -40,6 +40,8 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.itemEnhancer.consumer.UCLouvainItemEnhancerConsumer;
 import org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance;
+import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,15 +54,15 @@ import org.junit.Test;
  * adds an entry a enhancer queue if necessary.
  * 
  * A service ({@link UCLouvainItemEnhancerService}) holds the logic to execute the main operations of the feature.
- * 
- * The DAO ({@link UCLouvainItemEnhancerDAO}) interacts with the database to create, update, read and delete entries.
- * 
+ *
  * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDatabase {
     private ItemService itemService;
 
     private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
+
+    private UCLouvainItemEnhancerUpdatePoller uclouvainItemEnhancerUpdatePoller;
 
     private Collection collection;
 
@@ -82,11 +84,21 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         }
     }
 
+    /**
+     * Reset the event.dispatcher.default.consumers property value.
+     */
+    @AfterClass
+    public static void resetDefaultConsumers() {
+        configurationService.setProperty("event.dispatcher.default.consumers", consumers);
+        eventService.reloadConfiguration();
+    }
+
     // Code ran before test execution.
     @Before
     public void setup() {
         itemService = ContentServiceFactory.getInstance().getItemService();
         uclouvainItemEnhancerService = UCLouvainServiceFactory.getInstance().getItemEnhancerService();
+        uclouvainItemEnhancerUpdatePoller = UCLouvainServiceFactory.getInstance().getItemEnhancerUpdatePoller();
 
         context.turnOffAuthorisationSystem();
         parentCommunity = CommunityBuilder.createCommunity(context)
@@ -141,8 +153,7 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         assertThat(person.getMetadata(), hasItem(with("dc.title", "Jya Rivpa")));
 
         // There should be no entry at all in the enhancement table.
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(0));
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
     }
 
     /**
@@ -186,8 +197,7 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         context.reloadEntity(person);
 
         // Check that the database table is still empty.
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(0));
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
     }
 
     /**
@@ -237,8 +247,7 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         person = context.reloadEntity(person);
 
         // Check that the database table is still empty.
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(0));
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
     }
 
     /**
@@ -274,8 +283,8 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         person = context.reloadEntity(person);
 
         // Make sure that the enhancement table is empty before updating.
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(0));
+        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.getItemsToEnhance(context);
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
 
         // 2. Update the source metadata.
         context.turnOffAuthorisationSystem();
@@ -290,10 +299,10 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         assertThat(person.getMetadata(), hasItem(with("dc.title", "Jya Rivpa")));
 
         // Check the database entries to see if something was added.
-        itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
+        itemToEnhanceEntries = uclouvainItemEnhancerService.getItemsToEnhance(context);
 
         // Check the entry of the database.
-        assertThat(itemToEnhanceEntries, hasSize(1));
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
         assertThat(itemToEnhanceEntries.get(0), not(nullValue()));
         assertThat(itemToEnhanceEntries.get(0).getTargetItem(), equalTo(publication));
         assertThat(itemToEnhanceEntries.get(0).getSourceItem(), equalTo(person));
@@ -344,8 +353,7 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         publication = context.reloadEntity(publication);
 
         // Check that the table contains 1 entry for the modified relation.
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(1));
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
     }
 
     /**
@@ -392,8 +400,7 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
 
         // Check that we have one entry in the database since we modified one of configured the valid
         // source metadata field.
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(1));
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
     }
 
     /**
@@ -439,8 +446,8 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         assertThat(person.getMetadata(), hasItem(with("dc.title", "Jya Rivpa")));
 
         // Check the database entries to see if something was added.
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(1));
+        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.getItemsToEnhance(context);
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
         assertThat(itemToEnhanceEntries.get(0), not(nullValue()));
         assertThat(itemToEnhanceEntries.get(0).getDateQueued(), not(nullValue()));
 
@@ -459,8 +466,8 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         assertThat(person.getMetadata(), hasItem(with("dc.title", "Jean Gloutitou")));
 
         // Check the updated version of the entry.
-        itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(1));
+        itemToEnhanceEntries = uclouvainItemEnhancerService.getItemsToEnhance(context);
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
         assertThat(itemToEnhanceEntries.get(0), not(nullValue()));
         assertThat(itemToEnhanceEntries.get(0).getDateQueued(), not(nullValue()));
 
@@ -581,8 +588,8 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         publication2 = context.reloadEntity(publication2);
 
         // Check that the table has 4 entries (4 Person-Publication).
-        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.retrieveAllItemsToUpdate(context);
-        assertThat(itemToEnhanceEntries, hasSize(4));
+        List<ItemToEnhance> itemToEnhanceEntries = uclouvainItemEnhancerService.getItemsToEnhance(context);
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(4));
         // At least one entry should have the 'person' as source item.
         assertTrue(itemToEnhanceEntries.stream().anyMatch((ItemToEnhance ite) -> {
             return ite.getSourceItem().getID().toString().equals(personUUID);
@@ -599,5 +606,332 @@ public class UCLouvainItemEnhancerTest extends AbstractIntegrationTestWithDataba
         assertTrue(itemToEnhanceEntries.stream().anyMatch((ItemToEnhance ite) -> {
             return ite.getTargetItem().getID().toString().equals(publication2UUID);
         }));
+    }
+
+    /**
+     * Simple test for the item enhancer poller with only one relation being affected.
+     * Here we link a publication and a person with the person name:
+     * - person (dc.title) <-> publication (dc.contributor.author)
+     * 
+     * When we modify the dc.title of the person, it must create a new entry in the database.
+     * Then, we trigger the poller to read the database and process the updates.
+     * At the end, the dc.contributor.author of the publication should be the same as dc.title of the person.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void pollerTestWithOnePublicationAuthorRelation() throws Exception {
+        // Create a simple author-publication relation.
+        // The publication is linked to the author via the name.
+        context.turnOffAuthorisationSystem();
+        Item person = ItemBuilder.createItem(context, collection)
+            .withEntityType("Person")
+            .withTitle("Pierre Kiroul")
+            .build();
+        UUID personAuthority = person.getID();
+
+        Item publication = ItemBuilder.createItem(context, collection)
+            .withTitle("Test publication0")
+            .withEntityType("Publication")
+            .withAuthor("Pierre Kiroul", personAuthority.toString())
+            .build();
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person = context.reloadEntity(person);
+        publication = context.reloadEntity(publication);
+
+        // Modify the dc.title of the person
+        context.turnOffAuthorisationSystem();
+        itemService.setMetadataSingleValue(context, person, "dc", "title", null, null, "Jean Gloutitou");
+        itemService.update(context, person);
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person = context.reloadEntity(person);
+        publication = context.reloadEntity(publication);
+
+        // We now have one entry to process in the database.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
+
+        // Let's trigger the poller to read the database and update the required items.
+        uclouvainItemEnhancerUpdatePoller.run();
+
+        // Reload the entities to have the latests modifications.
+        context.commit();
+        person = context.reloadEntity(person);
+        publication = context.reloadEntity(publication);
+
+        // Check that the publication's author was updated.
+        String currentAuthor = itemService.getMetadataFirstValue(publication, "dc", "contributor", "author", null);
+        assertThat(currentAuthor, equalTo("Jean Gloutitou"));
+
+        // Check that there are no entries remaining in the database.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
+    }
+
+    /**
+     * This is a test for the case where there is two times the same target in the database with 2 different sources.
+     * - person1 (dc.title) <-> publication (dc.contributor.author)
+     * - person2 (dc.title) <-> publication (dc.contributor.author)
+     * The poller should process all the source for one target at the same time.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void pollerTestWithSameTargetButTwoDifferentSources() throws Exception {
+        // Create two simple author-publication relations.
+        // The two persons are linked to the same publication via the name.
+        context.turnOffAuthorisationSystem();
+        Item person1 = ItemBuilder.createItem(context, collection)
+            .withEntityType("Person")
+            .withTitle("Pierre Kiroul")
+            .build();
+        Item person2 = ItemBuilder.createItem(context, collection)
+            .withEntityType("Person")
+            .withTitle("Jya Rivpa")
+            .build();
+        UUID person1Authority = person1.getID();
+        UUID person2Authority = person2.getID();
+
+        Item publication = ItemBuilder.createItem(context, collection)
+            .withTitle("Single publication")
+            .withEntityType("Publication")
+            .withAuthor("Pierre Kiroul", person1Authority.toString())
+            .withAuthor("Jya Rivpa", person2Authority.toString())
+            .build();
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person1 = context.reloadEntity(person1);
+        person2 = context.reloadEntity(person2);
+        publication = context.reloadEntity(publication);
+
+        context.turnOffAuthorisationSystem();
+        itemService.setMetadataSingleValue(context, person1, "dc", "title", null, null, "Jean Gloutitou");
+        itemService.update(context, person1);
+        itemService.setMetadataSingleValue(context, person2, "dc", "title", null, null, "Jean Prendraideu");
+        itemService.update(context, person2);
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person1 = context.reloadEntity(person1);
+        person2 = context.reloadEntity(person2);
+        publication = context.reloadEntity(publication);
+
+        // We now have one entry to process in the database.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(2));
+
+        // Let's trigger the poller to read the database and update the required items.
+        uclouvainItemEnhancerUpdatePoller.run();
+
+        // Reload the entities to have the latests modifications.
+        context.commit();
+        person1 = context.reloadEntity(person1);
+        person2 = context.reloadEntity(person2);
+        publication = context.reloadEntity(publication);
+
+        // Check that the publication was updated.
+        List<MetadataValue> currentAuthor = itemService.getMetadata(publication, "dc", "contributor", "author", null);
+        assertTrue(currentAuthor.stream().map(mv -> mv.getValue()).anyMatch(v -> v.equals("Jean Gloutitou")));
+        assertTrue(currentAuthor.stream().map(mv -> mv.getValue()).anyMatch(v -> v.equals("Jean Prendraideu")));
+
+        MetadataValue firstAuthorMatch = currentAuthor.stream().filter(mv -> {
+            return mv.getValue().equals("Jean Gloutitou") && (mv.getPlace() == 0);
+        }).findFirst().orElse(null);
+        MetadataValue secondAuthorMatch = currentAuthor.stream().filter(mv -> {
+            return mv.getValue().equals("Jean Prendraideu") && (mv.getPlace() == 1);
+        }).findFirst().orElse(null);
+        assertThat(firstAuthorMatch, not(nullValue()));
+        assertThat(secondAuthorMatch, not(nullValue()));
+
+        // Check that the table was emptied correctly
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
+    }
+
+    /**
+     * Test the case were we have one source that serve 2 different target.
+     * - Person (dc.title) <-> Publication1 (dc.contributor.author)
+     * - Person (dc.title) <-> Publication2 (dc.contributor.author)
+     * When we update the source metadata, the 2 target items should be updated.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void pollerTestWithSameSourceButTwoDifferentTargets() throws Exception {
+        // Create two simple author-publication relations.
+        // The two publications are linked to the author via the name.
+        context.turnOffAuthorisationSystem();
+        Item person = ItemBuilder.createItem(context, collection)
+            .withEntityType("Person")
+            .withTitle("Pierre Kiroul")
+            .build();
+        UUID personAuthority = person.getID();
+
+        Item publication1 = ItemBuilder.createItem(context, collection)
+            .withTitle("First publication")
+            .withEntityType("Publication")
+            .withAuthor("Pierre Kiroul", personAuthority.toString())
+            .build();
+        Item publication2 = ItemBuilder.createItem(context, collection)
+        .withTitle("Second publication")
+        .withEntityType("Publication")
+        .withAuthor("Pierre Kiroul", personAuthority.toString())
+        .build();
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person = context.reloadEntity(person);
+        publication1 = context.reloadEntity(publication1);
+        publication2 = context.reloadEntity(publication2);
+
+        // Update the person name
+        context.turnOffAuthorisationSystem();
+        itemService.setMetadataSingleValue(context, person, "dc", "title", null, null, "Jean Gloutitou");
+        itemService.update(context, person);
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person = context.reloadEntity(person);
+
+        // We now have 2 entries to process in the database.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(2));
+
+        // Trigger the poller to update the publications.
+        uclouvainItemEnhancerUpdatePoller.run();
+
+        // Reload the entities to have the latests modifications.
+        context.commit();
+        publication1 = context.reloadEntity(publication1);
+        publication2 = context.reloadEntity(publication2);
+
+        // Check the values of the publications to make sure they have changed.
+        String publication1Author = itemService.getMetadataFirstValue(
+            publication1, "dc", "contributor", "author", null
+        );
+        assertThat(publication1Author, equalTo("Jean Gloutitou"));
+        String publication2Author = itemService.getMetadataFirstValue(
+            publication2, "dc", "contributor", "author", null
+        );
+        assertThat(publication2Author, equalTo("Jean Gloutitou"));
+
+        // Check that there are no entries remaining in the database.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
+    }
+
+    /**
+     * Test the poller when we have a source item with only the second configured metadata that is valid.
+     * Here we define a person (author) and a publication.
+     * The person is linked to the publication using the 'person.givenName' field.
+     * person (person.givenName) -> publication (dc.contributor.author)
+     * @throws Exception
+     */
+    @Test
+    public void testPollerWithSimplePublicationAuthorRelationAndMultipleSourceMetadataField() throws Exception {
+        // First we create the person and the publication.
+        context.turnOffAuthorisationSystem();
+        Item person = ItemBuilder.createItem(context, collection)
+            .withEntityType("Person")
+            .withPersonIdentifierFirstName("Pierre")
+            .build();
+        UUID personAuthority = person.getID();
+
+        Item publication = ItemBuilder.createItem(context, collection)
+            .withTitle("Test publication0")
+            .withEntityType("Publication")
+            .withAuthor("Pierre", personAuthority.toString())
+            .build();
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person = context.reloadEntity(person);
+        publication = context.reloadEntity(publication);
+
+        // Modify the second valid metadata for the source item 'person'.
+        context.turnOffAuthorisationSystem();
+        itemService.setMetadataSingleValue(context, person, "person", "givenName", null, null, "Jean");
+        itemService.update(context, person);
+        context.restoreAuthSystemState();
+
+        context.commit();
+        context.reloadEntity(person);
+
+        // Check that we have one entry in the database since we modified one of configured the valid
+        // source metadata field.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
+
+        // Trigger the poller to update the publications.
+        uclouvainItemEnhancerUpdatePoller.run();
+
+        // Reload the entities to have the latests modifications.
+        context.commit();
+        publication = context.reloadEntity(publication);
+
+        // Check that the publication has the right value for its author.
+        String publicationAuhtor = itemService.getMetadataFirstValue(
+            publication, "dc", "contributor", "author", null
+        );
+        assertThat(publicationAuhtor, equalTo("Jean"));
+
+        // Check that there are no entries remaining in the database.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
+    }
+
+    /**
+     * This test is for a specific case where multiple field are valid for a given relation but
+     * only the second valid field is modified.
+     * So for example we have a publication linked with an author: The target metadata field is 'dc.contributor.author'
+     * and the source fields are 'dc.title' and 'person.givenName'. In this case we will have a value for 'dc.title'
+     * and for 'person.givenName'. If we modify the 'person.givenName' it should not modify the publication since
+     * the first field that is checked for the source is 'dc.title' (and it has a value).
+     *
+     * @throws Exception
+     */
+    @Test
+    public void TestItemEnhancementWithSimplePublicationAuthorRelationAndMultipleValidField() throws Exception {
+        // First we create the person and the publication.
+        context.turnOffAuthorisationSystem();
+        Item person = ItemBuilder.createItem(context, collection)
+            .withEntityType("Person")
+            .withTitle("Pierre Kiroul")
+            .withPersonIdentifierFirstName("Pierre")
+            .build();
+        UUID personAuthority = person.getID();
+
+        Item publication = ItemBuilder.createItem(context, collection)
+            .withTitle("Test publication0")
+            .withEntityType("Publication")
+            .withAuthor("Pierre Kiroul", personAuthority.toString())
+            .build();
+        context.restoreAuthSystemState();
+
+        context.commit();
+        person = context.reloadEntity(person);
+        publication = context.reloadEntity(publication);
+
+        // Modify the second valid metadata for the source item 'person'.
+        context.turnOffAuthorisationSystem();
+        itemService.setMetadataSingleValue(context, person, "person", "givenName", null, null, "Jean");
+        itemService.update(context, person);
+        context.restoreAuthSystemState();
+
+        context.commit();
+        context.reloadEntity(person);
+
+        // We should not have any entry in the database since we modified the second valid metadata of the source.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
+
+        // Trigger the poller to update the publications. It should not do anything.
+        uclouvainItemEnhancerUpdatePoller.run();
+
+        // Reload the entities to have the latests modifications.
+        context.commit();
+        publication = context.reloadEntity(publication);
+
+        // Check that the publication author value did not change.
+        String publicationAuhtor = itemService.getMetadataFirstValue(
+            publication, "dc", "contributor", "author", null
+        );
+        assertThat(publicationAuhtor, equalTo("Pierre Kiroul"));
     }
 }
