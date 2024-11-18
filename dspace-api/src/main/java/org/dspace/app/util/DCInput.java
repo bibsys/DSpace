@@ -9,6 +9,9 @@ package org.dspace.app.util;
 
 import static org.apache.commons.lang3.StringUtils.equalsAnyIgnoreCase;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,6 +105,11 @@ public class DCInput {
      * 'hint' text to display
      */
     private String hint = null;
+
+    /**
+     * specific URL where to find 'help' for the field
+     */
+    private String help = null;
 
     /**
      * if input list-controlled, name of list
@@ -210,6 +218,7 @@ public class DCInput {
             valueList = listMap.get(valueListName);
         }
         hint = fieldMap.get("hint");
+        help = fieldMap.get("help");
         warning = fieldMap.get("required");
         required = warning != null && warning.length() > 0;
         visibility = fieldMap.get("visibility");
@@ -388,6 +397,20 @@ public class DCInput {
      */
     public String getHints() {
         return hint;
+    }
+
+    /**
+     * Get the help URL for this form field
+     *
+     * @return the help URL
+     */
+    public String getHelp() {
+        // only return valid URL, otherwise return null
+        try {
+            return new URL(help).toURI().toString();
+        } catch (MalformedURLException | URISyntaxException e) {
+            return null;
+        }
     }
 
     /**

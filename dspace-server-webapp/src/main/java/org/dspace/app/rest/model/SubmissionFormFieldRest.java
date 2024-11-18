@@ -72,6 +72,11 @@ public class SubmissionFormFieldRest {
     private String hints;
 
     /**
+     * A URL where to find help about the input field
+     */
+    private String help;
+
+    /**
      * Extra information to be used by the UI to customize the presentation of the field. The format is dependent from
      * the UI implementation, the default Angular UI expects whitespace separated CSS class to add to the field
      */
@@ -194,6 +199,23 @@ public class SubmissionFormFieldRest {
      */
     public void setHints(String hints) {
         this.hints = hints;
+    }
+
+    /**
+     * Getter for {@link #help}
+     *
+     * @return {@link #help}
+     */
+    public String getHelp() {
+        return help;
+    }
+
+    /**
+     * Setter for {@link #help}
+     *
+     */
+    public void setHelp(String help) {
+        this.help = help;
     }
 
     /**
