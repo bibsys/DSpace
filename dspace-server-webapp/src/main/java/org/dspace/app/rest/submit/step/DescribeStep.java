@@ -98,8 +98,8 @@ public class DescribeStep extends AbstractProcessingStep {
                     for (Object qualifier : input.getPairs()) {
                         fieldsName.add(input.getFieldName() + "." + (String) qualifier);
                     }
-                } else if (StringUtils.equalsIgnoreCase(input.getInputType(), "group") ||
-                        StringUtils.equalsIgnoreCase(input.getInputType(), "inline-group")) {
+                } else if (StringUtils.equalsAny(input.getInputType().toLowerCase(),
+                        "group", "inline-group", "inline-labeled-group")) {
                     log.debug("Called child form:" + config.getId() + "-" +
                              Utils.standardize(input.getSchema(), input.getElement(), input.getQualifier(), "-"));
                     DCInputSet inputConfigChild = inputReader.getInputsByFormName(config.getId() + "-" + Utils
@@ -199,8 +199,8 @@ public class DescribeStep extends AbstractProcessingStep {
                     for (Object qualifier : input.getPairs()) {
                         fieldsName.add(input.getFieldName() + "." + (String) qualifier);
                     }
-                } else if (StringUtils.equalsIgnoreCase(input.getInputType(), "group") ||
-                        StringUtils.equalsIgnoreCase(input.getInputType(), "inline-group")) {
+                } else if (StringUtils.equalsAny(input.getInputType().toLowerCase(),
+                        "group", "inline-group", "inline-labeled-group")) {
                     log.debug("Called child form:" + configId + "-" +
                         Utils.standardize(input.getSchema(), input.getElement(), input.getQualifier(), "-"));
                     DCInputSet inputConfigChild = inputReader.getInputsByFormName(configId + "-" + Utils

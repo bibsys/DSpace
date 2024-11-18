@@ -9,7 +9,11 @@ package org.dspace.app.util;
 
 import static org.apache.commons.lang3.StringUtils.equalsAnyIgnoreCase;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -104,6 +108,11 @@ public class DCInput {
     private String hint = null;
 
     /**
+     * specific URL where to find 'help' for the field
+     */
+    private String help = null;
+
+    /**
      * if input list-controlled, name of list
      */
     private String valueListName = null;
@@ -147,6 +156,11 @@ public class DCInput {
      * allowed document types
      */
     private List<String> typeBind = null;
+
+    /**
+     * Settings list for this field
+     */
+    private Map<String, String> settings = null;
 
     private boolean isRelationshipField = false;
     private boolean isMetadataField = false;
@@ -210,6 +224,7 @@ public class DCInput {
             valueList = listMap.get(valueListName);
         }
         hint = fieldMap.get("hint");
+        help = fieldMap.get("help");
         warning = fieldMap.get("required");
         required = warning != null && warning.length() > 0;
         visibility = fieldMap.get("visibility");
@@ -244,6 +259,16 @@ public class DCInput {
             }
         }
 
+        // build settings map
+        settings = new HashMap<>();
+        fieldMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().startsWith("setting."))
+                .forEach(entry -> {
+                    String settingKey = entry.getKey().substring("setting.".length());
+                    String settingValue = entry.getValue();
+                    settings.put(settingKey, settingValue);
+                });
     }
 
     protected void initRegex(String regex) {
@@ -388,6 +413,29 @@ public class DCInput {
      */
     public String getHints() {
         return hint;
+    }
+
+    /**
+     * Get the help URL for this form field
+     *
+     * @return the help URL
+     */
+    public String getHelp() {
+        // only return valid URL, otherwise return null
+        try {
+            return new URL(help).toURI().toString();
+        } catch (MalformedURLException | URISyntaxException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get the specific setting configured for this field
+     *
+     * @return the setting map
+     */
+    public Map<String, String> getSettings() {
+        return settings;
     }
 
     /**

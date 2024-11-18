@@ -34,6 +34,7 @@ import org.dspace.submit.model.UploadConfiguration;
 import org.dspace.submit.model.UploadConfigurationService;
 import org.dspace.utils.DSpace;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -330,8 +331,9 @@ public class DCInputsReader {
                         entry.entrySet();
 
                 for (Entry<String, String> attr : entrySet) {
+                    String[] groupValues = {"group", "inline-group", "inline-labeled-group"};
                     if (attr.getKey().equals("input-type") &&
-                            (attr.getValue().equals("group") || attr.getValue().equals("inline-group"))) {
+                            Arrays.asList(groupValues).contains(attr.getValue())) {
                         String schema = entry.get("dc-schema");
                         String element = entry.get("dc-element");
                         String qualifier = entry.get("dc-qualifier");
@@ -529,7 +531,7 @@ public class DCInputsReader {
                     String closedVocabularyString = getAttribute(nd, "closed");
                     field.put("closedVocabulary", closedVocabularyString);
                 } else if (tagName.equals("language")) {
-                    if (Boolean.valueOf(value)) {
+                    if (Boolean.parseBoolean(value)) {
                         String pairTypeName = getAttribute(nd, PAIR_TYPE_NAME);
                         if (pairTypeName == null) {
                             throw new SAXException("Form " + formName + ", field " +
@@ -549,6 +551,14 @@ public class DCInputsReader {
                         if (nestedTagName.equals("input-type")) {
                             handleInputTypeTagName(formName, field, nestedNode, nestedValue);
                         }
+                    }
+                } else if (tagName.equals("settings")) {
+                    field.remove("settings");  // previously wrongly set just before if/else statements
+                    for (int j = 0; j < nd.getChildNodes().getLength(); j ++) {
+                        Element settingNode = (Element) nd.getChildNodes().item(j);
+                        String settingName = settingNode.getAttribute("name");
+                        String settingValue = getValue(settingNode);
+                        field.put("setting." + settingName, settingValue);
                     }
                 }
             }
@@ -953,7 +963,8 @@ public class DCInputsReader {
     }
 
     private boolean isGroupType(DCInput dcInput) {
-        return "group".equals(dcInput.getInputType()) || "inline-group".equals(dcInput.getInputType());
+        String[] groupValues = {"group", "inline-group", "inline-labeled-group"};
+        return Arrays.asList(groupValues).contains(dcInput.getInputType());
     }
 
     public List<String> getUploadMetadataFieldsFromCollection(Collection collection) throws DCInputsReaderException {
