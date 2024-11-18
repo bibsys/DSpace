@@ -24,20 +24,17 @@
     <bean name="uclouvainItemEnhancerService" class="org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerServiceImpl">
         <property name="enhancers">
             <util:list>
-                <ref bean="publicationAuthorEnhancer"/>
-                <ref bean="publicationAffiliationEnhancer"/>
+                <!-- Put enhancer configuration bean here -->
             </util:list>
         </property>
     </bean>
-
     <!-- Enhancers configuration -->
-    <bean name="publicationAuthorEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+    <!-- Example of configuration bean for a simple author/publication relation-->
+    <!-- <bean name="publicationAuthorEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
         <property name="sourceEntityType" value="Person"/>
         <property name="sourceMetadataFields">
             <util:list>
                 <value>dc.title</value>
-                <!-- Not really realistic, but just for test so OK -->
-                <value>person.givenName</value>
             </util:list>
         </property>
         <property name="targetEntityType" value="Publication"/>
@@ -46,19 +43,5 @@
                 <value>dc.contributor.author</value>
             </util:list>
         </property>
-    </bean>
-    <bean name="publicationAffiliationEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
-        <property name="sourceEntityType" value="Person"/>
-        <property name="sourceMetadataFields">
-            <util:list>
-                <value>person.affiliation.name</value>
-            </util:list>
-        </property>
-        <property name="targetEntityType" value="Publication"/>
-        <property name="targetMetadataFields">
-            <util:list>
-                <value>oairecerif.author.affiliation</value>
-            </util:list>
-        </property>
-    </bean>
+    </bean> -->
 </beans>
