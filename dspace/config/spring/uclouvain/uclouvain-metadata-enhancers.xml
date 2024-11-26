@@ -25,12 +25,19 @@
         <property name="enhancers">
             <util:list>
                 <!-- Put enhancer configuration bean here -->
+                 <ref bean="publicationAuthorEnhancer"/>
+                 <ref bean="publicationAuthorEmailEnhancer"/>
+                 <ref bean="publicationAuthorORCIDEnhancer"/>
+                 <ref bean="publicationInstitutionEnhancer"/>
+                 <ref bean="publicationDepartmentEnhancer"/>
+                 <ref bean="personInstitutionEnhancer"/>
+                 <ref bean="personDepartmentEnhancer"/>
+                 <ref bean="affiliationParentEnhancer"/>
             </util:list>
         </property>
     </bean>
     <!-- Enhancers configuration -->
-    <!-- Example of configuration bean for a simple author/publication relation-->
-    <!-- <bean name="publicationAuthorEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+    <bean name="publicationAuthorEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
         <property name="sourceEntityType" value="Person"/>
         <property name="sourceMetadataFields">
             <util:list>
@@ -43,5 +50,103 @@
                 <value>dc.contributor.author</value>
             </util:list>
         </property>
-    </bean> -->
+    </bean>
+    <bean name="publicationAuthorEmailEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.email</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>authors.email</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAuthorORCIDEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.identifier.orcid</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>authors.identifier.orcid</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationInstitutionEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="OrgUnit"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>oairecerif.acronym</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>oairecerif.affiliation.orgunit</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationDepartmentEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="OrgUnit"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.title</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>oairecerif.affiliation.orgunitDepartment</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="personInstitutionEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="OrgUnit"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>oairecerif.acronym</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Person"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>person.affiliation.institution</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="personDepartmentEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="OrgUnit"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.title</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Person"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>person.affiliation.department</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="affiliationParentEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="OrgUnit"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.title</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="OrgUnit"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>organization.parentOrganization</value>
+            </util:list>
+        </property>
+    </bean>
 </beans>
