@@ -330,8 +330,9 @@ public class DCInputsReader {
                         entry.entrySet();
 
                 for (Entry<String, String> attr : entrySet) {
+                    String[] groupValues = {"group", "inline-group", "inline-labeled-group"};
                     if (attr.getKey().equals("input-type") &&
-                            (attr.getValue().equals("group") || attr.getValue().equals("inline-group"))) {
+                            Arrays.asList(groupValues).contains(attr.getValue())) {
                         String schema = entry.get("dc-schema");
                         String element = entry.get("dc-element");
                         String qualifier = entry.get("dc-qualifier");
@@ -953,7 +954,8 @@ public class DCInputsReader {
     }
 
     private boolean isGroupType(DCInput dcInput) {
-        return "group".equals(dcInput.getInputType()) || "inline-group".equals(dcInput.getInputType());
+        String[] groupValues = {"group", "inline-group", "inline-labeled-group"};
+        return Arrays.asList(groupValues).contains(dcInput.getInputType());
     }
 
     public List<String> getUploadMetadataFieldsFromCollection(Collection collection) throws DCInputsReaderException {
