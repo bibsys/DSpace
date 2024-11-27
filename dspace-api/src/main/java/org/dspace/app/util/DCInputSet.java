@@ -133,7 +133,8 @@ public class DCInputSet {
                             return Optional.of(field);
                         }
                     }
-                } else if (StringUtils.equalsAny(field.getInputType(), "group", "inline-group")) {
+                } else if (StringUtils.equalsAny(field.getInputType(),
+                        "group", "inline-group", "inline-labeled-group")) {
                     String formName = getFormName() + "-" + Utils.standardize(field.getSchema(),
                         field.getElement(), field.getQualifier(), "-");
                     try {
