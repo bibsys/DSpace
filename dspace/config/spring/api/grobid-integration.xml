@@ -22,9 +22,14 @@
 		<entry key-ref="dcIssued" value-ref="grobidIssuedContributor" />
 		<entry key-ref="dcJissn" value-ref="grobidJissnContributor" />
         <entry key-ref="dcPisbn" value-ref="grobidPisbnContributor" />
-		<entry key-ref="dcDoi" value-ref="grobidDoiContributor" />
+        <!-- Using 'dc.identifier.doi' instead of 'dc.identifier' to be more precise. -->
+		<entry key-ref="grobid.doi" value-ref="grobidDoiContributor" />
 		<entry key-ref="dcAbstract" value-ref="grobidAbstractContributor" />
-		<entry key-ref="dcAllKeyword" value-ref="grobidKeywordsContributor" />  
+		<entry key-ref="dcAllKeyword" value-ref="grobidKeywordsContributor" />
+        <entry key-ref="grobid.journalVolume" value-ref="grobidSerialVolume"/>
+        <entry key-ref="grobid.journalIssue" value-ref="grobidSerialIssue"/>
+        <entry key-ref="grobid.journalPages" value-ref="grobidSerialPages"/>
+        <entry key-ref="grobid.journalDate" value-ref="grobidSerialDate"/>
     </util:map>
 
     <bean id="grobidTitleContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
@@ -38,7 +43,7 @@
     </bean>
 
     <bean id="grobidJournalContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
-        <property name="field" ref="dcJournal"/>
+        <property name="field" ref="grobid.journalTitle"/>
         <property name="key" value="monogrtitle" />
     </bean>
 
@@ -58,7 +63,7 @@
     </bean>
     
     <bean id="grobidDoiContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
-        <property name="field" ref="dcDoi"/>
+        <property name="field" ref="grobid.doi"/>
         <property name="key" value="doi" />
     </bean>
     
@@ -71,5 +76,40 @@
         <property name="field" ref="dcAllKeyword"/>
         <property name="key" value="profiledesckeywordsterm" />
     </bean>
-    
+    <bean id="grobidSerialVolume" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
+        <property name="field" ref="grobid.journalVolume"/>
+        <property name="key" value="serialvolume" />
+    </bean>
+    <bean id="grobidSerialIssue" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
+        <property name="field" ref="grobid.journalIssue"/>
+        <property name="key" value="serialissue" />
+    </bean>
+    <bean id="grobidSerialPages" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
+        <property name="field" ref="grobid.journalPages"/>
+        <property name="key" value="serialpage" />
+    </bean>
+    <bean id="grobidSerialDate" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
+        <property name="field" ref="grobid.journalDate"/>
+        <property name="key" value="monogrimprintdatepublished" />
+    </bean>
+
+    <!-- Additional metadata mapping for more data extraction -->
+    <bean id="grobid.journalIssue" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.issue"/>
+    </bean>
+    <bean id="grobid.journalVolume" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.volume"/>
+    </bean>
+    <bean id="grobid.journalPages" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.pages"/>
+    </bean>
+    <bean id="grobid.doi" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.identifier.doi"/>
+    </bean>
+    <bean id="grobid.journalDate" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.dateIssued"/>
+    </bean>
+    <bean id="grobid.journalTitle" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.relation.journal"/>
+    </bean>
 </beans>
