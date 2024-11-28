@@ -21,6 +21,7 @@ import org.dspace.importer.external.service.components.dto.PlainMetadataSourceDt
 import org.dspace.submit.extraction.grobid.Abstract;
 import org.dspace.submit.extraction.grobid.Analytic;
 import org.dspace.submit.extraction.grobid.Author;
+import org.dspace.submit.extraction.grobid.BiblScope;
 import org.dspace.submit.extraction.grobid.BiblStruct;
 import org.dspace.submit.extraction.grobid.Date;
 import org.dspace.submit.extraction.grobid.FileDesc;
@@ -146,6 +147,13 @@ public class GrobidImportMetadataSourceServiceImpl extends AbstractPlainMetadata
                 extractDate(meatadata, ((Date) object), prefix + "date");
             } else if (object instanceof Imprint) {
                 extractInfo(meatadata, ((Imprint) object).getBiblScopesAndDatesAndPubPlaces(), prefix + "imprint");
+            } else if (object instanceof BiblScope) {
+                BiblScope biblScope = (BiblScope) object;
+                if (biblScope.getUnit().equals("page")) {
+                    extractSerialPage(meatadata, biblScope, "serial" + biblScope.getUnit());
+                } else {
+                    extractInfo(meatadata, biblScope.getContent(), "serial" + biblScope.getUnit());
+                }
             } else if (object instanceof String) {
                 String str = (String) object;
                 if (StringUtils.isNotBlank(str)) {
@@ -153,6 +161,10 @@ public class GrobidImportMetadataSourceServiceImpl extends AbstractPlainMetadata
                 }
             }
         }
+    }
+
+    private void extractSerialPage(PlainMetadataSourceDto metadataSource, BiblScope biblScope, String prefix) {
+        metadataSource.addMetadata(prefix, biblScope.getFrom() + "-" + biblScope.getTo());
     }
 
     private void extractDate(PlainMetadataSourceDto meatadataSource, Date content, String prefix) {
