@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -156,6 +157,11 @@ public class DCInput {
      */
     private List<String> typeBind = null;
 
+    /**
+     * Settings list for this field
+     */
+    private Map<String, String> settings = null;
+
     private boolean isRelationshipField = false;
     private boolean isMetadataField = false;
     private String relationshipType = null;
@@ -253,6 +259,16 @@ public class DCInput {
             }
         }
 
+        // build settings map
+        settings = new HashMap<>();
+        fieldMap.entrySet()
+                .stream()
+                .filter(entry -> entry.getKey().startsWith("setting."))
+                .forEach(entry -> {
+                    String settingKey = entry.getKey().substring("setting.".length());
+                    String settingValue = entry.getValue();
+                    settings.put(settingKey, settingValue);
+                });
     }
 
     protected void initRegex(String regex) {
@@ -411,6 +427,15 @@ public class DCInput {
         } catch (MalformedURLException | URISyntaxException e) {
             return null;
         }
+    }
+
+    /**
+     * Get the specific setting configured for this field
+     *
+     * @return the setting map
+     */
+    public Map<String, String> getSettings() {
+        return settings;
     }
 
     /**
