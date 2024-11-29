@@ -34,6 +34,7 @@ import org.dspace.submit.model.UploadConfiguration;
 import org.dspace.submit.model.UploadConfigurationService;
 import org.dspace.utils.DSpace;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -530,7 +531,7 @@ public class DCInputsReader {
                     String closedVocabularyString = getAttribute(nd, "closed");
                     field.put("closedVocabulary", closedVocabularyString);
                 } else if (tagName.equals("language")) {
-                    if (Boolean.valueOf(value)) {
+                    if (Boolean.parseBoolean(value)) {
                         String pairTypeName = getAttribute(nd, PAIR_TYPE_NAME);
                         if (pairTypeName == null) {
                             throw new SAXException("Form " + formName + ", field " +
@@ -550,6 +551,14 @@ public class DCInputsReader {
                         if (nestedTagName.equals("input-type")) {
                             handleInputTypeTagName(formName, field, nestedNode, nestedValue);
                         }
+                    }
+                } else if (tagName.equals("settings")) {
+                    field.remove("settings");  // previously wrongly set just before if/else statements
+                    for (int j = 0; j < nd.getChildNodes().getLength(); j ++) {
+                        Element settingNode = (Element) nd.getChildNodes().item(j);
+                        String settingName = settingNode.getAttribute("name");
+                        String settingValue = getValue(settingNode);
+                        field.put("setting." + settingName, settingValue);
                     }
                 }
             }

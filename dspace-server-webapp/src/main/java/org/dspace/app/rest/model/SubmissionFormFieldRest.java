@@ -10,6 +10,7 @@ package org.dspace.app.rest.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -98,6 +99,11 @@ public class SubmissionFormFieldRest {
      * The list of type bind value
      */
     private List<String> typeBind;
+
+    /**
+     * A list of settings defined for this field
+     */
+    private Map<String, String> settings;
 
     /**
      * Getter for {@link #selectableMetadata}
@@ -270,6 +276,14 @@ public class SubmissionFormFieldRest {
      */
     public void setInput(SubmissionFormInputTypeRest input) {
         this.input = input;
+    }
+
+    public Map<String, String> getSettings() {
+        return settings;
+    }
+
+    public void setSettings(Map<String, String> settings) {
+        this.settings = settings;
     }
 
     public SubmissionVisibilityRest getVisibility() {
