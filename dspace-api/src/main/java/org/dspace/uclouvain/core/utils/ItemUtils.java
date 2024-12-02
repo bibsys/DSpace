@@ -18,12 +18,13 @@ import org.dspace.content.Collection;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.WorkspaceItem;
+import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamService;
-import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.dspace.xmlworkflow.storedcomponents.service.CollectionRoleService;
@@ -42,17 +43,15 @@ public class ItemUtils {
     @Autowired
     private XmlWorkflowItemService xmlWorkflowItemService;
     @Autowired
-    private WorkspaceItemService workspaceItemService;
-    @Autowired
     private CollectionRoleService collectionRoleService;
 
-    /**
+    /** 
     * This method is used to extract all bitstreams from an item.
     * 
-    * @param item The item to extract files from.
+    * @param DSpaceItem The item to extract files from.
     * @return The list of bit streams for the given item.
     */
-    public static List<Bitstream> extractItemFiles(Item item) {
+    public static List<Bitstream> extractItemFiles(Item DSpaceItem) {
         // Configuration which gives the bundles names to use.
         List<String> acceptedBundles = Arrays.asList(
             DSpaceServicesFactory
@@ -61,7 +60,7 @@ public class ItemUtils {
                     .getArrayProperty("uclouvain.resource_policy.accepted_bundles")
         );
         List<Bitstream> bitstreams = new ArrayList<>();
-        for (Bundle bundle: item.getBundles()) {
+        for (Bundle bundle: DSpaceItem.getBundles()) {
             if (acceptedBundles.contains(bundle.getName())) {
                 bitstreams.addAll(bundle.getBitstreams());
             }
@@ -83,14 +82,14 @@ public class ItemUtils {
         if (collection == null) {
             // Check if the item is in the workflow; if yes, we need to use the XmlWorkflowItem to retrieve the
             // owning collection.
-            XmlWorkflowItem xmlWorkflowItem = xmlWorkflowItemService.findByItem(context, item);
+            XmlWorkflowItem xmlWorkflowItem = this.xmlWorkflowItemService.findByItem(context, item);
             if (xmlWorkflowItem != null) {
                 collection = xmlWorkflowItem.getCollection();
             }
         }
 
         // Retrieve all the roles created for the item's collection.
-        for (CollectionRole role : collectionRoleService.findByCollection(context, collection)) {
+        for (CollectionRole role : this.collectionRoleService.findByCollection(context, collection)) {
             if (role.getRoleId().equals(CollectionRoleService.LEGACY_WORKFLOW_STEP1_NAME)) {
                 for (Group group: role.getGroup().getMemberGroups()) {
                     managers.addAll(group.getMembers());
@@ -100,16 +99,16 @@ public class ItemUtils {
         return managers;
     }
 
-    /**
+    /** 
     * This method allows getting the root item of a bitstream.
-    *
+    * 
     * @param context The current Dspace context.
     * @param bitstream The bitstream to get the item from.
     * @return The item that contains the given bitstream or null if none.
     * @throws SQLException for any database exception
     */
     public Item getItemFromBitstream(Context context, Bitstream bitstream) throws SQLException {
-        DSpaceObject dso = bitstreamService.getParentObject(context, bitstream);
+        DSpaceObject dso = this.bitstreamService.getParentObject(context, bitstream);
         return (dso instanceof Item)
             ? (Item) dso
             : null;
@@ -123,13 +122,15 @@ public class ItemUtils {
      * @param item    The DSpace Item to analyze.
      * @return The main collection to which the item belongs. Returns null if not found.
      */
-    public Collection getMainCollection(Context context, Item item) {
+    public static Collection getMainCollection(Context context, Item item) {
         try {
-            WorkspaceItem wsItem = workspaceItemService.findByItem(context, item);
+            WorkspaceItem wsItem =
+                ContentServiceFactory.getInstance().getWorkspaceItemService().findByItem(context, item);
             if (wsItem != null) {
                 return wsItem.getCollection();
             }
-            XmlWorkflowItem wfItem = xmlWorkflowItemService.findByItem(context, item);
+            XmlWorkflowItem wfItem =
+                XmlWorkflowServiceFactory.getInstance().getXmlWorkflowItemService().findByItem(context, item);
             if (wfItem != null) {
                 return wfItem.getCollection();
             }
@@ -145,10 +146,10 @@ public class ItemUtils {
      * @param item The item to check.
      * @return True if the item is in workflow false otherwise.
      * @throws SQLException for any database exception
-     *
+     * 
      */
-    public boolean isWorkflow(Context context, Item item) throws SQLException {
-        return xmlWorkflowItemService.findByItem(context, item) != null;
+    public static boolean isWorkflow(Context context, Item item) throws SQLException {
+        return XmlWorkflowServiceFactory.getInstance().getWorkflowItemService().findByItem(context, item) != null;
     }
 
     /**
@@ -158,7 +159,7 @@ public class ItemUtils {
      * @return True if the item is in workspace false otherwise.
      * @throws SQLException for any database exception
      */
-    public boolean isWorkspace(Context context, Item item) throws SQLException {
-        return workspaceItemService.findByItem(context, item) != null;
+    public static boolean isWorkspace(Context context, Item item) throws SQLException {
+        return ContentServiceFactory.getInstance().getWorkspaceItemService().findByItem(context, item) != null;
     }
 }
