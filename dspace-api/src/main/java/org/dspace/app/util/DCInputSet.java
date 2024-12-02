@@ -243,7 +243,8 @@ public class DCInputSet {
                         }
                     }
                 } else {
-                    if (input.isAllowedFor(documentTypeValue) && !allowedFieldNames.contains(input.getFieldName())) {
+                    // Do not check for input validity since we want to return every registered data for the item.
+                    if (!allowedFieldNames.contains(input.getFieldName())) {
                         allowedFieldNames.add(input.getFieldName());
                     }
                 }
