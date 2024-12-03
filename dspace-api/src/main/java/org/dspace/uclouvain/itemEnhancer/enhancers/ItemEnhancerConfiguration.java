@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 import org.dspace.content.service.MetadataFieldService;
-import org.dspace.core.Context;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -40,7 +39,6 @@ public class ItemEnhancerConfiguration {
     }
 
     public void setSourceMetadataFields(List<String> fields) throws SQLException {
-        validateMetadataFields(fields);
         sourceMetadataFields = fields;
     }
 
@@ -57,32 +55,11 @@ public class ItemEnhancerConfiguration {
     }
 
     public void setTargetMetadataFields(List<String> fields) throws SQLException {
-        validateMetadataFields(fields);
         targetMetadataFields = fields;
     }
 
     public List<String> getTargetMetadataFields() {
         return targetMetadataFields;
-    }
-
-    /**
-     * At instantiation, checks that each field given in the xml configuration is valid.
-     * A field is valid if it can be retrieved by the {@link MetadataFieldService}.
-     * If a field is not valid, it triggers an exception.
-     * 
-     * @param fields A list of fields to test.
-     * @throws SQLException
-     */
-    private void validateMetadataFields(List<String> fields) throws SQLException {
-        Context context = new Context();
-        for (String field: fields) {
-            if (metadataFieldService.findByString(context, field, '.') == null) {
-                throw new RuntimeException(
-                    "Could not find metadata field '" + field + "' in the metadata registry, check if it exists."
-                );
-            }
-        }
-        context.complete();
     }
 
     /**
