@@ -5,7 +5,7 @@
 
 # This Dockerfile uses JDK11 by default, but has also been tested with JDK17.
 # To build with JDK17, use "--build-arg JDK_VERSION=17"
-ARG JDK_VERSION=11
+ARG JDK_VERSION=17
 ARG DSPACE_VERSION=latest
 
 # Step 1 - Run Maven Build
