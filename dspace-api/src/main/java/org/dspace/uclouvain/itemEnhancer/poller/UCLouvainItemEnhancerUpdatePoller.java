@@ -82,6 +82,7 @@ public class UCLouvainItemEnhancerUpdatePoller {
             // Retrieve items to update form the database table.
             List<ItemToEnhance> itemsToUpdate = itemEnhancerService.getItemsToEnhance(context);
             if (itemsToUpdate.isEmpty()) {
+                context.complete();
                 return;
             }
             logger.debug("Poller found " + itemsToUpdate.size() + " items to update in the database !");
