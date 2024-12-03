@@ -867,6 +867,9 @@
           <input-type>onebox</input-type>
           <hint>Enter the DOI (Digital object identifier) of the item.</hint>
           <regex>^10\.\d*\/.*</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid DOI format: DOI must start with "10."</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -878,7 +881,10 @@
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the ISBN of the item.</hint>
-          <regex>^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$</regex>
+          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid ISBN format</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -892,7 +898,7 @@
         </field>
       </row>
     </form>
-    <form name="publication-base-dc-contributor-author">
+    <form name="publication-authors-dc-contributor-author">
       <row>
         <field>
           <dc-schema>dc</dc-schema>
@@ -914,6 +920,10 @@
           <input-type>onebox</input-type>
           <hint>Enter the email of the author.</hint>
           <required>Please provide an email for this author.</required>
+          <regex>^(([^\[\]\\.,;:\s@"]+(\.[^\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid email format</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -934,7 +944,7 @@
           <dc-element>role</dc-element>
           <repeatable>false</repeatable>
           <label>Author's role</label>
-          <type-bind>text::journal-article</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type value-pairs-name="publication_roles_journal_article">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
@@ -946,7 +956,7 @@
           <dc-element>role</dc-element>
           <repeatable>false</repeatable>
           <label>Author's role</label>
-          <type-bind>text::conference-speech</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_roles_conference_speech">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
@@ -958,7 +968,7 @@
           <dc-element>role</dc-element>
           <repeatable>false</repeatable>
           <label>Author's role</label>
-          <type-bind>text::book</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type value-pairs-name="publication_roles_book">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
@@ -970,7 +980,7 @@
           <dc-element>role</dc-element>
           <repeatable>false</repeatable>
           <label>Author's role</label>
-          <type-bind>text::book-part</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_roles_book_chapter">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
@@ -982,7 +992,7 @@
           <dc-element>role</dc-element>
           <repeatable>false</repeatable>
           <label>Author's role</label>
-          <type-bind>text::working-paper</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::working-paper</type-bind>
           <input-type value-pairs-name="publication_roles_working_paper">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
@@ -994,7 +1004,7 @@
           <dc-element>role</dc-element>
           <repeatable>false</repeatable>
           <label>Author's role</label>
-          <type-bind>text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type value-pairs-name="publication_roles_report">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
@@ -1006,7 +1016,7 @@
           <dc-element>role</dc-element>
           <repeatable>false</repeatable>
           <label>Author's role</label>
-          <type-bind>text::patent</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type value-pairs-name="publication_roles_patent">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
@@ -1039,18 +1049,7 @@
         </field>
       </row>
     </form>
-    <form name="publication-base">
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>title</dc-element>
-          <repeatable>false</repeatable>
-          <label>Title</label>
-          <input-type>onebox</input-type>
-          <hint>Enter the main title of the item.</hint>
-          <required>You must enter a main title for this item.</required>
-        </field>
-      </row>
+    <form name="publication-authors">
       <row>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1058,9 +1057,12 @@
           <dc-qualifier>author</dc-qualifier>
           <repeatable>true</repeatable>
           <label>Authors</label>
-          <input-type>group</input-type>
+          <input-type>inline-labeled-group</input-type>
           <hint>Enter the names of the authors of this item.</hint>
           <required>You must enter at least one author</required>
+          <settings>
+            <setting name="displayIndex">true</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -1073,6 +1075,20 @@
           <input-type>checkbox</input-type>
           <hint>This publication has additional authors than those mentionned above</hint>
           <required>Please indicate if there are additional non-mentionned authors.</required>
+          <style>mt-2 border-top w-100 pt-2</style>
+        </field>
+      </row>
+    </form>
+    <form name="publication-base">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>title</dc-element>
+          <repeatable>false</repeatable>
+          <label>Title</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the main title of the item.</hint>
+          <required>You must enter a main title for this item.</required>
         </field>
       </row>
       <row>
@@ -1139,7 +1155,7 @@
           <dc-qualifier>orgunit</dc-qualifier>
           <repeatable>true</repeatable>
           <label>Additional affiliations</label>
-          <input-type>group</input-type>
+          <input-type>inline-labeled-group</input-type>
           <hint>Enter additional affiliation not yet linked to any author's affiliation.</hint>
         </field>
       </row>
@@ -1174,6 +1190,9 @@
           <input-type>onebox</input-type>
           <hint>Enter the number of pages of the item.</hint>
           <regex>^\d+$</regex>
+          <settings>
+            <setting name="regexErrorMessage">Only digits are accepted</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -1251,7 +1270,10 @@
           <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::conference-speech,text::working-paper</type-bind>
           <input-type>onebox</input-type>
           <hint/>
-          <regex>^\d{4}-\d{3}[\dX]{1}$</regex>
+          <regex>^\d{4}-\d{3}[\dX]{1}|([nN][\/-]?[aA])</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid ISSN format</setting>
+          </settings>
         </field>
       </row>
       <!-- Host document fields -->
@@ -1320,7 +1342,10 @@
           <input-type>onebox</input-type>
           <hint>Enter the host document ISBN</hint>
           <required>Host document ISBN is required</required>
-          <regex>^((?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+)|n-a$</regex>
+          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid ISBN format</setting>
+          </settings>
         </field>
       </row>
       <row>
