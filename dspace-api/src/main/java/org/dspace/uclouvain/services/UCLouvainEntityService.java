@@ -16,6 +16,14 @@ import org.dspace.uclouvain.core.model.EntityType;
 public interface UCLouvainEntityService {
 
     /**
+     * Find all entities for a specific entity type
+     *
+     * @param entityType the entity type to search
+     * @return an entity list matching search criteria
+     */
+    List<Entity> find(EntityType entityType);
+
+    /**
      * Find entities matching search criteria
      *
      * @param entityCode the entity code to search.

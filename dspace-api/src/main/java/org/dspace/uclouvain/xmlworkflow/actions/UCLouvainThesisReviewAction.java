@@ -208,7 +208,7 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             // Encode the reason in the metadata field
             itemService.setMetadataSingleValue(context, wfi.getItem(), activeRF, null, reason);
             // Send an email to submitter to notify for the change request.
-            new ThesisChangeRequestEmail(wfi.getItem(), reason).sendEmail();
+            new ThesisChangeRequestEmail(context, wfi.getItem(), reason).sendEmail();
             context.restoreAuthSystemState();
             return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
         } catch (Exception e) {
