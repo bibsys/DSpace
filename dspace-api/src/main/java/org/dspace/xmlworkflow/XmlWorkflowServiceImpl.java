@@ -298,7 +298,6 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             for (EPerson anEpa : epa) {
                 mail.addRecipient(anEpa.getEmail());
             }
-
             mail.send();
         }
     }
@@ -728,6 +727,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             if (null != ep) {
                 // Get the Locale
                 Locale supportedLocale = I18nUtil.getEPersonLocale(ep);
+                // TODO :: explore how it sends...
                 Email email = Email.getEmail(I18nUtil.getEmailFilename(supportedLocale, "submit_archive"));
 
                 // Get the item handle to email to user
