@@ -7,128 +7,233 @@
  */
 package org.dspace.uclouvain.core.mails;
 
-import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.function.BinaryOperator;
+import static org.dspace.core.Constants.CONTENT_BUNDLE_NAME;
 
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dspace.access.status.DefaultAccessStatusHelper;
+import org.dspace.access.status.factory.AccessStatusServiceFactory;
+import org.dspace.access.status.service.AccessStatusService;
+import org.dspace.content.Bitstream;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
+import org.dspace.core.Context;
 import org.dspace.core.Email;
-import org.dspace.uclouvain.core.GenericThesisEmail;
-import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.eperson.EPerson;
+import org.dspace.uclouvain.core.directLink.ThesisSupervisorDirectLinkGenerator;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 import org.dspace.uclouvain.exceptions.ResumeGenerationException;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
+import org.dspace.uclouvain.services.DirectLinkService;
+import org.dspace.uclouvain.services.FacultyManagerService;
 
 /**
  * Main class to send an email for the submission attestation to the authors of the item.
  * This mail is sent when someone makes a new submission, and it enters the workflow validation system.
  * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
+
 public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
 
-    protected String entityTypeField = new MetadataField("dspace.entity.type").getFullString("_");
-    protected String authorNameField = new MetadataField(
-            configService
-                .getProperty("uclouvain.global.metadata.authorname.field", "dc.contributor.author"))
-                .getFullString("_");
-    protected String authorEmailField = new MetadataField(
-            configService
-                .getProperty("uclouvain.global.metadata.authoremail.field", "authors.email"))
-                .getFullString("_");
-    protected String promoterNameField = new MetadataField(
-            configService
-                .getProperty("uclouvain.global.metadata.advisorname.field", "dc.contributor.advisor"))
-                .getFullString("_");
+    private final Logger logger = LogManager.getLogger(ThesisAuthorAttestationEmail.class);
 
+    // CONSTANTS =======================================================================================================
+    private static final Map<String, Map<String, String>> FIELD_LABELS = Map.of(
+            "authors", Map.of("fr", "Auteur(s)", "en", "Author(s)"),
+            "abstracts", Map.of("fr", "Résumé(s)", "en", "Abstract(s)"),
+            "supervisors", Map.of("fr", "Promoteur(s)", "en", "Supervisor(s)"),
+            "title", Map.of("fr", "Titre", "en", "Title")
+    );
+
+    // ATTRIBUTES ======================================================================================================
+    protected String authorNameField = configService.getProperty(
+            "uclouvain.global.metadata.authorname.field", "dc.contributor.author");
+    protected String promoterNameField = configService.getProperty(
+            "uclouvain.global.metadata.advisorname.field", "dc.contributor.advisor");
+    protected String rootDegreeCodeField = configService.getProperty(
+            "uclouvain.global.metadata.rootdegreecode.field", "masterthesis.rootdegree.code");
     protected InputStream attachment;
 
-    public ThesisAuthorAttestationEmail(Item item, InputStream attachment) {
-        super(item);
+    private static final FacultyManagerService facultyManagerService = UCLouvainServiceFactory
+            .getInstance()
+            .getFacultyManagerService();
+    private static final DirectLinkService uclouvainDirectLinkService = UCLouvainServiceFactory
+            .getInstance()
+            .getDirectLinkService();
+    private static final AccessStatusService accessStatusService = AccessStatusServiceFactory
+            .getInstance()
+            .getAccessStatusService();
+
+    // CONSTRUCTOR =====================================================================================================
+    public ThesisAuthorAttestationEmail(Context context, Item item, InputStream attachment) {
+        super(context, item);
         this.attachment = attachment;
     }
 
-    /**
-     * Configuration used to find the different properties for the email (subject, recipients...)
-     */
+    /** Configuration used to find the different properties for the email (subject, recipients...) */
     protected String getConfigurationName() {
         return "pdf_attestation";
     }
 
-    /**
-     * Get the corresponding template file for the author attestation mail.
-     */
+    /** Get the corresponding template file for the author attestation mail. */
     protected String getTemplatePath() {
-        return this.source + "/config/emails/pdf_attestation_author";
+        return this.source + "/config/emails/thesis_attestation.author";
+    }
+
+    /** Get the string to use as the email subject. */
+    protected String buildMailSubject() {
+        String authorNames = itemService.getMetadataByMetadataString(item, authorNameField)
+                .stream()
+                .map(MetadataValue::getValue)
+                .collect(Collectors.collectingAndThen(
+                    Collectors.joining("; "),
+                    joined -> joined.isEmpty() ? "" : " :: " + joined
+                ));
+        return mailSubject + authorNames;
+    }
+
+    /** Get the author email addresses that will be used as recipients. */
+    protected List<String> getRecipientAddresses() {
+        return itemService.getMetadataByMetadataString(item, authorEmailField)
+                .stream()
+                .map(MetadataValue::getValue)
+                .collect(Collectors.toList());
+    }
+
+    /** Get the faculty thesis manager corresponding to master thesis as CC recipients. */
+    @Override
+    protected List<String> getCCAddresses() {
+        Set<EPerson> facultyManagers = new HashSet<>();
+        for (MetadataValue degreeCode : itemService.getMetadataByMetadataString(item, rootDegreeCodeField)) {
+            try {
+                facultyManagers.addAll(facultyManagerService.getFacultyManagers(context, degreeCode.getValue()));
+            } catch (Exception e) {
+                log.error("Error getting faculty managers", e);
+            }
+        }
+        return facultyManagers.stream().map(EPerson::getEmail).collect(Collectors.toList());
     }
 
     /**
      * Generates a base email version with the given metadata that can be used for both the authors and the promoters.
+     *
      * @param email The current email to modify.
      * @throws EmailGenerationException If an error occurs while filling email information.
      */
     protected void generateEmail(Email email) throws EmailGenerationException {
+        String entityType = Optional.ofNullable(itemService.getMetadata(item, "dspace.entity.type")).orElse("");
         try {
-            this.addRecipients(getRecipientsEmails(), email);
-            email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
-            email.addArgument(generateSubmissionResume(metadataMap));
-            email.setSubject(mailSubject);
-            email.addAttachment(
-                attachment,
-                metadataMap.get(entityTypeField).get(0) + "SubmissionAttestation.pdf", "application/pdf"
-            );
+            email.addArgument(getEmailMetadata("fr"));
+            email.addArgument(getEmailMetadata("en"));
+            email.addArgument(getFilesDownloadURLs());
+            email.addArgument(configService.getProperty("dspace.ui.url") + "/mydspace");
+            email.addAttachment(attachment, entityType + "SubmissionAttestation.pdf", "application/pdf");
         } catch (Exception e) {
             throw new EmailGenerationException("An error occurred while filling email informations.", e);
         }
     }
 
     /**
-     * Get the author email addresses that will be used as recipients.
-     * @return The recipient addresses list.
-     */
-    protected List<String> getRecipientsEmails() {
-        return this.metadataMap.get(authorEmailField);
+     * Generates an abstract for the given submission containing the title, the abstract and the authors.
+     *
+     * @param language the language code to use to build the hashmap.
+     * @return The hashmap containing all metadata about the submission to display into the email.
+     * @throws ResumeGenerationException if any error occurred during abstract generation
+    */
+    protected HashMap<String, String> getEmailMetadata(String language) throws ResumeGenerationException {
+        HashMap<String, String> emailMetadata = new HashMap<>();
+        try {
+            emailMetadata.put(getFieldLabel("title", language), getMetadataValue("dc.title", false));
+            emailMetadata.put(getFieldLabel("authors", language), getMetadataValue(authorNameField, true));
+            emailMetadata.put(getFieldLabel("supervisors", language), getMetadataValue(promoterNameField, true));
+            emailMetadata.put(getFieldLabel("abstracts", language), getMetadataValue("dc.description.abstract", true));
+            emailMetadata.entrySet().removeIf(e -> e.getValue() == null || e.getValue().isEmpty());
+            return emailMetadata;
+        } catch (Exception e) {
+            throw new ResumeGenerationException("Submission mail generation failed :: " + e.getMessage());
+        }
     }
 
     /**
-     * Generates an abstract for the given submission containing the title, the abstract and the authors.
-     * 
-     * @param metadataMap The HashMap containing information about the submission.
-     * @return The abstract as a String.
-     * @throws ResumeGenerationException if any error occurred during abstract generation
-    */
-    protected String generateSubmissionResume(HashMap<String, List<String>> metadataMap)
-            throws ResumeGenerationException {
+     * Get i18n label to use about a specific field
+     *
+     * @param fieldName the field name to check (key into FIELD_LABELS map)
+     * @param language the language to check
+     * @return the best possible label to use.
+     */
+    protected String getFieldLabel(String fieldName, String language) {
+        // If label doesn't exist, then capitalize the fieldName
+        return (FIELD_LABELS.containsKey(fieldName) && FIELD_LABELS.get(fieldName).containsKey(language))
+            ? FIELD_LABELS.get(fieldName).get(language)
+            : fieldName.substring(0, 1).toUpperCase() + fieldName.substring(1).toLowerCase();
+    }
+
+    /**
+     * Get string values for a metadata field.
+     *
+     * @param metadataFieldName the metadata field to check (ex: 'dc_title')
+     * @param multiple concatenate multiple values or just return the first one.
+     * @return the string representation of the metadata values.
+     */
+    protected String getMetadataValue(String metadataFieldName, boolean multiple) {
+        List<String> metadataValues = itemService.getMetadataByMetadataString(item, metadataFieldName)
+                .stream()
+                .map(MetadataValue::getValue)
+                .collect(Collectors.toList());
+        if (metadataValues.isEmpty()) {
+            return "";
+        }
+        return (multiple)
+            ? String.join("; ", metadataValues)
+            : metadataValues.get(0);
+    }
+
+    /**
+     * Build direct download URLs for item attached files.
+     *
+     * @return a map where each key is the filename, each value is the download link;
+     */
+    protected List<String[]> getFilesDownloadURLs() {
+        List<String[]> urls = new ArrayList<>();
         try {
-            BinaryOperator<String> parser = (subtotal, element) -> subtotal + element + "; ";
-            List<String> resultString = new ArrayList<>();
-            // Retrieve all required metadata && check if they are existing before adding them to the submission's
-            // abstract.
-            List<String> title = metadataMap.get("dc_title");
-            if (title != null && !title.isEmpty()) {
-                resultString.add("Title: " + title.get(0));
+            String linkType = ThesisSupervisorDirectLinkGenerator.LINK_TYPE;
+            List<Bitstream> bitstreams = item.getBundles(CONTENT_BUNDLE_NAME)
+                    .stream()
+                    .flatMap(bundle -> bundle.getBitstreams().stream())
+                    .toList();
+            for (Bitstream bitstream : bitstreams) {
+                urls.add(new String[] {
+                    bitstream.getName(),
+                    getBitstreamAccessStatus(bitstream),
+                    uclouvainDirectLinkService.buildURL(context, bitstream, linkType, Collections.emptyMap())
+                });
             }
-            List<String> authors = metadataMap.get(authorNameField);
-            if (authors != null && !authors.isEmpty()) {
-                resultString.add("Authors: " + authors.stream().reduce("", parser));
-            }
-            List<String> promoters = metadataMap.get(promoterNameField);
-            if (promoters != null && !promoters.isEmpty()) {
-                resultString.add("Promoters: " + promoters.stream().reduce("", parser));
-            }
-            List<String> abstractText = metadataMap.get("dc_description_abstract");
-            if (abstractText != null && !abstractText.isEmpty()) {
-                resultString.add("Abstract: " + abstractText.get(0));
-            }
-            if (resultString.isEmpty()) {
-                resultString.add(":: No valid metadata could be found for the thesis, please contact support ::");
-            }
-            return String.join("\n", resultString);
         } catch (Exception e) {
-            throw new ResumeGenerationException("Submission mail generation failed :: " + e.getMessage());
+            logger.error("Unable to generate direct download URLs for supervisors :: " + e.getMessage());
+            return Collections.emptyList();
+        }
+        return urls;
+    }
+
+    private String getBitstreamAccessStatus(Bitstream bitstream) {
+        try {
+            return accessStatusService.getBitstreamAccessStatus(context, bitstream);
+        } catch (SQLException e) {
+            return DefaultAccessStatusHelper.UNKNOWN;
         }
     }
 }
