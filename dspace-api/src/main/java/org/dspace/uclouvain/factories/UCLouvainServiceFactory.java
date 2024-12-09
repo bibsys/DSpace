@@ -13,12 +13,13 @@ import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.services.DirectLinkService;
+import org.dspace.uclouvain.services.FacultyManagerService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
 /**
  * Abstract factory to get services for the UCLouvain package.
- * use UCLouvainServiceFactory.getInstance() to retrieve an implementation
+ * Use UCLouvainServiceFactory.getInstance() to retrieve an implementation
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
@@ -31,6 +32,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract CommentService getCommentService();
     public abstract DirectLinkService getDirectLinkService();
     public abstract MailMetadataParserService getMailMetadataParserService();
+    public abstract FacultyManagerService getFacultyManagerService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
