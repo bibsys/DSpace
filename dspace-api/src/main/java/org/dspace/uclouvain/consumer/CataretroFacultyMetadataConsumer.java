@@ -8,22 +8,17 @@
 package org.dspace.uclouvain.consumer;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.content.Collection;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataValue;
-import org.dspace.content.WorkspaceItem;
 import org.dspace.content.factory.ContentServiceFactory;
-import org.dspace.content.service.CollectionService;
 import org.dspace.content.service.ItemService;
 import org.dspace.content.service.MetadataFieldService;
-import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.event.Consumer;
@@ -34,9 +29,6 @@ import org.dspace.uclouvain.core.model.Entity;
 import org.dspace.uclouvain.core.model.EntityType;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
-import org.dspace.workflow.WorkflowItemService;
-import org.dspace.workflow.factory.WorkflowServiceFactory;
-import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 
 /**
  * Consumer to generate additional metadata from the faculty code ONLY for "catareto" collection.
@@ -46,24 +38,18 @@ import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
  */
 public class CataretroFacultyMetadataConsumer implements Consumer {
 
-    private static Logger log = org.apache.logging.log4j.LogManager.getLogger(CataretroFacultyMetadataConsumer.class);
+    private final static Logger log = LogManager.getLogger(CataretroFacultyMetadataConsumer.class);
 
     private String facultyCodeFieldName;
     private String facultyNameFieldName;
 
     private ItemService itemService;
-    private WorkspaceItemService workspaceItemService;
-    private WorkflowItemService<?> workflowItemService;
-    private CollectionService collectionService;
     private MetadataFieldService metadataFieldService;
     private UCLouvainEntityService uclouvainEntityService;
 
     @Override
     public void initialize() {
         itemService = ContentServiceFactory.getInstance().getItemService();
-        workspaceItemService = ContentServiceFactory.getInstance().getWorkspaceItemService();
-        workflowItemService = WorkflowServiceFactory.getInstance().getWorkflowItemService();
-        collectionService = ContentServiceFactory.getInstance().getCollectionService();
         metadataFieldService = ContentServiceFactory.getInstance().getMetadataFieldService();
         uclouvainEntityService = UCLouvainServiceFactory.getInstance().getEntityService();
 
@@ -146,36 +132,9 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
 
     /** Check if the modified item is a member of a "Cataretro" collection */
     private Boolean isRelevantCollection(Context context, Item item) {
-        return getItemCollection(context, item)
-                .stream()
-                .anyMatch(c -> {
-                    List<MetadataValue> meta = collectionService.getMetadataByMetadataString(c, "dcterms.provenance");
-                    return meta.stream().map(MetadataValue::getValue).anyMatch(v -> v.equals("cataretro"));
-                });
-    }
-
-    /**
-     * Get collections related to an item.
-     * Depending on item life-cycle, the item collection should be retrieved differently.
-     *
-     * @param context The DSpace context
-     * @param item the DSpace Item to analyze.
-     * @return the list of collection to which the item belongs.
-     */
-    private List<Collection> getItemCollection(Context context, Item item) {
-        try {
-            WorkspaceItem wsItem = workspaceItemService.findByItem(context, item);
-            if (wsItem != null) {
-                return Collections.singletonList(wsItem.getCollection());
-            }
-            XmlWorkflowItem wfItem = (XmlWorkflowItem) workflowItemService.findByItem(context, item);
-            if (wfItem != null) {
-                return Collections.singletonList(wfItem.getCollection());
-            }
-            return item.getCollections();
-        } catch (SQLException sqe) {
-            log.warn("Unable to identify item collection : " + sqe.getMessage());
-            return new ArrayList<>();
-        }
+        return itemService.getMetadataByMetadataString(item, "dcterms.provenance")
+            .stream()
+            .map(MetadataValue::getValue)
+            .anyMatch(v -> v.equals("cataretro"));
     }
 }
