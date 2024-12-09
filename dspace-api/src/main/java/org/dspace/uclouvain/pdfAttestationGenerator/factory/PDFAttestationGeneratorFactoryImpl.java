@@ -31,7 +31,9 @@ public class PDFAttestationGeneratorFactoryImpl implements PDFAttestationGenerat
      * Returns a handler instance for a dspace item to handle PDF attestation generation.
      * 
      * @param uuid Target DSpace Item's UUID.
-     * @return A handler or null if not found.
+     * @return The corresponding handler
+     * @throws SQLException if DSpace item doesn't exist.
+     * @throws HandlerNotFoundException if no handler found corresponding to Dspace item.
      */
     @Override
     public PDFAttestationGeneratorHandler getHandlerInstance(UUID uuid) throws SQLException, HandlerNotFoundException {
@@ -46,6 +48,6 @@ public class PDFAttestationGeneratorFactoryImpl implements PDFAttestationGenerat
         if (handler != null) {
             return handler.handlerClass;
         }
-        throw new HandlerNotFoundException("No handler found for type: " + itemType);
+        throw new HandlerNotFoundException(itemType);
     }
 }

@@ -10,12 +10,19 @@ package org.dspace.profile;
 import static org.dspace.core.Constants.READ;
 import static org.dspace.eperson.Group.ANONYMOUS;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
+import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.model.Entity;
+import org.dspace.uclouvain.core.model.EntityType;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
+import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.util.UUIDUtils;
 import org.springframework.util.Assert;
 
@@ -30,6 +37,13 @@ public class ResearcherProfile {
     private final Item item;
 
     private final MetadataValue dspaceObjectOwner;
+
+    private final String degreeMetadataFieldName = DSpaceServicesFactory
+            .getInstance()
+            .getConfigurationService()
+            .getProperty("uclouvain.solr.plugin.workflow.degree.field.metadata", "crisrp.workgroup");
+    private final UCLouvainEntityService entityService = UCLouvainServiceFactory.getInstance().getEntityService();
+
 
     /**
      * Create a new ResearcherProfile object from the given item.
@@ -64,8 +78,18 @@ public class ResearcherProfile {
     }
 
     public Optional<String> getOrcid() {
-        return getMetadataValue(item, "person.identifier.orcid")
-            .map(metadataValue -> metadataValue.getValue());
+        return getMetadataValue(item, "person.identifier.orcid").map(MetadataValue::getValue);
+    }
+
+    public List<String> getDegreeCodes() {
+        List<String> degreeCodes = getMetadataValues(item, degreeMetadataFieldName)
+                .flatMap(s -> Stream.of(s.getValue().split("[,;]"))) // Split using ',' or ';'
+                .map(String::trim)
+                .filter(s -> !s.isEmpty()) // remove possible empty string
+                .collect(Collectors.toList());
+        return (degreeCodes.contains("*"))
+            ? entityService.find(EntityType.DEGREE).stream().map(Entity::getCode).collect(Collectors.toList())
+            : degreeCodes;
     }
 
     private MetadataValue getDspaceObjectOwnerMetadata(Item item) {

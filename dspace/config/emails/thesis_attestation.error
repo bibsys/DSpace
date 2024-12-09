@@ -1,0 +1,18 @@
+## Email sent to the submitter to inform that an error occurred when generating the PDF attestation email.
+## Parameters:  - {0} Date and time
+##              - {1} Submitter name
+##              - {2} Submission type
+##              - {3} item UUID
+##              - {4} Error stacktrace
+<html>
+  <body>
+    <p>Dear ${params[1]},</p>
+    <p>We are sorry to announce you that an error occurred while generating your ${params[2]} submission PDF attestation.</p>
+    <p>Here are some information that might be useful for our team:</p>
+    <h5>item UUID</h5>
+    ${params[3]}
+    <h5>Error description</h5>
+    <pre style="border:1px solid #777; background-color:#EEE">${params[4]}</pre>
+    <p>Please contact our team for support at ${config.get("mail.helpdesk")}.</p>
+  </body>
+</html>
