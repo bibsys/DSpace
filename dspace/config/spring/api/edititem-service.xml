@@ -214,7 +214,7 @@
                                     <value>librarian</value>
                                 </list>
                             </property>
-                            <property name="submissionDefinition" value="master-thesis-edit" />
+                            <property name="submissionDefinition" value="master-thesis-edit-librarian" />
                         </bean>
                     </list>
                 </entry>

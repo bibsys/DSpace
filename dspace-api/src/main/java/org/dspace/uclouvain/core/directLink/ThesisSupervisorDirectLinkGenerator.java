@@ -7,17 +7,14 @@
  */
 package org.dspace.uclouvain.core.directLink;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.http.util.Asserts;
 import org.dspace.content.Bitstream;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
-import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamService;
-import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.utils.CryptoUtils;
@@ -29,8 +26,6 @@ public class ThesisSupervisorDirectLinkGenerator extends DirectLinkGenerator {
 
     @Autowired
     private BitstreamService bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
-    @Autowired
-    private ItemService itemService = ContentServiceFactory.getInstance().getItemService();
 
     private final String password = configurationService.getProperty("uclouvain.crypto.password");
     private final String salt = configurationService.getProperty("uclouvain.crypto.salt");
@@ -55,30 +50,25 @@ public class ThesisSupervisorDirectLinkGenerator extends DirectLinkGenerator {
     /**
      * Build the URL to use to download a bitstream without any restriction
      *
+     * @param context The Dspace application context
      * @param bitstream The bitstream to download
      * @param args      All required arguments used to build the URL (depending on concrete link generator class)
      * @return The full build URL
      * @throws Exception If any exception occurred during the URL generation
      */
     @Override
-<<<<<<< Updated upstream
-    protected String buildSecret(Bitstream bitstream, Map<String, Object> args) throws Exception {
-        String email = getArgument(args, "email", String.class);
-        String limitedTimeToken = buildToken(bitstream.getID() + GLUE + email);
-=======
     protected String buildSecret(Context context, Bitstream bitstream, Map<String, Object> args) throws Exception {
         DSpaceObject dso = bitstreamService.getParentObject(context, bitstream);
         if (!(dso instanceof Item)) {
             throw new Exception("Unable to find item parent ID");
         }
         String limitedTimeToken = buildToken(bitstream.getID() + GLUE + dso.getID().toString());
->>>>>>> Stashed changes
         return CryptoUtils.encrypt(limitedTimeToken, password, salt);
     }
 
     /**
      * Validate a token for a specific bitstream.
-     *     For this class, the decrypted token must represent a supervisor email for the related thesis
+     *     For this class, the decrypted token must represent the concatenation of bitstream ID and item ID
      *
      * @param context The Dspace application context
      * @param bitstream The bitstream to analyze
@@ -90,17 +80,15 @@ public class ThesisSupervisorDirectLinkGenerator extends DirectLinkGenerator {
         try {
             String decryptedToken = CryptoUtils.decrypt(token, password, salt);
             String tokenValue = getTokenValue(decryptedToken);
-
-            DSpaceObject dso = bitstreamService.getParentObject(context, bitstream);
-            if (!(dso instanceof Item item)) {
-                throw new Exception("Unable to find bitstream parent item");
+            String[] parts = tokenValue.split(GLUE, 2);
+            if (parts.length != 2 || !parts[0].equals(bitstream.getID().toString())) {
+                throw new InvalidTokenException("Unexpected bitstream ID");
             }
-            List<String> supervisorsEmails = itemService
-                .getMetadataByMetadataString(item, supervisorEmailField)
-                .stream()
-                .map(MetadataValue::getValue)
-                .toList();
-            return supervisorsEmails.stream().anyMatch(email -> email.equalsIgnoreCase(tokenValue));
+            DSpaceObject dso = bitstreamService.getParentObject(context, bitstream);
+            if (!(dso instanceof Item) || !parts[1].equals(dso.getID().toString())) {
+                throw new InvalidTokenException("Unexpected parent item ID");
+            }
+            return true;
         } catch (Exception e) {
             logger.info("Token validation error :: " + e.getMessage());
             return false;
