@@ -52,7 +52,6 @@ public class SendEmailAttestationAction extends ProcessingAction {
 
     public SendEmailAttestationAction() {
         ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-        // Instantiate the metadata fields from the configuration
         authorEmailField = new MetadataField(configService.getProperty(
                 "uclouvain.global.metadata.authoremail.field", "authors.email")).getFullString("_");
         supervisorEmailField = new MetadataField(configService.getProperty(
@@ -67,7 +66,10 @@ public class SendEmailAttestationAction extends ProcessingAction {
     * Action used by the workflow system to send an email when a submission is made.
     */
     @Override
-    public ActionResult execute(Context c, XmlWorkflowItem wfi, Step step, HttpServletRequest request) {
+    public ActionResult execute(Context context, XmlWorkflowItem wfi, Step step, HttpServletRequest request) {
+        Item dspaceItem = null;
+        // In any cases, the email attestation generation must not be blocking. We always return a valid response.
+        ActionResult staticResponse = new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
         // UUID of the current workflow item
         UUID uuid = wfi.getItem().getID();
         try {
@@ -75,54 +77,41 @@ public class SendEmailAttestationAction extends ProcessingAction {
             PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory
                 .getInstance()
                 .getHandlerInstance(uuid);
-            // If the type of the submission is supported, we have an handler
-            if (handler != null) {
-                Item dspaceItem = itemService.find(c, uuid);
-                HashMap<String, List<String>> map = MetadataUtils.getValuesHashMap(dspaceItem.getMetadata());
-
-                // Checks if authors and promoter are present
-                if (map.get(this.authorEmailField) == null || map.get(supervisorEmailField) == null) {
-                    logger.warn("No authors or advisors found for the following item: " + dspaceItem.getID()
-                            + ". Aborting email attestation generation.");
-                    return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
-                }
-
+            dspaceItem = itemService.find(context, uuid);
+            HashMap<String, List<String>> map = MetadataUtils.getValuesHashMap(dspaceItem.getMetadata());
+            // Checks if authors and promoter are present
+            if (map.get(authorEmailField) == null || map.get(supervisorEmailField) == null) {
+                logger.warn("No authors or supervisors found for the following item: " + dspaceItem.getID()
+                    + "--> Aborting email attestation generation.");
+                return staticResponse;
+            }
+            // We need to use a `ByteArrayInputStream` to be able to reset the stream after sending
+            // the email to the submitter(s).
+            ByteArrayInputStream pdfAttestation = new ByteArrayInputStream(
+                IOUtils.toByteArray(handler.getAttestationAsInputStream(uuid))
+            );
+            // Mark the position to reset to
+            pdfAttestation.mark(pdfAttestation.available());
+            // Send email to authors
+            new ThesisAuthorAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
+            // Reset to the previously marked position.
+            // We need to do that because the stream has been consumed by the previous email.
+            pdfAttestation.reset();
+            // Send email to promoters
+            new ThesisSupervisorAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
+        } catch (HandlerNotFoundException e) {
+            logger.error("[" + uuid + "] No handler found for item with uuid:" + e.getMessage());
+        } catch (Exception e) {
+            logger.error("[" + uuid + "] Exception occurred during email attestation generation: " + e.getMessage());
+            if (dspaceItem != null) {
                 try {
-                    // We need to use a `ByteArrayInputStream` in order to be able to reset the stream after sending
-                    // the email to the submitter(s).
-                    ByteArrayInputStream pdfAttestation = new ByteArrayInputStream(
-                        IOUtils.toByteArray(handler.getAttestationAsInputStream(uuid))
-                    );
-                    // Mark the position to reset to
-                    pdfAttestation.mark(pdfAttestation.available());
-                    // Send email to authors
-                    new ThesisAuthorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
-                    // Reset to the previously marked position.
-                    // We need to do that because the stream has been consumed by the previous email.
-                    pdfAttestation.reset();
-                    // Email promoters
-                    new ThesisSupervisorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
-                } catch (Exception e) {
-                    // Send an error email if something goes wrong
-                    logger.error("An exception occurred while generating email attestation for uuid: " + uuid + ": "
-                            + e.getMessage());
-                    try {
-                        new ThesisErrorAttestationEmail(dspaceItem, e).sendEmail();
-                    } catch (Exception errorException) {
-                        logger.error("Could not generate or send the error email for email attestation for uuid: "
-                            + uuid + ": " + errorException.getMessage());
-                    }
+                    new ThesisErrorAttestationEmail(context, dspaceItem, e).sendEmail();
+                } catch (Exception ignored) {
+                    // do nothing
                 }
             }
-        } catch (HandlerNotFoundException e) {
-            logger.error("No handler found for item with uuid: " + uuid + ": " + e.getMessage());
-            return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
-        } catch (Exception e) {
-            logger.error("An exception occurred while generating email attestation for uuid: " + uuid + ": "
-                + e.getMessage());
-            return new ActionResult(ActionResult.TYPE.TYPE_ERROR);
         }
-        return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
+        return staticResponse;
     }
 
     @Override
