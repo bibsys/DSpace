@@ -24,6 +24,25 @@ public class UCLouvainEntityServiceImpl implements UCLouvainEntityService {
     EntitiesConfigurationFile entitiesConfigurationFile;
 
     /**
+     * Find all entities for a specific entity type
+     *
+     * @param entityType the entity type to search (optional).
+     *                   If null, then all entities will be return independent of its entity type.
+     * @return an entity list matching search criteria
+     */
+    @Override
+    public List<Entity> find(EntityType entityType) {
+        try {
+            return entitiesConfigurationFile.getData()
+                .stream()
+                .filter(e -> entityType == null || e.getType() == entityType)  // Allow null value to return all
+                .collect(Collectors.toList());
+        } catch (IOException e) {
+            return new ArrayList<>();
+        }
+    }
+
+    /**
      * Find entities matching search criteria
      *
      * @param entityCode the entity code to search.
@@ -32,15 +51,10 @@ public class UCLouvainEntityServiceImpl implements UCLouvainEntityService {
      */
     @Override
     public List<Entity> find(String entityCode, EntityType entityType) {
-        Entity fakeEntity = new Entity(entityCode, entityType);
-        try {
-            return entitiesConfigurationFile.getData()
+        return find(entityType)
                 .stream()
-                .filter(e -> e.equals(fakeEntity))
+                .filter(e -> e.getCode().equals(entityCode))
                 .collect(Collectors.toList());
-        } catch (IOException e) {
-            return new ArrayList<>();
-        }
     }
 
     /**
@@ -52,14 +66,6 @@ public class UCLouvainEntityServiceImpl implements UCLouvainEntityService {
      */
     @Override
     public Entity findFirst(String entityCode, EntityType entityType) {
-        Entity fakeEntity = new Entity(entityCode, entityType);
-        try {
-            return entitiesConfigurationFile.getData()
-                .stream()
-                .filter(e -> e.equals(fakeEntity))
-                .findFirst().orElse(null);
-        } catch (IOException e) {
-            return null;
-        }
+        return find(entityCode, entityType).stream().findFirst().orElse(null);
     }
 }

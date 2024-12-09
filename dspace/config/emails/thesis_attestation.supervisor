@@ -1,0 +1,158 @@
+## Email sent to a DSpace User when his submission has be validated and entered the archive
+## This email comes with an attachment: an attestation that confirms the submission.
+## Parameters:
+##    {0} Date and time
+##    {1} Information about the submission (title, abstract...) in french
+##    {2} Information about the submission (title, abstract...) in english
+##    {3} List of attached files. Each row is a tuple of filename, file access type and file url
+##    {4} Link to 'My DSpace' page
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet':>
+        <style>
+          body {
+            font-family: 'Montserrat', arial, sans-serif;
+            font-size: 12px;
+          }
+          .timestamp {
+            text-align:right;
+          }
+          .language {
+            font-style: italic;
+            width: 100%;
+            text-align: center;
+          }
+          .metadata-table th, .metadata-table td, .metadata-table tr {
+            margin: 0;
+          }
+          .metadata-table th {
+            width: 25%;
+            min-width: 150px;
+            font-weight: bold;
+            background-color: #EEE;
+            text-align: left;
+            padding-right: 10px;
+          }
+        </style>
+    </head>
+    <body>
+        <p style="margin:20px">
+          <img src="https://uclouvain.be/sites/all/themes/ucltheme/logo.png?newdesign2018"/>
+        </p>
+        <p class="timestamp">${params[0]}</p>
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">
+            Version française (English version below)
+        </div>
+        <p>
+            Madame la Professeure,<br/>
+            Monsieur le Professeur,
+        </p>
+        <p>
+            Un mémoire dont vous êtes le promoteur / la promotrice vient d'être déposé en ligne dans le répertoire des
+            mémoires de l'UCLouvain.
+        </p>
+        <p>
+            Vous trouverez en annexe l'attestation de dépôt. Celle-ci indique le type de diffusion que l'auteur·rice a
+            choisi pour son mémoire ; le détail est également reproduit ci-dessous, avec les liens vous permettant de
+            télécharger les fichiers déposés.
+        </p>
+        <p>
+            <b>La version électronique déposée par l'étudiant·e constitue la version officielle du mémoire défendu</b>.
+            Dans le cas d'un dépôt parallèle d'un ou plusieurs exemplaires imprimés pour le jury, l'étudiant·e s'engage
+            à l'exacte conformité des deux versions. Néanmoins, le promoteur / la promotrice est invité·e à télécharger
+            le ou les fichiers déposés pour vérifier qu'il n'y a pas eu d'erreur de dépôt de la part de l'étudiant·e et,
+            éventuellement, pour les soumettre à un logiciel de détection de plagiat.
+        </p>
+        <p>
+            Nous attirons en outre votre attention sur l’importance, en tant que promoteur ou promotrice, de veiller à
+            la pertinence du choix de diffusion effectué par l’étudiant·e. Il vous revient en particulier de
+            sensibiliser l’étudiant·e au respect des éventuelles clauses de confidentialité qui le ou la lieraient à des
+            tiers du fait d’une convention spécifique qu’il ou elle aurait signée (par ex. avec une entreprise dont les
+            données sont citées dans le mémoire ou son/ses annexe(s)), des dispositions légales relatives au droit
+            d’auteur (par ex. pour la reproduction d’images, de photographies ou de textes) et à la protection des
+            données à caractère personnel (par ex. entretiens, données médicales).
+        </p>
+        <p>
+            Pour ce faire, le promoteur / la promotrice est invité·e à communiquer à l'administration facultaire les
+            restrictions qu'il ou elle souhaite voir appliquer.
+        </p>
+
+        <h5>Informations sur le mémoire</h5>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                #foreach ($mapEntry in $params[1].entrySet())
+                    <tr>
+                        <th style="border-right: 1px solid #777">$mapEntry.key</th>
+                        <td>$mapEntry.value</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+
+        #if(${params[3]})
+            <h5>Fichiers déposés</h5>
+            <ul>
+                #foreach ($attached_file in $params[3])
+                  <li><a href="$attached_file[2]">$attached_file[0]</a> ($attached_file[1])</li>
+                #end
+            </ul>
+        #end
+
+        <p>L'équipe ${config.get('dspace.name')}</p>
+
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
+        <p>Dear Professor,</p>
+        <p>
+            A thesis that you have supervised has just been submitted online in the UCLouvain electronic thesis
+            repository.
+        </p>
+        <p>
+            Attached, you will find the deposit certificate. This document indicates the type of access chosen by the
+            author for their thesis; the details are also reproduced below, along with links allowing you to download
+            the submitted files.
+        </p>
+        <p>
+            <b>The electronic version submitted by the student constitutes the official version of the defended thesis</b>.
+            In the case of a parallel submission of one or more printed copies for the jury, the student commits to
+            ensuring the exact conformity of both versions. Nevertheless, the supervisor is encouraged to download the
+            submitted files to verify that no errors have been made by the student during submission and, if necessary,
+            to subject them to plagiarism detection software.
+        </p>
+        <p>
+            Furthermore, we would like to draw your attention to the importance, as the supervisor, of ensuring the
+            appropriateness of the access level chosen by the student. In particular, it is your responsibility to make
+            the student aware of the need to respect any confidentiality clauses that may bind them to third parties
+            under a specific agreement they may have signed (e.g., with a company whose data is cited in the thesis or
+            its appendix/appendices), legal provisions related to copyright (e.g., for the reproduction of images,
+            photographs, or texts), and personal data protection (e.g., interviews, medical data).
+        </p>
+        <p>
+            To this end, the supervisor is invited to communicate to the faculty administration any restrictions they
+            wish to see applied.
+        </p>
+
+        <h5>Master thesis information</h5>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                #foreach ($mapEntry in $params[2].entrySet())
+                    <tr>
+                        <th style="border-right: 1px solid #777">$mapEntry.key</th>
+                        <td>$mapEntry.value</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+
+        #if(${params[3]})
+            <h5>Attached files</h5>
+            <ul>
+                #foreach ($attached_file in $params[3])
+                  <li><a href="$attached_file[2]">$attached_file[0]</a> ($attached_file[1])</li>
+                #end
+            </ul>
+        #end
+
+        <p>The ${config.get('dspace.name')} Team.</p>
+    </body>
+</html>

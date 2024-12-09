@@ -7,42 +7,43 @@
  */
 package org.dspace.uclouvain.core.mails;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
+import org.dspace.core.Context;
 import org.dspace.core.Email;
-import org.dspace.uclouvain.core.GenericThesisEmail;
-import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 
 /**
  * Class representing the ChangeRequest email.
  * This email is to be sent when a manager requests a change for a workflow item.
- * It will send the email along with the data to both the submitter and the promoters.
+ * It will send the email along with the data to both the submitter and authors.
  * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class ThesisChangeRequestEmail extends GenericThesisEmail {
 
     protected String changeRequest;
-    protected String promoterEmailField = new MetadataField(configService
-            .getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email"))
-            .getFullString("_");
+    protected String authorEmailField = configService
+            .getProperty("uclouvain.global.metadata.authoremail.field", "advisors.email");
 
-    public ThesisChangeRequestEmail(Item item, String reason) {
-        super(item);
+    public ThesisChangeRequestEmail(Context context, Item item, String reason) {
+        super(context, item);
         changeRequest = reason;
     }
 
-    /**
-     * Get the author email addresses that will be used as recipients.
-     * @return The recipient addresses list.
-     */
-    protected List<String> getRecipientsEmails() {
-        List<String> recipients = metadataMap.get(promoterEmailField);
-        recipients.add(item.getSubmitter().getEmail());
+    @Override
+    protected List<String> getRecipientAddresses() {
+        List<String> recipients = itemService.getMetadataByMetadataString(item, authorEmailField)
+                .stream()
+                .map(MetadataValue::getValue)
+                .collect(Collectors.toList());
+        String submitterEmail = item.getSubmitter().getEmail();
+        if (!recipients.contains(submitterEmail)) {
+            recipients.add(submitterEmail);
+        }
         return recipients;
     }
 
@@ -53,22 +54,20 @@ public class ThesisChangeRequestEmail extends GenericThesisEmail {
 
     @Override
     protected String getTemplatePath() {
-        return this.source + "/config/emails/change_request_notify_author";
+        return this.source + "/config/emails/thesis_change_request";
     }
 
-    /**
-     * Fill the email with information: recipients, subjects and arguments for the template.
-     * @param email the email to fill.
-     * @throws EmailGenerationException if an error occurs while filling email information.
-     */
+    @Override
+    protected String buildMailSubject() {
+        return this.mailSubject;
+    }
+
     @Override
     protected void generateEmail(Email email) throws EmailGenerationException {
         try {
-            this.addRecipients(this.getRecipientsEmails(), email);
-            email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
-            email.addArgument(this.metadataMap.get("dc_title").get(0));
+            email.addArgument(itemService.getMetadata(item, "dc.title"));
             email.addArgument(this.changeRequest);
-            email.setSubject(this.mailSubject);
+            email.addArgument(configService.getProperty("dspace.ui.url") + "/mydspace");
         } catch (Exception e) {
             throw new EmailGenerationException("An error occurred while filling email informations.", e);
         }
