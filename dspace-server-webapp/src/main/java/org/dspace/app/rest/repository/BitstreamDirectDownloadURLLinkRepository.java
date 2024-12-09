@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.repository;
 
-import java.util.Map;
+import java.util.Collections;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
@@ -64,7 +64,7 @@ public class BitstreamDirectDownloadURLLinkRepository
                 context,
                 bitstream,
                 "thesisSupervisor",
-                Map.of("email", context.getCurrentUser().getEmail())
+                Collections.emptyMap()
             ));
             return converter.toRest(bdu, projection);
         } catch (Exception e) {

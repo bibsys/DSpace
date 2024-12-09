@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.repository;
 
-import java.util.Map;
+import java.util.Collections;
 import java.util.UUID;
 
 import org.dspace.app.rest.exception.RepositoryMethodNotImplementedException;
@@ -54,7 +54,7 @@ public class BitstreamDirectDownloadURLRestRepository
                 context,
                 bitstream,
                 "thesisSupervisor",
-                Map.of("email", context.getCurrentUser().getEmail())
+                Collections.emptyMap()
             ));
             return converter.toRest(bdu, utils.obtainProjection());
         } catch (Exception e) {

@@ -7,67 +7,61 @@
  */
 package org.dspace.uclouvain.core.mails;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
+import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.eperson.EPerson;
-import org.dspace.uclouvain.core.GenericThesisEmail;
-import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 
 /**
  * Email to send when an error occurred during generation of attestation email (author or supervisor).
- * It is meant to be sent to both the manager and the supervisors.
+ * It is meant to be sent to thesis authors
  * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public class ThesisErrorAttestationEmail extends GenericThesisEmail {
 
-    protected String mailErrorSubject = configService.getProperty("uclouvain.pdf_attestation.mail.error.subject");
-    protected String entityTypeField = new MetadataField("dspace.entity.type").getFullString("_");
-    protected String authorEmailField =
-            new MetadataField(configService
-                .getProperty("uclouvain.global.metadata.authoremail.field", "authors.email"))
-                .getFullString("_");
-    protected String promoterEmailField =
-            new MetadataField(configService
-                .getProperty("uclouvain.global.metadata.advisoremail.field", "advisors.email"))
-                .getFullString("_");
     protected Exception error;
 
-    public ThesisErrorAttestationEmail(Item item, Exception error) {
-        super(item);
+    public ThesisErrorAttestationEmail(Context context, Item item, Exception error) {
+        super(context, item);
         this.error = error;
     }
 
-    /**
-     * Configuration used to find the different properties for the email (subject, recipients...)
-     */
+    @Override
     protected String getConfigurationName() {
         return "pdf_attestation";
     }
 
-    /**
-     * Get the corresponding template file for the error attestation email.
-     */
-    protected String getTemplatePath() {
-        return this.source + "/config/emails/pdf_attestation_error";
+    @Override
+    protected List<String> getRecipientAddresses() {
+        return itemService.getMetadataByMetadataString(item, authorEmailField)
+                .stream()
+                .map(MetadataValue::getValue)
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Recover the list of recipients for the error email.
-     * In this case, we notify both authors and promoters.
-     *
-     * @return the list of email addresses to be used as recipients.
-     */
-    protected List<String> getRecipientsEmails() {
-        List<String> recipients = metadataMap.get(authorEmailField);
-        recipients.addAll(metadataMap.get(promoterEmailField));
-        return recipients;
+    @Override
+    protected List<String> getCCAddresses() {
+        return Collections.singletonList(configService.getProperty("mail.admin"));
+    }
+
+    @Override
+    protected String getTemplatePath() {
+        return this.source + "/config/emails/thesis_attestation.error";
+    }
+
+    @Override
+    protected String buildMailSubject() {
+        return configService.getProperty("uclouvain.pdf_attestation.mail.error.subject");
     }
 
     /**
@@ -77,14 +71,12 @@ public class ThesisErrorAttestationEmail extends GenericThesisEmail {
      */
     protected void generateEmail(Email email) throws EmailGenerationException {
         try {
-            this.addRecipients(getRecipientsEmails(), email);
             EPerson submitter = item.getSubmitter();
-            email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
             email.addArgument(submitter.getFullName());
-            email.addArgument(metadataMap.get(entityTypeField).get(0).toLowerCase());
+            email.addArgument(Optional.ofNullable((itemService.getMetadata(item, "dc.entity.type"))).orElse(""));
+            email.addArgument(item.getID());
             email.addArgument("Here are some information that might be useful for our team:\n -> Item's uuid: " +
                     item.getID() + "\n-> Stacktrace:\n" + ExceptionUtils.getStackTrace(error));
-            email.setSubject(mailErrorSubject);
         } catch (Exception e) {
             throw new EmailGenerationException("Could not generate attestation error email", e);
         }

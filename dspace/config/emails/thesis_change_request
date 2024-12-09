@@ -1,0 +1,91 @@
+## Email sent to a DSpace User when changes are requested for a thesis.
+## Parameters:
+##    {0} Date and time
+##    {1} Title of the submission
+##    {2} The change request
+##    {3} Link to 'My DSpace' page
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet':>
+        <style>
+          body {
+            font-family: 'Montserrat', arial, sans-serif;
+            font-size: 12px;
+          }
+          .timestamp {
+            text-align:right;
+          }
+          .language {
+            font-style: italic;
+            width: 100%;
+            text-align: center;
+          }
+          .metadata-table th, .metadata-table td, .metadata-table tr {
+            margin: 0;
+          }
+          .metadata-table th {
+            width: 25%;
+            min-width: 150px;
+            font-weight: bold;
+            background-color: #EEE;
+            text-align: left;
+            padding-right: 10px;
+          }
+        </style>
+    </head>
+    <body>
+        <p style="margin:20px">
+          <img src="https://uclouvain.be/sites/all/themes/ucltheme/logo.png?newdesign2018"/>
+        </p>
+        <p class="timestamp">${params[0]}</p>
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">
+            Version française (English version below)
+        </div>
+        <p>Madame/Monsieur,</p>
+        <p>
+          Le dépôt de votre mémoire a été rejeté par votre gestionnaire de faculté et vous est renvoyé pour la raison
+          suivante :
+        </p>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                <tr>
+                    <th style="border-right: 1px solid #777">Titre du mémoire</th>
+                    <td>${params[1]}</td>
+                </tr>
+                <tr>
+                    <th style="border-right: 1px solid #777">Demande de changement</th>
+                    <td>${params[2]}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+          Veuillez vous rendre dans l'espace <a href="$params[3]">DIAL.mem</a> de votre dépôt et éditer celui-ci en y
+          apportant les modifications nécessaires. Ensuite, finalisez-le à nouveau.
+        </p>
+        <p>Bien à vous,</p>
+        <p>L'équipe ${config.get("dspace.name")}.</p>
+
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
+        <p>Dear Sir/Madam,</p>
+        <p>Your thesis submission has been rejected by your faculty manager with the following explanation : </p>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                <tr>
+                    <th style="border-right: 1px solid #777">Thesis title</th>
+                    <td>${params[1]}</td>
+                </tr>
+                <tr>
+                    <th style="border-right: 1px solid #777">Change request</th>
+                    <td>${params[2]}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>
+            Please go to your <a href="$params[3]">DIAL.mem</a> page and edit your submission with the necessary
+            changes. Then submit it once again.
+        </p>
+        <p>Best regards,</p>
+        <p>The ${config.get("dspace.name")} team.</p>
+    </body>
+</html>
