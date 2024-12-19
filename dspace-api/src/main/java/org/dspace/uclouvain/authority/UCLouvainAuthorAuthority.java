@@ -56,7 +56,7 @@ public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
 
         // String with "data-" will be used to fill other form fields
         extras.put("data-authors_institution_name", institution);
-        extras.put("data-authors_email", person.getEmail());
+        extras.put("data-authors_email_official", person.getEmail());
 
         // The Default value for those fields is an empty string because this will allow us to override
         // the previous set value
