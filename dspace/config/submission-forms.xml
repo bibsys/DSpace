@@ -20,6 +20,19 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>email</dc-element>
+          <dc-qualifier>official</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Offical email</label>
+          <input-type>onebox</input-type>
+          <hint>This email address will be used for official communication (attestation, notifications, ...)</hint>
+          <required>You must enter a valid email address.</required>
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>email</dc-element>
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
@@ -34,7 +47,7 @@
           <dc-qualifier>name</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Institution</label>
-          <style>col-6</style>
+          <style>col-12</style>
           <input-type>onebox</input-type>
           <hint>Enter the author institution name</hint>
           <required>You must enter the author institution name</required>
@@ -45,8 +58,7 @@
           <dc-qualifier>fgs</dc-qualifier>
           <repeatable>false</repeatable>
           <label>FGS</label>
-          <style>col-6</style>
-          <input-type>onebox</input-type>
+          <input-type>hidden</input-type>
           <hint>FGS Identifier</hint>
           <readonly>all</readonly>
         </field>
@@ -129,7 +141,7 @@
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email where to contact the supervisor</hint>
+          <hint>Enter the supervisor email address</hint>
           <required>You must enter a valid email address.</required>
         </field>
       </row>
@@ -424,7 +436,7 @@
           <hint />
         </field>
       </row>
-      <row>
+      <!--<row>
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
@@ -434,7 +446,7 @@
           <required />
           <hint />
         </field>
-      </row>
+      </row>-->
       <!--<row>
         <field>
           <dc-schema>dc</dc-schema>
