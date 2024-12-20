@@ -46,13 +46,11 @@ public class SendEmailAttestationAction extends ProcessingAction {
     @Autowired
     ItemService itemService;
 
-    private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-    private final String algorithm = configService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
-    private final String encryptionKey = configService.getProperty("uclouvain.api.bitstream.download.secret", "");
     private final String authorEmailField;
     private final String promoterEmailField;
 
     public SendEmailAttestationAction() {
+        ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
         authorEmailField = new MetadataField(configService.getProperty(
                 "uclouvain.global.metadata.authoremail.field", "authors.email")).getFullString("_");
         promoterEmailField = new MetadataField(configService.getProperty(
@@ -67,7 +65,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
     * Action used by the workflow system to send an email when a submission is made.
     */
     @Override
-    public ActionResult execute(Context c, XmlWorkflowItem wfi, Step step, HttpServletRequest request) {
+    public ActionResult execute(Context context, XmlWorkflowItem wfi, Step step, HttpServletRequest request) {
         Item dspaceItem = null;
         // In any cases, the email attestation generation must not be blocking. We always return a valid response.
         ActionResult staticResponse = new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
@@ -78,16 +76,14 @@ public class SendEmailAttestationAction extends ProcessingAction {
             PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory
                 .getInstance()
                 .getHandlerInstance(uuid);
-            dspaceItem = itemService.find(c, uuid);
-                HashMap<String, List<String>> map = MetadataUtils.getValuesHashMap(dspaceItem.getMetadata());
-
-                // Checks if authors and promoter are present
-                if (map.get(authorEmailField) == null || map.get(promoterEmailField) == null) {
+            dspaceItem = itemService.find(context, uuid);
+            HashMap<String, List<String>> map = MetadataUtils.getValuesHashMap(dspaceItem.getMetadata());
+            // Checks if authors and promoter are present
+            if (map.get(authorEmailField) == null || map.get(promoterEmailField) == null) {
                 logger.warn("No authors or supervisors found for the following item: " + dspaceItem.getID()
                         + "--> Aborting email attestation generation.");
                 return staticResponse;
-                }
-
+            }
             // We need to use a `ByteArrayInputStream` to be able to reset the stream after sending
             // the email to the submitter(s).
             ByteArrayInputStream pdfAttestation = new ByteArrayInputStream(
@@ -96,13 +92,12 @@ public class SendEmailAttestationAction extends ProcessingAction {
             // Mark the position to reset to
             pdfAttestation.mark(pdfAttestation.available());
             // Send email to authors
-            new ThesisAuthorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
+            new ThesisAuthorAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
             // Reset to the previously marked position.
             // We need to do that because the stream has been consumed by the previous email.
             pdfAttestation.reset();
             // Send email to promoters
-            new ThesisPromoterAttestationEmail(dspaceItem, pdfAttestation, algorithm, encryptionKey)
-                    .sendEmail();
+            new ThesisPromoterAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
         } catch (HandlerNotFoundException e) {
             logger.error("[" + uuid + "] No handler found for item with uuid:" + e.getMessage());
         } catch (Exception e) {
@@ -110,7 +105,7 @@ public class SendEmailAttestationAction extends ProcessingAction {
                             + e.getMessage());
             if (dspaceItem != null) {
                 try {
-                    new ThesisErrorAttestationEmail(dspaceItem, e).sendEmail();
+                    new ThesisErrorAttestationEmail(context, dspaceItem, e).sendEmail();
                 } catch (Exception ignored) {
                     // do nothing
                 }
