@@ -1,0 +1,122 @@
+## Email sent to a DSpace User when his submission has be validated and entered the archive
+## This email comes with an attachment: an attestation that confirms the submission.
+## Parameters:
+##    {0} Date and time
+##    {1} Information about the submission (title, abstract...) in french
+##    {2} Information about the submission (title, abstract...) in english
+##    {3} List of attached files. Each row is a tuple of filename, file access type and file url
+##    {4} Link to 'My DSpace' page
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet':>
+        <style>
+          body {
+            font-family: 'Montserrat', arial, sans-serif;
+            font-size: 12px;
+          }
+          .timestamp {
+            text-align:right;
+          }
+          .language {
+            font-style: italic;
+            width: 100%;
+            text-align: center;
+          }
+          .metadata-table th, .metadata-table td, .metadata-table tr {
+            margin: 0;
+          }
+          .metadata-table th {
+            width: 25%;
+            min-width: 150px;
+            font-weight: bold;
+            background-color: #EEE;
+            text-align: left;
+            padding-right: 10px;
+          }
+        </style>
+    </head>
+    <body>
+        <p style="margin:20px">
+          <img src="https://uclouvain.be/sites/all/themes/ucltheme/logo.png?newdesign2018"/>
+        </p>
+        <p class="timestamp">${params[0]}</p>
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">
+            Version française (English version below)
+        </div>
+        <p>Madame/Monsieur,</p>
+        <p>
+          Veuillez trouver en annexe l'attestation de dépôt de votre mémoire en version électronique.<br/>
+          Veuillez l'imprimer, la dater et la signer avant de la remettre selon les consignes qui vous ont été données par
+          votre faculté.</br>
+          Vous (ou, si vous n'êtes pas la personne qui a réalisé le dépôt, celle qui l'a fait en votre nom) pouvez
+          également télécharger cette attestation et les fichiers déposés depuis votre compte <a href="$params[4]">MyDIAL</a>
+        </p>
+
+        <h5>Informations sur le mémoire</h5>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                #foreach ($mapEntry in $params[1].entrySet())
+                    <tr>
+                        <th style="border-right: 1px solid #777">$mapEntry.key</th>
+                        <td>$mapEntry.value</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+        <h5>Fichiers attachés</h5>
+        <ul>
+        #foreach ($attached_file in $params[3])
+          <li><a href="$attached_file[2]">$attached_file[0]</a> ($attached_file[1])</li>
+        #end
+        </ul>
+
+        <h5>RAPPEL:</h5>
+        <p>
+          si votre règlement facultaire prévoit, en plus du dépôt électronique, la remise d'un ou plusieurs exemplaires
+          imprimés, <b>ceux-ci devront obligatoirement être imprimés à partir de ces mêmes fichiers déposés</b>. La
+          non-conformité de la version imprimée avec la version électronique peut amener le jury d'examen à décider
+          d'une irrégularité du fait de l'étudiant et l'attribution d'une note "T" (0/20).
+        </p>
+
+        <p>L'équipe ${config.get('dspace.name')}.</p>
+
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
+        <p>Dear Sir/Madam,</p>
+        <p>
+          Please find attached the submission attestation of your master thesis.<br/>
+          Kindly print, date, and sign this attestation before submitting it according to the instructions provided
+          by your faculty.<br/>
+          You (or the person who has submitted the thesis on your behalf) may also download this certificate and the
+          submitted files from your <a href="$params[4]">MyDIAL account</a>.
+        </p>
+
+        <h5>Master thesis data</h5>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                #foreach ($mapEntry in $params[2].entrySet())
+                    <tr>
+                        <th style="border-right: 1px solid #777">$mapEntry.key</th>
+                        <td>$mapEntry.value</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+        <h5>Attached files</h5>
+        <ul>
+        #foreach ($attached_file in $params[3])
+          <li><a href="$attached_file[2]">$attached_file[0]</a> ($attached_file[1])</li>
+        #end
+        </ul>
+
+        <h5>REMINDER:</h5>
+        <p>
+          If your faculty regulations require the submission of one or more printed copies in addition to the electronic
+          version, <b>these must be printed from the same files</b>. Any discrepancy between the printed version and the
+          electronic version may lead the examination board to determine there has been irregular conduct and award
+          a “T” mark (0/20).
+        </p>
+
+        <p>The ${config.get('dspace.name')} Team.</p>
+    </body>
+ </html>
