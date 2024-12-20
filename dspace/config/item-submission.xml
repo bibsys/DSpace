@@ -244,6 +244,10 @@
       <step id="upload" />
       <step id="master-thesis" />
     </submission-process>
+    <submission-process name="master-thesis-edit-librarian">
+      <step id="extractionstep" />
+      <step id="master-thesis" />
+    </submission-process>
     <submission-process name="master-thesis-cataretro">
       <step id="collection" />
       <step id="upload" />
