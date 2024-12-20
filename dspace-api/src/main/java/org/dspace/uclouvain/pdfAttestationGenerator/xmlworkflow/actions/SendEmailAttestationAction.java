@@ -48,8 +48,6 @@ public class SendEmailAttestationAction extends ProcessingAction {
     ItemService itemService;
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
-    private String algorithm = configurationService.getProperty("uclouvain.api.bitstream.download.algorithm", "MD5");
-    private String encryptionKey = configurationService.getProperty("uclouvain.api.bitstream.download.secret", "");
     private String authorEmailField;
     private String promoterEmailField;
 
@@ -98,20 +96,19 @@ public class SendEmailAttestationAction extends ProcessingAction {
             // Mark the position to reset to
             pdfAttestation.mark(pdfAttestation.available());
             // Send email to authors
-            new ThesisAuthorAttestationEmail(dspaceItem, pdfAttestation).sendEmail();
+            new ThesisAuthorAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
             // Reset to the previously marked position.
             // We need to do that because the stream has been consumed by the previous email.
             pdfAttestation.reset();
             // Send email to promoters
-            new ThesisPromoterAttestationEmail(dspaceItem, pdfAttestation, algorithm, encryptionKey)
-                    .sendEmail();
+            new ThesisPromoterAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
         } catch (HandlerNotFoundException e) {
             logger.error("[" + uuid + "] No handler found for item with uuid:" + e.getMessage());
         } catch (Exception e) {
             logger.error("[" + uuid + "] Exception occurred during email attestation generation:" + e.getMessage());
             if (dspaceItem != null) {
                 try {
-                    new ThesisErrorAttestationEmail(dspaceItem, e).sendEmail();
+                    new ThesisErrorAttestationEmail(context, dspaceItem, e).sendEmail();
                 } catch (Exception ignored) {
                     // do nothing
                 }
