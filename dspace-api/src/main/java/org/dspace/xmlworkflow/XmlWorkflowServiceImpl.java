@@ -283,7 +283,6 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             for (EPerson anEpa : epa) {
                 mail.addRecipient(anEpa.getEmail());
             }
-
             mail.send();
         }
     }
@@ -703,6 +702,10 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
      */
     protected void notifyOfArchive(Context context, Item item, Collection coll)
         throws SQLException, IOException {
+        // Check into the configuration if this notification must be sent
+        if (configurationService.getBooleanProperty("mail.message.step.notifyOfArchive.disabled", true)) {
+            return;
+        }
         try {
             // Get submitter
             EPerson ep = item.getSubmitter();
@@ -710,6 +713,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             if (null != ep) {
                 // Get the Locale
                 Locale supportedLocale = I18nUtil.getEPersonLocale(ep);
+                // TODO :: explore how it sends...
                 Email email = Email.getEmail(I18nUtil.getEmailFilename(supportedLocale, "submit_archive"));
 
                 // Get the item handle to email to user
@@ -746,6 +750,10 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
     public void notifyOfCuration(Context c, XmlWorkflowItem wi,
             List<EPerson> ePeople, String taskName, String action, String message)
             throws SQLException, IOException {
+        // Check into the configuration if this notification must be sent
+        if (configurationService.getBooleanProperty("mail.message.step.notifyOfCuration.disabled", true)) {
+            return;
+        }
         try {
             // Get the item title
             String title = getItemTitle(wi);
@@ -1277,6 +1285,10 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
 
     protected void notifyOfReject(Context c, XmlWorkflowItem wi, EPerson e,
                                   String reason) {
+        // Check into the configuration if this notification must be sent
+        if (configurationService.getBooleanProperty("mail.message.step.notifyOfReject.disabled", true)) {
+            return;
+        }
         try {
             // send the notification only if the person was not deleted in the
             // meantime between submission and archiving.
