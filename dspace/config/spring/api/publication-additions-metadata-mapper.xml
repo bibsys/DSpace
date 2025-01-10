@@ -1,0 +1,31 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd"
+       default-autowire-candidates="*Service,*DAO,javax.sql.DataSource">
+
+    <bean id="publication.publicationStatus" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.publicationStatus"/>
+    </bean>
+    <bean id="publication.host.pages" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.host.pages"/>
+    </bean>
+    <bean id="publication.host.isbn" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.host.isbn"/>
+    </bean>
+    <bean id="publication.serial.dateIssued" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.dateIssued"/>
+    </bean>
+    <bean id="publication.serial.issn" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.issn"/>
+    </bean>
+    <bean id="publication.serial.volume" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.volume"/>
+    </bean>
+    <bean id="publication.serial.issue" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.issue"/>
+    </bean>
+    <bean id="publication.serial.pages" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.pages"/>
+    </bean>
+</beans>
