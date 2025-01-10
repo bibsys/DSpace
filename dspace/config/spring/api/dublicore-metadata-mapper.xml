@@ -56,4 +56,12 @@
  	<bean id="dcPublisher" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
         <constructor-arg value="dc.publisher"/>
     </bean>
+
+    <!-- UCLouvain additions -->
+    <bean id="dcMainType" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.type.maintype"/>
+    </bean>
+    <bean id="dcJournalTitle" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.relation.journal"/>
+    </bean>
 </beans>
