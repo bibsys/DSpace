@@ -28,4 +28,21 @@
     <bean id="publication.serial.pages" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
         <constructor-arg value="publication.serial.pages"/>
     </bean>
+
+    <!-- Conference information -->
+    <bean id="publication.conference.name" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.conference.name"/>
+    </bean>
+
+    <bean id="publication.conference.location" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.conference.location"/>
+    </bean>
+
+    <bean id="publication.conference.startDate" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.conference.startDate"/>
+    </bean>
+
+    <bean id="publication.conference.endDate" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.conference.endDate"/>
+    </bean>
 </beans>
