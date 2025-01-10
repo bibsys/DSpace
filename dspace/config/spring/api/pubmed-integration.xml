@@ -24,10 +24,13 @@
         <entry key-ref="dc.date.issued" value-ref="dateContrib"/>
         <entry key-ref="dc.language.iso" value-ref="pubmedLanguageContrib"/>
         <entry key-ref="dc.subject" value-ref="keywordContrib"/>
-        <entry key-ref="dc.relation.ispartof" value-ref="journalContrib"/>
-        <entry key-ref="dc.relation.issn" value-ref="journalIssnContrib"/>
-        <entry key-ref="oaire.citation.volume" value-ref="volumeContrib"/>
-        <entry key-ref="oaire.citation.issue" value-ref="issueContrib"/>
+        <entry key-ref="dcJournalTitle" value-ref="journalContrib"/>
+        <entry key-ref="publication.serial.issn" value-ref="journalIssnContrib"/>
+        <entry key-ref="publication.serial.volume" value-ref="volumeContrib"/>
+        <entry key-ref="publication.serial.issue" value-ref="issueContrib"/>
+        <entry key-ref="publication.serial.pages" value-ref="paginationContrib"/>
+        <entry key-ref="publication.serial.dateIssued" value-ref="issuedContrib"/>
+        <entry key-ref="publication.publicationStatus" value-ref="statusContrib"/>
         <entry key-ref="dc.identifier.doi" value-ref="doiContrib"/>
         <entry key-ref="dc.type" value-ref="pubmedTypeContrib"/>
 
@@ -123,27 +126,73 @@
 
 
     <bean id="journalContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
-        <property name="field" ref="dc.relation.ispartof"/>
+        <property name="field" ref="dcJournalTitle"/>
         <property name="query" value="descendant::Journal/Title"/>
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
     </bean>
 
     <bean id="journalIssnContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
-        <property name="field" ref="dc.relation.issn"/>
+        <property name="field" ref="publication.serial.issn"/>
         <property name="query" value="descendant::Journal/ISSN"/>
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
     </bean>
 
     <bean id="volumeContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
-        <property name="field" ref="oaire.citation.volume"/>
+        <property name="field" ref="publication.serial.volume"/>
         <property name="query" value="descendant::Volume"/>
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
     </bean>
 
     <bean id="issueContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
-        <property name="field" ref="oaire.citation.issue"/>
+        <property name="field" ref="publication.serial.issue"/>
         <property name="query" value="descendant::JournalIssue/Issue"/>
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
+    </bean>
+
+    <!-- TODO: PAGINATION -->
+    <!-- Serial Pagination Combined-->
+    <bean id="paginationContrib" class="org.dspace.importer.external.metadatamapping.contributor.CombinedMetadatumContributor">
+        <property name="separator" value="-"/>
+        <property name="metadatumContributors" ref="combinedSerialPage"/>
+        <property name="field" ref="publication.serial.pages"/>
+    </bean>
+    <util:list id="combinedSerialPage" value-type="org.dspace.importer.external.metadatamapping.contributor.MetadataContributor" list-class="java.util.LinkedList">
+        <ref bean="serialStartPage"/>
+        <ref bean="serialEndPage"/>
+    </util:list>
+    
+    <!-- Serial Start Page Contributor -->
+    <bean id="serialStartPage" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
+        <property name="field" ref="publication.serial.pages"/>
+        <property name="query" value="descendant::Pagination/StartPage"/>
+        <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
+    </bean>
+
+    <!-- Serial End Page Contributor -->
+    <bean id="serialEndPage" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
+        <property name="field" ref="publication.serial.pages"/>
+        <property name="query" value="descendant::Pagination/EndPage"/>
+        <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
+    </bean>
+   
+    <!-- Serial issue date -->
+    <bean id="issuedContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
+        <property name="field" ref="publication.serial.dateIssued"/>
+        <property name="query" value="descendant::JournalIssue/PubDate/Year"/>
+        <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
+    </bean>
+
+    <!-- Publication Status -->
+    <bean id="innerStatusContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
+        <property name="field" ref="publication.publicationStatus"/>
+        <property name="query" value="descendant::PubmedData/PublicationStatus"/>
+        <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
+        <property name="metadataFieldMapping" ref="pubmedMetadataFieldMapping"/>
+    </bean> 
+
+    <bean id="statusContrib" class="org.dspace.importer.external.metadatamapping.contributor.MappedMetadataContributor">
+        <constructor-arg name="innerContributor" ref="innerStatusContrib" />
+        <constructor-arg name="mapConverter" ref="mapConverterPubmedStatusToPublicationStatus" />
     </bean>
 
     <bean id="doiContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
