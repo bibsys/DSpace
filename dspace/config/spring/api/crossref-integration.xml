@@ -22,15 +22,21 @@
         <entry key-ref="crossref.authors" value-ref="crossrefAuthorContrib"/>
         <entry key-ref="crossref.isbn" value-ref="crossrefISBNContrib"/>
         <entry key-ref="crossref.year" value-ref="crossrefYearContrib"/>
+        <entry key-ref="publication.serial.dateIssued" value-ref="crossrefSerialYear"/>
         <entry key-ref="crossref.editors" value-ref="crossrefEditorsContrib"/>
-        <entry key-ref="crossref.type" value-ref="crossrefDoiTypeContrib"/>
-        <entry key-ref="crossref.journal" value-ref="crossrefJournalContrib"/>
+        <!-- <entry key-ref="crossref.type" value-ref="crossrefDoiTypeContrib"/> -->
+        <entry key-ref="dcJournalTitle" value-ref="crossrefJournalContrib"/>
         <entry key-ref="crossref.id" value-ref="crossrefIDContrib"/>
-        <entry key-ref="crossref.issn" value-ref="crossrefIdentifierISSN" />
-        <entry key-ref="crossref.volume" value-ref="crossrefVolume" />
-        <entry key-ref="crossref.issue" value-ref="crossrefIssue" />
+        <entry key-ref="publication.serial.issn" value-ref="crossrefIdentifierISSN" />
+        <entry key-ref="publication.serial.volume" value-ref="crossrefVolume" />
+        <entry key-ref="publication.serial.issue" value-ref="crossrefIssue" />
+        <entry key-ref="publication.serial.pages" value-ref="crossrefSerialPagination"/>
         <entry key-ref="crossref.abstract" value-ref="crossrefAbstract" />
         <entry key-ref="crossref.publisher" value-ref="crossrefPublisher" />
+        <entry key-ref="dcMainType" value-ref="crossrefType"/>
+        <entry key-ref="dcLanguage" value-ref="crossrefLanguage"/>
+        <entry key-ref="publication.host.pages" value-ref="crossrefBookPartPagination"/>
+        <entry key-ref="publication.host.isbn" value-ref="crossrefHostISBNContrib"/>
     </util:map>
 
     <bean id="crossrefIDContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
@@ -42,7 +48,7 @@
     </bean>
 
     <bean id="crossrefJournalContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
-        <property name="field" ref="crossref.journal"/>
+        <property name="field" ref="dcJournalTitle"/>
         <property name="query" value="/container-title"/>
     </bean>
     <bean id="crossref.journal" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
@@ -107,7 +113,7 @@
     </bean>
 
     <bean id="crossrefIdentifierISSN" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
-        <property name="field" ref="crossref.issn"/>
+        <property name="field" ref="publication.serial.issn"/>
         <property name="query" value="/ISSN"/>
     </bean>
     <bean id="crossref.issn" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
@@ -115,7 +121,7 @@
     </bean>
 
     <bean id="crossrefVolume" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
-        <property name="field" ref="crossref.volume"/>
+        <property name="field" ref="publication.serial.volume"/>
         <property name="query" value="/volume"/>
     </bean>
     <bean id="crossref.volume" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
@@ -123,7 +129,7 @@
     </bean>
 
     <bean id="crossrefIssue" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
-        <property name="field" ref="crossref.issue"/>
+        <property name="field" ref="publication.serial.issue"/>
         <property name="query" value="/journal-issue/issue"/>
     </bean>
     <bean id="crossref.issue" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
@@ -148,6 +154,52 @@
 
     <bean class="java.lang.Integer" id="maxRetry">
         <constructor-arg value="3"/>
+    </bean>
+
+    <!-- Journal Article Serial -->
+    <!-- Year -->
+    <bean id="crossrefSerialYear" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.serial.dateIssued"/>
+        <property name="metadataProcessor" ref="crossrefSerialYearMetadataProcessor"/>
+    </bean>
+	<bean name="crossrefSerialYearMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefYearMetadataProcessor">
+	    <property name="pathToArray" value="/journal-issue/published-print/date-parts" />
+	</bean>
+
+    <!-- Serial pages -->
+    <bean id="crossrefSerialPagination" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.serial.pages"/>
+        <property name="query" value="/page" />
+    </bean>
+
+    <!-- Book part -->
+    <!-- Host document pagination -->
+    <bean id="crossrefBookPartPagination" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.host.pages"/>
+        <property name="query" value="/page" />
+    </bean>
+
+    <!-- Host document ISBN -->
+    <bean id="crossrefHostISBNContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.host.isbn"/>
+        <property name="query" value="/ISBN"/>
+    </bean>
+
+    <!-- Global Type Mapping -->
+    <bean id="innerCrossrefType" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="dcMainType"/>
+        <property name="query" value="/type"/>
+    </bean>
+    
+    <bean id="crossrefType" class="org.dspace.importer.external.metadatamapping.contributor.MappedMetadataContributor">
+        <constructor-arg name="innerContributor" ref="innerCrossrefType"/>
+        <constructor-arg name="mapConverter" ref="mapConverterCrossrefToCoarPublicationTypes"/>
+    </bean>
+
+    <!-- Main Language of the Document -->
+    <bean id="crossrefLanguage" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="dcLanguage"/>
+        <property name="query" value="/language"/>
     </bean>
 
 </beans>
