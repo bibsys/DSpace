@@ -37,6 +37,11 @@
         <entry key-ref="dcLanguage" value-ref="crossrefLanguage"/>
         <entry key-ref="publication.host.pages" value-ref="crossrefBookPartPagination"/>
         <entry key-ref="publication.host.isbn" value-ref="crossrefHostISBNContrib"/>
+        <!-- Conference info mapping -->
+        <entry key-ref="publication.conference.name" value-ref="crossrefConferenceName"/>
+        <entry key-ref="publication.conference.location" value-ref="conferenceLocationContributor"/>
+        <entry key-ref="publication.conference.startDate" value-ref="conferenceStartDate"/>
+        <entry key-ref="publication.conference.endDate" value-ref="conferenceEndDate"/>
     </util:map>
 
     <bean id="crossrefIDContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
@@ -185,6 +190,82 @@
         <property name="query" value="/ISBN"/>
     </bean>
 
+    <!-- Conference Speech -->
+    <!-- Conference info mapping -->
+    <bean id="crossrefConferenceName" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.conference.name"/>
+        <property name="metadataProcessor" ref="conferenceNameMetadataProcessor"/>
+    </bean>
+
+    <bean id="conferenceNameMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefJsonArrayMetadataProcessor">
+        <property name="pathToArray" value="/assertion"/>
+        <property name="nodeKeyToCheck" value="name"/>
+        <property name="nodeValueToCheck" value="conference_name"/>
+        <property name="nodeKeyToExtract" value="value"/>
+    </bean>
+
+    <!-- Conference Location -->
+    <bean id="conferenceLocationContributor" class="org.dspace.importer.external.metadatamapping.contributor.CombinedMetadatumContributor">
+        <property name="separator" value=", "/>
+
+        <property name="metadatumContributors" ref="combinedlocationList"/>
+        <property name="field" ref="publication.conference.location"/>
+    </bean>
+    <util:list id="combinedlocationList" value-type="org.dspace.importer.external.metadatamapping.contributor.MetadataContributor" list-class="java.util.LinkedList">
+        <ref bean="conferenceCity"/>
+        <ref bean="conferenceCountry"/>
+    </util:list>
+
+    <bean id="conferenceCity" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.conference.location"/>
+        <property name="metadataProcessor" ref="conferenceCityMetadataProcessor"/>
+    </bean>
+    <bean id="conferenceCountry" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.conference.location"/>
+        <property name="metadataProcessor" ref="conferenceCountryMetadataProcessor"/>
+    </bean>
+
+    <bean id="conferenceCityMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefJsonArrayMetadataProcessor">
+        <property name="pathToArray" value="/assertion"/>
+        <property name="nodeKeyToCheck" value="name"/>
+        <property name="nodeValueToCheck" value="conference_city"/>
+        <property name="nodeKeyToExtract" value="value"/>
+    </bean>
+    <bean id="conferenceCountryMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefJsonArrayMetadataProcessor">
+        <property name="pathToArray" value="/assertion"/>
+        <property name="nodeKeyToCheck" value="name"/>
+        <property name="nodeValueToCheck" value="conference_country"/>
+        <property name="nodeKeyToExtract" value="value"/>
+    </bean>
+
+    <!-- Conference Start Date -->
+    <bean id="conferenceStartDate" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.conference.startDate"/>
+        <property name="metadataProcessor" ref="conferenceStartDateMetadataProcessor"/>
+    </bean>
+    <bean id="conferenceStartDateMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefJsonArrayDateMetadataProcessor">
+        <property name="pathToArray" value="/assertion"/>
+        <property name="nodeKeyToCheck" value="name"/>
+        <property name="nodeValueToCheck" value="conference_start_date"/>
+        <property name="nodeKeyToExtract" value="value"/>
+        <property name="inputFormat" value="dd MMMM yyyy"/>
+        <property name="outputFormat" value="yyyy-MM-dd"/>
+    </bean>
+
+    <!-- Conference End Date -->
+    <bean id="conferenceEndDate" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.conference.endDate"/>
+        <property name="metadataProcessor" ref="conferenceEndDateMetadataProcessor"/>
+    </bean>
+    <bean id="conferenceEndDateMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefJsonArrayDateMetadataProcessor">
+        <property name="pathToArray" value="/assertion"/>
+        <property name="nodeKeyToCheck" value="name"/>
+        <property name="nodeValueToCheck" value="conference_end_date"/>
+        <property name="nodeKeyToExtract" value="value"/>
+        <property name="inputFormat" value="dd MMMM yyyy"/>
+        <property name="outputFormat" value="yyyy-MM-dd"/>
+    </bean>
+
     <!-- Global Type Mapping -->
     <bean id="innerCrossrefType" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
         <property name="field" ref="dcMainType"/>
@@ -201,5 +282,4 @@
         <property name="field" ref="dcLanguage"/>
         <property name="query" value="/language"/>
     </bean>
-
 </beans>
