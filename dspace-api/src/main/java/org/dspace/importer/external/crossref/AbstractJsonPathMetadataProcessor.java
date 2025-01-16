@@ -8,6 +8,7 @@
 package org.dspace.importer.external.crossref;
 
 import java.util.Collection;
+import java.util.Collections;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,33 +37,21 @@ public abstract class AbstractJsonPathMetadataProcessor implements JsonPathMetad
      */
     @Override
     public Collection<String> processMetadata(String jsonTree) {
-        JsonNode rootNode = convertStringJsonToJsonNode(jsonTree);
-        JsonNode typeNode = rootNode.at(pathToArray);
-        return processValues(typeNode);
-    }
-
-    /**
-     * Converts a json string to a json node. If an error occurred, return null.
-     * @param json The json string to convert to a node.
-     * @return A json node.
-     */
-    protected JsonNode convertStringJsonToJsonNode(String json) {
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode body = null;
         try {
-            body = mapper.readTree(json);
+            JsonNode rootNode = new ObjectMapper().readTree(jsonTree);
+            return processValues(rootNode.at(pathToArray));
         } catch (JsonProcessingException e) {
             logger.error("Unable to process json response.", e);
+            return Collections.emptyList();
         }
-        return body;
     }
 
     // GETTERS && SETTERS
     public void setPathToArray(String path) {
-        this.pathToArray = path;
+        pathToArray = path;
     }
 
     public String getPathToArray() {
-        return this.pathToArray;
+        return pathToArray;
     }
 }
