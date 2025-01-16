@@ -10,6 +10,7 @@ package org.dspace.importer.external.metadatamapping.contributor;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.dspace.importer.external.metadatamapping.MetadataFieldConfig;
 import org.dspace.importer.external.metadatamapping.MetadataFieldMapping;
@@ -77,7 +78,10 @@ public class CombinedMetadatumContributor<T> implements MetadataContributor<T> {
         LinkedList<LinkedList<MetadatumDTO>> metadatumLists = new LinkedList<>();
 
         for (MetadataContributor metadatumContributor : metadatumContributors) {
-            LinkedList<MetadatumDTO> metadatums = (LinkedList<MetadatumDTO>) metadatumContributor.contributeMetadata(t);
+            // Convert any Collection to a LinkedList
+            LinkedList<MetadatumDTO> metadatums = (LinkedList<MetadatumDTO>) metadatumContributor.contributeMetadata(t)
+                .stream()
+                .collect(Collectors.toCollection(LinkedList::new));
             metadatumLists.add(metadatums);
         }
 

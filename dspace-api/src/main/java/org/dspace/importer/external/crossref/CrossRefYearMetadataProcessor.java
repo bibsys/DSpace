@@ -9,7 +9,6 @@ package org.dspace.importer.external.crossref;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -28,18 +27,17 @@ public class CrossRefYearMetadataProcessor extends AbstractJsonPathMetadataProce
      */
     @Override
     protected Collection<String> processValues(JsonNode node) {
-        Iterator<JsonNode> dates = node.iterator();
         Collection<String> values = new ArrayList<>();
-        while (dates.hasNext()) {
-            JsonNode date = dates.next();
-            if (!date.isNull() && !date.isEmpty() && date.isArray()) {
+        node.forEach(date -> {
+            if (date.isArray() && !date.isNull() && !date.isEmpty()) {
                 // Retrieve the date from the array.
                 JsonNode firstEntry = date.get(0);
+                // Check that node has a value for index 0;
                 if (firstEntry.has(0)) {
                     values.add(firstEntry.get(0).asText());
                 }
             }
-        }
+        });
         return values;
     }
 }
