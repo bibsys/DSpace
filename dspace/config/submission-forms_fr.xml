@@ -236,6 +236,11 @@
           <input-type>year</input-type>
           <hint/>
           <required>Vous devez choisir une année</required>
+          <settings>
+            <setting name="useCurrentYearAsDefault">true</setting>
+            <setting name="maxYearDelta">2</setting>
+            <setting name="minYear">1900</setting>
+          </settings>
         </field>
       </row>
     </form>
@@ -372,6 +377,9 @@
           <input-type>year</input-type>
           <hint>Choisissez l'année pour laquelle le mémoire a été soumis</hint>
           <required>Vous devez choisir une année</required>
+          <settings>
+            <setting name="maxYearDelta">2</setting>
+          </settings>
         </field>
       </row>
       <row>
