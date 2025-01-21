@@ -442,16 +442,18 @@ public class Email {
                 if ((subject == null || subject.isEmpty()) && null != headerValue) {
                     subject = headerValue;
                 }
-            } else if ("charset".equalsIgnoreCase(headerName)) {
+            } else if ("charset".equalsIgnoreCase(headerName) && headerValue != null) {
                 charset = headerValue;
             } else {
                 message.setHeader(headerName, headerValue);
             }
         }
 
+        String contentTypeHeader = determineMimeType(fullMessage);
         // Set the subject of the email.
         if (charset != null) {
             message.setSubject(subject, charset);
+            contentTypeHeader += "; charset=" + charset;
         } else {
             message.setSubject(subject);
         }
@@ -464,12 +466,16 @@ public class Email {
             } else {
                 message.setText(fullMessage);
             }
+            message.setHeader("Content-Type", contentTypeHeader);
+            message.setHeader("Content-Transfer-Encoding", "base64");
         } else {
             Multipart multipart = new MimeMultipart();
 
             // create the first part of the email
             BodyPart messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText(fullMessage);
+            //messageBodyPart.setText(fullMessage);
+            messageBodyPart.setContent(fullMessage, contentTypeHeader);
+            messageBodyPart.setHeader("Content-Transfer-Encoding", "base64");
             multipart.addBodyPart(messageBodyPart);
 
             // Add file attachments
@@ -739,5 +745,19 @@ public class Email {
         public String get(String key) {
             return configurationService.getProperty(key);
         }
+    }
+
+    /**
+     * Try to determine the mimeType of the content-type for a message.
+     *
+     * @param text the message content. It should be overridden is the message contains a mimeType description.
+     * @return the mimeType to use. Default is "text/plain"
+     */
+    private String determineMimeType(String text) {
+        String mimeType = "text/plain";
+        if (text.startsWith("<html>")) {
+            mimeType = "text/html";
+        }
+        return mimeType;
     }
 }
