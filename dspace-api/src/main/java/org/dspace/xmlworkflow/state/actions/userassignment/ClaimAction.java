@@ -46,13 +46,15 @@ public class ClaimAction extends UserSelectionAction {
     public void activate(Context context, XmlWorkflowItem wfItem) throws SQLException, IOException, AuthorizeException {
         Step owningStep = getParent().getStep();
 
-        RoleMembers allroleMembers = getParent().getStep().getRole().getMembers(context, wfItem);
+        RoleMembers roleMembers = getParent().getStep().getRole().getMembers(context, wfItem);
         // Create pooled tasks for each member of our group
-        if (allroleMembers != null && (allroleMembers.getGroups().size() > 0 || allroleMembers.getEPersons()
-                                                                                              .size() > 0)) {
+        if (roleMembers != null && (!roleMembers.getGroups().isEmpty() || !roleMembers.getEPersons().isEmpty())) {
             XmlWorkflowServiceFactory.getInstance().getXmlWorkflowService()
-                                     .createPoolTasks(context, wfItem, allroleMembers, owningStep, getParent());
-            alertUsersOnActivation(context, wfItem, allroleMembers);
+                                     .createPoolTasks(context, wfItem, roleMembers, owningStep, getParent());
+            if (configurationService.getBooleanProperty("workflow.notify.activated.tasks", true)) {
+                alertUsersOnActivation(context, wfItem, roleMembers);
+            }
+
         } else {
             log.info(LogHelper.getHeader(context, "warning while activating claim action",
                                           "No group or person was found for the following roleid: " + getParent()
@@ -104,7 +106,7 @@ public class ClaimAction extends UserSelectionAction {
     @Override
     public void regenerateTasks(Context c, XmlWorkflowItem wfi, RoleMembers roleMembers)
         throws SQLException, AuthorizeException, IOException {
-        if (roleMembers != null && (roleMembers.getEPersons().size() > 0 || roleMembers.getGroups().size() > 0)) {
+        if (roleMembers != null && (!roleMembers.getEPersons().isEmpty() || !roleMembers.getGroups().isEmpty())) {
             //Create task for the users left
             XmlWorkflowServiceFactory.getInstance().getXmlWorkflowService()
                                      .createPoolTasks(c, wfi, roleMembers, getParent().getStep(), getParent());
