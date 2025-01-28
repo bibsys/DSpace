@@ -106,18 +106,26 @@
         <xsl:element name="dim:field">
             <xsl:attribute name="mdschema">masterthesis</xsl:attribute>
             <xsl:attribute name="element">session</xsl:attribute>
-            <xsl:attribute name="lang">fr</xsl:attribute>
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
     <!-- IDENTIFIER =================================================== -->
     <!--   * Manage `fedora_pid` identifier -->
+    <!--   * Manage `other` identifier :: legacy application identifier (virtua, RERO) -->
     <!--   * Skip other possible identifiers (not used for MasterThesis) -->
     <xsl:template match="/mods:mods/mods:identifier[@type='fedora_pid']">
         <xsl:element name="dim:field">
             <xsl:attribute name="mdschema">dc</xsl:attribute>
             <xsl:attribute name="element">identifier</xsl:attribute>
             <xsl:attribute name="qualifier">fedora</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template match="/mods:mods/mods:identifier[@type='other']">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">identifier</xsl:attribute>
+            <xsl:attribute name="qualifier">other</xsl:attribute>
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
@@ -168,9 +176,15 @@
             <!-- special `authors` schema ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
             <xsl:if test="$mdschema='authors'">
                 <xsl:element name="dim:field">
-                    <xsl:attribute name="mdschema">
-                        <xsl:value-of select="$mdschema"/>
-                    </xsl:attribute>
+                    <xsl:attribute name="mdschema">authors</xsl:attribute>
+                    <xsl:attribute name="element">email</xsl:attribute>
+                    <xsl:attribute name="qualifier">official</xsl:attribute>
+                    <xsl:call-template name="valueOrDefault">
+                        <xsl:with-param name="value" select="./mods:nameIdentifier[@type='official_email']"/>
+                    </xsl:call-template>
+                </xsl:element>
+                <xsl:element name="dim:field">
+                    <xsl:attribute name="mdschema">authors</xsl:attribute>
                     <xsl:attribute name="element">identifier</xsl:attribute>
                     <xsl:attribute name="qualifier">fgs</xsl:attribute>
                     <xsl:call-template name="valueOrDefault">
