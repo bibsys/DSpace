@@ -28,6 +28,7 @@ import org.dspace.app.rest.submit.factory.PatchOperationFactory;
 import org.dspace.app.rest.submit.factory.impl.PatchOperation;
 import org.dspace.app.rest.utils.Utils;
 import org.dspace.app.util.SubmissionStepConfig;
+import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bitstream;
 import org.dspace.content.BitstreamFormat;
 import org.dspace.content.Bundle;
@@ -35,6 +36,8 @@ import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.eperson.Group;
+import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.uclouvain.core.model.MetadataField;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -120,7 +123,7 @@ public class UploadStep extends AbstractProcessingStep
             bundles = itemService.getBundles(item, Constants.CONTENT_BUNDLE_NAME);
 
             InputStream inputStream = new BufferedInputStream(file.getInputStream());
-            if (bundles.size() < 1) {
+            if (bundles.isEmpty()) {
                 // set bundle's name to ORIGINAL
                 source = itemService.createSingleBitstream(context, inputStream, item, Constants.CONTENT_BUNDLE_NAME);
             } else {
@@ -134,6 +137,26 @@ public class UploadStep extends AbstractProcessingStep
             // Identify the format
             bf = bitstreamFormatService.guessFormat(context, source);
             source.setFormat(context, bf);
+
+            // Set a default access condition for a newly created bitstream.
+            if (configurationService.getBooleanProperty("bitstream.upload.default.accesstype.enabled", false)) {
+                ResourcePolicy rp = authorizeService.createResourcePolicy(
+                    context,
+                    source,
+                    EPersonServiceFactory.getInstance().getGroupService().findByName(context, Group.ANONYMOUS),
+                    null,
+                    Constants.READ,
+                    ResourcePolicy.TYPE_CUSTOM,
+                    configurationService.getProperty("bitstream.upload.default.accesstype"),
+                    null,
+                    null,
+                    null
+                );
+                // We need to update the resource policies of the bitstream.
+                // This is mandatory so that the returned bitstream has the correct access type.
+                // Maybe there is a better way (Context.reload() and bitstreamService.find() does not work)
+                source.getResourcePolicies().add(rp);
+            }
 
             String defaultLicense = configurationService.getProperty("bitstream.upload.default.license.url");
             // Add a default license to a newly created bitstream.
@@ -158,7 +181,7 @@ public class UploadStep extends AbstractProcessingStep
             log.error(e.getMessage(), e);
             ErrorRest result = new ErrorRest();
             result.setMessage(e.getMessage());
-            if (bundles != null && bundles.size() > 0) {
+            if (bundles != null && !bundles.isEmpty()) {
                 result.getPaths().add(
                     "/" + WorkspaceItemRestRepository.OPERATION_PATH_SECTIONS + "/" + stepConfig.getId() + "/files/" +
                     bundles.get(0).getBitstreams().size());
