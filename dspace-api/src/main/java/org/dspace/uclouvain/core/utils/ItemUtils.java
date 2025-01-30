@@ -9,11 +9,11 @@ package org.dspace.uclouvain.core.utils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
 import org.dspace.content.Collection;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
@@ -54,19 +54,15 @@ public class ItemUtils {
     */
     public static List<Bitstream> extractItemFiles(Item DSpaceItem) {
         // Configuration which gives the bundles names to use.
-        List<String> acceptedBundles = Arrays.asList(
-            DSpaceServicesFactory
-                    .getInstance()
-                    .getConfigurationService()
-                    .getArrayProperty("uclouvain.resource_policy.accepted_bundles")
+        Set<String> acceptedBundles = Set.of(DSpaceServicesFactory
+            .getInstance()
+            .getConfigurationService()
+            .getArrayProperty("uclouvain.resource_policy.accepted_bundles")
         );
-        List<Bitstream> bitstreams = new ArrayList<>();
-        for (Bundle bundle: DSpaceItem.getBundles()) {
-            if (acceptedBundles.contains(bundle.getName())) {
-                bitstreams.addAll(bundle.getBitstreams());
-            }
-        }
-        return bitstreams;
+        return DSpaceItem.getBundles().stream()
+                .filter(bundle -> acceptedBundles.contains(bundle.getName()))
+                .flatMap(bundle -> bundle.getBitstreams().stream())
+                .collect(Collectors.toList());
     }
 
     /**
