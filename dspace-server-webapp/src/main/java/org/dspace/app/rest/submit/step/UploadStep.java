@@ -35,6 +35,7 @@ import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.uclouvain.core.model.MetadataField;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -133,6 +134,21 @@ public class UploadStep extends AbstractProcessingStep
             // Identify the format
             bf = bitstreamFormatService.guessFormat(context, source);
             source.setFormat(context, bf);
+
+            String defaultLicense = configurationService.getProperty("bitstream.upload.default.license.url");
+            // Add a default license to a newly created bitstream.
+            if (
+                configurationService.getBooleanProperty("bitstream.upload.default.license.enabled", false)
+                    && defaultLicense != null
+            ) {
+                bitstreamService.setMetadataSingleValue(
+                    context,
+                    source,
+                    new MetadataField("dc.rights.license"),
+                    null,
+                    defaultLicense
+                );
+            }
 
             // Update to DB
             bitstreamService.update(context, source);
