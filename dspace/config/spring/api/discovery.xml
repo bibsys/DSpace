@@ -28,7 +28,8 @@
     <!--<bean id="rPSourceIDSolrIndexPlugin" class="org.dspace.discovery.RPSourceIDSolrIndexer"/>-->
 
     <bean id="solrServicePromoterItemPlugin" class="org.dspace.uclouvain.discovery.SolrServicePromoterItemPlugin" scope="prototype"/>
-    <bean id="solrServiceSessionYearFieldIndexingPlugin" class="org.dspace.uclouvain.discovery.SolrServiceSessionYearFieldIndexingPlugin" scope="prototype"/>
+    <bean id="solrServiceSessionYearFieldIndexingPlugin" class="org.dspace.uclouvain.discovery.indexing.SolrServiceSessionYearFieldIndexingPlugin" scope="prototype"/>
+    <bean id="solrServiceMasterThesisCountersIndexingPlugin" class="org.dspace.uclouvain.discovery.indexing.SolrServiceMasterThesisCountersIndexingPlugin" scope="prototype"/>
     <bean id="solrServiceResourceIndexPlugin" class="org.dspace.discovery.SolrServiceResourceRestrictionPlugin" scope="prototype"/>
     <bean id="solrServiceWorkspaceWorkflowPlugin" class="org.dspace.discovery.SolrServiceWorkspaceWorkflowRestrictionPlugin" scope="prototype"/>
     <bean id="solrServiceWorkflowMetadataRestrictionsPlugin" class="org.dspace.uclouvain.discovery.SolrServiceWorkflowMetadataRestrictionsPlugin" scope="prototype"/>
