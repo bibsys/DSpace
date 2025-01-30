@@ -31,42 +31,47 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  */
 public class LicenseConsumer implements Consumer {
 
-    static List<Integer> acceptedEvents = Arrays.asList(Event.MODIFY_METADATA, Event.MODIFY);
-    private MetadataFieldName licenseMetadataFieldName;
+    static List<Integer> acceptedEvents = Arrays.asList(Event.CREATE, Event.MODIFY_METADATA, Event.MODIFY);
+    private MetadataFieldName licenseField;
     private String defaultLicenseUrl;
+    private boolean enableDefault;
+
     // Services
     private BitstreamService bitstreamService;
     private ConfigurationService configurationService;
 
     @Override
-    public void finish(Context context) throws Exception {}
-
-    @Override
     public void initialize() throws Exception {
         // Retrieve services
-        this.bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
-        this.configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
+        configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-        this.defaultLicenseUrl = this.configurationService.getProperty("uclouvain.global.metadata.license.default",
-                "https://creativecommons.org/licenses/by/4.0/");
-        String fieldName = this.configurationService.getProperty("uclouvain.global.metadata.license.field",
+        defaultLicenseUrl = configurationService.getProperty("bitstream.upload.default.license.url");
+        enableDefault = configurationService.getBooleanProperty("bitstream.upload.default.license.enabled", false);
+        String fieldName = configurationService.getProperty("uclouvain.global.metadata.license.field",
                 "dc.rights.license");
-        this.licenseMetadataFieldName = new MetadataFieldName(fieldName);
+        licenseField = new MetadataFieldName(fieldName);
     }
 
     @Override
     public void consume(Context context, Event event) throws Exception {
         // Only process bitstreams that have no license && are being modified
-        if (event.getSubjectType() == Constants.BITSTREAM && acceptedEvents.contains(event.getEventType())) {
+        if (isEventValid(event) && enableDefault && defaultLicenseUrl != null) {
             Bitstream bitstream = (Bitstream) event.getSubject(context);
-            if (bitstreamService.getMetadataFirstValue(bitstream, this.licenseMetadataFieldName, null) == null) {
-                bitstreamService.setMetadataSingleValue(context, bitstream, this.licenseMetadataFieldName, null,
+            if (bitstreamService.getMetadataFirstValue(bitstream, licenseField, null) == null) {
+                bitstreamService.setMetadataSingleValue(context, bitstream, licenseField, null,
                         defaultLicenseUrl);
             }
         }
     }
 
     @Override
-    public void end(Context context) throws Exception {
+    public void end(Context context) throws Exception {}
+
+    @Override
+    public void finish(Context context) throws Exception {}
+
+    private boolean isEventValid(Event event) {
+        return event.getSubjectType() == Constants.BITSTREAM && acceptedEvents.contains(event.getEventType());
     }
 }
