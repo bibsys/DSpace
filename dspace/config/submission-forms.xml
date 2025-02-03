@@ -1465,6 +1465,11 @@
           <input-type>year</input-type>
           <hint>Enter date issued of the serial.</hint>
           <required>You need to select a date</required>
+          <settings>
+            <setting name="useCurrentYearAsDefault">false</setting>
+            <setting name="maxYearDelta">2</setting>
+            <setting name="minYear">1925</setting>
+          </settings>
         </field>
       </row>
       <row>
