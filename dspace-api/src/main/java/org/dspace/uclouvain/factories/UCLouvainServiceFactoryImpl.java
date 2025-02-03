@@ -11,6 +11,7 @@ import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
+import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -31,6 +32,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainItemEnhancerUpdatePoller uclouvainItemEnhancerUpdatePoller;
     @Autowired(required = true)
     private UCLouvainAffiliationEntityRestService uclouvainAffiliationEntityRestService;
+    @Autowired(required = true)
+    private UCLouvainFWBValidationService uclouvainFWBValidationService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -51,6 +54,10 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public UCLouvainAffiliationEntityRestService getAffiliationEntityRestService() {
         return uclouvainAffiliationEntityRestService;
+    }
+    @Override
+    public UCLouvainFWBValidationService getFWBValidationService() {
+        return uclouvainFWBValidationService;
     }
 
 }
