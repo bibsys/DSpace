@@ -33,6 +33,8 @@
         <property name="resourcePolicyPriorities" ref="resourcePolicyPriorities"/>
     </bean>
 
+    <bean id="uclouvainFWBValidationService" class="org.dspace.uclouvain.services.UCLouvainFWBValidationServiceImpl"/>
+    
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
 
