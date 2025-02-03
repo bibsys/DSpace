@@ -58,5 +58,8 @@
         </property>
         <property name="filter" ref="funding-has-at-least-one-investigator-or-one-lead-organization_filter"/>
     </bean>
-    
+    <!-- Custom UCLouvain FWB constraints validator -->
+    <bean name="FWBAccessStatusValidation" class="org.dspace.uclouvain.validation.FWBAccessTypeValidator">
+        <property name="name" value="upload"/>
+    </bean>
 </beans>
