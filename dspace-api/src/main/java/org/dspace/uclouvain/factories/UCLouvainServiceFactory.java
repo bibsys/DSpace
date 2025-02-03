@@ -13,6 +13,7 @@ import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
+import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
 /**
@@ -29,6 +30,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract UCLouvainItemEnhancerUpdatePoller getItemEnhancerUpdatePoller();
     public abstract CommentService getCommentService();
     public abstract UCLouvainAffiliationEntityRestService getAffiliationEntityRestService();
+    public abstract UCLouvainFWBValidationService getFWBValidationService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
