@@ -16,9 +16,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -237,7 +239,11 @@ public class RabbitMQPackager extends AbstractCLICommand {
             }
             fedoraPid = fedoraPid.replace("-", ":");
             logger.info("\tFedora pid is :: " + fedoraPid);
-            DSpaceObject objectToReplace = getObjectFromIdentifier(context, "fedora.pid", fedoraPid);
+            DSpaceObject objectToReplace = getObjectFromIdentifier(
+                    context,
+                    new String[]{"fedora.pid", "dc.identifier.fedora"},
+                    fedoraPid
+            );
             // Ingest the object into DSpace system
             //   * If the `objectToReplace` is null, the `replace` function will simply ingest.
             //   * If ingest/replace is well done, we can remove the working packager file.
@@ -354,20 +360,26 @@ public class RabbitMQPackager extends AbstractCLICommand {
      * Get any DspaceObject that already exists into the system referencing an identifier value.
      *
      * @param context the application context
-     * @param key     the identifier key to search (the key in `Solr.search` core)
+     * @param keys    identifier keys to search (the key in `Solr.search` core)
      * @param value   the identifier value to search.
      * @return the DSpaceObject referencing the identifier; return `null` if no object is found.
      */
-    private DSpaceObject getObjectFromIdentifier(Context context, String key, String value) {
+    private DSpaceObject getObjectFromIdentifier(Context context, String[] keys, String value) {
+        String query = Arrays.stream(keys)
+                .map(key -> String.format("%s:\"%s\"", key, value))
+                .collect(Collectors.joining(" OR "));
         DiscoverQuery dq = new DiscoverQuery();
         dq.setMaxResults(1);
-        dq.setQuery(String.format("%s:\"%s\"", key, value));
+        dq.setQuery(query);
+        logger.info("SOLR query is :: " + query);
         try {
             DiscoverResult result = searchService.search(context, dq);
+            logger.info("#results :: " + result.getTotalSearchResults());
             return (result.getTotalSearchResults() == 0)
                 ? null
                 : (DSpaceObject) result.getIndexableObjects().get(0).getIndexedObject();
         } catch (SearchServiceException sse) {
+            logger.error("error :: " + sse.getMessage(), sse);
             return null;
         }
     }
