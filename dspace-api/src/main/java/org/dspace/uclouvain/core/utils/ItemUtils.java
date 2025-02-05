@@ -18,12 +18,13 @@ import org.dspace.content.Collection;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.WorkspaceItem;
+import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamService;
-import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.dspace.xmlworkflow.storedcomponents.service.CollectionRoleService;
@@ -41,8 +42,6 @@ public class ItemUtils {
     private BitstreamService bitstreamService;
     @Autowired
     private XmlWorkflowItemService xmlWorkflowItemService;
-    @Autowired
-    private WorkspaceItemService workspaceItemService;
     @Autowired
     private CollectionRoleService collectionRoleService;
 
@@ -123,13 +122,15 @@ public class ItemUtils {
      * @param item    The DSpace Item to analyze.
      * @return The main collection to which the item belongs. Returns null if not found.
      */
-    public Collection getMainCollection(Context context, Item item) {
+    public static Collection getMainCollection(Context context, Item item) {
         try {
-            WorkspaceItem wsItem = workspaceItemService.findByItem(context, item);
+            WorkspaceItem wsItem =
+                ContentServiceFactory.getInstance().getWorkspaceItemService().findByItem(context, item);
             if (wsItem != null) {
                 return wsItem.getCollection();
             }
-            XmlWorkflowItem wfItem = (XmlWorkflowItem) xmlWorkflowItemService.findByItem(context, item);
+            XmlWorkflowItem wfItem =
+                XmlWorkflowServiceFactory.getInstance().getXmlWorkflowItemService().findByItem(context, item);
             if (wfItem != null) {
                 return wfItem.getCollection();
             }
@@ -147,8 +148,8 @@ public class ItemUtils {
      * @throws SQLException for any database exception
      * 
      */
-    public boolean isWorkflow(Context context, Item item) throws SQLException {
-        return this.xmlWorkflowItemService.findByItem(context, item) != null;
+    public static boolean isWorkflow(Context context, Item item) throws SQLException {
+        return XmlWorkflowServiceFactory.getInstance().getWorkflowItemService().findByItem(context, item) != null;
     }
 
     /**
@@ -158,7 +159,7 @@ public class ItemUtils {
      * @return True if the item is in workspace false otherwise.
      * @throws SQLException for any database exception
      */
-    public boolean isWorkspace(Context context, Item item) throws SQLException {
-        return this.workspaceItemService.findByItem(context, item) != null;
+    public static boolean isWorkspace(Context context, Item item) throws SQLException {
+        return ContentServiceFactory.getInstance().getWorkspaceItemService().findByItem(context, item) != null;
     }
 }
