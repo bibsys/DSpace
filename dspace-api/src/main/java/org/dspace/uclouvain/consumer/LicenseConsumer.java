@@ -35,22 +35,17 @@ public class LicenseConsumer implements Consumer {
     private MetadataFieldName licenseField;
     private String defaultLicenseUrl;
     private boolean enableDefault;
-
-    // Services
     private BitstreamService bitstreamService;
-    private ConfigurationService configurationService;
 
     @Override
     public void initialize() throws Exception {
-        // Retrieve services
         bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
-        configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-        defaultLicenseUrl = configurationService.getProperty("bitstream.upload.default.license.url");
-        enableDefault = configurationService.getBooleanProperty("bitstream.upload.default.license.enabled", false);
-        String fieldName = configurationService.getProperty("uclouvain.global.metadata.license.field",
-                "dc.rights.license");
-        licenseField = new MetadataFieldName(fieldName);
+        ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        defaultLicenseUrl = configService.getProperty("bitstream.upload.default.license.url");
+        enableDefault = configService.getBooleanProperty("bitstream.upload.default.license.enabled", false);
+        licenseField = new MetadataFieldName(configService.getProperty(
+                "uclouvain.global.metadata.license.field", "dc.rights.license"));
     }
 
     @Override
@@ -59,8 +54,7 @@ public class LicenseConsumer implements Consumer {
         if (isEventValid(event) && enableDefault && defaultLicenseUrl != null) {
             Bitstream bitstream = (Bitstream) event.getSubject(context);
             if (bitstreamService.getMetadataFirstValue(bitstream, licenseField, null) == null) {
-                bitstreamService.setMetadataSingleValue(context, bitstream, licenseField, null,
-                        defaultLicenseUrl);
+                bitstreamService.setMetadataSingleValue(context, bitstream, licenseField, null, defaultLicenseUrl);
             }
         }
     }

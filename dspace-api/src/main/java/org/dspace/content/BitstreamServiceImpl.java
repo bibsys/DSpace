@@ -275,13 +275,20 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
     public void delete(Context context, Bitstream bitstream) throws SQLException, AuthorizeException {
 
         // changed to a check on delete
-        // Check authorisation
+        // Check authorization
         authorizeService.authorizeAction(context, bitstream, Constants.DELETE);
-        log.info(LogHelper.getHeader(context, "delete_bitstream",
-                                      "bitstream_id=" + bitstream.getID()));
+        log.info(LogHelper.getHeader(context, "delete_bitstream", "bitstream_id=" + bitstream.getID()));
 
-        context.addEvent(new Event(Event.DELETE, Constants.BITSTREAM, bitstream.getID(),
-                                   String.valueOf(bitstream.getSequenceID()), getIdentifiers(context, bitstream)));
+        // When consumers get a DELETE event about a bitstream, this bitstream is already deleted.
+        // Then it's impossible to get the related parent object using `getParentObject` method.
+        // To prevent this issue, we send the parent object UUID as `Object` of this event.
+        DSpaceObject parentObject = getParentObject(context, bitstream);
+        context.addEvent(new Event(
+                Event.DELETE,
+                Constants.BITSTREAM, bitstream.getID(),
+                parentObject.getType(), parentObject.getID(),
+                String.valueOf(bitstream.getSequenceID()),
+                getIdentifiers(context, bitstream)));
 
         // Remove bitstream itself
         bitstream.setDeleted(true);
