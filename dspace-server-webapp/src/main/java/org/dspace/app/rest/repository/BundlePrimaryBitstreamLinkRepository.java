@@ -20,7 +20,9 @@ import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
 import org.dspace.content.service.BundleService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.event.Event;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -157,6 +159,16 @@ public class BundlePrimaryBitstreamLinkRepository extends AbstractDSpaceRestRepo
         if (bitstream != null && !bundle.getBitstreams().contains(bitstream)) {
             throw new UnprocessableEntityException("Bundle '" + bundle.getName() + "' does not contain " +
                                                        "bitstream with id: " + bitstream.getID());
+        }
+
+        // Trigger a fake event on the bitstream to run item access type calculation.
+        // Check `org.dspace.uclouvain.consumer.AccessTypeConsumer` class for better understanding
+        if (bitstream != null) {
+            context.addEvent(new Event(
+                    Event.MODIFY_METADATA,
+                    Constants.BITSTREAM,
+                    bitstream.getID(),
+                    bitstream.getName()));
         }
 
         bundle.setPrimaryBitstreamID(bitstream);
