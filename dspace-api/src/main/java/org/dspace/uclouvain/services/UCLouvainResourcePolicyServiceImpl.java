@@ -35,9 +35,10 @@ public class UCLouvainResourcePolicyServiceImpl implements UCLouvainResourcePoli
     @Autowired
     private ResourcePolicyService resourcePolicyService;
     @Autowired
-    private List<ResourcePolicyPriority> resourcePolicyPriorities;
-    @Autowired
     private ResourcePolicyPriority defaultResourcePolicyPriority;
+
+    private List<ResourcePolicyPriority> resourcePolicyPriorities;
+
 
     /** Find all valid resource policies specifically created on a DSpace object.
      *
@@ -65,7 +66,7 @@ public class UCLouvainResourcePolicyServiceImpl implements UCLouvainResourcePoli
         ResourcePolicy masterPolicy = null;
         int currentMaxWeight = Integer.MIN_VALUE;
         for (ResourcePolicy policy : policies) {
-            int policyWeight = getPolicyWeight(policy);
+            int policyWeight = getPolicyWeight(policy.getRpName());
             if (policyWeight > currentMaxWeight) {
                 currentMaxWeight = policyWeight;
                 masterPolicy = policy;
@@ -75,7 +76,7 @@ public class UCLouvainResourcePolicyServiceImpl implements UCLouvainResourcePoli
     }
 
     private boolean isValidDateInterval(ResourcePolicy policy) {
-        // in a resourcePolicy, the `startDate` field is used to expose "start date where access is granted" ;
+        // In a resourcePolicy, the `startDate` field is used to expose "start date where access is granted";
         // opposite, the `endDate` field is used to expose "date where access is revoked". So to test if the
         // policy is valid, we need to check endDate <= currentDate <= startDate
         long currentTime = new Date().getTime();
@@ -84,11 +85,22 @@ public class UCLouvainResourcePolicyServiceImpl implements UCLouvainResourcePoli
         return endDate <= currentTime && currentTime <= startDate;
     }
 
-    private int getPolicyWeight(ResourcePolicy policy) {
+    /** Get the policy weight based on a policy name
+     *
+     * @param rpName the resource policy name
+     * @return the priority weight
+     */
+    public int getPolicyWeight(String rpName) {
         return this.resourcePolicyPriorities
                 .stream()
-                .filter(p -> p.getRpName().equalsIgnoreCase(policy.getRpName()))
-                .findFirst().orElse(defaultResourcePolicyPriority)
+                .filter(p -> p.getRpName().equalsIgnoreCase(rpName))
+                .findFirst()
+                .orElse(defaultResourcePolicyPriority)
                 .getWeight();
+    }
+
+    // GETTER & SETTER =================================================================================================
+    public void setResourcePolicyPriorities(List<ResourcePolicyPriority> resourcePolicyPriorities) {
+        this.resourcePolicyPriorities = resourcePolicyPriorities;
     }
 }
