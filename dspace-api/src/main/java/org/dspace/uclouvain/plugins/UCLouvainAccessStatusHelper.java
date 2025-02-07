@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.plugins;
 
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -63,9 +64,8 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
 
 
     public UCLouvainAccessStatusHelper() {
-        String fieldName = configurationService
-                .getProperty("uclouvain.global.metadata.accesstype.field", "dcterms.accessRights");
-        this.accessMetadataFieldName = new MetadataFieldName(fieldName);
+        this.accessMetadataFieldName = new MetadataFieldName(configurationService
+                .getProperty("uclouvain.global.metadata.accesstype.field", "dcterms.accessRights"));
     }
 
     /**
@@ -83,7 +83,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
         if (item == null) {
             return UNKNOWN;
         }
-        Bitstream masterBitstream = this.getMasterBitstreamForItem(item);
+        Bitstream masterBitstream = this.getMasterBitstreamForItem(context, item);
         return (masterBitstream != null)
                 ? calculateAccessStatusForDso(context, masterBitstream)
                 : getAccessFromMetadata(item);
@@ -105,7 +105,7 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
             return null;
         }
         // Get the master bitstream about this item... it should return an embargoed bitstream.
-        Bitstream masterBitstream = getMasterBitstreamForItem(item);
+        Bitstream masterBitstream = getMasterBitstreamForItem(context, item);
         if (masterBitstream == null) {
             return null;
         }
@@ -119,27 +119,50 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
      * Get the master bitstream for an Item. Master bitstream is either the
      * defined item primary bitstream, either the first bitstream of the default bundle.
      *
+     * @param context the application context
      * @param item the item to analyze
      * @return the master item bitstream if exists, otherwise return null.
      */
-    private Bitstream getMasterBitstreamForItem(@NotNull Item item) {
+    private Bitstream getMasterBitstreamForItem(Context context, @NotNull Item item) {
         List<Bundle> bundles = item.getBundles(Constants.DEFAULT_BUNDLE_NAME);
-        Bitstream bitstream = bundles
+
+        // 1) Try to find a bitstream flagged as `primary`.
+        //    If we find one, then use it!
+        Bitstream primaryBitstream = bundles
                 .stream()
                 .map(Bundle::getPrimaryBitstream)
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
-        if (bitstream == null) {
-            bitstream = bundles
-                    .stream()
-                    .map(Bundle::getBitstreams)
-                    .flatMap(List::stream)
-                    .findFirst()
-                    .orElse(null);
+        if (primaryBitstream != null) {
+            return primaryBitstream;
         }
-        return bitstream;
+
+        // 2) No primary bitstream has been found.
+        //    So we need to find the most permissive bitstream
+        return bundles
+                .stream()
+                .flatMap(bundle -> bundle.getBitstreams().stream())
+                .max(Comparator.comparingInt(b -> getBitstreamPriority(context, b)))
+                .orElse(null);
     }
+
+    /**
+     * Find the bitstream priority based on bitstream related resource policy.
+     *
+     * @param context the application context
+     * @param bitstream the bitstream to analyze
+     * @return the bitstream priority; larger number = higher priority.
+     */
+    private int getBitstreamPriority(Context context, Bitstream bitstream) {
+        try {
+            String accessStatus = calculateAccessStatusForDso(context, bitstream);
+            return uclouvainResourcePolicyService.getPolicyWeight(accessStatus);
+        } catch (SQLException sqle) {
+            return Integer.MIN_VALUE;
+        }
+    }
+
 
     /**
      * Look at the DSpace object's policies to determine an access status value.
@@ -163,9 +186,14 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
             }
         }
         String accessValue = getAccessFromMetadata(dso);
-        return (accessValue != null)
-            ? getControlledAccessValue(accessValue)
-            : OPEN_ACCESS;
+
+        // Special case for `Bitstream`:
+        //   If nor policies are found, nor specific metadata,
+        //   then the access status isn't UNKNOWN but OPEN_ACCESS
+        if (accessValue.equals(UNKNOWN) && dso instanceof Bitstream) {
+            return OPEN_ACCESS;
+        }
+        return getControlledAccessValue(accessValue);
     }
 
     /**
