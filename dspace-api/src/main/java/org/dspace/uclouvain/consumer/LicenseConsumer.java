@@ -43,8 +43,8 @@ public class LicenseConsumer implements Consumer {
         ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
         defaultLicenseUrl = configService.getProperty("bitstream.upload.default.license.url");
         enableDefault = configService.getBooleanProperty("bitstream.upload.default.license.enabled", false);
-        String fieldName = configService.getProperty("uclouvain.global.metadata.license.field", "dc.rights.license");
-        licenseField = new MetadataFieldName(fieldName);
+        licenseField = new MetadataFieldName(configService.getProperty(
+                "uclouvain.global.metadata.license.field", "dc.rights.license"));
     }
 
     @Override

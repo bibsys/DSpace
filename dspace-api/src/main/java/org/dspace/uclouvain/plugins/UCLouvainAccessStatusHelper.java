@@ -84,8 +84,8 @@ public class UCLouvainAccessStatusHelper implements AccessStatusHelper {
         }
         Bitstream masterBitstream = this.getMasterBitstreamForItem(context, item);
         return (masterBitstream != null)
-                ? calculateAccessStatusForDso(context, masterBitstream)
-                : getAccessFromMetadata(item);
+            ? calculateAccessStatusForDso(context, masterBitstream)
+            : UNKNOWN;
     }
 
     /**
