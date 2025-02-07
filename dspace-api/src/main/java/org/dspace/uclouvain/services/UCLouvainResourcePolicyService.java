@@ -39,4 +39,11 @@ public interface UCLouvainResourcePolicyService {
      * @return the master resource policy into this list. Could be `null` if `policies` argument is an empty list.
      */
     ResourcePolicy getMasterPolicy(List<ResourcePolicy> policies);
+
+    /** Get the policy weight based on a policy name
+     *
+     * @param policyName the resource policy name
+     * @return the priority weight
+     */
+    int getPolicyWeight(String policyName);
 }
