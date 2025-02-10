@@ -7,12 +7,13 @@
  */
 package org.dspace.uclouvain.consumer;
 
-import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataValue;
@@ -38,10 +39,9 @@ import org.dspace.uclouvain.services.UCLouvainEntityService;
  */
 public class CataretroFacultyMetadataConsumer implements Consumer {
 
-    private final static Logger log = LogManager.getLogger(CataretroFacultyMetadataConsumer.class);
-
     private String facultyCodeFieldName;
     private String facultyNameFieldName;
+    private final Set<UUID> itemToProcess = new HashSet<>();
 
     private ItemService itemService;
     private MetadataFieldService metadataFieldService;
@@ -62,58 +62,40 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
 
     @Override
     public void consume(Context context, Event event) throws Exception {
-        if (!canBeProcessed(context, event)) {
-            log.debug("consume cannot be processed. Cancel consuming");
-            return;
+        if (event.getSubjectType() == Constants.ITEM && isRelevantMetadataModified(event.getDetail())) {
+            itemToProcess.add(event.getSubjectID());
         }
-        Item item = (Item) event.getSubject(context);
-        MetadataField fcField = metadataFieldService.findByString(context, facultyCodeFieldName, '.');
-        MetadataField fnField = metadataFieldService.findByString(context, facultyNameFieldName, '.');
+    }
 
-        // 1) Clear all previously stored faculty names into the object.
-        itemService.clearMetadata(
-                context,
-                item,
-                fnField.getMetadataSchema().getName(),
-                fnField.getElement(),
-                fnField.getQualifier(),
-                null
-        );
-        // 2) Retrieve faculty entities corresponding to faculty codes stored into the item.
-        //    For each entity found, store the faculty entity name into the item.
-        List<MetadataValue> dbFacultyCodes = itemService.getMetadataByMetadataString(item, fcField.toString('.'));
-        for (MetadataValue facultyCode: dbFacultyCodes) {
-            Entity entityFac = uclouvainEntityService.findFirst(facultyCode.getValue(), EntityType.FACULTY);
-            if (entityFac != null) {
-                itemService.addMetadata(context, item, fnField, null, entityFac.getName());
-            } else {
-                log.warn("Unable to retrieve faculty entity related to '" + facultyCode.getValue() + "'");
+    @Override
+    public void end(Context context) throws Exception {
+        MetadataField fnField = metadataFieldService.findByString(context, facultyNameFieldName, '.');
+        for (UUID id : itemToProcess) {
+            Item item = itemService.find(context, id);
+            if (item != null) {
+                Set<String> existingFacultyNames = getExistingFacultyNames(item);
+                Set<String> computedFacultyNames = getComputedFacultyNames(item);
+                if (!(existingFacultyNames.equals(computedFacultyNames))) {
+                    // Clear previously stored faculty name metadata
+                    itemService.clearMetadata(
+                            context,
+                            item,
+                            fnField.getMetadataSchema().getName(),
+                            fnField.getElement(),
+                            fnField.getQualifier(),
+                            null
+                    );
+                    // Add new computed faculty names
+                    for (String facultyName : computedFacultyNames) {
+                        itemService.addMetadata(context, item, fnField, null, facultyName);
+                    }
+                }
             }
         }
     }
 
     @Override
-    public void end(Context context) throws Exception {}
-
-    @Override
     public void finish(Context context) throws Exception {}
-
-    /**
-     * Check if an event should be processed by this consumer.
-     * 
-     * @param context The current DSpace context.
-     * @param event The event to evaluate.
-     * @return True if the event is relevant for this consumer, False otherwise
-     */
-    private Boolean canBeProcessed(Context context, Event event) throws SQLException {
-        if (event.getSubjectType() != Constants.ITEM) {
-            log.warn("CataretroMetadataConsumer should not have been given this kind of subject in an event, skipping: "
-                    + event);
-            return false;
-        }
-        Item item = (Item)event.getSubject(context);
-        return item != null && isRelevantCollection(context, item) && isRelevantMetadataModified(event.getDetail());
-    }
 
     /** Check if one modified metadata match faculty code metadata field */
     private Boolean isRelevantMetadataModified(String modifiedMetadataFields) {
@@ -127,14 +109,32 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
         return Arrays.stream(modifiedMetadataFields.split(","))
                 .map(String::trim)
                 .map(m -> m.replaceAll("_", "."))
-                .anyMatch(x -> x.equals(this.facultyCodeFieldName));
+                .anyMatch(x -> x.equals(facultyCodeFieldName));
     }
 
-    /** Check if the modified item is a member of a "Cataretro" collection */
-    private Boolean isRelevantCollection(Context context, Item item) {
-        return itemService.getMetadataByMetadataString(item, "dcterms.provenance")
+    /** Get faculty names stored into the item
+     *
+     * @param item the Item to analyze
+     * @return the set of stored faculty names.
+     */
+    private Set<String> getExistingFacultyNames(Item item) {
+        return itemService
+            .getMetadataByMetadataString(item, facultyNameFieldName)
+            .stream().map(MetadataValue::getValue)
+            .collect(Collectors.toSet());
+    }
+
+    /** Get the faculty names based on stored faculty codes
+     *
+     * @param item the item to analyze
+     * @return the set of faculty names corresponding to faculty codes stored into the item.
+     */
+    private Set<String> getComputedFacultyNames(Item item) {
+        return itemService.getMetadataByMetadataString(item, facultyCodeFieldName)
             .stream()
-            .map(MetadataValue::getValue)
-            .anyMatch(v -> v.equals("cataretro"));
+            .map(field -> uclouvainEntityService.findFirst(field.getValue(), EntityType.FACULTY))
+            .filter(Objects::nonNull)
+            .map(Entity::getName)
+            .collect(Collectors.toSet());
     }
 }
