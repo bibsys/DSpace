@@ -10,12 +10,15 @@ package org.dspace.uclouvain.consumer;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
-import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.content.service.MetadataFieldService;
@@ -34,7 +37,8 @@ import org.dspace.uclouvain.services.UCLouvainEntityService;
  * Consumer to generate additional metadata from the degree code metadata field.
  *
  * @version $Revision$
- * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public class DegreeMetadataConsumer implements Consumer {
 
@@ -45,6 +49,8 @@ public class DegreeMetadataConsumer implements Consumer {
     private String rootDegreeLabelFieldName;
     private String facultyCodeFieldName;
     private String facultyNameFieldName;
+    private final Set<UUID> itemToProcess = new HashSet<>();
+
     private ItemService itemService;
     private MetadataFieldService metadataFieldService;
     private UCLouvainEntityService uclouvainEntityService;
@@ -69,50 +75,50 @@ public class DegreeMetadataConsumer implements Consumer {
     }
 
     @Override
-    public void consume(Context context, Event event) throws SQLException {
-        if (!canBeProcessed(context, event)) {
-            log.debug("consume cannot be processed. Cancel consuming");
-            return;
-        }
-        Item item = (Item) event.getSubject(context);
-        // 1) Clear all previously stored faculty names into the object.
-        clearPreviousMetadata(context, item);
-
-        // 2) Retrieve entities related to degree codes stored into the item.
-        //    For each entity found, store the hierarchical ancestors into the item (degree/faculty entityType only)
-        Set<MetadataValue> dbDegreeCodes =
-                new HashSet<>(itemService.getMetadataByMetadataString(item, degreeCodeFieldName));
-        for (MetadataValue degreeCode : dbDegreeCodes) {
-            Entity entity = uclouvainEntityService.findFirst(degreeCode.getValue(), EntityType.DEGREE);
-            if (entity != null) {
-                addEntityMetadata(context, item, entity.getParent());
-            } else {
-                log.warn("Unable to retrieve degree entity related to '" + degreeCode.getValue() + "'");
-            }
+    public void consume(Context context, Event event) throws Exception {
+        if (canBeProcessed(context, event)) {
+            itemToProcess.add(event.getSubjectID());
         }
     }
 
     @Override
-    public void end(Context context) throws Exception {}
+    public void end(Context context) throws Exception {
+        for (UUID uuid : itemToProcess) {
+            Item item = itemService.find(context, uuid);
+            if (item != null) {
+                // 1) Get existing rootDegree/faculty metadata stored into the item.
+                // 2) Retrieve the rootDegree/faculty related to degrees stored into the item.
+                // 3) Compare both lists; if any divergences are found, then update the item
+                //    a) clear existing rootDegree/faculty metadata stored into the item
+                //    b) add newly computed metadata into the item
+                Set<Pair<String, String>> existingMetadata = getPreviousMetadata(item);
+                Set<Pair<String, String>> computedMetadata = getRelatedEntities(item);
+                if (!(existingMetadata).equals(computedMetadata)) {
+                    clearPreviousMetadata(context, item);
+                    addComputedMetadata(context, item, computedMetadata);
+                }
+            }
+        }
+        itemToProcess.clear();
+    }
 
     @Override
     public void finish(Context context) throws Exception {}
 
     /**
      * Check if an event is modifying the degree code metadata field.
-     * 
-     * @param context The current DSpace context.
-     * @param event The event to evaluate.
+     *
+     * @param context the current DSpace context.
+     * @param event the event to evaluate.
      * @return True if the event is relevant for this consumer, False otherwise
      */
-    private Boolean canBeProcessed(Context context, Event event) throws SQLException {
+    private boolean canBeProcessed(Context context, Event event) throws SQLException {
         // First, we need to check the subject item exists and is an `Item`
         if (event.getSubjectType() != Constants.ITEM) {
-            log.warn("DegreeMetadataConsumer should not have been given this kind of subject in an event, skipping: "
-                    + event);
+            log.warn("Invalid subject: " + event.getSubjectType());
             return false;
         }
-        Item item = (Item)event.getSubject(context);
+        Item item = (Item) event.getSubject(context);
         if (item == null) {
             log.warn("Item cannot be found.");
             return false;
@@ -132,6 +138,83 @@ public class DegreeMetadataConsumer implements Consumer {
                 .map(String::trim)
                 .map(m -> m.replace("_", "."))
                 .anyMatch(x -> x.equals(degreeCodeFieldName));
+    }
+
+
+    /**
+     * Search into an `Item` to retrieve metadata related to basic degree fields
+     * @param item the item to analyze
+     * @return a set of "tuple" containing metadata related to basic degree fields
+     */
+    private Set<Pair<String, String>> getPreviousMetadata(Item item) {
+        String[] fields = new String[] {
+            rootDegreeCodeFieldName,
+            rootDegreeLabelFieldName,
+            facultyCodeFieldName,
+            facultyNameFieldName
+        };
+        Set<Pair<String, String>> metadata = new HashSet<>();
+        for (String fieldName : fields) {
+            this.itemService
+                .getMetadataByMetadataString(item, fieldName)
+                .forEach(m -> metadata.add(Pair.of(fieldName, m.getValue())));
+        }
+        return metadata;
+    }
+
+    /**
+     * Found entities related to an item.
+     * For each degree code encoded into the items, search for degree ancestors and return them.
+     * If multiple same root degrees or faculties are found, we distinct them to return a `Set`.
+     * @param item the item to analyze
+     * @return a set of "tuple" containing metadata related to item encoded degree code.
+     */
+    private Set<Pair<String, String>> getRelatedEntities(Item item) {
+        Set<Entity> degreeEntities = itemService
+                .getMetadataByMetadataString(item, degreeCodeFieldName).stream()
+                .map(m -> uclouvainEntityService.findFirst(m.getValue(), EntityType.DEGREE))
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+
+        Set<Pair<String, String>> output = new HashSet<>();
+        for (Entity entity : degreeEntities) {
+            Set<Pair<String, String>> extractedEntities = extractEntityMetadata(new HashSet<>(), entity.getParent());
+            // Special case :: if `extractedEntities` doesn't contain any DEGREE, it should be because the degreeEntity
+            // is already a root degree (this is the case for M1 or MC master thesis codes).
+            // In this case, we need to duplicate the original code as the rootDegree field to have consistent data
+            // for a good workflow (rootDegree is required for filtering master thesis by manager)
+            if (extractedEntities.stream().noneMatch(pair -> pair.getLeft().equals(rootDegreeLabelFieldName))) {
+                extractedEntities.add(Pair.of(rootDegreeCodeFieldName, entity.getCode()));
+                extractedEntities.add(Pair.of(rootDegreeLabelFieldName, entity.getName()));
+            }
+            output.addAll(extractedEntities);
+        }
+        return output;
+    }
+
+    /** Recursive function to extract metadata about an entity and possible ancestors. */
+    private Set<Pair<String, String>> extractEntityMetadata(Set<Pair<String, String>> entities, Entity entity) {
+        if (entity == null) {
+            return entities;
+        }
+        switch (entity.getType()) {
+            case DEGREE:
+                addIfNotNull(entities, rootDegreeCodeFieldName, entity.getCode());
+                addIfNotNull(entities, rootDegreeLabelFieldName, entity.getName());
+                break;
+            case FACULTY:
+                addIfNotNull(entities, facultyCodeFieldName, entity.getCode());
+                addIfNotNull(entities, facultyNameFieldName, entity.getName());
+                break;
+            default:
+                break;
+        }
+        return extractEntityMetadata(entities, entity.getParent());
+    }
+
+    private void addIfNotNull(Set<Pair<String, String>> entities, String key, String value) {
+        if (value != null) {
+            entities.add(Pair.of(key, value));
+        }
     }
 
     /**
@@ -157,34 +240,20 @@ public class DegreeMetadataConsumer implements Consumer {
         }
     }
 
-    private void addEntityMetadata(Context context, Item item, Entity entity) throws SQLException {
-        if (entity == null) {
-            return;
-        }
-        // Determine in which metadata fields the parent entity should be mapped
-        MetadataField codeField;
-        MetadataField nameField;
-        switch (entity.getType()) {
-            case DEGREE:
-                codeField = metadataFieldService.findByString(context, rootDegreeCodeFieldName, '.');
-                nameField = metadataFieldService.findByString(context, rootDegreeLabelFieldName, '.');
-                break;
-            case FACULTY:
-                codeField = metadataFieldService.findByString(context, facultyCodeFieldName, '.');
-                nameField = metadataFieldService.findByString(context, facultyNameFieldName, '.');
-                break;
-            default:
-                log.debug("Unable to manage '" + entity.getType().label + "' parent entity");
-                return;
-        }
-        // At this time, we are sure `codeField` and `nameField` have values, so add metadata into item.
-        if (entity.getCode() != null) {
-            itemService.addMetadata(context, item, codeField, null, entity.getCode());
-        }
-        if (entity.getName() != null) {
-            itemService.addMetadata(context, item, nameField, null, entity.getName());
-        }
-        // Recursively add potential parent ancestor entity
-        addEntityMetadata(context, item, entity.getParent());
+    /**
+     * Add metadata into the item
+     * @param context the application context.
+     * @param item the item to update
+     * @param metadata metadata list to add in the item
+     */
+    private void addComputedMetadata(Context context, Item item, Set<Pair<String, String>> metadata) {
+        metadata.forEach(pair -> {
+            try {
+                MetadataField mdField = metadataFieldService.findByString(context, pair.getLeft(), '.');
+                itemService.addMetadata(context, item, mdField, null, pair.getRight());
+            } catch (SQLException ignored) {
+                log.error("Unable to add metadata :: " + pair.getLeft() + " -- " + pair.getRight());
+            }
+        });
     }
 }
