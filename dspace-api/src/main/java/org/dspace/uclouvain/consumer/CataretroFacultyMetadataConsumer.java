@@ -9,9 +9,9 @@ package org.dspace.uclouvain.consumer;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.List;
 
 import org.apache.logging.log4j.Logger;
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataValue;
@@ -31,6 +31,8 @@ import org.dspace.uclouvain.services.UCLouvainEntityService;
 
 /**
  * Consumer to generate additional metadata from the faculty code ONLY for "catareto" collection.
+ * Into the catareto submission form, user specifies one/multiple faculty codes (using select box); We need to
+ * associate faculty name related to these faculty codes.
  *
  * @version $Revision$
  *
@@ -66,10 +68,18 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
             log.debug("consume cannot be processed. Cancel consuming");
             return;
         }
-        Item item = (Item) event.getSubject(context);
+        context.turnOffAuthorisationSystem();
+        try {
+            consume(context, (Item) event.getSubject(context));
+        } finally {
+            context.restoreAuthSystemState();
+        }
+
+    }
+
+    private void consume(Context context, Item item) throws SQLException, AuthorizeException {
         MetadataField fcField = metadataFieldService.findByString(context, facultyCodeFieldName, '.');
         MetadataField fnField = metadataFieldService.findByString(context, facultyNameFieldName, '.');
-
         // 1) Clear all previously stored faculty names into the object.
         itemService.clearMetadata(
                 context,
@@ -79,11 +89,9 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
                 fnField.getQualifier(),
                 null
         );
-
         // 2) Retrieve faculty entities corresponding to faculty codes stored into the item.
         //    For each entity found, store the faculty entity name into the item.
-        List<MetadataValue> dbFacultyCodes = itemService.getMetadataByMetadataString(item, fcField.toString('.'));
-        for (MetadataValue facultyCode: dbFacultyCodes) {
+        for (MetadataValue facultyCode: itemService.getMetadataByMetadataString(item, fcField.toString('.'))) {
             Entity entityFac = uclouvainEntityService.findFirst(facultyCode.getValue(), EntityType.FACULTY);
             if (entityFac != null) {
                 itemService.addMetadata(context, item, fnField, null, entityFac.getName());
@@ -91,6 +99,7 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
                 log.warn("Unable to retrieve faculty entity related to '" + facultyCode.getValue() + "'");
             }
         }
+        itemService.update(context, item);
     }
 
     @Override

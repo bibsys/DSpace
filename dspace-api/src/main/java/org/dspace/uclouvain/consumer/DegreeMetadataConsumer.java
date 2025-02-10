@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.logging.log4j.Logger;
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataValue;
@@ -71,20 +72,27 @@ public class DegreeMetadataConsumer implements Consumer {
     }
 
     @Override
-    public void consume(Context context, Event event) throws SQLException {
+    public void consume(Context context, Event event) throws Exception {
         if (!canBeProcessed(context, event)) {
             log.debug("consume cannot be processed. Cancel consuming");
             return;
         }
-        Item item = (Item) event.getSubject(context);
+        context.turnOffAuthorisationSystem();
+        try {
+            consume(context, (Item) event.getSubject(context));
+        } finally {
+            context.restoreAuthSystemState();
+        }
+    }
+
+    private void consume(Context context, Item item) throws SQLException, AuthorizeException {
         // 1) Clear all previously stored faculty names into the object.
         clearPreviousMetadata(context, item);
 
         // 2) Retrieve entities related to degree codes stored into the item.
         //    For each entity found, store the hierarchical ancestors into the item (degree/faculty entityType only)
-        Set<MetadataValue> dbDegreeCodes =
-                new HashSet<>(itemService.getMetadataByMetadataString(item, degreeCodeFieldName));
-        for (MetadataValue degreeCode : dbDegreeCodes) {
+        Set<MetadataValue> dbCodes = new HashSet<>(itemService.getMetadataByMetadataString(item, degreeCodeFieldName));
+        for (MetadataValue degreeCode : dbCodes) {
             Entity entity = uclouvainEntityService.findFirst(degreeCode.getValue(), EntityType.DEGREE);
             if (entity != null) {
                 addEntityMetadata(context, item, entity.getParent());
@@ -92,6 +100,7 @@ public class DegreeMetadataConsumer implements Consumer {
                 log.warn("Unable to retrieve degree entity related to '" + degreeCode.getValue() + "'");
             }
         }
+        itemService.update(context, item);
     }
 
     @Override
