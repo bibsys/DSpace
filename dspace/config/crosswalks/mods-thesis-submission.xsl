@@ -109,6 +109,15 @@
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
+    <!-- PROVENANCE =================================================== -->
+    <!--   * recordInfoNote[@type='provenance'] -> dcterms.provenance -->
+    <xsl:template match="/mods:mods/mods:recordInfo/mods:recordInfoNote[@type='provenance']">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dcterms</xsl:attribute>
+            <xsl:attribute name="element">provenance</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
     <!-- IDENTIFIER =================================================== -->
     <!--   * Manage `fedora_pid` identifier -->
     <!--   * Manage `other` identifier :: legacy application identifier (virtua, RERO) -->
@@ -229,12 +238,22 @@
             </xsl:call-template>
         </xsl:element>
     </xsl:template>
-    <!-- RELATEDITEM[@otherType="root_degree"] -> masterthesis.rootdegree -->
+    <!-- RELATEDITEM[@otherType="faculty"] ================================ -->
+    <!--   * titleInfo/title          -> masterthesis.faculty.name -->
+    <!--   * identifier[@type="code"] -> masterthesis.faculty.code -->
     <xsl:template match="/mods:mods/mods:relatedItem[@otherType='faculty']/mods:titleInfo/mods:title">
         <xsl:element name="dim:field">
             <xsl:attribute name="mdschema">masterthesis</xsl:attribute>
             <xsl:attribute name="element">faculty</xsl:attribute>
             <xsl:attribute name="qualifier">name</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template match="/mods:mods/mods:relatedItem[@otherType='faculty']/mods:identifier[@type='code']">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">masterthesis</xsl:attribute>
+            <xsl:attribute name="element">faculty</xsl:attribute>
+            <xsl:attribute name="qualifier">code</xsl:attribute>
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
