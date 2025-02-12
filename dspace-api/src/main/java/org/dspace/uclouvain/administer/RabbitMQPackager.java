@@ -30,6 +30,7 @@ import com.rabbitmq.client.DeliverCallback;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Option;
 import org.dspace.content.DSpaceObject;
+import org.dspace.content.Item;
 import org.dspace.content.crosswalk.CrosswalkException;
 import org.dspace.content.packager.AbstractMETSIngester;
 import org.dspace.content.packager.METSManifest;
@@ -50,6 +51,9 @@ import org.dspace.eperson.service.EPersonService;
 import org.dspace.uclouvain.exceptions.UserNotFoundException;
 import org.dspace.utils.DSpace;
 import org.dspace.workflow.WorkflowException;
+import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
+import org.dspace.xmlworkflow.service.XmlWorkflowService;
+import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,6 +98,7 @@ public class RabbitMQPackager extends AbstractCLICommand {
     // CLASS ATTRIBUTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     protected EPersonService ePersonService;
     protected SearchService searchService;
+    protected XmlWorkflowService workflowService;
     protected Connection mqConnection;
     protected PluginService pluginService;
     protected String packageType = "METS";
@@ -126,6 +131,7 @@ public class RabbitMQPackager extends AbstractCLICommand {
         searchService = new DSpace().getSingletonService(SearchService.class);
         mqConnection = createRabbitMQConnection();
         pluginService = CoreServiceFactory.getInstance().getPluginService();
+        workflowService = XmlWorkflowServiceFactory.getInstance().getXmlWorkflowService();
     }
 
     protected void buildOptions() {
@@ -238,19 +244,38 @@ public class RabbitMQPackager extends AbstractCLICommand {
             }
             fedoraPid = fedoraPid.replace("-", ":");
             logger.info("\tFedora pid is :: " + fedoraPid);
-            DSpaceObject objectToReplace = getObjectFromIdentifier(
+            Object existingObject = getObjectFromIdentifier(
                     context,
                     new String[]{"fedora.pid", "dc.identifier.fedora"},
                     fedoraPid
             );
+            // SPECIAL CASE :: XmlWorkflowItem
+            //    In case an object already exists for this pid identifier, and this object is an "XmlWorkflowItem" then
+            //    we can't use 'replace' method because it's only working with basic DSpaceObject. Then the solution is
+            //    to delete the existing object and recreate a new one.
+            //    In all other cases, we just need to replace the existing object.
+            DSpaceObject objectToReplace = null;
+            if (existingObject != null) {
+                if (existingObject instanceof XmlWorkflowItem) {
+                    XmlWorkflowItem wfi = (XmlWorkflowItem) existingObject;
+                    logger.info("\tDelete existing WorkflowItem :: " + wfi.getID());
+                    this.workflowService.deleteWorkflowByWorkflowItem(context, wfi, context.getCurrentUser());
+                }
+                if (existingObject instanceof Item) {
+                    objectToReplace = (DSpaceObject) existingObject;
+                }
+            }
+
             // Ingest the object into DSpace system
             //   * If the `objectToReplace` is null, the `replace` function will simply ingest.
             //   * If ingest/replace is well done, we can remove the working packager file.
             //   * If ingest/replace failed, move the working file to `error` directory and raise exception.
             try {
+                String mRecordStatus = manifest.getRecordStatus();
                 DSpaceObject ingestedObject = null;
                 PackageParameters pkgParams = new PackageParameters();
-                pkgParams.setWorkflowEnabled(false);
+                pkgParams.setWorkflowEnabled(mRecordStatus != null && mRecordStatus.equalsIgnoreCase("workflow"));
+                logger.debug("\tIs workflow item ? " + pkgParams.workflowEnabled());
                 if (objectToReplace != null) {
                     logger.info("\tObject already exists ? [TRUE] --> [" + Constants.typeText[objectToReplace.getType()]
                             + "#" + objectToReplace.getID() + "]");
@@ -362,20 +387,21 @@ public class RabbitMQPackager extends AbstractCLICommand {
      * @param value the identifier value to search.
      * @return the DSpaceObject referencing the identifier; return `null` if no object is found.
      */
-    private DSpaceObject getObjectFromIdentifier(Context context, String[] keys, String value) {
+    private Object getObjectFromIdentifier(Context context, String[] keys, String value) {
         String query = Arrays.stream(keys)
                 .map(key -> String.format("%s:\"%s\"", key, value))
                 .collect(Collectors.joining(" OR "));
         DiscoverQuery dq = new DiscoverQuery();
         dq.setMaxResults(1);
         dq.setQuery(query);
-        logger.info("SOLR query is :: " + query);
+        dq.addFilterQueries("search.resourcetype:\"Item\" OR search.resourcetype:\"XmlWorkflowItem\"");
+        logger.debug("SOLR query is :: " + query);
         try {
             DiscoverResult result = searchService.search(context, dq);
             logger.info("#results :: " + result.getTotalSearchResults());
             return (result.getTotalSearchResults() == 0)
                 ? null
-                : (DSpaceObject) result.getIndexableObjects().get(0).getIndexedObject();
+                : result.getIndexableObjects().get(0).getIndexedObject();
         } catch (SearchServiceException sse) {
             logger.error("error :: " + sse.getMessage(), sse);
             return null;
