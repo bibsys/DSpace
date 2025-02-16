@@ -71,8 +71,7 @@ public class BasicDispatcher extends Dispatcher {
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("Processing queue of "
-                              + String.valueOf(ctx.getEvents().size()) + " events.");
+                log.debug("Processing queue of " + ctx.getEvents().size() + " events.");
             }
 
             // transaction identifier applies to all events created in
@@ -86,49 +85,36 @@ public class BasicDispatcher extends Dispatcher {
                 event.setTransactionID(tid);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("Iterating over "
-                                  + String.valueOf(consumers.values().size())
-                                  + " consumers...");
+                    log.debug("Iterating over " + consumers.values().size() + " consumers...");
                 }
 
-                for (Iterator ci = consumers.values().iterator(); ci.hasNext(); ) {
-                    ConsumerProfile cp = (ConsumerProfile) ci.next();
+                for (ConsumerProfile cp : consumers.values()) {
+                    if (event.pass(cp.getFilters()) && event.activate(ctx, cp.getEnableRules(), cp.getDisableRules())) {
 
-                    if (event.pass(cp.getFilters())) {
                         if (log.isDebugEnabled()) {
-                            log.debug("Sending event to \"" + cp.getName()
-                                          + "\": " + event.toString());
+                            log.debug("Sending event to \"" + cp.getName() + "\": " + event);
                         }
-
                         try {
                             cp.getConsumer().consume(ctx, event);
-
-                            // Record that the event has been consumed by this
-                            // consumer
+                            // Record that the event has been consumed by this consumer
                             event.setBitSet(cp.getName());
                         } catch (Exception e) {
-                            log.error("Consumer(\"" + cp.getName()
-                                          + "\").consume threw: " + e.toString(), e);
+                            log.error("Consumer(\"" + cp.getName() + "\").consume threw: " + e, e);
                         }
                     }
-
                 }
             }
 
             // Call end on the consumers that got synchronous events.
-            for (Iterator ci = consumers.values().iterator(); ci.hasNext(); ) {
-                ConsumerProfile cp = (ConsumerProfile) ci.next();
+            for (ConsumerProfile cp : consumers.values()) {
                 if (cp != null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Calling end for consumer \"" + cp.getName()
-                                      + "\"");
+                        log.debug("Calling end for consumer \"" + cp.getName() + "\"");
                     }
-
                     try {
                         cp.getConsumer().end(ctx);
                     } catch (Exception e) {
-                        log.error("Error in Consumer(\"" + cp.getName()
-                                      + "\").end: " + e.toString(), e);
+                        log.error("Error in Consumer(\"" + cp.getName() + "\").end: " + e, e);
                     }
                 }
             }
