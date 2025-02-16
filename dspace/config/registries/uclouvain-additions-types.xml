@@ -86,4 +86,19 @@
         <element>contentmodels</element>
         <scope_note>FedoraCommons object content model</scope_note>
     </dc-type>
+    <!-- TAG SCHEMA -->
+    <dc-schema>
+        <name>tag</name>
+        <namespace>https://uclouvain.be/ontology/tags</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>tag</schema>
+        <element>certified</element>
+        <scope_note>Specify the object is certified by a manager user</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>fedora</schema>
+        <element>contentmodels</element>
+        <scope_note>FedoraCommons object content model</scope_note>
+    </dc-type>
 </dspace-dc-types>
