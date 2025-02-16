@@ -34,10 +34,9 @@
           <dc-schema>authors</dc-schema>
           <dc-element>email</dc-element>
           <repeatable>false</repeatable>
-          <label>Email</label>
+          <label>Personal email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email where to contact the author</hint>
-          <required>You must enter a valid email address.</required>
+          <hint>Enter a personal email address so that UCLouvain can send you particular access requests.</hint>
         </field>
       </row>
       <row>
