@@ -22,6 +22,7 @@ import org.dspace.content.DSpaceObject;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.event.behavior.ConsumerActivationRule;
 import org.dspace.event.factory.EventServiceFactory;
 
 /**
@@ -603,6 +604,28 @@ public class Event implements Serializable {
         }
 
         return result;
+    }
+
+    /**
+     * Test whether this event would be activated through a list of consumer activation rules
+     *
+     * @param ctx the application context.
+     * @param enableRules all rules required to activate the event.
+     * @param disableRules all rules that could disable the event.
+     * @return true if the event must be activated, false otherwise (or in case of errors during check).
+     */
+    public boolean activate(Context ctx, List<ConsumerActivationRule> enableRules,
+                            List<ConsumerActivationRule> disableRules) {
+        return enableRules.stream().allMatch(rule -> isValidSafe(ctx, rule))
+               && disableRules.stream().noneMatch(rule -> isValidSafe(ctx, rule));
+    }
+    private boolean isValidSafe(Context ctx, ConsumerActivationRule rule) {
+        try {
+            return rule.isValid(ctx, this.getSubject(ctx));
+        } catch (SQLException e) {
+            log.error("Error checking consumer activation rule :: " + e, e);
+            return false;
+        }
     }
 
     // dumb integer "log base 2", returns -1 if there are no 1's in number.
