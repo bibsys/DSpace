@@ -8,6 +8,9 @@
 package org.dspace.uclouvain.consumer;
 
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.dspace.access.status.factory.AccessStatusServiceFactory;
@@ -40,6 +43,7 @@ public class AccessTypeConsumer implements Consumer {
     private ItemService itemService;
     private BitstreamService bitstreamService;
     private MetadataField accessTypeField;
+    private final Set<UUID> itemToProcess = new HashSet<>();
 
     @Override
     public void initialize() throws Exception {
@@ -67,18 +71,27 @@ public class AccessTypeConsumer implements Consumer {
     @Override
     public void consume(Context context, Event event) throws Exception {
         Item item = getItem(context, event);
-        if (item == null) {
-            return;
+        if (item != null) {
+            itemToProcess.add(item.getID());
         }
+    }
+
+    @Override
+    public void finish(Context context) throws Exception {}
+
+    @Override
+    public void end(Context context) throws Exception {
         context.turnOffAuthorisationSystem();
         try {
-            consume(context, item);
+            for (UUID id : itemToProcess) {
+                processItem(context, itemService.find(context, id));
+            }
         } finally {
             context.restoreAuthSystemState();
+            itemToProcess.clear();
         }
-
     }
-    private void consume(Context context, Item item) throws SQLException, AuthorizeException {
+    private void processItem(Context context, Item item) throws AuthorizeException, SQLException {
         // Calculate the item global access type based on attached bitstream
         //   1) if `accessType` is empty or UNKNOWN, remove the possible existing item metadata
         //   2) if `accessType` change from possible existing item metadata, update the item.
@@ -100,15 +113,6 @@ public class AccessTypeConsumer implements Consumer {
             itemService.setMetadataSingleValue(context, item, accessTypeField, null, accessType);
             itemService.update(context, item);
         }
-    }
-
-
-    @Override
-    public void finish(Context context) throws Exception {
-    }
-
-    @Override
-    public void end(Context context) throws Exception {
     }
 
     /**

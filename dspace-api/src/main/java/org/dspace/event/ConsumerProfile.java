@@ -9,10 +9,14 @@ package org.dspace.event;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.event.behavior.ConsumerActivationRule;
+import org.dspace.event.behavior.MetadataActivationRule;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 
@@ -42,6 +46,12 @@ public class ConsumerProfile {
      * Filters - each is an array of 2 bitmasks, action mask and subject mask
      */
     private List<int[]> filters;
+
+    /**
+     * ActivationRules - list of enable rules and disable rules
+     */
+    private List<ConsumerActivationRule> enableRules;
+    private List<ConsumerActivationRule> disableRules;
 
     // Prefix of keys in DSpace Configuration.
     private static final String CONSUMER_PREFIX = "event.consumer.";
@@ -84,24 +94,17 @@ public class ConsumerProfile {
      * @throws NoSuchMethodException     passed through.
      * @throws InvocationTargetException passed through.
      */
-    private void readConfiguration()
-        throws IllegalArgumentException, ClassNotFoundException,
-            InstantiationException, IllegalAccessException, NoSuchMethodException,
-            InvocationTargetException {
-        ConfigurationService configurationService
-                = DSpaceServicesFactory.getInstance().getConfigurationService();
-        String className = configurationService.getProperty(CONSUMER_PREFIX
-                                                                + name + ".class");
-        String filterString = configurationService.getProperty(CONSUMER_PREFIX
-                                                                   + name + ".filters");
+    private void readConfiguration() throws IllegalArgumentException, ClassNotFoundException,
+            InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        String className = configService.getProperty(CONSUMER_PREFIX + name + ".class");
+        String filterString = configService.getProperty(CONSUMER_PREFIX + name + ".filters");
 
         if (className == null) {
-            throw new IllegalArgumentException(
-                "No class configured for consumer named: " + name);
+            throw new IllegalArgumentException("No class configured for consumer named: " + name);
         }
         if (filterString == null) {
-            throw new IllegalArgumentException(
-                "No filters configured for consumer named: " + name);
+            throw new IllegalArgumentException("No filters configured for consumer named: " + name);
         }
 
         consumer = Class.forName(className.trim())
@@ -110,46 +113,47 @@ public class ConsumerProfile {
 
         // Each "filter" is <objectTypes> + <eventTypes> : ...
         filters = new ArrayList<>();
-        String part[] = filterString.trim().split(":");
-        for (int j = 0; j < part.length; ++j) {
-            String fpart[] = part[j].split("\\+");
-            if (fpart.length != 2) {
-                log.error("Bad Filter clause in consumer stanza in Configuration entry for "
-                              + CONSUMER_PREFIX
-                              + name
-                              + ".consumers: "
-                              + part[j]);
-            } else {
-                int filter[] = new int[2];
-                filter[0] = 0;
-                filter[1] = 0;
-                String objectNames[] = fpart[0].split("\\|");
-                for (int k = 0; k < objectNames.length; ++k) {
-                    int ot = Event.parseObjectType(objectNames[k]);
-                    if (ot == 0) {
-                        log.error("Bad ObjectType in Consumer Stanza in Configuration entry for "
-                                      + CONSUMER_PREFIX
-                                      + name
-                                      + ".consumers: " + objectNames[k]);
-                    } else {
-                        filter[Event.SUBJECT_MASK] |= ot;
-                    }
-                }
-                String eventNames[] = fpart[1].split("\\|");
-                for (int k = 0; k < eventNames.length; ++k) {
-                    int et = Event.parseEventType(eventNames[k]);
-                    if (et == 0) {
-                        log.error("Bad EventType in Consumer Stanza in Configuration entry for "
-                                      + CONSUMER_PREFIX
-                                      + name
-                                      + ".consumers: " + eventNames[k]);
-                    } else {
-                        filter[Event.EVENT_MASK] |= et;
-                    }
-                }
-                filters.add(filter);
+        for (String part : filterString.trim().split(":")) {
+            String[] fparts = part.split("\\+");
+            if (fparts.length != 2) {
+                log.error("Bad Filter clause in consumer stanza in Configuration entry for " + CONSUMER_PREFIX + name
+                          + ".consumers: " + part);
+                continue;
             }
+
+            int[] filter = {0, 0};
+            String[] objectNames = fparts[0].split("\\|");
+            for (String objectName : objectNames) {
+                int ot = Event.parseObjectType(objectName);
+                if (ot == 0) {
+                    log.error("Bad ObjectType in Consumer Stanza in Configuration entry for " + CONSUMER_PREFIX + name
+                              + ".consumers: " + objectName);
+                } else {
+                    filter[Event.SUBJECT_MASK] |= ot;
+                }
+            }
+
+            String[] eventNames = fparts[1].split("\\|");
+            for (String eventName : eventNames) {
+                int et = Event.parseEventType(eventName);
+                if (et == 0) {
+                    log.error("Bad EventType in Consumer Stanza in Configuration entry for " + CONSUMER_PREFIX + name
+                              + ".consumers: " + eventName);
+                } else {
+                    filter[Event.EVENT_MASK] |= et;
+                }
+            }
+            filters.add(filter);
         }
+
+        enableRules = Arrays
+            .stream(configService.getArrayProperty(CONSUMER_PREFIX + name + ".rule.enable", new String[] {}))
+            .map(MetadataActivationRule::new)  // TODO :: should use a factory to build ActivationRule
+            .collect(Collectors.toList());
+        disableRules = Arrays
+            .stream(configService.getArrayProperty(CONSUMER_PREFIX + name + ".rule.disable", new String[] {}))
+            .map(MetadataActivationRule::new)  // TODO :: should use a factory to build ActivationRule
+            .collect(Collectors.toList());
     }
 
     public Consumer getConsumer() {
@@ -162,5 +166,13 @@ public class ConsumerProfile {
 
     public String getName() {
         return name;
+    }
+
+    public List<ConsumerActivationRule> getEnableRules() {
+        return enableRules;
+    }
+
+    public List<ConsumerActivationRule> getDisableRules() {
+        return disableRules;
     }
 }
