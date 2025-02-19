@@ -186,7 +186,7 @@
         <Appender name='A8'
                   filePattern="${log.dir}/authentication.log%d{yyyy-MM-dd}"
                   type='RollingFile'
-                  fileName='${log.dir}/item-enhancer.log'>
+                  fileName='${log.dir}/authentication.log'>
             <Layout type='PatternLayout' pattern='%d %-5p -- %c :: %m%n'/>
             <policies>
                 <policy type='TimeBasedTriggeringPolicy'>yyyy-MM-dd</policy>
