@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Logging configuration for DSpace command line tools -->
 <Configuration strict='true'
-               xmlns='http://logging.apache.org/log4j/2.0/config'>
+               xmlns='http://logging.apache.org/log4j/2.0/config' packages="io.sentry.log4j2">
 
     <Properties>
         <!-- Default log file directory for DSpace.
@@ -9,10 +9,12 @@
              your configuration when DSpace is installed. -->
         <Property name='log.dir'>${log4j:configParentLocation}/../log</Property>
 
-        <!-- Log level for all DSpace-specific code (org.dspace.*)
-             Possible values (from most to least info):
-	     DEBUG, INFO, WARN, ERROR, FATAL -->
-        <Property name='loglevel.dspace'>INFO</Property>
+        <!-- Log level for dspace authentication system (org.dspace.authenticate.*) -->
+        <Property name='loglevel.dspace.authentication'>${sys:log_level_auth:-INFO}</Property>
+        <!-- Log level for all DSpace-specific code (org.dspace.*) -->
+        <Property name='loglevel.dspace'>${sys:log_level:-INFO}</Property>
+        <!-- Log level for other third-party tools/APIs used by DSpace -->
+        <Property name='loglevel.other'>${sys:log_level:-INFO}</Property>
 
         <!-- Log level for other third-party tools/APIs used by DSpace
              Possible values (from most to least info):
@@ -70,7 +72,7 @@
             <DefaultRolloverStrategy>
                 <Delete basePath='${log.dir}'>
                     <IfFileName glob='solr.log-*'/>
-                    <IfAccumulatedFileCount exceeds='${logging.server.retention-accumulated-to-keep}'/>
+                    <IfAccumulatedFileCount exceeds='${retention-accumulated-to-keep}'/>
                 </Delete>
             </DefaultRolloverStrategy>
         </Appender>
@@ -156,6 +158,27 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </Appender>
+
+        <!-- A8 is for authentication process -->
+        <Appender name='A8'
+                  filePattern="${log.dir}/authentication.log%d{yyyy-MM-dd}"
+                  type='RollingFile'
+                  fileName='${log.dir}/item-enhancer.log'>
+            <Layout type='PatternLayout' pattern='%d %-5p -- %c :: %m%n'/>
+            <policies>
+                <policy type='TimeBasedTriggeringPolicy'>yyyy-MM-dd</policy>
+            </policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath='${log.dir}'>
+                    <IfFileName glob='authentication.log-*'/>
+                    <IfAccumulatedFileCount exceeds='${logging.server.retention-accumulated-to-keep}'/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </Appender>
+        <Sentry name='Sentry' dsn='${sys:SENTRY_DSN}' minimumBreadcrumbLevel='INFO' minimumEventLevel='ERROR'/>
+        <Appender name='Console' type='Console'>
+            <Layout type='PatternLayout' pattern='%d %-5p %c @ %m%n'/>
+        </Appender>
     </Appenders>
 
     <Loggers>
@@ -165,6 +188,8 @@
                 level='${loglevel.dspace}'
                 additivity='false'>
             <AppenderRef ref='A1'/>
+            <AppenderRef ref='Sentry'/>
+            <AppenderRef ref='Console'/>
         </Logger>
 
         <!-- Embedded SOLR (for test) -->
@@ -200,6 +225,13 @@
                 level='INFO'
                 additivity='false'>
             <AppenderRef ref='A7'/>
+        </Logger>
+
+        <!-- Authentication -->
+        <Logger name="org.dspace.authenticate"
+                level="${loglevel.dspace.authentication}"
+                additivity="false">
+            <AppenderRef ref="A8"/>
         </Logger>
 
         <!--
