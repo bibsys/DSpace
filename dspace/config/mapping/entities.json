@@ -59,16 +59,6 @@
         "type": "degree"
       },
       {
-        "code": "DRLN2M",
-        "name": "Master [120] en droit (horaire décalé)",
-        "type": "degree"
-      },
-      {
-        "code": "DRLN2MS/GE",
-        "name": "Master [120] en droit, à finalité spécialisée (horaire décalé)",
-        "type": "degree"
-      },
-      {
         "code": "DROI2M",
         "name": "Master [120] en droit",
         "type": "degree",
@@ -114,11 +104,6 @@
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "DROI2MS/GE",
-        "name": "Master [120] en droit, à finalité spécialisée",
-        "type": "degree"
       },
       {
         "code": "DRT IN",
@@ -325,13 +310,13 @@
             "code": "ANTR2MA",
             "name": "Master [120] en anthropologie, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "ANTR2MD",
+            "name": "Master [120] en anthropologie, à finalité didactique",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "ANTR2MD",
-        "name": "Master [120] en anthropologie, à finalité didactique",
-        "type": "degree"
       },
       {
         "code": "APHM2M",
@@ -380,16 +365,11 @@
         "type": "degree",
         "children": [
           {
-            "code": "COHM2MS/G",
-            "name": "Master [120] en communication, à finalité spécialisée (horaire décalé)",
+            "code": "COHM2MS/CC",
+            "name": "Master [120] en communication, à finalité spécialisée (horaire décalé): culture et communication",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "COHM2MS/CC",
-        "name": "Master [120] en communication, à finalité spécialisée (horaire décalé): culture et communication",
-        "type": "degree"
       },
       {
         "code": "COHM2MS/CI",
@@ -481,6 +461,11 @@
         "type": "degree"
       },
       {
+        "code": "DVLP2MC",
+        "name": "Master de spécialisation en développement, environnement et sociétés",
+        "type": "degree"
+      },
+      {
         "code": "ECGE2A",
         "name": "Agrégation de l'enseignement secondaire supérieur (sciences économiques, orientation générale)",
         "type": "degree"
@@ -501,6 +486,11 @@
             "type": "degree"
           },
           {
+            "code": "ECON2MD",
+            "name": "Master [120] en sciences économiques, orientation générale, à finalité didactique",
+            "type": "degree"
+          },
+          {
             "code": "ECON2MS/G",
             "name": "Master [120] en sciences économiques, orientation générale, à finalité spécialisée",
             "type": "degree"
@@ -515,11 +505,6 @@
       {
         "code": "ECON2MC",
         "name": "Master de spécialisation en économie internationale et du développement - Specialized master in international and development economics",
-        "type": "degree"
-      },
-      {
-        "code": "ECON2MD",
-        "name": "Master [120] en sciences économiques, orientation générale, à finalité didactique",
         "type": "degree"
       },
       {
@@ -601,6 +586,11 @@
       {
         "code": "GESM2A",
         "name": "Agrégation de l'enseignement secondaire supérieur (sciences de gestion) (horaire décalé)",
+        "type": "degree"
+      },
+      {
+        "code": "GRC2MC",
+        "name": "Master de spécialisation en gestion des risques et des catastrophes",
         "type": "degree"
       },
       {
@@ -700,13 +690,13 @@
             "code": "SOC2MA",
             "name": "Master [120] en sociologie, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "SOC2MD",
+            "name": "Master [120] en sociologie, à finalité didactique",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "SOC2MD",
-        "name": "Master [120] en sociologie, à finalité didactique",
-        "type": "degree"
       },
       {
         "code": "SOCA2M1",
@@ -756,17 +746,17 @@
             "code": "SPOL2MA",
             "name": "Master [120] en sciences politiques, orientation générale, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "SPOL2MD",
+            "name": "Master [120] en sciences politiques, orientation générale, à finalité didactique",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "SPOL2M1",
         "name": "Master [60] en sciences politiques, orientation générale",
-        "type": "degree"
-      },
-      {
-        "code": "SPOL2MD",
-        "name": "Master [120] en sciences politiques, orientation générale, à finalité didactique",
         "type": "degree"
       },
       {
@@ -880,6 +870,11 @@
         "type": "degree",
         "children": [
           {
+            "code": "ARKE2MD",
+            "name": "Master [120] en histoire de l'art et archéologie, orientation générale, à finalité didactique",
+            "type": "degree"
+          },
+          {
             "code": "ARKE2MS/IV",
             "name": "Master [120] en histoire de l'art et archéologie, orientation générale, à finalité spécialisée: iconologie et études des cultures visuelles",
             "type": "degree"
@@ -897,11 +892,6 @@
         "type": "degree"
       },
       {
-        "code": "ARKE2MD",
-        "name": "Master [120] en histoire de l'art et archéologie, orientation générale, à finalité didactique",
-        "type": "degree"
-      },
-      {
         "code": "CLAS2A",
         "name": "Agrégation de l'enseignement secondaire supérieur (langues et lettres anciennes, orientation classiques)",
         "type": "degree"
@@ -915,17 +905,17 @@
             "code": "CLAS2MA",
             "name": "Master [120] en langues et lettres anciennes, orientation classiques, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "CLAS2MD",
+            "name": "Master [120] en langues et lettres anciennes, orientation classiques, à finalité didactique",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "CLAS2M1",
         "name": "Master [60] en langues et lettres anciennes, orientation classiques",
-        "type": "degree"
-      },
-      {
-        "code": "CLAS2MD",
-        "name": "Master [120] en langues et lettres anciennes, orientation classiques, à finalité didactique",
         "type": "degree"
       },
       {
@@ -979,17 +969,17 @@
             "code": "FILO2MA",
             "name": "Master [120] en philosophie, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "FILO2MD",
+            "name": "Master [120] en philosophie, à finalité didactique",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "FILO2M1",
         "name": "Master [60] en philosophie",
-        "type": "degree"
-      },
-      {
-        "code": "FILO2MD",
-        "name": "Master [120] en philosophie, à finalité didactique",
         "type": "degree"
       },
       {
@@ -1008,16 +998,16 @@
         "type": "degree",
         "children": [
           {
+            "code": "FLE2MA",
+            "name": "Master [120] en langues et lettres françaises et romanes, orientation français langue étrangère, à finalité approfondie",
+            "type": "degree"
+          },
+          {
             "code": "FLE2MS/G",
             "name": "Master [120] en langues et lettres françaises et romanes, orientation français langue étrangère, à finalité spécialisée",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "FLE2MA",
-        "name": "Master [120] en langues et lettres françaises et romanes, orientation français langue étrangère, à finalité approfondie",
-        "type": "degree"
       },
       {
         "code": "GENR2MC",
@@ -1035,8 +1025,18 @@
         "type": "degree",
         "children": [
           {
-            "code": "GERM2MS/AL",
-            "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité spécialisée: approches linguistiques et littéraires d'une société plurielle",
+            "code": "GERM2MA",
+            "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "GERM2MD",
+            "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité didactique",
+            "type": "degree"
+          },
+          {
+            "code": "GERM2MS/AF",
+            "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité spécialisée: langues des affaires",
             "type": "degree"
           }
         ]
@@ -1044,21 +1044,6 @@
       {
         "code": "GERM2M1",
         "name": "Master [60] en langues et lettres modernes, orientation germaniques",
-        "type": "degree"
-      },
-      {
-        "code": "GERM2MA",
-        "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité approfondie",
-        "type": "degree"
-      },
-      {
-        "code": "GERM2MD",
-        "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité didactique",
-        "type": "degree"
-      },
-      {
-        "code": "GERM2MS/AF",
-        "name": "Master [120] en langues et lettres modernes, orientation germaniques, à finalité spécialisée: langues des affaires",
         "type": "degree"
       },
       {
@@ -1077,6 +1062,11 @@
             "type": "degree"
           },
           {
+            "code": "HIST2MD",
+            "name": "Master [120] en histoire, à finalité didactique",
+            "type": "degree"
+          },
+          {
             "code": "HIST2MS/CO",
             "name": "Master [120] en histoire, à finalité spécialisée: communication de l'histoire",
             "type": "degree"
@@ -1091,11 +1081,6 @@
       {
         "code": "HIST2M1",
         "name": "Master [60] en histoire",
-        "type": "degree"
-      },
-      {
-        "code": "HIST2MD",
-        "name": "Master [120] en histoire, à finalité didactique",
         "type": "degree"
       },
       {
@@ -1148,13 +1133,23 @@
         "type": "degree",
         "children": [
           {
-            "code": "LAFR2MS/CL",
-            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: cultures latine et française à travers le temps",
+            "code": "LAFR2MD",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité didactique",
             "type": "degree"
           },
           {
-            "code": "LAFR2MS/ME",
-            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: métiers du livre",
+            "code": "LAFR2MS/LF",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: cultures latine et française du Moyen Age et des Temps Modernes",
+            "type": "degree"
+          },
+          {
+            "code": "LAFR2MS/ML",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: sciences et métiers du livre",
+            "type": "degree"
+          },
+          {
+            "code": "LAFR2MS/RF",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: civilisation romaine et études françaises contemporaines",
             "type": "degree"
           }
         ]
@@ -1165,23 +1160,8 @@
         "type": "degree"
       },
       {
-        "code": "LAFR2MD",
-        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité didactique",
-        "type": "degree"
-      },
-      {
-        "code": "LAFR2MS/LF",
-        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: cultures latine et française du Moyen Age et des Temps Modernes",
-        "type": "degree"
-      },
-      {
-        "code": "LAFR2MS/ML",
-        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: sciences et métiers du livre",
-        "type": "degree"
-      },
-      {
-        "code": "LAFR2MS/RF",
-        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: civilisation romaine et études françaises contemporaines",
+        "code": "LAFR2MA",
+        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité approfondie",
         "type": "degree"
       },
       {
@@ -1195,16 +1175,11 @@
             "type": "degree"
           },
           {
-            "code": "LING2MS/LR",
-            "name": "Master [120] en linguistique, à finalité spécialisée: Empirical Linguistics Research",
+            "code": "LING2MS/LM",
+            "name": "Master [120] en linguistique, à finalité spécialisée: Linguistics and its Applications for a Multilingual Society",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "LING2MS/LM",
-        "name": "Master [120] en linguistique, à finalité spécialisée: Linguistics and its Applications for a Multilingual Society",
-        "type": "degree"
       },
       {
         "code": "LITT9CE",
@@ -1281,8 +1256,23 @@
         "type": "degree",
         "children": [
           {
-            "code": "ROGE2MS/AL",
-            "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: approches linguitiques et littéraires d'une société plurielle",
+            "code": "ROGE2MA",
+            "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "ROGE2MD",
+            "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité didactique",
+            "type": "degree"
+          },
+          {
+            "code": "ROGE2MS/AF",
+            "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: langues des affaires",
+            "type": "degree"
+          },
+          {
+            "code": "ROGE2MS/ML",
+            "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
             "type": "degree"
           }
         ]
@@ -1290,26 +1280,6 @@
       {
         "code": "ROGE2M1",
         "name": "Master [60] en langues et lettres modernes, orientation générale",
-        "type": "degree"
-      },
-      {
-        "code": "ROGE2MA",
-        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité approfondie",
-        "type": "degree"
-      },
-      {
-        "code": "ROGE2MD",
-        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité didactique",
-        "type": "degree"
-      },
-      {
-        "code": "ROGE2MS/AF",
-        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: langues des affaires",
-        "type": "degree"
-      },
-      {
-        "code": "ROGE2MS/ML",
-        "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
         "type": "degree"
       },
       {
@@ -1328,8 +1298,13 @@
             "type": "degree"
           },
           {
-            "code": "ROM2MS/ME",
-            "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité spécialisée: métiers du livre",
+            "code": "ROM2MD",
+            "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité didactique",
+            "type": "degree"
+          },
+          {
+            "code": "ROM2MS/ML",
+            "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
             "type": "degree"
           }
         ]
@@ -1337,16 +1312,6 @@
       {
         "code": "ROM2M1",
         "name": "Master [60] en langues et lettres françaises et romanes, orientation générale",
-        "type": "degree"
-      },
-      {
-        "code": "ROM2MD",
-        "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité didactique",
-        "type": "degree"
-      },
-      {
-        "code": "ROM2MS/ML",
-        "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
         "type": "degree"
       },
       {
@@ -1360,16 +1325,16 @@
         "type": "degree",
         "children": [
           {
+            "code": "THEA2MD",
+            "name": "Master [120] en arts du spectacle, à finalité didactique",
+            "type": "degree"
+          },
+          {
             "code": "THEA2MS/PM",
             "name": "Master [120] en arts du spectacle, à finalité spécialisée: pratiques et métiers du théâtre",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "THEA2MD",
-        "name": "Master [120] en arts du spectacle, à finalité didactique",
-        "type": "degree"
       },
       {
         "code": "TRAD2M",
@@ -1379,6 +1344,11 @@
           {
             "code": "TRAD2MA",
             "name": "Master [120] en traduction, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "TRAD2MD",
+            "name": "Master [120] en traduction, à finalité didactique",
             "type": "degree"
           },
           {
@@ -1404,11 +1374,6 @@
         ]
       },
       {
-        "code": "TRAD2MD",
-        "name": "Master [120] en traduction, à finalité didactique",
-        "type": "degree"
-      },
-      {
         "code": "VISU2MC",
         "name": "Master de spécialisation en cultures visuelles",
         "type": "degree"
@@ -1428,21 +1393,18 @@
       {
         "code": "EUAB2M",
         "name": "Master [120] in EU Studies",
-        "type": "degree"
-      },
-      {
-        "code": "EUAB2MS/G",
-        "name": "Master [120] in EU Studies, Professional Focus",
-        "type": "degree"
+        "type": "degree",
+        "children": [
+          {
+            "code": "EUAB2MS/G",
+            "name": "Master [120] in EU Studies, Professional Focus",
+            "type": "degree"
+          }
+        ]
       },
       {
         "code": "EUHB2MC",
         "name": "Master de spécialisation interdisciplinaire en études européennes (horaire décalé)",
-        "type": "degree"
-      },
-      {
-        "code": "EUPB2MC",
-        "name": "Advanced Master in EU Environmental Governance (POLLEN)",
         "type": "degree"
       },
       {
@@ -1825,13 +1787,13 @@
             "code": "EBIB2MA",
             "name": "Master [120] en études bibliques, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "EBIB2MD",
+            "name": "Master [120] en études bibliques, à finalité didactique",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "EBIB2MD",
-        "name": "Master [120] en études bibliques, à finalité didactique",
-        "type": "degree"
       },
       {
         "code": "EBIB9CE",
@@ -1889,17 +1851,17 @@
             "code": "THEO2MA",
             "name": "Master [120] en théologie, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "THEO2MD",
+            "name": "Master [120] en théologie, à finalité didactique",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "THEO2M1",
         "name": "Master [60] en théologie",
-        "type": "degree"
-      },
-      {
-        "code": "THEO2MD",
-        "name": "Master [120] en théologie, à finalité didactique",
         "type": "degree"
       }
     ]
@@ -2006,11 +1968,6 @@
         ]
       },
       {
-        "code": "PMTX2MC",
-        "name": "Advanced Master of pharmacometrics",
-        "type": "degree"
-      },
-      {
         "code": "SBIM2M",
         "name": "Master [120] en sciences biomédicales",
         "type": "degree",
@@ -2070,31 +2027,21 @@
         "type": "degree",
         "children": [
           {
-            "code": "EDPH2MS/EA",
-            "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité spécialisée: entrainement, activité physique et santé",
+            "code": "EDPH2MA",
+            "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité approfondie",
             "type": "degree"
           },
           {
-            "code": "EDPH2MS/MN",
-            "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité spécialisée: management du sport",
+            "code": "EDPH2MD",
+            "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité didactique",
+            "type": "degree"
+          },
+          {
+            "code": "EDPH2MS/MO",
+            "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité spécialisée: management des organisations sportives",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "EDPH2MA",
-        "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité approfondie",
-        "type": "degree"
-      },
-      {
-        "code": "EDPH2MD",
-        "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité didactique",
-        "type": "degree"
-      },
-      {
-        "code": "EDPH2MS/MO",
-        "name": "Master [120] en sciences de la motricité, orientation éducation physique, à finalité spécialisée: management des organisations sportives",
-        "type": "degree"
       },
       {
         "code": "FSM IN",
@@ -2164,11 +2111,6 @@
       },
       {
         "code": "MDTR2MC",
-        "name": "Master de spécialisation en médecine du travail",
-        "type": "degree"
-      },
-      {
-        "code": "METR2MC",
         "name": "Master de spécialisation en médecine du travail",
         "type": "degree"
       },
@@ -2618,6 +2560,18 @@
         "type": "degree"
       },
       {
+        "code": "ENVI2M",
+        "name": "Master [120] en sciences et gestion de l'environnement",
+        "type": "degree",
+        "children": [
+          {
+            "code": "ENVI2MS/G",
+            "name": "Master [120] en sciences et gestion de l'environnement, à finalité spécialisée",
+            "type": "degree"
+          }
+        ]
+      },
+      {
         "code": "ENVI2MC",
         "name": "Master de spécialisation interdisciplinaire en sciences et gestion de l'environnement et du développement durable",
         "type": "degree"
@@ -2637,6 +2591,16 @@
         "name": "Master [120] en Smart Rurality",
         "type": "degree",
         "children": [
+          {
+            "code": "RURA2MS/AG",
+            "name": "Master [120] en Smart Rurality, à finalité spécialisée: analyse et gestion de l'information",
+            "type": "degree"
+          },
+          {
+            "code": "RURA2MS/DP",
+            "name": "Master [120] en Smart Rurality, à finalité spécialisée: diagnostic et prospective territoriale",
+            "type": "degree"
+          },
           {
             "code": "RURA2MS/EM",
             "name": "Master [120] en Smart Rurality, à finalité spécialisée: enjeux et méthodes géographiques",
@@ -2679,6 +2643,11 @@
       {
         "code": "SAIV2MS/U",
         "name": "Master [120] en sciences agronomiques et industries du vivant , à finalité spécialisée: aménagement du territoire, urbanisme et développement territorial",
+        "type": "degree"
+      },
+      {
+        "code": "SGED2MC",
+        "name": "Master de spécialisation en sciences et gestion de l'environnement dans les pays en développement",
         "type": "degree"
       }
     ]
@@ -3036,16 +3005,16 @@
             "type": "degree"
           },
           {
+            "code": "BBMC2MD",
+            "name": "Master [120] en biochimie et biologie moléculaire et cellulaire, à finalité didactique",
+            "type": "degree"
+          },
+          {
             "code": "BBMC2MS/BT",
             "name": "Master [120] en biochimie et biologie moléculaire et cellulaire, à finalité spécialisée: biotechnologie",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "BBMC2MD",
-        "name": "Master [120] en biochimie et biologie moléculaire et cellulaire, à finalité didactique",
-        "type": "degree"
       },
       {
         "code": "BIOL2A",
@@ -3071,13 +3040,13 @@
             "code": "BOE2MA",
             "name": "Master [120] en biologie des organismes et écologie, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "BOE2MD",
+            "name": "Master [120] en biologie des organismes et écologie, à finalité didactique",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "BOE2MD",
-        "name": "Master [120] en biologie des organismes et écologie, à finalité didactique",
-        "type": "degree"
       },
       {
         "code": "BOE2MS/BE",
@@ -3112,6 +3081,11 @@
             "type": "degree"
           },
           {
+            "code": "CHIM2MD",
+            "name": "Master [120] en sciences chimiques, à finalité didactique",
+            "type": "degree"
+          },
+          {
             "code": "CHIM2MS/CI",
             "name": "Master [120] en sciences chimiques, à finalité spécialisée: chimie de l'industrie",
             "type": "degree"
@@ -3121,11 +3095,6 @@
       {
         "code": "CHIM2M1",
         "name": "Master [60] en sciences chimiques",
-        "type": "degree"
-      },
-      {
-        "code": "CHIM2MD",
-        "name": "Master [120] en sciences chimiques, à finalité didactique",
         "type": "degree"
       },
       {
@@ -3171,17 +3140,17 @@
             "code": "GEOG2MA",
             "name": "Master [120] en sciences géographiques, orientation générale, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "GEOG2MD",
+            "name": "Master [120] en sciences géographiques, orientation générale, à finalité didactique",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "GEOG2M1",
         "name": "Master [60] en sciences géographiques, orientation générale",
-        "type": "degree"
-      },
-      {
-        "code": "GEOG2MD",
-        "name": "Master [120] en sciences géographiques, orientation générale, à finalité didactique",
         "type": "degree"
       },
       {
@@ -3203,17 +3172,17 @@
             "code": "MATH2MA",
             "name": "Master [120] en sciences mathématiques, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "MATH2MD",
+            "name": "Master [120] en sciences mathématiques, à finalité didactique",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "MATH2M1",
         "name": "Master [60] en sciences mathématiques",
-        "type": "degree"
-      },
-      {
-        "code": "MATH2MD",
-        "name": "Master [120] en sciences mathématiques, à finalité didactique",
         "type": "degree"
       },
       {
@@ -3247,22 +3216,22 @@
             "code": "PHYS2MA",
             "name": "Master [120] en sciences physiques, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "PHYS2MD",
+            "name": "Master [120] en sciences physiques, à finalité didactique",
+            "type": "degree"
+          },
+          {
+            "code": "PHYS2MS/PM",
+            "name": "Master [120] en sciences physiques, à finalité spécialisée: physique médicale",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "PHYS2M1",
         "name": "Master [60] en sciences physiques",
-        "type": "degree"
-      },
-      {
-        "code": "PHYS2MD",
-        "name": "Master [120] en sciences physiques, à finalité didactique",
-        "type": "degree"
-      },
-      {
-        "code": "PHYS2MS/PM",
-        "name": "Master [120] en sciences physiques, à finalité spécialisée: physique médicale",
         "type": "degree"
       },
       {
@@ -3298,5 +3267,10 @@
         "type": "degree"
       }
     ]
+  },
+  {
+    "code": "FUCaM",
+    "name": "FUCaM",
+    "type": "faculty"
   }
 ]

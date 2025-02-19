@@ -334,6 +334,7 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             // Loop through each affiliation
             Set<Group> groups = new HashSet<>();
+            log.debug("Looping on affiliations....");
             if (affiliations != null) {
                 for (String affiliation : affiliations) {
                     // If we ignore the affiliation's scope then strip the scope if it exists.
@@ -350,13 +351,16 @@ public class ShibAuthentication implements AuthenticationMethod {
                             affiliation = affiliation.substring(index + 1, affiliation.length());
                         }
                     }
+                    log.debug("\tAffiliation is :: " + affiliation);
 
                     // Get the group names
                     String[] groupNames = configurationService
                         .getArrayProperty("authentication-shibboleth.role." + affiliation);
+                    log.debug("\tSearching for 'authentication-shibboleth.role." + affiliation + "'");
                     if (groupNames == null || groupNames.length == 0) {
                         groupNames = configurationService
                             .getArrayProperty("authentication-shibboleth.role." + affiliation.toLowerCase());
+                        log.debug("\tSearching for 'authentication-shibboleth.role." + affiliation + "'");
                     }
 
                     if (groupNames == null) {
@@ -373,8 +377,10 @@ public class ShibAuthentication implements AuthenticationMethod {
                     // Add each group to the list.
                     for (int i = 0; i < groupNames.length; i++) {
                         try {
+                            log.debug("-> Try to add user to DSpace group '" + groupNames[i].trim() + "' ...");
                             Group group = groupService.findByName(context, groupNames[i].trim());
                             if (group != null) {
+                                log.debug("\t\tGroup found ! Adding user...");
                                 groups.add(group);
                             } else {
                                 log.debug("Unable to find group: '" + groupNames[i].trim() + "'");
@@ -1208,7 +1214,15 @@ public class ShibAuthentication implements AuthenticationMethod {
      * @return The list of values found, or null if none found.
      */
     protected List<String> findMultipleAttributes(HttpServletRequest request, String name) {
+        log.debug("findMultipleAttributes(\"" + name + "\") ----------------------------------------");
+        log.debug("\tRequest attributes are ::");
+        for (Iterator<String> it = request.getAttributeNames().asIterator(); it.hasNext(); ) {
+            String attrName = it.next();
+            log.debug("\t\t- [" + attrName + "] --> [" + request.getAttribute(attrName) + "]");
+        }
         String values = findAttribute(request, name);
+        // For a student, attribute value should be "student;member"....
+        log.debug("\tAttribute '" + name + "' values is :: " + values);
 
         if (values == null) {
             return null;
@@ -1248,6 +1262,8 @@ public class ShibAuthentication implements AuthenticationMethod {
             values = values.replaceAll("\\\\;", ";");
             valueList.add(values);
         }
+        // For a student, valueList should be "student" and "member"....
+        log.debug("\tReturned values are now :: " + String.join(", ", valueList));
 
         return valueList;
     }
