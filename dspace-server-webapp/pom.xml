@@ -603,6 +603,11 @@
             <version>${log4j.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.sentry</groupId>
+            <artifactId>sentry-log4j2</artifactId>
+        </dependency>
+
         <!-- DSpace dependencies -->
         <dependency>
             <groupId>org.dspace</groupId>
