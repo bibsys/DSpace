@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Logging configuration for DSpace command line tools -->
 <Configuration strict='true'
-               xmlns='http://logging.apache.org/log4j/2.0/config'>
+               xmlns='http://logging.apache.org/log4j/2.0/config' packages="io.sentry.log4j2">
 
     <Properties>
         <!-- Default log file directory for DSpace.
@@ -200,6 +200,7 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </Appender>
+        <Sentry name="Sentry" dsn="${sys:SENTRY_DSN}" minimumBreadcrumbLevel="INFO" minimumEventLevel="ERROR"/>
     </Appenders>
 
     <Loggers>
@@ -209,6 +210,7 @@
                 level='${loglevel.dspace}'
                 additivity='false'>
             <AppenderRef ref='A1'/>
+            <AppenderRef ref='Sentry'/>
         </Logger>
 
         <!-- The checksum checker -->
