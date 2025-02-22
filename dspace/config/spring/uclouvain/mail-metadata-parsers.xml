@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                  http://www.springframework.org/schema/context
+                  http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
+       xmlns:util="http://www.springframework.org/schema/util">
+    
+    <context:annotation-config/> <!-- allows us to use spring annotations in beans -->
+
+    <!-- ////////////////////////////////////////// -->
+    <!-- MAIN MAIL METADATA PARSER SERVICE -->
+    <!-- ////////////////////////////////////////// -->
+    <bean id="mailMetadataParserService" class="org.dspace.uclouvain.core.mail.MailMetadataParserServiceImpl">
+        <property name="parsers">
+            <util:list>
+                <ref bean="maintypeMailParser"/>
+                <ref bean="titleMailParser"/>
+                <ref bean="dateIssuedParser"/>
+                <ref bean="authorsMailParser"/>
+                <ref bean="abstractMailParser"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <bean id="maintypeMailParser" class="org.dspace.uclouvain.core.mail.MailMetadataParser">
+        <property name="metadataField" value="dc.type.maintype"/>
+        <property name="labels">
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="fr" value="Type"/>
+                <entry key="en" value="Type"/>
+            </map>
+        </property>
+        <property name="multipleValues" value="false"/>
+        <property name="vocabularyName" value="publication_maintypes"/>
+    </bean>
+    <bean id="titleMailParser" class="org.dspace.uclouvain.core.mail.MailMetadataParser">
+        <property name="metadataField" value="dc.title"/>
+        <property name="labels">
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="fr" value="Titre"/>
+                <entry key="en" value="Title"/>
+            </map>
+        </property>
+        <property name="multipleValues" value="false"/>
+    </bean>
+    <bean id="dateIssuedParser" class="org.dspace.uclouvain.core.mail.MailMetadataParser">
+        <property name="metadataField" value="dc.date.issued"/>
+        <property name="labels">
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="fr" value="Date de soumission"/>
+                <entry key="en" value="Issued date"/>
+            </map>
+        </property>
+        <property name="multipleValues" value="false"/>
+    </bean>
+    <bean id="authorsMailParser" class="org.dspace.uclouvain.core.mail.MailMetadataParser">
+        <property name="metadataField" value="dc.contributor.author"/>
+        <property name="labels">
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="fr" value="Auteurs"/>
+                <entry key="en" value="Authors"/>
+            </map>
+        </property>
+    </bean>
+    <bean id="abstractMailParser" class="org.dspace.uclouvain.core.mail.MailMetadataParser">
+        <property name="metadataField" value="dc.description.abstract"/>
+        <property name="labels">
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="fr" value="Résumé"/>
+                <entry key="en" value="Abstract"/>
+            </map>
+        </property>
+    </bean>
+</beans>
