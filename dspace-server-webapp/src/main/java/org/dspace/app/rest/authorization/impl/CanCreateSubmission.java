@@ -9,7 +9,8 @@ package org.dspace.app.rest.authorization.impl;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.Streams;
 import org.apache.logging.log4j.LogManager;
@@ -19,12 +20,12 @@ import org.dspace.app.rest.authorization.AuthorizationFeatureDocumentation;
 import org.dspace.app.rest.model.BaseObjectRest;
 import org.dspace.app.rest.model.CollectionRest;
 import org.dspace.app.rest.model.SiteRest;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
+import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,11 +47,11 @@ public class CanCreateSubmission implements AuthorizationFeature {
     private static final Logger logger = LogManager.getLogger();
 
     @Autowired
-    AuthorizeService authService;
+    private ItemService itemService;
     @Autowired
-    ItemService itemService;
+    private GroupService groupService;
     @Autowired
-    ConfigurationService configService;
+    private ConfigurationService configService;
 
     /**
      * Check if the user can make a new submission based on his roles.
@@ -62,19 +63,10 @@ public class CanCreateSubmission implements AuthorizationFeature {
     @Override
     public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException {
         EPerson currentUser = context.getCurrentUser();
-        if (currentUser != null) {
-            for (Group group: currentUser.getGroups()) {
-                // Two different cases to accept the submission creation:
-                // 1. - The user is an administrator, manager...
-                // 2. - The user is a student that has no pending submissions
-                if (this.canSubmitMultipleTimes(group.getName())
-                        || (this.numberOfCurrentSubmissionForEperson(context, currentUser) == 0)
-                ) {
-                    return true;
-                }
-            }
+        if (currentUser == null) {
+            return false;
         }
-        return false;
+        return multipleSubmissionAllowed(context, currentUser) || !hasCurrentSubmission(context, currentUser);
     }
 
     @Override
@@ -88,43 +80,42 @@ public class CanCreateSubmission implements AuthorizationFeature {
     /**
      * Check if the user can make many submissions.
      * 
-     * @param searchedValue A role of a user.
-     * @return True if the user can submit multiple times, false if not.
+     * @param person the EPerson to check
+     * @return True if the user can submit multiple times, false otherwise
     */
-    private boolean canSubmitMultipleTimes(String searchedValue) {
-        return this.isPresentForProperty("uclouvain.feature.can_create_submission.permit_all_time", searchedValue);
+    private boolean multipleSubmissionAllowed(Context context, EPerson person) throws SQLException {
+        // Get all groups for the person
+        Set<String> allPersonGroups = groupService.allMemberGroups(context, person)
+            .stream()
+            .map(Group::getName)
+            .collect(Collectors.toSet());
+        // Get groups that can have unlimited submission from configuration
+        String[] properties = configService
+                .getArrayProperty("uclouvain.feature.can_create_submission.permit_all_time", new String[] {});
+        // Check intersection between person groups and configuration properties
+        return Arrays.stream(properties).anyMatch(allPersonGroups::contains);
     }
 
     /**
-     * Checks if a string value is present in a list of values coming from a DSpace config.
+     * Check if a person has current submission (in any collection)
      * 
-     * @param propertyName A configuration property name to check values from.
-     * @param searchedValue The value we are searching for.
-     * @return true if searchedValue equals to one of the value of configurationPropertyName, false otherwise.
+     * @param context the current DSpace context.
+     * @param eperson the eperson to check submission for.
+     * @return True if the user has at least one pending submission, false otherwise.
     */
-    private boolean isPresentForProperty(String propertyName, String searchedValue) {
-        return Arrays.asList(configService.getArrayProperty(propertyName)).contains(searchedValue);
+    private boolean hasCurrentSubmission(Context context, EPerson eperson) throws SQLException {
+        boolean retour = Streams
+                .stream(itemService.findBySubmitter(context, eperson, true))
+                .anyMatch(i -> isInProgressSubmission(context, i));
+        return retour;
     }
 
-    /**
-     * Give the number of in progress submission made by a given eperson.
-     * 
-     * @param context The current DSpace context.
-     * @param eperson The eperson to check submission for.
-     * @return: The number of in progress submission (workspace or workflow) the eperson has made.
-    */
-    private Long numberOfCurrentSubmissionForEperson(Context context, EPerson eperson) throws SQLException {
-        Iterator<Item> submissions = itemService.findBySubmitter(context, eperson, true);
-        return Streams.stream(submissions).filter(
-            (Item item) -> {
-                try {
-                    return itemService.isInProgressSubmission(context, item);
-                } catch (SQLException e) {
-                    logger.warn("Could not check if item is in progress: " + e.getMessage() + " :: item id: "
-                            + item.getID());
-                    return true;
-                }
-            }
-        ).count();
+    private boolean isInProgressSubmission(Context context, Item item) {
+        try {
+            return itemService.isInProgressSubmission(context, item);
+        } catch (SQLException e) {
+            logger.warn("Cannot check isInProgressSubmission(" + item.getID() + "): " + e.getMessage());
+            return true;
+        }
     }
 }
