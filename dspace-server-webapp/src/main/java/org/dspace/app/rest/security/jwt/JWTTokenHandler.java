@@ -81,6 +81,9 @@ public abstract class JWTTokenHandler {
     @Autowired
     private MachineClaimProvider machineClaimProvider;
 
+    @Autowired
+    private AuthenticationMethodClaimProvider authenticationMethodClaimProvider;
+
     private String generatedJwtKey;
     private String generatedEncryptionKey;
 
@@ -380,6 +383,17 @@ public abstract class JWTTokenHandler {
      */
     private JWTClaimsSet buildJwtClaimsSet(Context context, HttpServletRequest request) {
         JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder();
+
+        // HACK UCLouvain (IPAuth <> ShibAuth)
+        //    The application context `specialGroup` attribute is based on JWT token 'sg' attribute.
+        //    To build this attribute, `SpecialGroupClaimProvider` is called.
+        //    This class will ask to `AuthenticationService` all special groups based on each activated authentication
+        //    method; but dedicated `specialGroups` method will be called only if it is applicable.
+        //      * `IPAuthentication.areSpecialGroupsApplicable()` always returns true
+        //      * `ShibAuthentication.areSpecialGroupsApplicable()` returns true if auth method is 'shibboleth'
+        //        But auth method is get from context too! And this value isn't set until the JWT token is parsed...
+        //    To solve this issue, we manually set the context auth method by calling the `authClaimProvider`
+        context.setAuthenticationMethod(authenticationMethodClaimProvider.getValue(context, request).toString());
 
         for (JWTClaimProvider jwtClaimProvider : jwtClaimProviders) {
             builder = builder.claim(jwtClaimProvider.getKey(), jwtClaimProvider.getValue(context, request));

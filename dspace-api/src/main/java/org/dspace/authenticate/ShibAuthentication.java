@@ -293,10 +293,13 @@ public class ShibAuthentication implements AuthenticationMethod {
                 return Collections.EMPTY_LIST;
             }
 
-            if (context.getSpecialGroups().size() > 0 ) {
+            // BUG :: https://github.com/DSpace/DSpace/issues/9226
+            //   IPAuthentication return some special groups, then special groups for shibd are never computed.
+            //   Remove comments when bix was fixed.
+            /* if (context.getSpecialGroups().size() > 0 ) {
                 log.debug("Returning cached special groups.");
                 return context.getSpecialGroups();
-            }
+            }*/
 
             log.debug("Starting to determine special groups");
             String[] defaultRoles = configurationService.getArrayProperty("authentication-shibboleth.default-roles");
