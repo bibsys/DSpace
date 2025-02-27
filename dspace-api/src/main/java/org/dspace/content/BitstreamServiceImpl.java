@@ -282,11 +282,17 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
         // When consumers get a DELETE event about a bitstream, this bitstream is already deleted.
         // Then it's impossible to get the related parent object using `getParentObject` method.
         // To prevent this issue, we send the parent object UUID as `Object` of this event.
+        int parentObjectType = Event.NONE;
+        UUID parentObjectID = null;
         DSpaceObject parentObject = getParentObject(context, bitstream);
+        if (parentObject != null) {
+            parentObjectID = parentObject.getID();
+            parentObjectType = parentObject.getType();
+        }
         context.addEvent(new Event(
                 Event.DELETE,
                 Constants.BITSTREAM, bitstream.getID(),
-                parentObject.getType(), parentObject.getID(),
+                parentObjectType, parentObjectID,
                 String.valueOf(bitstream.getSequenceID()),
                 getIdentifiers(context, bitstream)));
 
