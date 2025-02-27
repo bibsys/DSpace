@@ -7,14 +7,10 @@
  */
 package org.dspace.uclouvain.consumer;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.dspace.content.Bitstream;
 import org.dspace.content.MetadataFieldName;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamService;
-import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.event.Consumer;
 import org.dspace.event.Event;
@@ -31,10 +27,9 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  */
 public class LicenseConsumer implements Consumer {
 
-    static List<Integer> acceptedEvents = Arrays.asList(Event.CREATE, Event.MODIFY_METADATA, Event.MODIFY);
     private MetadataFieldName licenseField;
     private String defaultLicenseUrl;
-    private boolean enableDefault;
+    private boolean defaultLicenseEnabled;
     private BitstreamService bitstreamService;
 
     @Override
@@ -43,7 +38,7 @@ public class LicenseConsumer implements Consumer {
 
         ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
         defaultLicenseUrl = configService.getProperty("bitstream.upload.default.license.url");
-        enableDefault = configService.getBooleanProperty("bitstream.upload.default.license.enabled", false);
+        defaultLicenseEnabled = configService.getBooleanProperty("bitstream.upload.default.license.enabled", false);
         licenseField = new MetadataFieldName(configService.getProperty(
                 "uclouvain.global.metadata.license.field", "dc.rights.license"));
     }
@@ -51,7 +46,7 @@ public class LicenseConsumer implements Consumer {
     @Override
     public void consume(Context context, Event event) throws Exception {
         // Only process bitstreams that have no license && are being modified
-        if (isEventValid(event) && enableDefault && defaultLicenseUrl != null) {
+        if (defaultLicenseEnabled && defaultLicenseUrl != null) {
             Bitstream bitstream = (Bitstream) event.getSubject(context);
             if (bitstreamService.getMetadataFirstValue(bitstream, licenseField, null) == null) {
                 bitstreamService.setMetadataSingleValue(context, bitstream, licenseField, null, defaultLicenseUrl);
@@ -64,8 +59,4 @@ public class LicenseConsumer implements Consumer {
 
     @Override
     public void finish(Context context) throws Exception {}
-
-    private boolean isEventValid(Event event) {
-        return event.getSubjectType() == Constants.BITSTREAM && acceptedEvents.contains(event.getEventType());
-    }
 }
