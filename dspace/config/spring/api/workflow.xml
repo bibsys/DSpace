@@ -13,6 +13,7 @@
                 <entry key="defaultWorkflow"
                        value-ref="defaultWorkflow"/>
                 <entry key="2078.5/Publication" value-ref="publicationWorkflow"/>
+                <entry key="2078.5/Dissertation" value-ref="dissertationWorkflow"/>
 <!--                <entry key="123456789/4" value-ref="selectSingleReviewer"/>-->
 <!--                <entry key="123456789/5" value-ref="scoreReview"/>-->
             </util:map>
@@ -45,6 +46,14 @@
             </util:list>
         </property>
     </bean>
+    <bean name="dissertationWorkflow" class="org.dspace.xmlworkflow.state.Workflow">
+        <property name="firstStep" ref="dissertationreviewstep"/>
+        <property name="steps">
+            <util:list>
+                <ref bean="dissertationreviewstep"/>
+            </util:list>
+        </property>
+    </bean>
 
     <bean name="notifyauthorsstep" class="org.dspace.xmlworkflow.state.Step">
         <property name="userSelectionMethod" ref="noUserSelectionAction"/>
@@ -52,6 +61,15 @@
             <list>
                 <ref bean="notifyauthorsaction"/>
             </list>
+        </property>
+    </bean>
+    <bean name="dissertationreviewstep" class="org.dspace.xmlworkflow.state.Step">
+        <property name="userSelectionMethod" ref="claimaction"/>
+        <property name="role" ref="reviewer"/>
+        <property name="actions">
+            <util:list>
+                <ref bean="dissertationreviewaction"/>
+            </util:list>
         </property>
     </bean>
 
