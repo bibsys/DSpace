@@ -7,6 +7,7 @@
     <bean id="notifyauthorsactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.NotifyAuthorsAction" scope="prototype"/>
     <bean id="claimactionAPI" class="org.dspace.xmlworkflow.state.actions.userassignment.ClaimAction" scope="prototype"/>
     <bean id="reviewactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.ReviewAction" scope="prototype"/>
+    <bean id="dissertationreviewactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.UCLouvainDissertationReviewAction" scope="prototype"/>
     <bean id="editactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.AcceptEditRejectAction" scope="prototype"/>
     <bean id="finaleditactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.FinalEditAction" scope="prototype"/>
     <bean id="checkcorrectionactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.CheckCorrectionAction" scope="prototype"/>
@@ -32,6 +33,11 @@
         <constructor-arg type="java.lang.String" value="notifyauthorsaction"/>
         <property name="processingAction" ref="notifyauthorsactionAPI"/>
         <property name="requiresUI" value="false"/>
+    </bean>
+    <bean id="dissertationreviewaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
+        <constructor-arg type="java.lang.String" value="dissertationreviewaction"/>
+        <property name="processingAction" ref="dissertationreviewactionAPI"/>
+        <property name="requiresUI" value="true"/>
     </bean>
 
     <bean id="reviewaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
