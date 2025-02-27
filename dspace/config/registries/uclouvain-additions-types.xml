@@ -167,6 +167,17 @@
         <qualifier />
         <scope_note>Author role in this publication</scope_note>
     </dc-type>
+    <!-- ADVISORS SCHEMA -->
+    <dc-schema>
+        <name>advisors</name>
+        <namespace>https://uclouvain.be/ontology/advisors</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>email</element>
+        <qualifier/>
+        <scope_note>Supervisor email</scope_note>
+    </dc-type>
     <!-- FEDORA SCHEMA -->
     <dc-schema>
         <name>fedora</name>
@@ -505,6 +516,39 @@
         <element>serial</element>
         <qualifier>issn</qualifier>
         <scope_note>To specify a potential issn identifier for the serial</scope_note>
+    </dc-type>
+    <!-- DISSERTATION SCHEMA -->
+    <dc-schema>
+        <name>dissertation</name>
+        <namespace>https://uclouvain.be/ontology/dissertation</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>dissertation</schema>
+        <element>institution</element>
+        <qualifier>name</qualifier>
+        <scope_note>The main institution of the dissertation</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dissertation</schema>
+        <element>degree</element>
+        <qualifier>name</qualifier>
+        <scope_note>The main degree name of the dissertation</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dissertation</schema>
+        <element>degree</element>
+        <qualifier>code</qualifier>
+        <scope_note>The main degree code of the dissertation</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dissertation</schema>
+        <element>defenseDate</element>
+        <scope_note>The date when the dissertation was defended</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dissertation</schema>
+        <element>faculty</element>
+        <scope_note>The faculty linked to the dissertation</scope_note>
     </dc-type>
     <!-- PERSON SCHEMA -->
     <dc-type>

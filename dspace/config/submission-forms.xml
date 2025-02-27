@@ -2038,6 +2038,272 @@
         </field>
       </row>
     </form>
+    <form name="dissertation-authors-dc-contributor-author">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>author</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Author's name</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+          <required>You must enter at least the author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>email</dc-element>
+          <repeatable>false</repeatable>
+          <label>Author's email</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the email of the author.</hint>
+          <required>Please provide an email for this author.</required>
+          <regex>^(([^\[\]\\.,;:\s@"]+(\.[^\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid email format.</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>institution</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Author's Institution</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the institution of the author.</hint>
+          <required>You must provide an institution for the author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>fgs</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>FGS Identifier</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the FGS identifier of the author.</hint>
+          <required>You must provide the FGS number of this author.</required>
+        </field>
+      </row>
+    </form>
+    <form name="dissertation-advisors-dc-contributor-advisor">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>advisor</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Supervisor's name</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the supervisor name of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J]</hint>
+          <required>You must enter at least the supervisor.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>advisors</dc-schema>
+          <dc-element>email</dc-element>
+          <repeatable>false</repeatable>
+          <label>Supervisor's email</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the email of the supervisor.</hint>
+          <required>Please provide an email for this supervisor.</required>
+          <regex>^(([^\[\]\\.,;:\s@"]+(\.[^\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid email format.</setting>
+          </settings>
+        </field>
+      </row>
+    </form>
+    <form name="dissertation-specific-oairecerif-affiliation-orgunit">
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>orgunit</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Institution</label>
+          <style>col-3</style>
+          <input-type>institution-affiliation-select</input-type>
+          <hint>Enter the name of the institution of the affiliation.</hint>
+          <required>Please enter an institution for this affiliation.</required>
+        </field>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>orgunitDepartment</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Department</label>
+          <style>col-9</style>
+          <input-type>department-affiliation-select</input-type>
+          <hint>Enter the department of the affiliation.</hint>
+          <required>Please enter a department for this affiliation.</required>
+        </field>
+      </row>
+    </form>
+    <form name="dissertation-type">
+        <row>
+          <field>
+            <dc-schema>dc</dc-schema>
+            <dc-element>type</dc-element>
+            <dc-qualifier>maintype</dc-qualifier>
+            <repeatable>false</repeatable>
+            <label>Dissertation type</label>
+            <input-type value-pairs-name="dissertation_type">dropdown</input-type>
+            <hint>The dissertation type, should be 'thesis'.</hint>
+            <required></required>
+            <readonly>all</readonly>
+          </field>
+        </row>
+    </form>
+    <form name="dissertation-authors">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>author</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Authors</label>
+          <input-type>inline-labeled-group</input-type>
+          <hint>Enter the names of the authors of this dissertation.</hint>
+          <required>You must enter at least one author.</required>
+          <settings>
+            <setting name="displayIndex">true</setting>
+          </settings>
+        </field>
+      </row>
+    </form>
+    <form name="dissertation-advisors">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>contributor</dc-element>
+          <dc-qualifier>advisor</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Supervisors</label>
+          <input-type>inline-labeled-group</input-type>
+          <hint>Enter the names of the supervisors of this dissertation.</hint>
+          <required>You must enter at least one supervisor.</required>
+          <settings>
+            <setting name="displayIndex">true</setting>
+          </settings>
+        </field>
+      </row>
+    </form>
+    <form name="dissertation-base">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>title</dc-element>
+          <repeatable>false</repeatable>
+          <label>Title</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the title of this dissertation.</hint>
+          <required>You must enter a title for this dissertation.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>description</dc-element>
+          <dc-qualifier>abstract</dc-qualifier>
+          <language value-pairs-name="common_iso_languages">true</language>
+          <repeatable>true</repeatable>
+          <label>Abstract</label>
+          <input-type>textarea</input-type>
+          <hint>Enter the abstract of the item. For additional abstract, use the below "add" link.</hint>
+          <required>You must enter at least one abstract.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>language</dc-element>
+          <dc-qualifier>iso</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Language</label>
+          <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+          <hint>Select the language of the main content of the dissertation.</hint>
+          <required>You must choose a language.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>subject</dc-element>
+          <repeatable>true</repeatable>
+          <label>Subject Keywords</label>
+          <input-type>tag</input-type>
+          <hint>Use a comma between keywords.</hint>
+        </field>
+      </row>
+    </form>
+    <form name="dissertation-specific">
+      <row>
+        <field>
+          <dc-schema>dissertation</dc-schema>
+          <dc-element>institution</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Dissertation's main institution</label>
+          <input-type>onebox</input-type>
+          <hint>The main institution for this dissertation.</hint>
+          <required>A institution should be provided for this dissertion.</required>
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dissertation</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Dissertation's degree</label>
+          <input-type value-pairs-name="dissertation_degrees">dropdown</input-type>
+          <hint>The main degree of the dissertation.</hint>
+          <required>Please provide a degree for this dissertation.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>orgunit</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Dissertation's affiliations</label>
+          <input-type>inline-labeled-group</input-type>
+          <hint>Enter affiliations for the dissertation.</hint>
+          <required>You must add at least one affiliation for the dissertation.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dissertation</dc-schema>
+          <dc-element>faculty</dc-element>
+          <repeatable>true</repeatable>
+          <label>Dissertation's linked faculties</label>
+          <input-type value-pairs-name="dissertation_faculties">dropdown</input-type>
+          <hint>Enter all the linked faculties of this dissertation.</hint>
+          <required>You must add at least one linked faculty for the dissertation.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dissertation</dc-schema>
+          <dc-element>defenseDate</dc-element>
+          <repeatable>false</repeatable>
+          <label>Dissertation's defense date</label>
+          <input-type>date</input-type>
+          <hint>Please provide the defned date of the dissertation.</hint>
+          <required>You must enter at least the year.</required>
+        </field>
+      </row>
+    </form>
   </form-definitions>
 
 
@@ -3650,6 +3916,164 @@
       <pair>
         <displayed-value>Delivered</displayed-value>
         <stored-value>delivered</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="dissertation_type" dc-term="dissertation_type">
+      <pair>
+        <displayed-value>Thesis</displayed-value>
+        <stored-value>text::thesis</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="dissertation_degrees" dc-term="dissertation_degrees">
+      <pair>
+          <displayed-value>AGRO - Sciences agronomiques et ingénierie biologique</displayed-value>
+          <stored-value>AGRO - Sciences agronomiques et ingénierie biologique</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>ART - Art et sciences de l'art</displayed-value>
+          <stored-value>ART - Art et sciences de l'art</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>BAUR - Art de bâtir et urbanisme</displayed-value>
+          <stored-value>BAUR - Art de bâtir et urbanisme</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>BIFA - Sciences biomédicales et pharmaceutiques</displayed-value>
+          <stored-value>BIFA - Sciences biomédicales et pharmaceutiques</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>CDCA - Cinéma et arts du spectacle</displayed-value>
+          <stored-value>CDCA - Cinéma et arts du spectacle</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>COMU - Information et communication</displayed-value>
+          <stored-value>COMU - Information et communication</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>CRIM - Criminologie</displayed-value>
+          <stored-value>CRIM - Criminologie</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>DENT - Sciences dentaires</displayed-value>
+          <stored-value>DENT - Sciences dentaires</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>DROI - Sciences juridiques</displayed-value>
+          <stored-value>DROI - Sciences juridiques</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>ECGE - Sciences économiques et de gestion</displayed-value>
+          <stored-value>ECGE - Sciences économiques et de gestion</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>FILO - Philosophie</displayed-value>
+          <stored-value>FILO - Philosophie</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>FSA - Sciences de l'ingénieur</displayed-value>
+          <stored-value>FSA - Sciences de l'ingénieur</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>HIAR - Histoire, art et archéologie</displayed-value>
+          <stored-value>HIAR - Histoire, art et archéologie</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>LALE - Langues et lettres</displayed-value>
+          <stored-value>LALE - Langues et lettres</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>MED - Sciences médicales</displayed-value>
+          <stored-value>MED - Sciences médicales</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>MOTR - Sciences de la motricité</displayed-value>
+          <stored-value>MOTR - Sciences de la motricité</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>POLS - Sciences politiques et sociales</displayed-value>
+          <stored-value>POLS - Sciences politiques et sociales</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>PSYE - Sciences psychologiques et de l'éducation</displayed-value>
+          <stored-value>PSYE - Sciences psychologiques et de l'éducation</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>SC - Sciences</displayed-value>
+          <stored-value>SC - Sciences</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>SP - Sciences de la santé publique</displayed-value>
+          <stored-value>SP - Sciences de la santé publique</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>STI - Sciences Traduction et interprétation</displayed-value>
+          <stored-value>STI - Sciences Traduction et interprétation</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>THER - Théologie et étude des religions</displayed-value>
+          <stored-value>THER -Théologie et étude des religions </stored-value>
+      </pair>
+      <pair>
+          <displayed-value>VETE - Sciences vétérinaires</displayed-value>
+          <stored-value>VETE - Sciences vétérinaires</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="dissertation_faculties" dc-term="dissertation_faculties">
+      <pair>
+          <displayed-value>Faculté de théologie</displayed-value>
+          <stored-value>Faculté de théologie</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté de droit et de criminologie</displayed-value>
+          <stored-value>Faculté de droit et de criminologie</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté des sciences économiques, sociales, politiques et de communication</displayed-value>
+          <stored-value>Faculté des sciences économiques, sociales, politiques et de communication</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Louvain School of Management</displayed-value>
+          <stored-value>Louvain School of Management</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté de philosophie, arts et lettres</displayed-value>
+          <stored-value>Faculté de philosophie, arts et lettres</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté de psychologie et des sciences de l'éducation</displayed-value>
+          <stored-value>Faculté de psychologie et des sciences de l'éducation</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté de médecine et médecine dentaire</displayed-value>
+          <stored-value>Faculté de médecine et médecine dentaire</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté de pharmacie et des sciences biomédicales</displayed-value>
+          <stored-value>Faculté de pharmacie et des sciences biomédicales</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté de santé publique</displayed-value>
+          <stored-value>Faculté de santé publique</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté des sciences de la motricité</displayed-value>
+          <stored-value>Faculté des sciences de la motricité</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté des Sciences</displayed-value>
+          <stored-value>Faculté des Sciences</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Ecole Polytechnique de Louvain</displayed-value>
+          <stored-value>Ecole Polytechnique de Louvain</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Faculté d'architecture, d'ingénierie architecturale, d'urbanisme (LOCI)</displayed-value>
+          <stored-value>Faculté d'architecture, d'ingénierie architecturale, d'urbanisme (LOCI)</stored-value>
+      </pair>
+      <pair>
+          <displayed-value>Ingénierie biologique, agronomique et environnementale</displayed-value>
+          <stored-value>Ingénierie biologique, agronomique et environnementale</stored-value>
       </pair>
     </value-pairs>
   </form-value-pairs>
