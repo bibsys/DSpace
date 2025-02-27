@@ -14,6 +14,7 @@
   <submission-map>
     <!-- Default submission process -->
     <name-map collection-handle="default" submission-name="publication"/>
+    <name-map collection-handle="123456789/Dissertation" submission-name="dissertation"/>
 
     <!-- Sample Entities Collection configuration based on the demo Entities dataset available at:
          https://github.com/DSpace-Labs/AIP-Files/releases/tag/demo-entities-data
@@ -72,6 +73,11 @@
       <processing-class>org.dspace.app.rest.submit.step.UploadStep</processing-class>
       <type>upload</type>
     </step-definition>
+    <step-definition id="upload-mandatory" mandatory="true">
+      <heading>submit.progressbar.upload</heading>
+      <processing-class>org.dspace.app.rest.submit.step.UploadStep</processing-class>
+      <type>upload</type>
+    </step-definition>
     <step-definition id="license" mandatory="true">
       <heading>submit.progressbar.license</heading>
       <processing-class>org.dspace.app.rest.submit.step.LicenseStep</processing-class>
@@ -114,6 +120,26 @@
     </step-definition>
     <step-definition id="publication-funding" mandatory="false">
       <heading>submit.progressbar.describe.publication_funding</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="dissertation-authors" mandatory="true">
+      <heading>submit.progressbar.describe.dissertation_authors</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="dissertation-advisors" mandatory="true">
+    <heading>submit.progressbar.describe.dissertation_advisors</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="dissertation-base" mandatory="true">
+      <heading>submit.progressbar.describe.dissertation_base</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="dissertation-specific" mandatory="true">
+      <heading>submit.progressbar.describe.dissertation_specific</heading>
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
     </step-definition>
@@ -218,6 +244,17 @@
       <step id="publication-base" />
       <step id="publication-specific" />
       <step id="publication-funding" />
+    </submission-process>
+    <submission-process name="dissertation">
+      <step id="extractionstep" />
+      <step id="upload-mandatory" />
+      <step id="dissertation-authors"/>
+      <step id="dissertation-advisors"/>
+      <step id="dissertation-base"/>
+      <step id="dissertation-specific"/>
+      <step id="correction" />
+      <step id="detect-duplicate" />
+      <step id="license" />
     </submission-process>
     <submission-process name="person">
       <step id="collection" />
