@@ -87,7 +87,7 @@ public class Event implements Serializable {
     /**
      * XXX NOTE: with ALL_OBJECTS_MASK *AND* objTypeToMask hash *
      */
-    protected static final int NONE = 0;
+    public static final int NONE = 0;
 
     protected static final int BITSTREAM = 1 << Constants.BITSTREAM; // 0
 
