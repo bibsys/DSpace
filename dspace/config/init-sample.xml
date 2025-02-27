@@ -33,6 +33,9 @@
                 <metadata schema="dc" element="type" qualifier="subtype">
                     <value>doctoral thesis</value>
                 </metadata>
+                <metadata schema="dissertation" element="institution">
+                    <value>UCLouvain</value>
+                </metadata>
             </templateItem>
         </collection>
     </community>
