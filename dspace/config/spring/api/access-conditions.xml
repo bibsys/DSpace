@@ -20,6 +20,22 @@
         </property>
     </bean>
 
+    <!-- Definition of a required upload file section. -->
+    <bean id="uploadConfigurationMandatory" class="org.dspace.submit.model.UploadConfiguration">
+		<property name="name" value="upload"/>
+		<property name="metadata" value="bitstream-metadata" />
+        <property name="singleAccessCondition" value="true" />
+        <property name="required" value="true"/>
+        <property name="options">
+            <list>
+                <ref bean="openAccess"/>
+                <ref bean="embargoed" />
+                <ref bean="restricted"/>
+                <ref bean="administrator"/>
+            </list>
+        </property>
+    </bean>
+
     <bean id="openAccess" class="org.dspace.submit.model.AccessConditionOption">
         <property name="groupName" value="Anonymous"/>
         <property name="name" value="openaccess"/>
@@ -64,6 +80,7 @@
         <property name="map">
             <map>
                 <entry key="upload" value-ref="uploadConfigurationDefault" />
+                <entry key="upload-mandatory" value-ref="uploadConfigurationMandatory" />
             </map>
         </property>
     </bean>
