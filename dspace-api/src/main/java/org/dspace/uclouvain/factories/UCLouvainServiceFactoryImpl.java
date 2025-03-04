@@ -13,6 +13,7 @@ import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.FacultyManagerService;
+import org.dspace.uclouvain.services.MasterThesisService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private MailMetadataParserService mailMetadataParserService;
     @Autowired
     private FacultyManagerService facultyManagerService;
+    @Autowired
+    private MasterThesisService masterThesisService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -72,5 +75,9 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public MailMetadataParserService getMailMetadataParserService() {
         return mailMetadataParserService;
+    }
+    @Override
+    public MasterThesisService getMasterThesisService() {
+        return masterThesisService;
     }
 }
