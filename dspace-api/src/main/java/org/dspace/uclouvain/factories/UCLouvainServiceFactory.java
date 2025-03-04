@@ -12,6 +12,7 @@ import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.services.FacultyManagerService;
+import org.dspace.uclouvain.services.MasterThesisService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
@@ -29,6 +30,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract UCLouvainItemEnhancerUpdatePoller getItemEnhancerUpdatePoller();
     public abstract CommentService getCommentService();
     public abstract FacultyManagerService getFacultyManagerService();
+    public abstract MasterThesisService getMasterThesisService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
