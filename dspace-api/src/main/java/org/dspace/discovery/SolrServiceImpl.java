@@ -91,6 +91,9 @@ import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.util.UUIDUtils;
+import org.dspace.xmlworkflow.storedcomponents.ClaimedTask;
+import org.dspace.xmlworkflow.storedcomponents.PoolTask;
+import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -855,7 +858,16 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             IndexableObject res = discoverResult.getIndexableObjects().get(relativeCursor);
             relativeCursor++;
             absoluteCursor++;
-            return (Item) res.getIndexedObject();
+
+            if (res.getIndexedObject() instanceof ClaimedTask) {
+                return ((ClaimedTask) res.getIndexedObject()).getWorkflowItem().getItem();
+            } else if (res.getIndexedObject() instanceof PoolTask) {
+                return ((PoolTask) res.getIndexedObject()).getWorkflowItem().getItem();
+            } else if (res.getIndexedObject() instanceof XmlWorkflowItem) {
+                return ((XmlWorkflowItem) res.getIndexedObject()).getItem();
+            } else {
+                return (Item) res.getIndexedObject();
+            }
         }
     }
 
@@ -998,11 +1010,13 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             solrQuery.addFacetPivotField(discoveryQuery.getFacetPivots().toArray(String[]::new));
         }
 
-        //Add any configured search plugins !
+        //Add any configured search plugins if they are not disabled by queryConfiguration!
         List<SolrServiceSearchPlugin> solrServiceSearchPlugins = DSpaceServicesFactory.getInstance()
                 .getServiceManager().getServicesByType(SolrServiceSearchPlugin.class);
         for (SolrServiceSearchPlugin searchPlugin : solrServiceSearchPlugins) {
-            searchPlugin.additionalSearchParameters(context, discoveryQuery, solrQuery);
+            if (!discoveryQuery.getDisabledPlugins().contains(searchPlugin.getClass())) {
+                searchPlugin.additionalSearchParameters(context, discoveryQuery, solrQuery);
+            }
         }
 
         return solrQuery;

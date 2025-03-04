@@ -37,6 +37,7 @@ public class DiscoverQuery {
     private final List<String> fieldPresentQueries;
     private boolean spellCheck;
     private boolean includeNotDiscoverableOrWithdrawn;
+    private final List<Class> disabledPlugins = new ArrayList<>();
 
     private int start = 0;
     private int maxResults = -1;
@@ -449,5 +450,13 @@ public class DiscoverQuery {
 
     public void setIncludeNotDiscoverableOrWithdrawn(boolean includeNotDiscoverableAndWithdrawn) {
         this.includeNotDiscoverableOrWithdrawn = includeNotDiscoverableAndWithdrawn;
+    }
+
+    public void addDisabledPlugin(Class disablePluginClass) {
+        this.disabledPlugins.add(disablePluginClass);
+    }
+
+    public List<Class> getDisabledPlugins() {
+        return this.disabledPlugins;
     }
 }
