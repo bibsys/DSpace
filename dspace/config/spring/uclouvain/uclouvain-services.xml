@@ -25,6 +25,7 @@
     <!-- SERVICES ========================================================= -->
     <bean id="bitstreamDirectDownloadURLService" class="org.dspace.uclouvain.services.BitstreamDirectDownloadURLServiceImpl"/>
     <bean id="facultyManagerService" class="org.dspace.uclouvain.services.FacultyManagerServiceImpl"/>
+    <bean id="masterThesisService" class="org.dspace.uclouvain.services.MasterThesisServiceImpl"/>
     <bean id="uclouvainEntityService" class="org.dspace.uclouvain.services.UCLouvainEntityServiceImpl"/>
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl">
         <property name="resourcePolicyPriorities" ref="resourcePolicyPriorities"/>
