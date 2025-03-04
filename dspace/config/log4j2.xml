@@ -9,15 +9,13 @@
              your configuration when DSpace is installed. -->
         <Property name='log.dir'>${log4j:configParentLocation}/../log</Property>
 
-        <!-- Log level for all DSpace-specific code (org.dspace.*)
-             Possible values (from most to least info):
-	     DEBUG, INFO, WARN, ERROR, FATAL -->
-        <Property name='loglevel.dspace'>INFO</Property>
+        <!-- Log level for dspace authentication system (org.dspace.authenticate.*) -->
+        <Property name='loglevel.dspace.authentication'>${sys:log_level_auth:-INFO}</Property>
+        <!-- Log level for all DSpace-specific code (org.dspace.*) -->
+        <Property name='loglevel.dspace'>${sys:log_level:-INFO}</Property>
+        <!-- Log level for other third-party tools/APIs used by DSpace -->
+        <Property name='loglevel.other'>${sys:log_level:-INFO}</Property>
 
-        <!-- Log level for other third-party tools/APIs used by DSpace
-             Possible values (from most to least info):
-	     DEBUG, INFO, WARN, ERROR, FATAL -->
-        <Property name='loglevel.other'>INFO</Property>
         <Property name='retention-accumulated-to-keep'>31</Property>
     </Properties>
 
@@ -200,7 +198,10 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </Appender>
-        <Sentry name="Sentry" dsn="${sys:SENTRY_DSN}" minimumBreadcrumbLevel="INFO" minimumEventLevel="ERROR"/>
+        <Sentry name='Sentry' dsn='${sys:SENTRY_DSN}' minimumBreadcrumbLevel='INFO' minimumEventLevel='ERROR'/>
+        <Appender name='Console' type='Console'>
+            <Layout type='PatternLayout' pattern='%d %-5p %c @ %m%n'/>
+        </Appender>
     </Appenders>
 
     <Loggers>
@@ -211,6 +212,7 @@
                 additivity='false'>
             <AppenderRef ref='A1'/>
             <AppenderRef ref='Sentry'/>
+            <AppenderRef ref='Console'/>
         </Logger>
 
         <!-- The checksum checker -->
@@ -255,8 +257,9 @@
             <AppenderRef ref='A7'/>
         </Logger>
 
+        <!-- Authentication -->
         <Logger name="org.dspace.authenticate"
-                level="INFO"
+                level="${loglevel.dspace.authentication}"
                 additivity="false">
             <AppenderRef ref="A8"/>
         </Logger>
