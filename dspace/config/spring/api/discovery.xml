@@ -807,6 +807,10 @@
                         <ref bean="sortDateIssuedDesc" />
                         <ref bean="sortDateAccessionedAsc" />
                         <ref bean="sortDateAccessionedDesc" />
+                        <!-- Create fake sort fields to create corresponding "*_dt" keys -->
+                        <ref bean="sortDateCreatedDesc"/>
+                        <ref bean="sortDateSubmittedDesc"/>
+                        <ref bean="sortDateValidatedDesc"/>
                     </list>
                 </property>
             </bean>
@@ -4151,6 +4155,24 @@
 		<property name="type" value="date" />
         <property name="defaultSortOrder" value="desc"/>
 	</bean>
+
+    <bean id="sortDateCreatedDesc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="dc.date.created"/>
+        <property name="type" value="date"/>
+        <property name="defaultSortOrder" value="desc"/>
+    </bean>
+
+    <bean id="sortDateSubmittedDesc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="dc.date.submitted"/>
+        <property name="type" value="date"/>
+        <property name="defaultSortOrder" value="desc"/>
+    </bean>
+
+    <bean id="sortDateValidatedDesc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="dc.date.validated"/>
+        <property name="type" value="date"/>
+        <property name="defaultSortOrder" value="desc"/>
+    </bean>
 
     <bean id="sortFamilyName" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
         <property name="metadataField" value="person.familyName"/>
