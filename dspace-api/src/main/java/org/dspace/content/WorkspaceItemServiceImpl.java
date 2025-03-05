@@ -131,6 +131,13 @@ public class WorkspaceItemServiceImpl implements WorkspaceItemService {
         }
         item.setSubmitter(context.getCurrentUser());
 
+        // Add `dc.date.created` metadata
+        itemService.setMetadataSingleValue(
+            context, item,
+            MetadataSchemaEnum.DC.getName(), "date", "created", null,
+            DCDate.getCurrent().toString()
+        );
+
         // Now create the policies for the submitter to modify item and contents (bitstreams, bundles)
         int[] actionIds = { Constants.READ, Constants.WRITE, Constants.ADD, Constants.REMOVE, Constants.DELETE };
         for (int actionId : actionIds) {
