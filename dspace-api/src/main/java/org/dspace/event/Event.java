@@ -107,8 +107,10 @@ public class Event implements Serializable {
 
     protected static final int LDN_MESSAGE = 1 << Constants.LDN_MESSAGE; // 8
 
+    protected static final int COMMENT = 1 << Constants.COMMENT; // 9
+
     protected static final int ALL_OBJECTS_MASK = BITSTREAM | BUNDLE | ITEM
-        | COLLECTION | COMMUNITY | SITE | GROUP | EPERSON | LDN_MESSAGE;
+        | COLLECTION | COMMUNITY | SITE | GROUP | EPERSON | LDN_MESSAGE | COMMENT;
 
     protected static Map<Integer, Integer> objTypeToMask = new HashMap<Integer, Integer>();
 
@@ -141,6 +143,9 @@ public class Event implements Serializable {
 
         objTypeToMask.put(Constants.LDN_MESSAGE, LDN_MESSAGE);
         objMaskToType.put(LDN_MESSAGE, Constants.LDN_MESSAGE);
+
+        objTypeToMask.put(Constants.COMMENT, COMMENT);
+        objMaskToType.put(COMMENT, Constants.COMMENT);
     }
 
     /** ---------- Event Fields ------------- * */
