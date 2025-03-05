@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.factories;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
@@ -25,6 +26,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract UCLouvainEntityService getEntityService();
     public abstract UCLouvainItemEnhancerService getItemEnhancerService();
     public abstract UCLouvainItemEnhancerUpdatePoller getItemEnhancerUpdatePoller();
+    public abstract CommentService getCommentService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
