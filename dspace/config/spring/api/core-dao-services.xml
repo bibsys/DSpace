@@ -21,6 +21,7 @@
     <bean class="org.dspace.content.dao.impl.BitstreamDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.BitstreamFormatDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.BundleDAOImpl"/>
+    <bean class="org.dspace.uclouvain.content.dao.impl.CommentDOAImpl"/>
     <bean class="org.dspace.content.dao.impl.CommunityDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.ItemDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.MetadataFieldDAOImpl"/>
