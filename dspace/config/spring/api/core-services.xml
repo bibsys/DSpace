@@ -42,6 +42,7 @@
     <bean class="org.dspace.content.BundleServiceImpl"/>
     <bean class="org.dspace.content.integration.crosswalks.virtualfields.ItemDOIService"/>
     <bean class="org.dspace.content.CommunityServiceImpl"/>
+    <bean class="org.dspace.uclouvain.content.CommentServiceImpl"/>
     <bean class="org.dspace.content.InstallItemServiceImpl"/>
     <bean class="org.dspace.content.ItemServiceImpl"/>
     <bean class="org.dspace.content.MetadataDSpaceCsvExportServiceImpl"/>
