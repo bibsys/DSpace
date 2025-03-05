@@ -221,6 +221,13 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             wfi.setPublishedBefore(wsi.isPublishedBefore());
             xmlWorkflowItemService.update(context, wfi);
 
+            // Force to add "dc.date.submitted" metadata into the item. If a value already exists, override it.
+            itemService.setMetadataSingleValue(
+                context, myitem,
+                MetadataSchemaEnum.DC.getName(), "date", "submitted", null,
+                DCDate.getCurrent().toString()
+            );
+
             removeUserItemPolicies(context, myitem, myitem.getSubmitter());
             if (collectionService.isSharedWorkspace(context, collection)) {
                 removeGroupItemPolicies(context, myitem, collection.getSubmitters());
