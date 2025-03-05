@@ -104,6 +104,7 @@ import org.dspace.orcid.service.OrcidTokenService;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.qaevent.dao.QAEventsDAO;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.versioning.Version;
 import org.dspace.versioning.VersionHistory;
@@ -220,6 +221,9 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
     @Autowired(required = true)
     private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
+
+    @Autowired
+    private CommentService commentService;
 
     protected ItemServiceImpl() {
     }
@@ -1030,6 +1034,9 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         //remove subscription related with it
         subscribeService.deleteByDspaceObject(context, item);
         crisMetricsService.deleteByResourceID(context, item);
+
+        commentService.deleteAllItemComments(context, item);
+
 
         // Remove relationships
         for (Relationship relationship : relationshipService.findByItem(context, item, -1, -1, false, false)) {

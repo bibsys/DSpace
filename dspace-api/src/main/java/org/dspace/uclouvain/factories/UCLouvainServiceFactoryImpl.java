@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.factories;
 
+import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
@@ -28,6 +29,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
     @Autowired
     private UCLouvainItemEnhancerPoller uclouvainItemEnhancerPoller;
+    @Autowired(required = true)
+    private CommentService commentService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -44,5 +47,9 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public UCLouvainItemEnhancerPoller getItemEnhancerUpdatePoller() {
         return uclouvainItemEnhancerPoller;
+    }
+    @Override
+    public CommentService getCommentService() {
+        return commentService;
     }
 }
