@@ -7,9 +7,9 @@
     <!-- DUBLIN CORE SCHEMA -->
     <dc-type>
         <schema>dc</schema>
-        <element>language</element>
-        <qualifier>iso-639-2</qualifier>
-        <scope_note>ISO 639-2 code language</scope_note>
+        <element>date</element>
+        <qualifier>validated</qualifier>
+        <scope_note>Field to store date when a publication is approved/reject by a reviewer</scope_note>
     </dc-type>
     <dc-type>
         <schema>dc</schema>
@@ -28,6 +28,12 @@
         <element>identifier</element>
         <qualifier>fedora</qualifier>
         <scope_note>To store original FedoraCommons PID</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>language</element>
+        <qualifier>iso-639-2</qualifier>
+        <scope_note>ISO 639-2 code language</scope_note>
     </dc-type>
     <!-- AUTHORS SCHEMA -->
     <dc-schema>

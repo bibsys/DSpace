@@ -26,7 +26,6 @@ import org.dspace.content.Item;
 import org.dspace.content.MetadataSchemaEnum;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.InstallItemService;
-import org.dspace.content.service.ItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
@@ -36,7 +35,6 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.mails.ThesisChangeRequestEmail;
 import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
-import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
@@ -81,8 +79,6 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     private GroupService groupService;
     @Autowired
     private BitstreamService bitstreamService;
-    @Autowired
-    private ItemService itemService;
 
     private Logger logger = LogManager.getLogger(UCLouvainThesisReviewAction.class);
 
@@ -98,9 +94,9 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
                 case SUBMIT_APPROVE:
                     return processAccept(c, wfi);
                 case SUBMIT_APPROVE_WITHOUT_DIFFUSION:
-                    return this.processAcceptWithoutDiffusion(c, wfi, request);
+                    return processAcceptWithoutDiffusion(c, wfi);
                 case SUBMIT_WITHDRAW_REJECT:
-                    return this.processRejectPage(c, wfi, request);
+                    return processRejectPage(c, wfi, request);
                 case SUBMITTER_IS_DELETED_PAGE:
                     return processSubmitterIsDeletedPage(c, wfi, request);
                 case RETURN_TO_SUBMITTER:
@@ -129,27 +125,38 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
         return options;
     }
 
+    public ActionResult processAccept(Context ctx, XmlWorkflowItem wfi)
+            throws SQLException, AuthorizeException {
+        Item currentItem = wfi.getItem();
+        addValidationDate(ctx, currentItem);
+        return super.processAccept(ctx, wfi);
+    }
+
     /**
      * Process result when option 'SUBMIT_APPROVE_WITHOUT_DIFFUSION' is selected.
      * - First delete all bitstream restrictions and add only administrator access.
      * - Add a new tag to keep a trace of the operation in the 'dc.description.X' metadata field.
-     * If reason is not given => error
+     * @param ctx the application context
+     * @param wfi the workflow item to manage
+     * @return the action to perform to continue item life cycle
      */
-    public ActionResult processAcceptWithoutDiffusion(Context ctx, XmlWorkflowItem wfi, HttpServletRequest request)
+    public ActionResult processAcceptWithoutDiffusion(Context ctx, XmlWorkflowItem wfi)
             throws SQLException, AuthorizeException {
+        // When a manager chooses to approve a publication without any diffusion, we need:
+        //   1) Change bitstreams access restriction: force "admin only" restriction for all bitstreams from ORIGINAL
+        //      bundle
+        //   2) add the "dc.date.validated" metadata
+        //   3) add the "dc.description.provenance" to store item history
         Item currentItem = wfi.getItem();
-        // 1. Change bitstreams access to admin only
         Group adminGroup = groupService.findByName(ctx, "Administrator");
         if (adminGroup != null) {
-            // For all bitstream of the bundle 'ORIGINAL' replace the policies to 'ADMIN ONLY'
             for (Bitstream bitstream: bitstreamService.getBitstreamByBundleName(currentItem, "ORIGINAL")) {
                 this.restrictBitstream(ctx, bitstream, adminGroup);
             }
         }
-        // 2. Add provenance with the name of the user that performed the action.
-        addProvenance(ctx, currentItem, "Approved with no diffusion for entry into archive by user: '"
-                + ctx.getCurrentUser().getEmail() + "'");
-        itemService.update(ctx, currentItem);
+        addValidationDate(ctx, currentItem);
+        addProvenance(ctx, currentItem,
+                "Approved with no diffusion for entry into archive by user: '" + ctx.getCurrentUser().getEmail() + "'");
         return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
     }
 
@@ -158,22 +165,24 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
      * - First archive the item.
      * - Once archived, withdrawn it, to be only visible by administrators.
      *
-     * @param context The current DSpace context.
-     * @param wfi The workflow item that is being operated.
-     * @param request The current request object.
+     * @param context the current application context.
+     * @param wfi the workflow item that is being operated.
+     * @param request the current request object.
      * @return An ActionResult object which represents the output of the action.
      * @throws SQLException if any database exception occurred
      * @throws AuthorizeException if any authorization occurred
      */
     @Override
     public ActionResult processRejectPage(Context context, XmlWorkflowItem wfi, HttpServletRequest request)
-            throws SQLException, AuthorizeException, IOException {
-        addProvenance(context, wfi.getItem(), "Rejected for entry into archive and placed into withdrawn state by " +
-                "user: '" + context.getCurrentUser().getEmail() + "'");
+            throws SQLException, AuthorizeException {
+        Item item = wfi.getItem();
+        addValidationDate(context, item);
+        addProvenance(context, item, "Rejected for entry into archive and placed into withdrawn state by user: '" +
+                context.getCurrentUser().getEmail() + "'");
         context.turnOffAuthorisationSystem();
         // Archive the item, then instantly withdraw it
-        Item archivedItem = archive(context, wfi);
-        itemService.withdraw(context, archivedItem);
+        archive(context, wfi);
+        itemService.withdraw(context, item);
         context.restoreAuthSystemState();
         return new ActionResult(ActionResult.TYPE.TYPE_PAGE);
     }
@@ -207,7 +216,7 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             }
             // Encode the reason in the metadata field
             itemService.setMetadataSingleValue(context, wfi.getItem(), activeRF, null, reason);
-            // Send an email to submitter to notify for the change request.
+            // Send email to submitter to notify for the change request.
             new ThesisChangeRequestEmail(context, wfi.getItem(), reason).sendEmail();
             context.restoreAuthSystemState();
             return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
@@ -220,26 +229,20 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     /**
      * Used to archive an item and remove all metadata related to the workflow.
      *
-     * @param context The current DSpace context.
-     * @param wfi The workflow item to archive.
-     * @return The archived item.
+     * @param context the current application context.
+     * @param wfi the workflow item to archive.
      * @throws SQLException if any database exception occurred
      * @throws AuthorizeException if any authorization occurred
      */
-    private Item archive(Context context, XmlWorkflowItem wfi) throws SQLException, AuthorizeException {
+    private void archive(Context context, XmlWorkflowItem wfi) throws SQLException, AuthorizeException {
         Item item = wfi.getItem();
         workflowItemRoleService.deleteForWorkflowItem(context, wfi);
         installItemService.installItem(context, wfi);
         itemService.clearMetadata(
-                context,
-                item,
-                WorkflowRequirementsService.WORKFLOW_SCHEMA,
-                Item.ANY,
-                Item.ANY,
-                Item.ANY
+            context, item, WorkflowRequirementsService.WORKFLOW_SCHEMA,
+            Item.ANY, Item.ANY, Item.ANY
         );
         itemService.update(context, item);
-        return item;
     }
 
     /**
@@ -277,12 +280,9 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
      */
     private void addProvenance(Context context, Item item, String message) throws SQLException, AuthorizeException {
         String now = DCDate.getCurrent().toString();
-        String usersName = XmlWorkflowServiceFactory
-                .getInstance()
-                .getXmlWorkflowService()
+        String userName = xmlWorkflowService
                 .getEPersonName(context.getCurrentUser());
-        String provDescription = getProvenanceStartId() + " " + message + " " + usersName + " on " + now + " (GMT) ";
-        // Add provenance info in the 'dc.description.provenance' field
+        String provDescription = getProvenanceStartId() + " " + message + " " + userName + " on " + now + " (GMT) ";
         context.turnOffAuthorisationSystem();
         itemService.addMetadata(
             context,
@@ -290,6 +290,17 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             MetadataSchemaEnum.DC.getName(),
             "description", "provenance", "en",
             provDescription
+        );
+        itemService.update(context, item);
+        context.restoreAuthSystemState();
+    }
+
+    private void addValidationDate(Context context, Item item) throws SQLException, AuthorizeException {
+        context.turnOffAuthorisationSystem();
+        itemService.setMetadataSingleValue(
+                context, item,
+                MetadataSchemaEnum.DC.getName(), "date", "validated", null,
+                DCDate.getCurrent().toString()
         );
         itemService.update(context, item);
         context.restoreAuthSystemState();
