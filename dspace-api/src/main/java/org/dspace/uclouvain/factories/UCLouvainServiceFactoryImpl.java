@@ -9,6 +9,7 @@ package org.dspace.uclouvain.factories;
 
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
+import org.dspace.uclouvain.services.CommentService;
 import org.dspace.uclouvain.services.FacultyManagerService;
 import org.dspace.uclouvain.services.MasterThesisService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
@@ -34,6 +35,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private FacultyManagerService facultyManagerService;
     @Autowired(required = true)
     private MasterThesisService masterThesisService;
+    @Autowired(required = true)
+    private CommentService commentService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -58,5 +61,9 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public MasterThesisService getMasterThesisService() {
         return masterThesisService;
+    }
+    @Override
+    public CommentService getCommentService() {
+        return commentService;
     }
 }
