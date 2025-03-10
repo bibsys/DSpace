@@ -200,6 +200,12 @@
     <!-- CRIS-PATENT SCHEMA -->
     <dc-type>
         <schema>crispatent</schema>
+        <element>identifier</element>
+        <qualifier>type</qualifier>
+        <scope_note>The type of the patent representing its status</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>crispatent</schema>
         <element>deposit</element>
         <qualifier>code</qualifier>
         <scope_note></scope_note>
@@ -381,6 +387,12 @@
         <element>conference</element>
         <qualifier>name</qualifier>
         <scope_note>To specify the conference name where to the publication take place</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>speech</element>
+        <qualifier>status</qualifier>
+        <scope_note>To specify in which type of document the speech was published in.</scope_note>
     </dc-type>
     <!-- EDITOR ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <dc-type>
