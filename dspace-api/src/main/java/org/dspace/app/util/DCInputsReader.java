@@ -560,6 +560,17 @@ public class DCInputsReader {
                         String settingValue = getValue(settingNode);
                         field.put("setting." + settingName, settingValue);
                     }
+                } else if (tagName.equals("type-bind")) {
+                    // Remove the previously set type-bind.
+                    field.remove("type-bind");
+                    // Case to handle "type-bind" field types and the 'type-bind-field' attribute.
+                    String typeBindAttribute = getAttribute(nd, "type-bind-field");
+                    if (typeBindAttribute == null) {
+                        throw new RuntimeException(
+                            "Every type-bind linked field should have its type-bind-field configured."
+                        );
+                    }
+                    field.put("type-bind." + typeBindAttribute, getValue(nd));
                 }
             }
         }

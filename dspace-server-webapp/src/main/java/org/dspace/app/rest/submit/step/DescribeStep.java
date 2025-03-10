@@ -8,6 +8,7 @@
 package org.dspace.app.rest.submit.step;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -85,10 +86,10 @@ public class DescribeStep extends AbstractProcessingStep {
     private void readField(InProgressSubmission obj, SubmissionStepConfig config, DataDescribe data,
                            DCInputSet inputConfig) throws DCInputsReaderException {
 
-        String documentType = TypeBindUtils.getTypeBindValue(obj);
+        HashMap<String, String> typeBindFields = TypeBindUtils.getTypeBindValues(obj);
 
         // Get list of all field names (including qualdrop names) allowed for this dc.type
-        List<String> allowedFieldNames = inputConfig.populateAllowedFieldNames(documentType);
+        List<String> allowedFieldNames = inputConfig.populateAllowedFieldNames(typeBindFields);
 
         // Loop input rows and process submitted metadata
         for (DCInput[] row : inputConfig.getFields()) {

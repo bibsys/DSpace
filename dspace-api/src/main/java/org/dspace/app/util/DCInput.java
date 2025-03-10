@@ -13,12 +13,14 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
 import org.apache.commons.lang3.StringUtils;
@@ -155,7 +157,7 @@ public class DCInput {
     /**
      * allowed document types
      */
-    private List<String> typeBind = null;
+    private HashMap<String, List<String>> typeBind = null;
 
     /**
      * Settings list for this field
@@ -236,14 +238,16 @@ public class DCInput {
             || "yes".equalsIgnoreCase(closedVocabularyStr);
 
         // parsing of the <type-bind> element (using the colon as split separator)
-        typeBind = new ArrayList<>();
-        String typeBindDef = fieldMap.get("type-bind");
-        if (typeBindDef != null && typeBindDef.trim().length() > 0) {
-            String[] types = typeBindDef.split(",");
-            for (String type : types) {
-                typeBind.add(type.trim());
-            }
-        }
+        typeBind = new HashMap<>();
+        // For each entry in the map, extract the type-bind field and the list of values.
+        fieldMap.entrySet().stream()
+            .filter(entry -> entry.getKey().startsWith("type-bind."))
+            .forEach(entry -> {
+                String typeBindKey = entry.getKey().substring("type-bind.".length());
+                List<String> typeBindValues = Arrays.stream(entry.getValue().split(","))
+                    .map(String::trim).collect(Collectors.toList());
+                typeBind.put(typeBindKey, typeBindValues);
+            });
         style = fieldMap.get("style");
         isRelationshipField = fieldMap.containsKey("relationship-type");
         isMetadataField = fieldMap.containsKey("dc-schema");
@@ -595,17 +599,15 @@ public class DCInput {
     }
 
     /**
-     * Decides if this field is valid for the document type
+     * Decides if this field is valid for the current type binding.
      *
-     * @param typeName Document type name
-     * @return true when there is no type restriction or typeName is allowed
+     * @param typeFields The field name && values for the current document.
+     * @return true when there is no type restriction or when typeFields is allowed.
      */
-    public boolean isAllowedFor(String typeName) {
-        if (typeBind.isEmpty()) {
-            return true;
-        }
-
-        return typeBind.contains(typeName);
+    public boolean isAllowedFor(HashMap<String, String> typeFields) {
+        // For each field/value pair, check that it is allowed for the current configuration.
+        return typeBind.keySet().stream()
+            .allMatch(key -> typeFields.containsKey(key) && typeBind.get(key).contains(typeFields.get(key)));
     }
 
     public String getScope() {
@@ -674,9 +676,9 @@ public class DCInput {
     /**
      * Get the type bind list for use in determining whether
      * to display this field in angular dynamic form building
-     * @return list of bound types
+     * @return Map of bound types
      */
-    public List<String> getTypeBindList() {
+    public HashMap<String, List<String>> getTypeBindMap() {
         return typeBind;
     }
 
