@@ -1174,9 +1174,31 @@
       <row>
         <field>
           <dc-schema>publication</dc-schema>
+          <dc-element>speech</dc-element>
+          <dc-qualifier>status</dc-qualifier>
+          <label>Speech status</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <input-type value-pairs-name="publication_speech_status">dropdown</input-type>
+          <hint>Select in which type of document the speech was published.</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
           <dc-element>publicationStatus</dc-element>
           <label>Publication status</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::conference-speech,text::journal-article</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article</type-bind>
+          <input-type value-pairs-name="publication_status">dropdown</input-type>
+          <hint>Select the appropriate publication status for the item.</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>publicationStatus</dc-element>
+          <label>Publication status</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
           <hint>Select the appropriate publication status for the item.</hint>
         </field>
@@ -1228,7 +1250,7 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>name</dc-qualifier>
           <label>Editor name</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::conference-speech,text::journal-article,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article,text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1237,7 +1259,29 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>location</dc-qualifier>
           <label>Editor location</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::conference-speech,text::journal-article,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article,text::report</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <label>Editor name</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>location</dc-qualifier>
+          <label>Editor location</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1249,7 +1293,7 @@
           <dc-element>collection</dc-element>
           <dc-qualifier>name</dc-qualifier>
           <label>Collection name</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::conference-speech,text::working-paper</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::working-paper</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1258,7 +1302,7 @@
           <dc-element>collection</dc-element>
           <dc-qualifier>number</dc-qualifier>
           <label>Collection number</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::conference-speech,text::working-paper</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::working-paper</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1267,7 +1311,43 @@
           <dc-element>collection</dc-element>
           <dc-qualifier>issn</dc-qualifier>
           <label>Collection ISSN</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::conference-speech,text::working-paper</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+          <regex>^\d{4}-\d{3}[\dX]{1}|([nN][\/-]?[aA])</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid ISSN format</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>collection</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <label>Collection name</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>collection</dc-element>
+          <dc-qualifier>number</dc-qualifier>
+          <label>Collection number</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>collection</dc-element>
+          <dc-qualifier>issn</dc-qualifier>
+          <label>Collection ISSN</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
           <hint/>
           <regex>^\d{4}-\d{3}[\dX]{1}|([nN][\/-]?[aA])</regex>
@@ -1283,7 +1363,19 @@
           <dc-element>host</dc-element>
           <dc-qualifier>type</dc-qualifier>
           <label>Host document type</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book-part,text::conference-speech</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
+          <input-type value-pairs-name="publication_host_documentType">dropdown</input-type>
+          <hint>Select the host document type of the item.</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>type</dc-qualifier>
+          <label>Host document type</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type value-pairs-name="publication_host_documentType">dropdown</input-type>
           <hint>Select the host document type of the item.</hint>
         </field>
@@ -1294,7 +1386,19 @@
           <dc-element>host</dc-element>
           <dc-qualifier>title</dc-qualifier>
           <label>Host document title</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book-part,text::conference-speech</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the host document title</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>title</dc-qualifier>
+          <label>Host document title</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the host document title</hint>
         </field>
@@ -1305,7 +1409,19 @@
           <dc-element>host</dc-element>
           <dc-qualifier>editionStatement</dc-qualifier>
           <label>Host edition statement</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book-part,text::conference-speech</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the host document edition statement</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>editionStatement</dc-qualifier>
+          <label>Host edition statement</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the host document edition statement</hint>
         </field>
@@ -1316,7 +1432,19 @@
           <dc-element>host</dc-element>
           <dc-qualifier>authors</dc-qualifier>
           <label>Host document authors</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book-part,text::conference-speech</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the host document authors. Each author should be separated by ','</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>authors</dc-qualifier>
+          <label>Host document authors</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the host document authors. Each author should be separated by ','</hint>
         </field>
@@ -1327,7 +1455,7 @@
           <dc-element>host</dc-element>
           <dc-qualifier>pages</dc-qualifier>
           <label>Host document pagination</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book-part,text::conference-speech</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
         </field>
@@ -1336,9 +1464,73 @@
         <field>
           <dc-schema>publication</dc-schema>
           <dc-element>host</dc-element>
+          <dc-qualifier>pages</dc-qualifier>
+          <label>Host document pagination</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>dateIssued</dc-qualifier>
+          <label>Date</label>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
+          <input-type>year</input-type>
+          <hint>Enter date issued of the host document.</hint>
+          <required>You need to select a date</required>
+          <settings>
+            <setting name="useCurrentYearAsDefault">false</setting>
+            <setting name="maxYearDelta">2</setting>
+            <setting name="minYear">1925</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>dateIssued</dc-qualifier>
+          <label>Date</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
+          <input-type>year</input-type>
+          <hint>Enter date issued of the host document.</hint>
+          <required>You need to select a date</required>
+          <settings>
+            <setting name="useCurrentYearAsDefault">false</setting>
+            <setting name="maxYearDelta">2</setting>
+            <setting name="minYear">1925</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
           <dc-qualifier>isbn</dc-qualifier>
           <label>Host document ISBN</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book-part,text::conference-speech</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the host document ISBN</hint>
+          <required>Host document ISBN is required</required>
+          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid ISBN format</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>isbn</dc-qualifier>
+          <label>Host document ISBN</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the host document ISBN</hint>
           <required>Host document ISBN is required</required>
@@ -1355,9 +1547,28 @@
           <dc-qualifier>peerReviewed</dc-qualifier>
           <repeatable>false</repeatable>
           <label>Host document peer-review</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book-part,text::conference-speech</type-bind>
-          <input-type value-pairs-name="truefalse">list</input-type>
-          <hint>Is the host document peer-reviewed</hint>
+          <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
+          <input-type>checkbox</input-type>
+          <hint>The host document is peer-reviewed</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>host</dc-element>
+          <dc-qualifier>peerReviewed</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Host document peer-review</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
+          <input-type>checkbox</input-type>
+          <hint>The host document is peer-reviewed</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
         </field>
       </row>
       <!-- Conference fields -->
@@ -1409,8 +1620,9 @@
           <dc-element>isAbstract</dc-element>
           <label>Is abstract</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type>checkbox</input-type>
-          <hint>Is this item is only an abstract of another publication.</hint>
+          <hint>If this item is only an abstract of another publication.</hint>
         </field>
       </row>
       <!-- Serial fields -->
@@ -1419,10 +1631,22 @@
           <dc-schema>dc</dc-schema>
           <dc-element>relation</dc-element>
           <dc-qualifier>journal</dc-qualifier>
-          <label>journal</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article</type-bind>
+          <label>Journal title</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Select or enter the host journal name</hint>
+          <hint>Enter the host journal title</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>relation</dc-element>
+          <dc-qualifier>journal</dc-qualifier>
+          <label>Journal title</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the host journal title</hint>
         </field>
       </row>
       <row>
@@ -1431,7 +1655,7 @@
           <dc-element>serial</dc-element>
           <dc-qualifier>volume</dc-qualifier>
           <label>Volume</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the volume number of the serial the item belongs</hint>
           <required>You need to specify volume number (or 'n/a')</required>
@@ -1441,7 +1665,7 @@
           <dc-element>serial</dc-element>
           <dc-qualifier>issue</dc-qualifier>
           <label>Issue</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the issue number of the serial the item belongs</hint>
           <required>You need to specify issue number (or 'n/a')</required>
@@ -1451,7 +1675,7 @@
           <dc-element>serial</dc-element>
           <dc-qualifier>pages</dc-qualifier>
           <label>Pagination</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
           <required>You need to specify pagination (or 'n/a')</required>
@@ -1461,7 +1685,58 @@
           <dc-element>serial</dc-element>
           <dc-qualifier>dateIssued</dc-qualifier>
           <label>Date</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>year</input-type>
+          <hint>Enter date issued of the serial.</hint>
+          <required>You need to select a date</required>
+          <settings>
+            <setting name="useCurrentYearAsDefault">false</setting>
+            <setting name="maxYearDelta">2</setting>
+            <setting name="minYear">1925</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>volume</dc-qualifier>
+          <label>Volume</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the volume number of the serial the item belongs</hint>
+          <required>You need to specify volume number (or 'n/a')</required>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>issue</dc-qualifier>
+          <label>Issue</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the issue number of the serial the item belongs</hint>
+          <required>You need to specify issue number (or 'n/a')</required>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>pages</dc-qualifier>
+          <label>Pagination</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
+          <required>You need to specify pagination (or 'n/a')</required>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>dateIssued</dc-qualifier>
+          <label>Date</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>year</input-type>
           <hint>Enter date issued of the serial.</hint>
           <required>You need to select a date</required>
@@ -1478,7 +1753,19 @@
           <dc-element>serial</dc-element>
           <dc-qualifier>issn</dc-qualifier>
           <label>ISSN</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the ISSN of the host serial</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>issn</dc-qualifier>
+          <label>ISSN</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the ISSN of the host serial</hint>
         </field>
@@ -1489,9 +1776,27 @@
           <dc-element>serial</dc-element>
           <dc-qualifier>peerReviewed</dc-qualifier>
           <label>Journal peer-reviewed</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article</type-bind>
-          <input-type value-pairs-name="truefalse">list</input-type>
-          <hint>Is the linked journal peer-reviewed</hint>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>checkbox</input-type>
+          <hint>The linked journal is peer-reviewed</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>peerReviewed</dc-qualifier>
+          <label>Journal peer-reviewed</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>checkbox</input-type>
+          <hint>The linked journal is peer-reviewed</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
         </field>
       </row>
       <!-- Report/workingPaper -->
@@ -1501,7 +1806,7 @@
           <dc-element>report</dc-element>
           <dc-qualifier>organization</dc-qualifier>
           <label>Organization name</label>
-          <type-bind type-bind-field="dc.type.maintype">text::report,text::working-paper</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the organization name of the item.</hint>
         </field>
@@ -1510,7 +1815,7 @@
           <dc-element>identifier</dc-element>
           <dc-qualifier>reportID</dc-qualifier>
           <label>Report ID</label>
-          <type-bind type-bind-field="dc.type.maintype">text::report,text::working-paper</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1519,7 +1824,7 @@
           <dc-element>report</dc-element>
           <dc-qualifier>period</dc-qualifier>
           <label>Period</label>
-          <type-bind type-bind-field="dc.type.maintype">text::report,text::working-paper</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the period time for the item</hint>
         </field>
@@ -1534,7 +1839,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the invention IPC identifier</hint>
-          <required/>
+          <required>Please provide an IPC identifier for this patent.</required>
         </field>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1544,7 +1849,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the invention ECLA identifier</hint>
-          <required/>
+          <required>Please provide an ECLA identifier for this patent.</required>
         </field>
       </row>
       <row>
@@ -1557,7 +1862,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter name(s) of the inventor; one submitter by fields</hint>
-          <required/>
+          <required>Please enter at least one submitter for this patent.</required>
         </field>
       </row>
       <row>
@@ -1568,7 +1873,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type value-pairs-name="patent_depositLevel">dropdown</input-type>
           <hint>Select the invention deposit level</hint>
-          <required/>
+          <required>Please select the deposit level of this patent.</required>
         </field>
       </row>
       <row>
@@ -1579,7 +1884,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the office beside of which the patent request was submitted</hint>
-          <required/>
+          <required>Please provide an office for this patent.</required>
         </field>
       </row>
       <row>
@@ -1587,23 +1892,11 @@
           <dc-schema>dc</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>priorityNumber</dc-qualifier>
-          <label>priority number</label>
+          <label>Priority number</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the priority number attributed to the invention</hint>
-          <required/>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>priorityNumber</dc-qualifier>
-          <label>priority number</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the priority number attributed to the invention</hint>
-          <required/>
+          <required>Please provide the priority number of this patent.</required>
         </field>
       </row>
       <row>
@@ -1615,7 +1908,19 @@
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the scope of the patent protection. Use ISO code separated by comma</hint>
-          <required/>
+          <required>Please provide the countries for the scope of this patent.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crispatent</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>type</dc-qualifier>
+          <label>Patent type</label>
+          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <input-type value-pairs-name="publication_patent_types">dropdown</input-type>
+          <hint>Please provide a status type for this patent.</hint>
+          <required>Please select a type for this patent.</required>
         </field>
       </row>
       <row>
@@ -1625,9 +1930,10 @@
           <dc-qualifier>patentDepositID</dc-qualifier>
           <label>Deposit ID</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">deposited</type-bind>
           <input-type>onebox</input-type>
           <hint/>
-          <required/>
+          <required>Please provide an id for this patent.</required>
         </field>
         <field>
           <dc-schema>crispatent</dc-schema>
@@ -1635,9 +1941,10 @@
           <dc-qualifier>code</dc-qualifier>
           <label>Deposit code</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">deposited</type-bind>
           <input-type>onebox</input-type>
           <hint/>
-          <required/>
+          <required>Please provide a deposit code for this patent.</required>
         </field>
         <field>
           <dc-schema>crispatent</dc-schema>
@@ -1645,9 +1952,10 @@
           <dc-qualifier>date</dc-qualifier>
           <label>Deposit date</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">deposited</type-bind>
           <input-type>onebox</input-type>
           <hint/>
-          <required/>
+          <required>Please provide a deposit date for this patent.</required>
         </field>
       </row>
       <row>
@@ -1657,9 +1965,10 @@
           <dc-qualifier>patentPublishID</dc-qualifier>
           <label>Publish ID</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">published</type-bind>
           <input-type>onebox</input-type>
           <hint/>
-          <required/>
+          <required>Please provide an id for the patent.</required>
         </field>
         <field>
           <dc-schema>crispatent</dc-schema>
@@ -1667,9 +1976,10 @@
           <dc-qualifier>code</dc-qualifier>
           <label>Publish code</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">published</type-bind>
           <input-type>onebox</input-type>
           <hint/>
-          <required/>
+          <required>Please provide a published code for this patent.</required>
         </field>
         <field>
           <dc-schema>crispatent</dc-schema>
@@ -1677,9 +1987,10 @@
           <dc-qualifier>date</dc-qualifier>
           <label>Publish date</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">published</type-bind>
           <input-type>onebox</input-type>
           <hint/>
-          <required/>
+          <required>Please provide a published date for this patent.</required>
         </field>
       </row>
       <row>
@@ -1689,6 +2000,7 @@
           <dc-qualifier>patentDeliveryID</dc-qualifier>
           <label>Delivery ID</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">delivered</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1698,6 +2010,7 @@
           <dc-qualifier>code</dc-qualifier>
           <label>Delivery code</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">delivered</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1707,6 +2020,7 @@
           <dc-qualifier>date</dc-qualifier>
           <label>Delivery date</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <type-bind type-bind-field="crispatent.identifier.type">delivered</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -3154,6 +3468,20 @@
         <stored-value>external</stored-value>
       </pair>
     </value-pairs>
+    <value-pairs value-pairs-name="publication_speech_status" dc-term="publication_speech_status">
+      <pair>
+        <displayed-value>Not published</displayed-value>
+        <stored-value>not_published</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Published in serial</displayed-value>
+        <stored-value>published_in_serial</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Published in book</displayed-value>
+        <stored-value>published_in_book</stored-value>
+      </pair>
+    </value-pairs>
     <value-pairs value-pairs-name="publication_host_documentType" dc-term="publication_host_documentType">
       <pair>
         <displayed-value>Conference proceedings</displayed-value>
@@ -3308,6 +3636,20 @@
       <pair>
         <displayed-value>Inventor</displayed-value>
         <stored-value>inventor</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_patent_types" dc-term="publication_patent_types">
+      <pair>
+        <displayed-value>Deposited</displayed-value>
+        <stored-value>deposited</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Published</displayed-value>
+        <stored-value>published</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Delivered</displayed-value>
+        <stored-value>delivered</stored-value>
       </pair>
     </value-pairs>
   </form-value-pairs>
