@@ -8,6 +8,7 @@
 package org.dspace.app.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -166,19 +167,19 @@ public class DCInputSet {
      * Scan through every field in every page of the input set
      *
      * @param fieldName    field name
-     * @param documentType doc type
+     * @param documentTypes The current document data for the type fields
      * @return true if the current set has the named field
      */
-    public boolean isFieldPresent(String fieldName, String documentType) {
-        if (documentType == null) {
-            documentType = "";
+    public boolean isFieldPresent(String fieldName, HashMap<String, String> documentTypes) {
+        if (documentTypes == null) {
+            documentTypes = new HashMap<>();
         }
         for (int i = 0; i < inputs.length; i++) {
             for (int j = 0; j < inputs[i].length; j++) {
                 DCInput field = inputs[i][j];
                 String fullName = field.getFieldName();
                 if (fullName.equals(fieldName)) {
-                    if (field.isAllowedFor(documentType)) {
+                    if (field.isAllowedFor(documentTypes)) {
                         return true;
                     }
                 }
@@ -214,10 +215,10 @@ public class DCInputSet {
      *
      * This can be more efficient than isFieldPresent to avoid looping the input set with each check.
      *
-     * @param documentTypeValue     Document type eg. Article, Book
+     * @param documentTypeValues     Document type eg. Article, Book
      * @return                      ArrayList of field names to use in validation
      */
-    public List<String> populateAllowedFieldNames(String documentTypeValue) {
+    public List<String> populateAllowedFieldNames(HashMap<String, String> documentTypeValues) {
         List<String> allowedFieldNames = new ArrayList<>();
         // Before iterating each input for validation, run through all inputs + fields and populate a lookup
         // map with inputs for this type. Because an input can be configured repeatedly in a form (for example
@@ -231,7 +232,7 @@ public class DCInputSet {
                     // values are also in the list and before the stored values.
                     for (int i = 1; i < inputPairs.size(); i += 2) {
                         String fullFieldname = input.getFieldName() + "." + inputPairs.get(i);
-                        if (input.isAllowedFor(documentTypeValue)) {
+                        if (input.isAllowedFor(documentTypeValues)) {
                             if (!allowedFieldNames.contains(fullFieldname)) {
                                 allowedFieldNames.add(fullFieldname);
                             }
@@ -243,7 +244,7 @@ public class DCInputSet {
                         }
                     }
                 } else {
-                    if (input.isAllowedFor(documentTypeValue) && !allowedFieldNames.contains(input.getFieldName())) {
+                    if (input.isAllowedFor(documentTypeValues) && !allowedFieldNames.contains(input.getFieldName())) {
                         allowedFieldNames.add(input.getFieldName());
                     }
                 }

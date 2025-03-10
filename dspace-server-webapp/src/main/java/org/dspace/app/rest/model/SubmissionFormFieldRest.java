@@ -9,6 +9,7 @@
 package org.dspace.app.rest.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,7 +99,7 @@ public class SubmissionFormFieldRest {
     /**
      * The list of type bind value
      */
-    private List<String> typeBind;
+    private HashMap<String, List<String>> typeBind;
 
     /**
      * A list of settings defined for this field
@@ -313,11 +314,11 @@ public class SubmissionFormFieldRest {
         this.rows = rows;
     }
 
-    public List<String> getTypeBind() {
+    public HashMap<String, List<String>> getTypeBind() {
         return typeBind;
     }
 
-    public void setTypeBind(List<String> typeBind) {
+    public void setTypeBind(HashMap<String, List<String>> typeBind) {
         this.typeBind = typeBind;
     }
 
