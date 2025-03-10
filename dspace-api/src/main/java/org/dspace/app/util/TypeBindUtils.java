@@ -7,6 +7,8 @@
  */
 package org.dspace.app.util;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,36 +40,44 @@ public class TypeBindUtils {
     private TypeBindUtils() {}
 
     /**
-     * This method gets the field used for type-bind.
+     * This method gets the fields used for type-bind.
      * @return the field used for type-bind.
      */
-    public static String getTypeBindField() {
-        return configurationService.getProperty("submit.type-bind.field", "dc.type");
+    public static List<String> getTypeBindField() {
+        return Arrays.asList(
+            configurationService.getArrayProperty("submit.type-bind.field", new String[]{"dc.type"})
+        );
     }
 
     /**
-     * This method gets the value of the type-bind field from the current item.
-     * @return the value of the type-bind field from the current item.
+     * This method gets the values of the type-bind fields from the current item.
+     * 
+     * @param obj The object to extract type-bind values from.
+     * @return the values for each type-bind fields from the current item.
      */
-    public static String getTypeBindValue(InProgressSubmission<?> obj) {
-        List<MetadataValue> documentType = itemService.getMetadataByMetadataString(
-                obj.getItem(), getTypeBindField());
+    public static HashMap<String, String> getTypeBindValues(InProgressSubmission<?> obj) {
+        HashMap<String, String> response = new HashMap<>();
+        for (String field: getTypeBindField()) {
+            List<MetadataValue> typeBindFieldValues =
+                itemService.getMetadataByMetadataString(obj.getItem(), field);
 
-        // check empty type-bind field
-        if (documentType == null || documentType.isEmpty()
-                || StringUtils.isBlank(documentType.get(0).getValue())) {
-            return null;
+            if (typeBindFieldValues == null || typeBindFieldValues.isEmpty()
+                || StringUtils.isBlank(typeBindFieldValues.get(0).getValue())) {
+                continue;
+            }
+
+            MetadataValue typeBindValue = typeBindFieldValues.get(0);
+
+            boolean isAuthorityAllowed = metadataAuthorityService.isAuthorityAllowed(
+                field.replace(".","_"), Constants.ITEM, obj.getCollection()
+            );
+            if (isAuthorityAllowed && typeBindValue.getAuthority() != null) {
+                response.put(field, typeBindValue.getAuthority());
+                continue;
+            }
+            response.put(field, typeBindValue.getValue());
         }
-
-        MetadataValue typeBindValue = documentType.get(0);
-
-        boolean isAuthorityAllowed = metadataAuthorityService.isAuthorityAllowed(
-                getTypeBindField().replace(".","_"), Constants.ITEM, obj.getCollection());
-        if (isAuthorityAllowed && typeBindValue.getAuthority() != null) {
-            return typeBindValue.getAuthority();
-        }
-
-        return typeBindValue.getValue();
+        return response;
     }
 
 }

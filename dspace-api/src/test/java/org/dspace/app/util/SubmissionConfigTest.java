@@ -12,6 +12,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.dspace.AbstractUnitTest;
@@ -84,10 +85,16 @@ public class SubmissionConfigTest extends AbstractUnitTest {
         assertEquals(typeBindSubmissionStepName, submissionStepConfig.getId());
         // Get inputs and allowed fields
         DCInputSet inputConfig = inputReader.getInputsByFormName(submissionStepConfig.getId());
-        List<String> allowedFieldsForBook = inputConfig.populateAllowedFieldNames("Book");
-        List<String> allowedFieldsForBookChapter = inputConfig.populateAllowedFieldNames("Book chapter");
-        List<String> allowedFieldsForArticle = inputConfig.populateAllowedFieldNames("Article");
-        List<String> allowedFieldsForNoType = inputConfig.populateAllowedFieldNames(null);
+        HashMap<String, String> bookTypeBind = new HashMap<>();
+        bookTypeBind.put("dc.type", "Book");
+        List<String> allowedFieldsForBook = inputConfig.populateAllowedFieldNames(bookTypeBind);
+        HashMap<String, String> bookChapterTypeBind = new HashMap<>();
+        bookChapterTypeBind.put("dc.type", "Book chapter");
+        List<String> allowedFieldsForBookChapter = inputConfig.populateAllowedFieldNames(bookChapterTypeBind);
+        HashMap<String, String> articleTypeBind = new HashMap<>();
+        articleTypeBind.put("dc.type", "Article");
+        List<String> allowedFieldsForArticle = inputConfig.populateAllowedFieldNames(articleTypeBind);
+        List<String> allowedFieldsForNoType = inputConfig.populateAllowedFieldNames(new HashMap<>());
         // Book and book chapter should be allowed all 5 fields (each is bound to dc.identifier.isbn)
         assertEquals(allConfiguredFields, allowedFieldsForBook);
         assertEquals(allConfiguredFields, allowedFieldsForBookChapter);
