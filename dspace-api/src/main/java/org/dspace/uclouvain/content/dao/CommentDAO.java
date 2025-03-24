@@ -32,10 +32,11 @@ public interface CommentDAO extends GenericDAO<Comment> {
      *
      * @param context the application context.
      * @param item the item owner of the comment.
+     * @param asc is the result should be sort ascending?
      * @return the list of comments related to this item.
      * @throws SQLException if any database errors occurred.
      */
-    List<Comment> findByItem(Context context, Item item) throws SQLException;
+    List<Comment> findByItem(Context context, Item item, boolean asc) throws SQLException;
 
     /**
      * Count the number of {@link org.dspace.uclouvain.content.Comment} related to an {@link org.dspace.content.Item}
