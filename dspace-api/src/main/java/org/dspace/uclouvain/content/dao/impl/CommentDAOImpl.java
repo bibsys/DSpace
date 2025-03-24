@@ -18,11 +18,17 @@ import org.dspace.uclouvain.content.Comment;
 import org.dspace.uclouvain.content.dao.CommentDAO;
 
 @SuppressWarnings("unchecked")
-public class CommentDOAImpl extends AbstractHibernateDAO<Comment> implements CommentDAO {
+public class CommentDAOImpl extends AbstractHibernateDAO<Comment> implements CommentDAO {
 
     @Override
-    public List<Comment> findByItem(Context context, Item item) throws SQLException {
-        Query query = createQuery(context, "SELECT c FROM Comment c WHERE c.owner = :owner");
+    public List<Comment> findByItem(Context context, Item item, boolean asc) throws SQLException {
+        String direction = (asc) ? "ASC" : "DESC";
+        Query query = createQuery(context,
+                "SELECT c " +
+                "FROM Comment c " +
+                "WHERE c.owner = :owner " +
+                "ORDER BY c.creationDate " + direction
+        );
         query.setParameter("owner", item);
         return query.getResultList();
     }

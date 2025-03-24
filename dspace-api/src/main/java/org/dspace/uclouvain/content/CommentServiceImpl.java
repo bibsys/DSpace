@@ -109,8 +109,13 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    public List<Comment> findByItem(Context context, Item item, boolean asc) throws SQLException {
+        return commentDAO.findByItem(context, item, asc);
+    }
+
+    @Override
     public List<Comment> findByItem(Context context, Item item) throws SQLException {
-        return commentDAO.findByItem(context, item);
+        return commentDAO.findByItem(context, item, true);
     }
 
     @Override
