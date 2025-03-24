@@ -112,6 +112,18 @@ public interface CommentService {
     List<Comment> findAll(Context context) throws SQLException;
 
     /**
+     * Get all {@link org.dspace.uclouvain.content.Comment} related to an {@link org.dspace.content.Item} sorted on
+     * comment creation date.
+     *
+     * @param context the application context.
+     * @param item the related {@link org.dspace.content.Item}
+     * @param asc is the result should be sort ascending or descending?
+     * @return a list of {@link org.dspace.uclouvain.content.Comment} stored into the database.
+     * @throws SQLException if any database errors occurred.
+     */
+    List<Comment> findByItem(Context context, Item item, boolean asc) throws SQLException;
+
+    /**
      * Get all {@link org.dspace.uclouvain.content.Comment} related to an {@link org.dspace.content.Item}.
      *
      * @param context the application context.
