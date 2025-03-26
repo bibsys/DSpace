@@ -19,10 +19,13 @@ public enum DSpaceRestPermission {
     DELETE(Constants.DELETE),
     ADD(Constants.ADD),
     ADMIN(Constants.ADMIN),
-    // STATUS permissions allows someone to see the status of an object, without necessarily being able to fully READ it
+    // STATUS permission allows someone to see the status of an object, without necessarily being able to fully READ it
     // For example, STATUS is used to allow withdrawn Items to be seen as withdrawn,
     // while hiding all their metadata/links.
-    STATUS(Constants.READ);
+    STATUS(Constants.READ),
+    // EDIT permission allows determining if someone could edit an item without necessarily had WRITE permission on it.
+    // This permission must only be used with ITEM target object and will use CRIS `editModes` feature.
+    EDIT(Constants.WRITE);
 
     private int dspaceApiActionId;
 

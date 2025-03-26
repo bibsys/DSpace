@@ -39,6 +39,7 @@ import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 
@@ -56,18 +57,20 @@ public class CommentRestRepository extends DSpaceRestRepository<CommentRest, UUI
 
     // REST METHODS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // HTTP GET --------------------------------------------------------------------------------------------------------
-    @Override
+
     /**
      * Manage GET `api/core/comments/[UUID]` REST request.
      * Allow getting information's about a specific {@link org.dspace.uclouvain.content.Comment}.
      *
      * @param context the dspace application context
-     * @param uuid the comment UUID to search
+     * @param id the comment UUID to search
      * @return The REST representation of the comment
      */
-    public CommentRest findOne(Context context, UUID uuid) {
+    @Override
+    @PreAuthorize("hasPermission(#id, 'COMMENT', 'READ')")
+    public CommentRest findOne(Context context, UUID id) {
         try {
-            Comment comment = commentService.find(context, uuid);
+            Comment comment = commentService.find(context, id);
             return (comment != null)
                 ? converter.toRest(comment, utils.obtainProjection())
                 : null;
@@ -98,6 +101,7 @@ public class CommentRestRepository extends DSpaceRestRepository<CommentRest, UUI
      * @throws SQLException if any database exception occurred
      */
     @SearchRestMethod(name = "findAllByParent")
+    @PreAuthorize("hasPermission(#id, 'COMMENT', 'READ')")
     public Page<AuthorizationRest> findAllByParent(
             @Parameter(value = "id", required = true) UUID id,
             Pageable pageable
@@ -122,6 +126,7 @@ public class CommentRestRepository extends DSpaceRestRepository<CommentRest, UUI
      * @throws SQLException if any database errors occurred.
      */
     @Override
+    @PreAuthorize("hasPermission(#parentID, 'ITEM', 'EDIT')")
     protected CommentRest createAndReturn(Context context, UUID parentID) throws AuthorizeException, SQLException {
         CommentRest commentRest = null;
         try {
@@ -151,6 +156,7 @@ public class CommentRestRepository extends DSpaceRestRepository<CommentRest, UUI
      * @throws SQLException if any database errors occurred.
      */
     @Override
+    @PreAuthorize("hasPermission(#id, 'COMMENT', #patch)")
     protected void patch(Context context, HttpServletRequest request, String apiCategory, String model,
             UUID id, Patch patch) throws AuthorizeException, SQLException {
         Comment comment = commentService.find(context, id);
@@ -180,6 +186,7 @@ public class CommentRestRepository extends DSpaceRestRepository<CommentRest, UUI
      * @param uuid the comment ID to delete
      */
     @Override
+    @PreAuthorize("hasAuthority('ADMIN')")
     protected void delete(Context context, UUID uuid) {
         try {
             Comment comment = commentService.find(context, uuid);
