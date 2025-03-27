@@ -101,7 +101,7 @@ public class BitstreamDirectDownloadURLPermissionEvaluatorPlugin extends RestObj
     // Checks if with the current context (item && user) we can generate a download URL.
     private boolean isAuthorized(Context context, Item item, EPerson currentUser) {
         try {
-            return this.itemUtils.isWorkflow(context, item) && this.isUserAuthorized(context, item, currentUser);
+            return ItemUtils.isWorkflow(context, item) && this.isUserAuthorized(context, item, currentUser);
         } catch (SQLException e) {
             logger.warn("An error occurred while checking the authorization for the download URL generation with " +
                     "item UUID: " + item.getID() + " && user: " + currentUser.getEmail() + "; " + e.getMessage());
