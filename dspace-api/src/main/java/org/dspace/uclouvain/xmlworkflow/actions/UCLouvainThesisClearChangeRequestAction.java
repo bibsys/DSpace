@@ -23,7 +23,6 @@ import org.dspace.xmlworkflow.state.actions.ActionResult;
 import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 
-
 /**
  * Method to clean the active change request field value when the user submits the item.
  * Before being deleted, the value can be stored in a request history field.
@@ -36,14 +35,8 @@ public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
     private Logger logger = LogManager.getLogger(UCLouvainThesisClearChangeRequestAction.class);
 
     private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-
-    private final MetadataField activeRF = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.activerequestchange.field"));
-    private final MetadataField RFHistory = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.requestchangehistory.field"));
-    private final Boolean storeInHistory = configService.getBooleanProperty(
-            "uclouvain.feature.send_back_to_submitter.store_reason", false);
-
+    private MetadataField activeRequestField = new MetadataField(configService.getProperty(
+            "uclouvain.global.metadata.activerequestchange.field"));
 
     @Override
     public void activate(Context context, XmlWorkflowItem wfItem) {}
@@ -53,27 +46,15 @@ public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
         Item item = wfi.getItem();
         try {
             // Retrieve the value of the active request field
-            String value = itemService.getMetadataFirstValue(item, activeRF, Item.ANY);
+            String value = itemService.getMetadataFirstValue(item, activeRequestField, Item.ANY);
             if (value != null) {
-                // If any value is found, we store it in the history field if desired and then we delete it.
-                if (storeInHistory) {
-                    itemService.addMetadata(
+                this.itemService.clearMetadata(
                         context,
                         item,
-                        RFHistory.getSchema(),
-                        RFHistory.getElement(),
-                        RFHistory.getQualifier(),
-                        null,
-                        value
-                    );
-                }
-                itemService.clearMetadata(
-                    context,
-                    item,
-                    activeRF.getSchema(),
-                    activeRF.getElement(),
-                    activeRF.getQualifier(),
-                    Item.ANY
+                        activeRequestField.getSchema(),
+                        activeRequestField.getElement(),
+                        activeRequestField.getQualifier(),
+                        Item.ANY
                 );
             }
             return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
