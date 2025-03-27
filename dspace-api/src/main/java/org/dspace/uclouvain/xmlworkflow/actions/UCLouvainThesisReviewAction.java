@@ -32,6 +32,7 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.mails.ThesisChangeRequestEmail;
 import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
@@ -79,6 +80,8 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     private GroupService groupService;
     @Autowired
     private BitstreamService bitstreamService;
+    @Autowired
+    private CommentService commentService;
 
     private Logger logger = LogManager.getLogger(UCLouvainThesisReviewAction.class);
 
@@ -189,9 +192,9 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
 
     /**
      * Process the action 'RETURN_TO_SUBMITTER' which can be performed by a manager and will:
-     *  -> Send the item back to the submitter for modifications.
-     *  -> Add a message (given by the manager) into a metadata field of the item.
-     *  -> The message will then be used to inform the submitter of the needed changes.
+     *  1) Send the item back to the submitter for modifications.
+     *  2) Add a message (given by the manager) into a metadata field of the item.
+     *  3) The message will then be used to inform the submitter of the necessary changes.
      *
      * @param context The current DSpace context.
      * @param wfi The workflow item that is being operated.
@@ -214,10 +217,15 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             if (StringUtils.isEmpty(reason)) {
                 return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
             }
-            // Encode the reason in the metadata field
-            itemService.setMetadataSingleValue(context, wfi.getItem(), activeRF, null, reason);
-            // Send email to submitter to notify for the change request.
-            new ThesisChangeRequestEmail(context, wfi.getItem(), reason).sendEmail();
+            // Encode the reason in the metadata field & store this reason as a new comment related to the item.
+            Item item = wfi.getItem();
+            if (item != null) {
+                itemService.setMetadataSingleValue(context, item, activeRF, null, reason);
+                String commentContent = "Send back to submitter for modifications :: " + reason;
+                commentService.create(context, item, context.getCurrentUser(), commentContent);
+                // Send email to submitter to notify for the change request.
+                new ThesisChangeRequestEmail(context, item, reason).sendEmail();
+            }
             context.restoreAuthSystemState();
             return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
         } catch (Exception e) {
