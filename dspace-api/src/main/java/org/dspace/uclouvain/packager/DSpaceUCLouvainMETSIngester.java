@@ -8,6 +8,9 @@
 package org.dspace.uclouvain.packager;
 
 import static org.dspace.content.crosswalk.XSLTCrosswalk.DIM_NS;
+import static org.dspace.core.Constants.CONTENT_BUNDLE_NAME;
+import static org.dspace.uclouvain.constants.AccessConditions.EMBARGO;
+import static org.dspace.uclouvain.constants.AccessConditions.OPEN_ACCESS;
 import static org.dspace.uclouvain.content.utils.CommentUtils.loadLegacyComments;
 
 import java.io.File;
@@ -15,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +32,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bitstream;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
@@ -51,6 +56,7 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.content.LegacyComment;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
+import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.dspace.workflow.WorkflowException;
 import org.jdom2.Content;
 import org.jdom2.Element;
@@ -66,6 +72,8 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
             ContentServiceFactory.getInstance().getMetadataFieldService();
     private static final BitstreamService bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
     private final CommentService commentService = UCLouvainServiceFactory.getInstance().getCommentService();
+    private final UCLouvainResourcePolicyService policyService =
+            UCLouvainServiceFactory.getInstance().getResourcePolicyService();
 
     private long transformerLastModified = 0;
     private File transformFile;
@@ -215,8 +223,10 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         // Legacy comments creation
         //   After loading, the legacy comments are present into bitstreams from "COMMENT" bundle.
         //   We need to extract each comment to create a corresponding `Comment` DSO into the system.
+        //   We also create a new comment to store access status of loaded bitstream
         if (dso instanceof Item) {
             createLegacyComment(context, (Item) dso);
+            createBitstreamAccessComment(context, (Item) dso);
         }
     }
 
@@ -395,6 +405,34 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
             service.delete(context, dso);
         } catch (Exception e) {
             log.error("Error deleting comment " + dso.getClass().getName() + "@" + dso.getID(), e);
+        }
+    }
+
+    /**
+     * Create a comment to store the initial bitstream access condition after loading
+     *
+     * @param context the application context
+     * @param item the related item
+     */
+    private void createBitstreamAccessComment(Context context, Item item) {
+        item.getBundles(CONTENT_BUNDLE_NAME).stream()
+            .flatMap(bundle -> bundle.getBitstreams().stream())
+            .forEach(bitstream -> this.createInitialAccessBitstreamComment(context, item, bitstream));
+    }
+
+    private void createInitialAccessBitstreamComment(Context context, Item item, Bitstream bitstream) {
+        try {
+            ResourcePolicy masterPolicy = policyService.getMasterPolicy(policyService.find(context, bitstream));
+            String accessStatus = (masterPolicy != null) ? masterPolicy.getRpName() : OPEN_ACCESS;
+            if (masterPolicy != null && masterPolicy.getRpName().equalsIgnoreCase(EMBARGO)) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+                accessStatus += " until (" + dateFormat.format(masterPolicy.getStartDate()) + ")";
+            }
+            String commentContent = "Bitstream@" + bitstream.getID() + " with name \"" + bitstream.getName() + "\" :: ";
+            commentContent += "Legacy accessCondition is " + accessStatus + "\n";
+            commentService.create(context, item, context.getCurrentUser(), commentContent);
+        } catch (Exception e) {
+            log.warn("Error generating comment :: " + e.getMessage(), e);
         }
     }
 }

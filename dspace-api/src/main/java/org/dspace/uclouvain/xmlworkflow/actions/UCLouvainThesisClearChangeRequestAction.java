@@ -38,10 +38,6 @@ public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
     private ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
     private MetadataField activeRequestField = new MetadataField(configService
             .getProperty("uclouvain.global.metadata.activerequestchange.field"));
-    private MetadataField requestFieldHistory = new MetadataField(configService
-            .getProperty("uclouvain.global.metadata.requestchangehistory.field"));
-    private Boolean storeInHistory = configService
-            .getBooleanProperty("uclouvain.feature.send_back_to_submitter.store_reason", false);
 
     @Override
     public void activate(Context context, XmlWorkflowItem wfItem) {}
@@ -53,18 +49,6 @@ public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
             // Retrieve the value of the active request field
             String value = this.itemService.getMetadataFirstValue(item, activeRequestField, Item.ANY);
             if (value != null) {
-                // If any value is found, we store it in the history field if desired and then we delete it.
-                if (this.storeInHistory) {
-                    this.itemService.addMetadata(
-                            context,
-                            item,
-                            requestFieldHistory.getSchema(),
-                            requestFieldHistory.getElement(),
-                            requestFieldHistory.getQualifier(),
-                            null,
-                            value
-                    );
-                }
                 this.itemService.clearMetadata(
                         context,
                         item,
