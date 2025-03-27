@@ -30,8 +30,6 @@ public class AttestationAuthorizationService {
     private PDFAttestationGeneratorConfiguration pdfAttestationGeneratorConfiguration;
     @Autowired
     private AuthorizationUtils authUtils;
-    @Autowired
-    private ItemUtils itemUtils;
 
     /**
      * Check if the item is valid for the current attestation configuration.
@@ -43,7 +41,7 @@ public class AttestationAuthorizationService {
      */
     public boolean isItemValidForAttestation(Item item, Context context) throws SQLException {
         // Check that the item is not in the workspace
-        return !this.itemUtils.isWorkspace(context, item)
+        return !ItemUtils.isWorkspace(context, item)
             && this.pdfAttestationGeneratorConfiguration
                 .getAllHandledTypes()
                 .contains(
