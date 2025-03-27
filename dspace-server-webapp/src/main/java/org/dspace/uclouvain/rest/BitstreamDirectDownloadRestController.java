@@ -159,7 +159,7 @@ public class BitstreamDirectDownloadRestController {
                         this.getPromotersEmailsAsHash(parentObject).stream(),
                         this.getManagerEmailsAsHash(context, parentObject).stream()
                 ).collect(Collectors.toList());
-                return hashList.contains(hash) && this.itemUtils.isWorkflow(context, parentObject);
+                return hashList.contains(hash) && ItemUtils.isWorkflow(context, parentObject);
             }
             return false;
         } catch (Exception e) {
