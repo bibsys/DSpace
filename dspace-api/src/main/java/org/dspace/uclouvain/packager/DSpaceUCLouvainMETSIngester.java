@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.packager;
 
 import static org.dspace.content.crosswalk.XSLTCrosswalk.DIM_NS;
+import static org.dspace.uclouvain.content.utils.CommentUtils.loadLegacyComments;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,11 +42,15 @@ import org.dspace.content.packager.METSManifest;
 import org.dspace.content.packager.PackageParameters;
 import org.dspace.content.packager.PackageValidationException;
 import org.dspace.content.service.BitstreamService;
+import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.content.service.MetadataFieldService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.content.LegacyComment;
+import org.dspace.uclouvain.content.service.CommentService;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.workflow.WorkflowException;
 import org.jdom2.Content;
 import org.jdom2.Element;
@@ -61,6 +66,7 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
             ContentServiceFactory.getInstance().getMetadataFieldService();
     private static final BitstreamService bitstreamService =
             ContentServiceFactory.getInstance().getBitstreamService();
+    private final CommentService commentService = UCLouvainServiceFactory.getInstance().getCommentService();
 
     private long transformerLastModified = 0;
     private File transformFile;
@@ -201,6 +207,17 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         Element dmdSec = getFileDmdSection(manifest, mfile);
         if (dmdSec != null) {
             applyDim(context, extractBitstreamMetadata(dmdSec), bs);
+        }
+    }
+
+    @Override
+    public void finishObject(Context context, DSpaceObject dso, PackageParameters params)
+            throws PackageValidationException, CrosswalkException, AuthorizeException, SQLException, IOException {
+        // Legacy comments creation
+        //   After loading, the legacy comments are present into bitstreams from "COMMENT" bundle.
+        //   We need to extract each comment to create a corresponding `Comment` DSO into the system.
+        if (dso instanceof Item) {
+            createLegacyComment(context, (Item) dso);
         }
     }
 
@@ -355,6 +372,43 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
                     lang,
                     field.getText()
             );
+        }
+    }
+
+    /**
+     * Allows creating comments from a legacy source.
+     *   During the SIP ingestion, comments are provided and stored into bitstreams stored into "COMMENT" bundle.
+     *   We need to read these XML bitstream to extract all comments and create related DSpace comments
+     *
+     * @param context the dspace application context
+     * @param item the related item
+     * @throws SQLException if any database exception occurred
+     */
+    private void createLegacyComment(Context context, Item item) throws SQLException {
+        commentService.deleteAllItemComments(context, item);
+        // Get all possible bitstreams containing comments
+        List<Bitstream> commentBitstreams = item.getBundles("COMMENT").stream()
+                .flatMap(bundle -> bundle.getBitstreams().stream())
+                .collect(Collectors.toList());
+        // Extract all comments from
+        List<LegacyComment> legacyComments = commentBitstreams.stream()
+                .flatMap(bitstream -> loadLegacyComments(context, bitstream).stream())
+                .collect(Collectors.toList());
+        for (LegacyComment comment : legacyComments) {
+            commentService.create(context, item, comment.getWriter(), comment.getContent());
+        }
+
+        // We can now safely delete all "comment" bitstream. We can also delete the related bundles
+        commentBitstreams.forEach(b -> safeDeleteDSO(context, b));
+        item.getBundles("COMMENT").forEach(b -> safeDeleteDSO(context, b));
+    }
+
+    private void safeDeleteDSO(Context context, DSpaceObject dso) {
+        try {
+            DSpaceObjectService<DSpaceObject> service = ContentServiceFactory.getInstance().getDSpaceObjectService(dso);
+            service.delete(context, dso);
+        } catch (Exception e) {
+            log.error("Error deleting comment " + dso.getClass().getName() + "@" + dso.getID(), e);
         }
     }
 }
