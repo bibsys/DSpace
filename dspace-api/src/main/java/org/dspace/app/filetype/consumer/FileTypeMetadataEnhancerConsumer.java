@@ -71,8 +71,7 @@ public class FileTypeMetadataEnhancerConsumer implements Consumer {
         if (Constants.BITSTREAM == event.getSubjectType()) {
             this.handleBitStreamConsumer(
                     ctx,
-                    Optional.ofNullable((Bitstream) event.getObject(ctx))
-                            .orElse(this.loadBitstream(ctx, event)),
+                    this.loadBitstream(ctx, event),
                     event
             );
         } else if (Constants.ITEM == event.getSubjectType() && Event.CREATE == event.getEventType()) {
