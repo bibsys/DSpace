@@ -76,7 +76,6 @@ public class CommentRestPermissionEvaluatorPlugin extends RestObjectPermissionEv
                 case READ:
                     return authorizeService.authorizeActionBoolean(context, item, Constants.READ);
                 case WRITE:
-                    boolean result = modeService.canEdit(context, item);
                     return modeService.canEdit(context, item);
                 default:
                     return false;
