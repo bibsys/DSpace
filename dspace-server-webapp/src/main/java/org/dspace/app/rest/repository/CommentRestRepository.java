@@ -38,6 +38,7 @@ import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -111,7 +112,10 @@ public class CommentRestRepository extends DSpaceRestRepository<CommentRest, UUI
         if (item == null) {
             throw new DSpaceBadRequestException("Item " + id + " not found");
         }
-        List<Comment> comments = commentService.findByItem(context, item);
+
+        Sort sort = pageable.getSortOr(Sort.by(Sort.Direction.DESC, "created"));
+        boolean asc = sort.isUnsorted() || (sort.isSorted() && sort.getOrderFor("created").isAscending());
+        List<Comment> comments = commentService.findByItem(context, item, asc);
         return converter.toRestPage(comments, pageable, utils.obtainProjection());
     }
 
