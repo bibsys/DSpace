@@ -31,6 +31,7 @@
 
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
+    <bean id="authorizationUtils" class="org.dspace.uclouvain.core.utils.AuthorizationUtils" />
 
     <!-- OTHER BEANS ====================================================== -->
     <util:list id="resourcePolicyPriorities">
