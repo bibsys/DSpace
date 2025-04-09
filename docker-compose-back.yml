@@ -50,7 +50,7 @@ services:
     - |
       while (!</dev/tcp/dspacedb/5432) > /dev/null 2>&1; do sleep 1; done;
       /dspace/bin/dspace database migrate
-      catalina.sh run
+      java -jar /dspace/webapps/server-boot.jar --dspace.dir=/dspace
   dspacedb: 
     container_name: dspacedb
     environment:
