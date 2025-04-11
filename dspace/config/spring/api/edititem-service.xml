@@ -218,6 +218,25 @@
                         </bean>
                     </list>
                 </entry>
+                <entry key="masterthesis.master-thesis-cataretro">
+                    <list>
+                        <bean class="org.dspace.content.edit.EditItemMode">
+                            <property name="name" value="FULL" />
+                            <property name="security">
+                                <value type="org.dspace.content.security.CrisSecurity">
+                                    GROUP
+                                </value>
+                            </property>
+                            <property name="groups">
+                                <list>
+                                    <value>Administrator</value>
+                                    <value>librarian</value>
+                                </list>
+                            </property>
+                            <property name="submissionDefinition" value="master-thesis-cataretro-edit" />
+                        </bean>
+                    </list>
+                </entry>
             </map>
         </property>
     </bean>
