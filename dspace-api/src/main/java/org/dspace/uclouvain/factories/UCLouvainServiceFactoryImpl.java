@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.factories;
 
+import org.dspace.uclouvain.citations.UCLouvainCitationsService;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
@@ -37,6 +38,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainAffiliationEntityRestService uclouvainAffiliationEntityRestService;
     @Autowired(required = true)
     private UCLouvainFWBValidationService uclouvainFWBValidationService;
+    @Autowired(required = true)
+    private UCLouvainCitationsService uclouvainCitationsService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -65,6 +68,10 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public UCLouvainFWBValidationService getFWBValidationService() {
         return uclouvainFWBValidationService;
+    }
+    @Override
+    public UCLouvainCitationsService getCitationsService() {
+        return uclouvainCitationsService;
     }
 
 }
