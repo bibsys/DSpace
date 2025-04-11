@@ -58,7 +58,14 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
 
     private String fileName;
 
+    private boolean exposed = true;
+
     private CrosswalkMode crosswalkMode;
+
+    @Override
+    public boolean isExposed() {
+        return exposed;
+    }
 
     @Override
     public boolean canDisseminate(Context context, DSpaceObject dso) {
@@ -157,6 +164,10 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
 
     public CrosswalkMode getCrosswalkMode() {
         return Optional.ofNullable(this.crosswalkMode).orElse(ItemExportCrosswalk.super.getCrosswalkMode());
+    }
+
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
     }
 
     @Override
