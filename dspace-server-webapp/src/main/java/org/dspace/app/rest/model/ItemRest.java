@@ -38,6 +38,7 @@ public class ItemRest extends DSpaceObjectRest {
     public static final String ACCESS_STATUS = "accessStatus";
     public static final String BUNDLES = "bundles";
     public static final String COMMENTS = "comments";
+    public static final String CITATIONS = "citations";
     public static final String IDENTIFIERS = "identifiers";
     public static final String MAPPED_COLLECTIONS = "mappedCollections";
     public static final String OWNING_COLLECTION = "owningCollection";

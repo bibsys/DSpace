@@ -905,6 +905,27 @@
                 </exclusion>
          	</exclusions>
       </dependency>
+        <!-- FIX for citation generationg in JAVA 17.x -->
+        <dependency>
+            <groupId>org.openjdk.nashorn</groupId>
+            <artifactId>nashorn-core</artifactId>
+            <version>15.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-util</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-tree</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-analysis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
       <dependency>
 	      <groupId>org.citationstyles</groupId>
 	      <artifactId>locales</artifactId>
