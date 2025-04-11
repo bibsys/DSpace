@@ -18,6 +18,8 @@ public class ItemExportFormat {
     private String mimeType;
     private String entityType;
     private String molteplicity;
+    /** Additional flag that indicate if an export format should be visible in the Rest API */
+    private boolean exposed;
 
     public String getId() {
         return id;
@@ -42,5 +44,13 @@ public class ItemExportFormat {
     }
     public void setMolteplicity(String molteplicity) {
         this.molteplicity = molteplicity;
+    }
+
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
+    }
+
+    public boolean isExposed() {
+        return exposed;
     }
 }

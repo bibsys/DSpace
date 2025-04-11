@@ -45,4 +45,8 @@ public interface ItemExportCrosswalk extends StreamDisseminationCrosswalk, FileN
     public default boolean isAuthorized(Context context) {
         return true;
     }
+
+    public default boolean isExposed() {
+        return true;
+    }
 }
