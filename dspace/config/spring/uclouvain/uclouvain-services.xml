@@ -34,7 +34,9 @@
     </bean>
 
     <bean id="uclouvainFWBValidationService" class="org.dspace.uclouvain.services.UCLouvainFWBValidationServiceImpl"/>
-    
+
+    <bean id="uclouvainCitationsService" class="org.dspace.uclouvain.citations.UCLouvainCitationsServiceImpl"/>
+
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
     <bean id="authorizationUtils" class="org.dspace.uclouvain.core.utils.AuthorizationUtils" />
