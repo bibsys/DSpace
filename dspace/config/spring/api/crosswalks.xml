@@ -9,17 +9,18 @@
 	<bean class="org.dspace.content.integration.crosswalks.StreamDisseminationCrosswalkMapper">
 		<constructor-arg>
 			<map>
-				<entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex"></entry>
-				<entry key="endnote" value-ref="referCrosswalkEndnote"></entry>
-				
-				<entry key="publication-cerif-xml" value-ref="referCrosswalkPublicationCerifXml"></entry>
+				<!-- <entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex"></entry>
+				<entry key="endnote" value-ref="referCrosswalkEndnote"></entry>-->
+
+				<entry key="publication-uclouvain" value-ref="cslItemDataCrosswalkUCLouvainCustom"></entry>
+				<!-- <entry key="publication-cerif-xml" value-ref="referCrosswalkPublicationCerifXml"></entry>
 				<entry key="publication-json" value-ref="cslItemDataCrosswalkJson"></entry>
 				<entry key="publication-pdf" value-ref="pdfCrosswalkPublication"></entry>
 				<entry key="publication-csv" value-ref="csvCrosswalkPublication"></entry>
-				<entry key="publication-xls" value-ref="xlsCrosswalkPublication"></entry>
+				<entry key="publication-xls" value-ref="xlsCrosswalkPublication"></entry> -->
 				<entry key="publication-apa" value-ref="cslItemDataCrosswalkApa"></entry>
 				<entry key="publication-chicago" value-ref="cslItemDataCrosswalkChicago"></entry>
-				<entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry>
+				<!-- <entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry> -->
 
 				<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
 				<entry key="person-cerif-xml" value-ref="referCrosswalkPersonCerifXml"></entry>
@@ -71,6 +72,15 @@
                 <entry key="item-zip" value-ref="zipCrosswalk"></entry>
 			</map>
 		</constructor-arg>
+	</bean>
+
+	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkUCLouvainCustom">
+		<property name="style" value="crosswalks/csl/uclouvain.csl"/>
+		<property name="mimeType" value="text/plain"/>
+		<property name="format" value="text"/>
+		<property name="fileName" value="publications.txt"/>
+		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+		<property name="exposed" value="false"/>
 	</bean>
 	
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkBibtex">

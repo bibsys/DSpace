@@ -4,31 +4,75 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd"
     default-lazy-init="true">
 
-    <bean id="DSpaceListItemDataProvider" class="org.dspace.content.integration.crosswalks.csl.DSpaceListItemDataProvider" scope="prototype">
-    	<property name="typeConverter" ref="mapConverterPublicationTypes"/>
-    	<property name="type" value="dc.type"/>
-    	<property name="language" value="dc.language.iso"/>
-        <!-- please note the following is not a typo abstract is a reserved word in JAVA
-             so the property has been named abstrct (without the a) -->
-        <property name="abstrct" value="dc.description.abstract"/>
-        <property name="DOI" value="dc.identifier.doi"/>
-        <property name="ISBN" value="dc.identifier.isbn"/>
-        <property name="ISSN" value="dc.identifier.issn"/>
-        <property name="keyword" value="dc.subject"/>
-        <property name="publisher" value="dc.publisher"/>
-        <property name="volume" value="oaire.citation.volume"/>
-        <property name="issue" value="oaire.citation.issue"/>
-        <property name="event" value="dc.relation.conference"/>
-        <property name="title" value="dc.title"/>
-        <property name="URL" value="dc.identifier.uri"/>
-        <property name="issued" value="dc.date.issued"/>
-        <property name="author" value="dc.contributor.author"/>
-        <property name="editor" value="dc.contributor.editor"/>
-    </bean>
+  <!-- Custom UCLouvain mapping. -->
+  <bean id="DSpaceListItemDataProvider" class="org.dspace.content.integration.crosswalks.csl.DSpaceListItemDataProvider" scope="prototype">
+    <property name="typeConverter" ref="mapConverterPublicationTypes"/>
+    <property name="type" value="dc.type.maintype"/>
+    <property name="language" value="dc.language.iso"/>
+    <property name="abstrct" value="dc.description.abstract"/>
+    <property name="DOI" value="dc.identifier.doi"/>
+    <property name="ISBN" value="dc.identifier.isbn"/>
+    <property name="ISSN" value="dc.identifier.issn"/>
+    <property name="keyword" value="dc.subject"/>
+    <property name="publisher" value="dc.publisher"/>
+    <property name="volume" value="oaire.citation.volume"/>
+    <property name="issue" value="oaire.citation.issue"/>
+    <property name="event" value="dc.relation.conference"/>
+    <property name="title" value="dc.title"/>
+    <property name="URL" value="dc.identifier.uri"/>
+    <property name="issued" value="dc.date.issued"/>
+    <property name="author" value="dc.contributor.author"/>
+    <property name="editor" value="dc.contributor.editor"/>
+
+    <property name="numberOfPages" value="publication.numberOfPages" />
+    <property name="status" value="publication.publicationStatus"/>
+    <property name="containerTitle" value="publication.host.title"/>
+    <property name="page" value="publication.host.pages"/>
+    <property name="eventPlace" value="publication.conference.location"/>
+    <!-- TODO: See how to deal with event start and end date -->
+    <!-- <property name="eventDate" value=""/> -->
+
+    <property name="typeSpecificFieldMap" ref="typeSpecificFieldMapDef">
     
-    <bean name="mapConverterPublicationTypes" class="org.dspace.util.SimpleMapConverter" init-method="init">
-		<property name="converterNameFile" value="mapConverter-publicationTypes.properties" />
-		<property name="configurationService" ref="org.dspace.services.ConfigurationService" />
-		<property name="defaultValue" value=""/>
+    </property>
+  </bean>
+
+  <!-- Converts our main type to an exploitable type for the csl engine -->
+  <bean name="mapConverterPublicationTypes" class="org.dspace.util.SimpleMapConverter" init-method="init">
+      <property name="converterNameFile" value="mapConverter-publicationTypes-uclouvain.properties" />
+      <property name="configurationService" ref="org.dspace.services.ConfigurationService" />
+      <property name="defaultValue" value=""/>
 	</bean>
+
+  <!-- Specific metadata definition by publication type -->
+  <util:map id="typeSpecificFieldMapDef" map-class="java.util.HashMap">
+    <entry key="text::book-part">
+      <map>
+        <entry key="ISBN" value="host.document.isbn"/>
+      </map>
+    </entry>
+
+    <entry key="text::journal-article">
+      <map>
+        <entry key="containerTitle" value="dc.relation.journal"/>
+        <entry key="volume" value="publication.serial.volume"/>
+        <entry key="issue" value="publication.serial.issue"/>
+        <entry key="page" value="publication.serial.page"/>
+        <entry key="originalDate" value="publication.serial.dateIssued"/>
+      </map>
+    </entry>
+
+    <entry key="text::conference-speech">
+      <map>
+        <entry key="event" value="publication.conference.name"/>
+      </map>
+    </entry>
+
+    <entry key="text::patent">
+      <map>
+        <entry key="director" value="crispatent.patentoffice"/>
+      </map>
+    </entry>
+  </util:map>
+
 </beans>
