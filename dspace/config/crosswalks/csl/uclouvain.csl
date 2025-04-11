@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0"  demote-non-dropping-particle="never" page-range-format="expanded">
+  <info>
+    <title>UCLouvain's custom DSpace Style</title>
+    <id>http://www.uclouvain.be/styles/ucl-style</id>
+    <updated>2025-04-09T11:03:00+00:00</updated>
+    <author>
+      <name>Pourbaix Michaël</name>
+      <mail>michael.pourbaix@uclouvain.be</mail>
+    </author>
+  </info>
+
+  <macro name="issued">
+    <date variable="issued">
+      <date-part name="year"/>
+    </date>
+  </macro>
+
+  <macro name="book">
+    <text macro="issued" prefix="(" suffix=") "/>
+    <group delimiter=", ">
+      <text variable="ISBN" prefix="ISBN: [" suffix="]"/>
+      <text variable="number-of-pages" suffix=" pages"/>
+      <text variable="status"/>
+    </group>
+  </macro>
+
+  <macro name="book-part">
+    <text macro="issued" prefix="(" suffix=") "/>
+    <text variable="container-title" suffix=" — "/>
+    <group delimiter=", ">
+      <text variable="ISBN" prefix="ISBN: [" suffix="]"/>
+      <text variable="page" />
+      <text variable="status"/>
+    </group>
+  </macro>
+
+  <macro name="conference-speech">
+    <text macro="issued" prefix="(" suffix=") "/>
+    <group delimiter=" — " suffix=" ">
+      <text variable="event"/>
+      <text variable="event-place" prefix="Location: "/>
+    </group>
+    <group prefix="(" suffix=")">
+      <date variable="event-date">
+        <date-part name="day" suffix="."/>
+        <date-part name="month" suffix="."/>
+        <date-part name="year"/>
+      </date>
+    </group>
+  </macro>
+
+  <macro name="journal-article">
+    <text macro="issued" prefix="(" suffix=") "/>
+    <text variable="container-title" suffix=" — "/>
+    <group delimiter=", " suffix=" ">
+      <text variable="volume" prefix="Vol. "/>
+      <text variable="issue" prefix="n° "/>
+      <text variable="page" prefix="p. " />
+    </group>
+    <date variable="original-date" prefix="(" suffix=")">
+      <date-part name="year"/>
+    </date>
+  </macro>
+
+  <macro name="patent">
+    <text macro="issued" prefix="(" suffix=") "/>
+    <!-- Director is ued here for the patent office -->
+    <text variable="director" prefix="Patent Off. "/>
+  </macro>
+
+  <macro name="report">
+    <text macro="issued" prefix="(" suffix=") "/>
+    <text variable="number-of-pages" prefix=", " suffix=" pages"/>
+  </macro>
+
+  <macro name="working-paper">
+    <text macro="issued" prefix="(" suffix=") "/>
+  </macro>
+
+  <macro name="dissertation">
+    <text macro="issued" prefix="(" suffix=") "/>
+  </macro>
+
+  <macro name="default">
+    <text macro="issued" prefix="(" suffix=")"/>
+  </macro>
+
+  <citation>
+    <layout>
+      <choose>
+        <if type="book">
+          <text macro="book"/>
+        </if>
+        <else-if type="chapter">
+          <text macro="book-part"/>
+        </else-if>
+        <else-if type="paper-conference">
+          <text macro="conference-speech"/>
+        </else-if>
+        <else-if type="article-journal">
+          <text macro="journal-article"/>
+        </else-if>
+        <else-if type="patent">
+          <text macro="patent"/>
+        </else-if>
+        <else-if type="report">
+          <text macro="report"/>
+        </else-if>
+        <else-if type="working-paper">
+          <text macro="working-paper"/>
+        </else-if>
+        <else-if type="thesis">
+          <text macro="dissertation"/>
+        </else-if>
+        <else>
+          <text macro="default"/>
+        </else>
+      </choose>
+    </layout>
+  </citation>
+  <bibliography>
+    <layout>
+      <choose>
+        <if type="book">
+          <text macro="book" />
+        </if>
+        <else-if type="chapter">
+          <text macro="book-part"/>
+        </else-if>
+        <else-if type="paper-conference">
+          <text macro="conference-speech"/>
+        </else-if>
+        <else-if type="article-journal">
+          <text macro="journal-article"/>
+        </else-if>
+        <else-if type="patent">
+          <text macro="patent"/>
+        </else-if>
+        <else-if type="report">
+          <text macro="report"/>
+        </else-if>
+        <else-if type="working-paper">
+          <text macro="working-paper"/>
+        </else-if>
+        <else-if type="thesis">
+          <text macro="dissertation"/>
+        </else-if>
+        <else>
+          <text macro="default"/>
+        </else>
+      </choose>
+    </layout>
+  </bibliography>
+</style>

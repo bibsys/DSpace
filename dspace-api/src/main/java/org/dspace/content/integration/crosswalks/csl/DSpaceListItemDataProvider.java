@@ -10,8 +10,11 @@ package org.dspace.content.integration.crosswalks.csl;
 import static org.dspace.app.itemupdate.MetadataUtilities.parseCompoundForm;
 import static org.dspace.content.Item.ANY;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -32,6 +35,7 @@ import org.dspace.content.DCPersonName;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
+import org.dspace.core.Constants;
 import org.dspace.util.SimpleMapConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,11 +134,15 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
     private SimpleMapConverter typeConverter;
 
+    // UCLouvain addition for specific fields that need to be added for some types.
+    private Map<String, Map<String, String>> typeSpecificFieldMap = new HashMap<>();
+
     public DSpaceListItemDataProvider(ItemService itemService) {
         this.itemService = itemService;
     }
 
     public void processItem(Item item) {
+        overrideFieldsForPubType(item);
         CSLItemDataBuilder itemBuilder = new CSLItemDataBuilder();
         itemBuilder.id(String.valueOf(item.getID()));
 
@@ -144,6 +152,36 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
         CSLItemData cslItemData = itemBuilder.build();
         this.items.put(cslItemData.getId(), cslItemData);
+    }
+
+    /**
+     * Overrides some properties of the current class depending on the configuration and type of the publication.
+     * 
+     * @param item The item to override fields for. Used to extract the publication type.
+     */
+    private void overrideFieldsForPubType(Item item) {
+        if ((item.getType() != Constants.ITEM) || !(itemService.getEntityType(item).equals("Publication"))) {
+            return;
+        }
+        // Get the publication type of the item.
+        String publicationType = getMetadataFirstValue(item, type);
+        if (typeSpecificFieldMap.containsKey(publicationType)) {
+            // Using the publication type get the fields to override.
+            typeSpecificFieldMap.get(publicationType).forEach((key, value) -> {
+                try {
+                    // retrieve the corresponding field from the current class and try to set its value.
+                    Field classField = this.getClass().getDeclaredField(key);
+                    classField.setAccessible(true);
+                    classField.set(this, value);
+                } catch (NoSuchFieldException e) {
+                    LOGGER.error(
+                        "Tried to override a non existing property of {}: [{}]", this.getClass(), key
+                    );
+                } catch (IllegalAccessException ille) {
+                    LOGGER.error("Cannot access field [{}] on class {}", key, this.getClass());
+                }
+            });
+        }
     }
 
     public void processItems(Iterator<Item> items) {
@@ -350,6 +388,14 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
         return Optional.of(new CSLDateBuilder().dateParts(dateParts).build());
 
+    }
+
+    public void setTypeSpecificFieldMap(Map<String, Map<String, String>> map) {
+        typeSpecificFieldMap = map;
+    }
+
+    public Map<String, Map<String, String>> getTypeSpecificFieldMap() {
+        return typeSpecificFieldMap;
     }
 
     private CSLType getPublicationType(String value) {
