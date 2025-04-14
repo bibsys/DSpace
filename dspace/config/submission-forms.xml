@@ -202,7 +202,7 @@
           <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the item. For additional abstract, use the below "add" link.</hint>
+          <hint>Enter the abstract of the item. For additional abstract, use the "+" button.&lt;br&gt;&lt;b class="text-danger"&gt;Warning&lt;/b&gt;, after faculty validation of your thesis, &lt;span class="text-danger"&gt;the abstract content will be open access&lt;/span&gt;. Be particularly careful not to include confidential information in this field.</hint>
           <required>You must enter an abstract.</required>
         </field>
       </row>
