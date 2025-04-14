@@ -8,7 +8,7 @@
             <list>
                 <ref bean="sectionresearchoutputs" />
                 <!-- Browse section to display all browse possibilities -->
-                <ref bean="sectionbrowse"/>
+                <!-- <ref bean="sectionbrowse"/> -->
                 <!-- <ref bean="sectionfundings_and_projects" /> -->
                 <!-- <ref bean="sectionresearcherprofiles" /> -->
                 <ref bean="sectionsite" />
