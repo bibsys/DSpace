@@ -7,14 +7,19 @@
  */
 package org.dspace.uclouvain.core.mails;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
+import org.dspace.eperson.EPerson;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
+import org.dspace.uclouvain.services.FacultyManagerService;
 
 /**
  * Class representing the ChangeRequest email.
@@ -28,6 +33,12 @@ public class ThesisChangeRequestEmail extends GenericThesisEmail {
     protected String changeRequest;
     protected String authorEmailField = configService
             .getProperty("uclouvain.global.metadata.authoremail.field", "advisors.email");
+    protected String rootDegreeCodeField = configService.getProperty(
+            "uclouvain.global.metadata.rootdegreecode.field", "masterthesis.rootdegree.code");
+
+    private static final FacultyManagerService facultyManagerService = UCLouvainServiceFactory
+            .getInstance()
+            .getFacultyManagerService();
 
     public ThesisChangeRequestEmail(Context context, Item item, String reason) {
         super(context, item);
@@ -45,6 +56,19 @@ public class ThesisChangeRequestEmail extends GenericThesisEmail {
             recipients.add(submitterEmail);
         }
         return recipients;
+    }
+
+    @Override
+    protected List<String> getCCAddresses() {
+        Set<EPerson> facultyManagers = new HashSet<>();
+        for (MetadataValue degreeCode : itemService.getMetadataByMetadataString(item, rootDegreeCodeField)) {
+            try {
+                facultyManagers.addAll(facultyManagerService.getFacultyManagers(context, degreeCode.getValue()));
+            } catch (Exception e) {
+                log.error("Error getting faculty managers", e);
+            }
+        }
+        return facultyManagers.stream().map(EPerson::getEmail).collect(Collectors.toList());
     }
 
     @Override
