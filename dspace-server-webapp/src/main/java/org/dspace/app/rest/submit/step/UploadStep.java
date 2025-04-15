@@ -7,6 +7,8 @@
  */
 package org.dspace.app.rest.submit.step;
 
+import static org.dspace.validation.UploadValidator.DEFAULT_ACCESS_CONDITIONS_ACK_FIELD;
+
 import java.io.BufferedInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -34,6 +36,7 @@ import org.dspace.content.BitstreamFormat;
 import org.dspace.content.Bundle;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataFieldName;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
@@ -68,6 +71,14 @@ public class UploadStep extends AbstractProcessingStep
                 }
             }
         }
+        if (configurationService.getBooleanProperty("webui.submit.upload.acknowledgement.required", false)) {
+            MetadataFieldName mdField = new MetadataFieldName(configurationService.getProperty(
+                "webui.submit.upload.acknowledgement.field",
+                DEFAULT_ACCESS_CONDITIONS_ACK_FIELD
+            ));
+            String mdValue = itemService.getMetadataFirstValue(obj.getItem(), mdField, Item.ANY);
+            result.setAccessConditionAcknowledge(Boolean.parseBoolean(mdValue));
+        }
         return result;
     }
 
@@ -81,6 +92,8 @@ public class UploadStep extends AbstractProcessingStep
                 instance = UPLOAD_STEP_METADATA_OPERATION_ENTRY;
             } else if (op.getPath().contains(UPLOAD_STEP_ACCESSCONDITIONS_OPERATION_ENTRY)) {
                 instance = stepConf.getType() + "." + UPLOAD_STEP_ACCESSCONDITIONS_OPERATION_ENTRY;
+            } else if (op.getPath().endsWith(UPLOAD_STEP_ACCESSCONDITIONS_ACKNOWLEDGEMENT)) {
+                instance = stepConf.getType() + "." + UPLOAD_STEP_ACCESSCONDITIONS_ACKNOWLEDGEMENT;
             } else if (op.getPath().contains(PRIMARY_FLAG_ENTRY)) {
                 instance = PRIMARY_FLAG_ENTRY;
             } else {
@@ -95,6 +108,8 @@ public class UploadStep extends AbstractProcessingStep
         } else {
             if (op.getPath().contains(UPLOAD_STEP_ACCESSCONDITIONS_OPERATION_ENTRY)) {
                 instance = stepConf.getType() + "." + UPLOAD_STEP_ACCESSCONDITIONS_OPERATION_ENTRY;
+            } else if (op.getPath().endsWith(UPLOAD_STEP_ACCESSCONDITIONS_ACKNOWLEDGEMENT)) {
+                instance = stepConf.getType() + "." + UPLOAD_STEP_ACCESSCONDITIONS_ACKNOWLEDGEMENT;
             } else if (op.getPath().contains(UPLOAD_STEP_METADATA_PATH)) {
                 instance = UPLOAD_STEP_METADATA_OPERATION_ENTRY;
             } else if (op.getPath().contains(PRIMARY_FLAG_ENTRY)) {
