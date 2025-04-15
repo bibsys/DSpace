@@ -4,6 +4,13 @@
         <contributor.author>Renaud Michotte</contributor.author>
         <contributor.editor>Michaël Pourbaix</contributor.editor>
     </dspace-header>
+    <!-- DSPACE SCHEMA -->
+    <dc-type>
+        <schema>dspace</schema>
+        <element>file-access-condition</element>
+        <qualifier>acknowledgement</qualifier>
+        <scope_note>To specify if publication submitter approve the default file access conditions</scope_note>
+    </dc-type>
     <!-- DUBLIN CORE SCHEMA -->
     <dc-type>
         <schema>dc</schema>

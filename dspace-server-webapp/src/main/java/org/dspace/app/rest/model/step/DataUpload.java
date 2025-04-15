@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
@@ -27,6 +28,9 @@ public class DataUpload implements SectionData {
 
     @JsonUnwrapped
     private List<UploadBitstreamRest> files;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean accessConditionAcknowledge = false;
 
     public List<UploadBitstreamRest> getFiles() {
         if (files == null) {
@@ -45,6 +49,14 @@ public class DataUpload implements SectionData {
 
     public void setPrimary(UUID primary) {
         this.primary = primary;
+    }
+
+    public boolean isAccessConditionAcknowledge() {
+        return accessConditionAcknowledge;
+    }
+
+    public void setAccessConditionAcknowledge(boolean acknowledge) {
+        this.accessConditionAcknowledge = acknowledge;
     }
 
 }
