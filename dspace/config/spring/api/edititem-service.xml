@@ -212,6 +212,7 @@
                             <property name="groups">
                                 <list>
                                     <value>librarian</value>
+                                    <value>manager</value>
                                 </list>
                             </property>
                             <property name="submissionDefinition" value="master-thesis-edit-librarian" />

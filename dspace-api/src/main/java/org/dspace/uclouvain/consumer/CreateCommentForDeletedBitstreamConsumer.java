@@ -7,10 +7,14 @@
  */
 package org.dspace.uclouvain.consumer;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.content.Item;
@@ -51,9 +55,14 @@ public class CreateCommentForDeletedBitstreamConsumer extends AbstractBitstreamC
         if (!managedEventTypes.contains(event.getEventType()) || event.getSubjectType() != Constants.BITSTREAM) {
             return;
         }
+        if (context.ignoreAutomaticCommentCreation()) {
+            return;
+        }
         Item item = getItem(context, event);
         if (item != null && item.isArchived()) {
-            bitstreamToProcess.add(Pair.of(event.getSubjectID(), item.getID()));
+            if (extractBundleNames(event).stream().anyMatch(this::isBundleAffectedForComment)) {
+                bitstreamToProcess.add(Pair.of(event.getSubjectID(), item.getID()));
+            }
         }
     }
 
@@ -76,5 +85,21 @@ public class CreateCommentForDeletedBitstreamConsumer extends AbstractBitstreamC
     @Override
     public void finish(Context context) throws Exception {
 
+    }
+
+    /**
+     * Extract all bundle names from event detail if present.
+     * @param event the event to analyze
+     * @return the list of bundle names found.
+     */
+    private List<String> extractBundleNames(Event event) {
+        List<String> bundleNames = new ArrayList<>();
+        Pattern pattern = Pattern.compile("bundle_names=\\[([^\\]]+)\\]");
+        Matcher matcher = pattern.matcher(event.getDetail());
+        if (matcher.find()) {
+            String[] names = matcher.group(1).split(",\\s*");
+            Collections.addAll(bundleNames, names);
+        }
+        return bundleNames;
     }
 }
