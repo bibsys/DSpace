@@ -3156,7 +3156,7 @@ it, please enter the types and the actual numbers or codes.</hint>
     </value-pairs>
     <value-pairs value-pairs-name="common_iso_languages" dc-term="common_iso_languages">
       <pair>
-        <displayed-value>N/A</displayed-value>
+        <displayed-value>Langue du résumé</displayed-value>
         <stored-value />
       </pair>
       <!--<pair>
