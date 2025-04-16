@@ -139,10 +139,12 @@ public class AccessTypeConsumer extends AbstractBitstreamConsumer implements Con
                 accessStatus += " until (" + dateFormat.format(masterPolicy.getStartDate()) + ")";
             }
             // create a new system comment
-            EPerson currentUser = context.getCurrentUser();
-            String commentContent = "Bitstream@" + bitstream.getID() + " with name \"" + bitstream.getName() + "\" :: "
-                    + "access condition changes to " + accessStatus;
-            commentService.create(context, (Item) parentObj, currentUser, commentContent);
+            if (!context.ignoreAutomaticCommentCreation() && isBitstreamAffectedForComment(bitstream)) {
+                EPerson currentUser = context.getCurrentUser();
+                String commentContent = "Bitstream@" + bitstream.getID() + " with name \"" + bitstream.getName()
+                        + "\" :: " + "access condition changes to " + accessStatus;
+                commentService.create(context, (Item) parentObj, currentUser, commentContent);
+            }
         }
     }
 
