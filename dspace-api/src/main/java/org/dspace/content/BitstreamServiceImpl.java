@@ -289,11 +289,16 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
             parentObjectID = parentObject.getID();
             parentObjectType = parentObject.getType();
         }
+        // We also need, for some consumers, to analyze bitstream owner bundle names.
+        // Extract them into structured string and use this string into the event detail
+        List<String> bundleNames = bitstream.getBundles().stream().map(Bundle::getName).collect(Collectors.toList());
+        String bundleNamesStr = "bundle_names=[" + String.join(",", bundleNames) + "]";
+
         context.addEvent(new Event(
                 Event.DELETE,
                 Constants.BITSTREAM, bitstream.getID(),
                 parentObjectType, parentObjectID,
-                String.valueOf(bitstream.getSequenceID()),
+                String.valueOf(bitstream.getSequenceID()) + ", " + bundleNamesStr,
                 getIdentifiers(context, bitstream)));
 
         // Remove bitstream itself

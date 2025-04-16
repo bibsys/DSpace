@@ -9,8 +9,7 @@ package org.dspace.app.rest.submit.factory.impl;
 
 import static org.dspace.validation.UploadValidator.DEFAULT_ACCESS_CONDITIONS_ACK_FIELD;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataFieldName;
