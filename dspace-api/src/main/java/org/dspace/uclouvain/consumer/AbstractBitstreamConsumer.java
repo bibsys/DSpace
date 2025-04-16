@@ -8,6 +8,9 @@
 package org.dspace.uclouvain.consumer;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.dspace.content.Bitstream;
 import org.dspace.content.DSpaceObject;
@@ -17,14 +20,36 @@ import org.dspace.content.service.BitstreamService;
 import org.dspace.core.Context;
 import org.dspace.event.Consumer;
 import org.dspace.event.Event;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 
 public abstract class AbstractBitstreamConsumer implements Consumer {
 
     protected BitstreamService bitstreamService;
 
+    protected List<String> affectedBundles = new ArrayList<>();
+
     @Override
     public void initialize() throws Exception {
         bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
+
+        ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
+        affectedBundles = Arrays.asList(configurationService.getArrayProperty(
+            "comments.automatic-creation.affected-bundles",
+            new String[] {}
+        ));
+    }
+
+    /** Allow determining if a bundle is affected for automatic comment creation
+     *
+     * @param bundleName the bundle name to check
+     * @return True if the bundle is affected, false otherwise
+     */
+    protected boolean isBundleAffectedForComment(String bundleName) {
+        return affectedBundles.isEmpty() || affectedBundles.contains(bundleName);
+    }
+    protected boolean isBitstreamAffectedForComment(Bitstream bitstream) throws SQLException {
+        return bitstream.getBundles().stream().anyMatch(b -> isBundleAffectedForComment(b.getName()));
     }
 
     /**
