@@ -75,6 +75,12 @@ public class CommentServiceImpl implements CommentService {
         commentDAO.save(context, comment);
     }
 
+    @Override
+    public void forceCreatedDate(Context context, Comment comment, Date timestamp) throws SQLException {
+        comment.setCreationDate(timestamp);
+        commentDAO.save(context, comment);
+    }
+
     // Delete methods --------------------------------------------------------------------------------------------------
     @Override
     public void delete(Context context, Comment comment) throws SQLException {
