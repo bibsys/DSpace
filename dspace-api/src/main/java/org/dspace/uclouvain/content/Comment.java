@@ -70,7 +70,7 @@ public class Comment implements Serializable, ReloadableEntity<UUID> {
     @Column(name = "content", nullable = false)
     private String content;
 
-    @Column(name = "created", nullable = false, updatable = false)
+    @Column(name = "created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date creationDate;
 

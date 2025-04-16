@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.content.service;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,7 +62,6 @@ public interface CommentService {
      * @throws SQLException if any database errors occurred.
      */
     Comment createSystemComment(Context context, Item owner, String content) throws SQLException;
-
 
     /**
      * Update the content of a {@link org.dspace.uclouvain.content.Comment}.
@@ -142,4 +142,14 @@ public interface CommentService {
      * @throws SQLException if any database errors occurred.
      */
     int countCommentByItem(Context context, Item item) throws SQLException;
+
+    /**
+     * Set comment created date using a custom timestamp
+     * It could be useful for legacy comment, keeping the legacy original comment creation timestamp
+     *
+     * @param context the application context
+     * @param comment the comment to update
+     * @param timestamp the creation timestamp to set
+     */
+    void forceCreatedDate(Context context, Comment comment, Date timestamp) throws SQLException;
 }
