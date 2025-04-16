@@ -81,6 +81,11 @@ public class Context implements AutoCloseable {
     private boolean ignoreAuth;
 
     /**
+     * indicates whether automatic comment creation should be ignored
+     */
+    private boolean ignoreCommentCreation;
+
+    /**
      * A stack with the history of authorisation system check modify
      */
     private Deque<Boolean> authStateChangeHistory;
@@ -1017,5 +1022,27 @@ public class Context implements AutoCloseable {
         return (adminGroup == null) ? EPersonServiceFactory.getInstance()
                                                            .getGroupService()
                                                            .findByName(this, Group.ADMIN) : adminGroup;
+    }
+
+    /**
+     * Find out if the automatic comment creation system should be ignored for this context.
+     *   Consumers mainly create automatic comments.
+     *
+     * @return <code>true</code> if automatic comment creation should be ignored for this session.
+     */
+    public boolean ignoreAutomaticCommentCreation() {
+        return ignoreCommentCreation;
+    }
+
+    /** Disable automatic comment creation system */
+    public void turnOffAutomaticCommentCreation() {
+        this.ignoreCommentCreation = false;
+        log.debug("Automatic comment creation is turn off");
+    }
+
+    /** Restore automatic comment creation system */
+    public void restoreAutomaticCommentCreation() {
+        this.ignoreCommentCreation = true;
+        log.debug("Automatic comment creation is turn on");
     }
 }
