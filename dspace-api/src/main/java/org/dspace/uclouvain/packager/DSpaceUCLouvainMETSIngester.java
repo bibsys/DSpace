@@ -53,6 +53,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.content.Comment;
 import org.dspace.uclouvain.content.LegacyComment;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
@@ -120,9 +121,11 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
             File pkgFile, PackageParameters params, String license
     ) throws IOException, SQLException, AuthorizeException, CrosswalkException,
             PackageValidationException, WorkflowException {
+        context.turnOffAutomaticCommentCreation();
         DSpaceObject dso = super.ingestObject(context, parent, manifest, pkgFile, params, license);
         this.addAncestorIdentifier(context, dso, manifest, params);
         this.updateObjectStatus(context, dso, manifest, params);
+        context.restoreAutomaticCommentCreation();
         return dso;
     }
 
@@ -405,7 +408,8 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
                 .flatMap(bitstream -> loadLegacyComments(context, bitstream).stream())
                 .collect(Collectors.toList());
         for (LegacyComment comment : legacyComments) {
-            commentService.create(context, item, comment.getWriter(), comment.getContent());
+            Comment newComment = commentService.create(context, item, comment.getWriter(), comment.getContent());
+            commentService.forceCreatedDate(context, newComment, comment.getCreated());
         }
 
         // We can now safely delete all "comment" bitstream. We can also delete the related bundles
