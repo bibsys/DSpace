@@ -711,15 +711,16 @@
         <!--Which sidebar facets are to be displayed (same as defaultConfiguration above)-->
         <property name="sidebarFacets">
             <list>
-                <ref bean="searchFilterType" />
-                <ref bean="graphPublicationByType" />
-                <ref bean="graphPublicationByDate" />
                 <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterSubject" />
+                <!-- <ref bean="searchFilterType" /> -->
+                <ref bean="searchFilterPublicationType" />
+                <!-- <ref bean="graphPublicationByType" />
+                <ref bean="graphPublicationByDate" /> -->
+                <!-- <ref bean="searchFilterSubject" /> -->
                 <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterContentInOriginalBundle"/>
+                <!-- <ref bean="searchFilterContentInOriginalBundle"/>
                 <ref bean="searchFilterEntityType"/>
-                <ref bean="searchFilterLanguage" />
+                <ref bean="searchFilterLanguage" /> -->
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -729,6 +730,7 @@
         <property name="searchFilters">
             <list>
                 <ref bean="searchFilterType" />
+                <ref bean="searchFilterPublicationType" />
                 <ref bean="graphPublicationByType" />
                 <ref bean="graphPublicationByDate" />
                 <ref bean="searchFilterTitle" />
@@ -773,7 +775,8 @@
                 <!--DSpace-CRIS by default exclude communities and collections from the
 		            global search. Replace the following filter with the commented one if you
 		            prefer the default dspace behavior -->
-                <value>search.resourcetype:Item</value>
+                <!-- DISPLAY ONLY ITEMS THAT HAVE THE 'PUBLICATION' ENTITY TYPE. -->
+                <value>search.resourcetype:Item AND entityType:Publication</value>
                 <value>-withdrawn:true AND -discoverable:false</value>
             </list>
         </property>
@@ -840,7 +843,8 @@
         <property name="sidebarFacets">
             <list>
                 <ref bean="searchFilterObjectNamedType" />
-                <ref bean="searchFilterType" />
+                <!-- <ref bean="searchFilterType" /> -->
+                <ref bean="searchFilterPublicationType" />
                 <ref bean="searchFilterIssued" />
             </list>
         </property>
@@ -849,6 +853,7 @@
             <list>
                 <ref bean="searchFilterObjectNamedType" />
                 <ref bean="searchFilterType" />
+                <ref bean="searchFilterPublicationType" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterEntityType" />
             </list>
@@ -1065,9 +1070,10 @@
         <property name="sidebarFacets">
             <list>
                 <ref bean="searchFilterObjectNamedType" />
-                <ref bean="searchFilterType" />
+                <ref bean="searchFilterAuthor" />
+                <!-- <ref bean="searchFilterType" /> -->
                 <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterSubmitter" />
+                <!-- <ref bean="searchFilterSubmitter" /> -->
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -1075,6 +1081,7 @@
         <property name="searchFilters">
             <list>
                 <ref bean="searchFilterObjectNamedType" />
+                <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterType" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterSubmitter" />
@@ -2864,6 +2871,7 @@
                 <value>dcterms.accessRights</value>
             </list>
         </property>
+        <property name="exposeFilter" value="false"/>
     </bean>
 
     <bean id="searchFilterDiscoverable" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
@@ -3199,6 +3207,16 @@
         <property name="metadataFields">
             <list/>
         </property>
+    </bean>
+
+    <bean id="searchFilterPublicationType" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="itempublicationtype" />
+        <property name="metadataFields">
+            <list>
+                <value>dc.type.maintype</value>
+            </list>
+        </property>
+        <property name="exposeFilter" value="false"/>
     </bean>
 
     <bean id="searchFilterType" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
