@@ -43,11 +43,16 @@ import org.dspace.core.factory.CoreServiceFactory;
 import org.dspace.core.service.PluginService;
 import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.DiscoverResult;
+import org.dspace.discovery.IndexableObject;
+import org.dspace.discovery.IndexingService;
 import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
+import org.dspace.discovery.indexobject.factory.IndexFactory;
+import org.dspace.discovery.indexobject.factory.IndexObjectFactoryFactory;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.exceptions.UserNotFoundException;
 import org.dspace.utils.DSpace;
 import org.dspace.workflow.WorkflowException;
@@ -101,6 +106,9 @@ public class RabbitMQPackager extends AbstractCLICommand {
     protected XmlWorkflowService workflowService;
     protected Connection mqConnection;
     protected PluginService pluginService;
+    protected IndexingService indexer;
+    protected IndexObjectFactoryFactory indexObjectServiceFactory;
+
     protected String packageType = "METS";
 
     // MAIN ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -132,6 +140,10 @@ public class RabbitMQPackager extends AbstractCLICommand {
         mqConnection = createRabbitMQConnection();
         pluginService = CoreServiceFactory.getInstance().getPluginService();
         workflowService = XmlWorkflowServiceFactory.getInstance().getXmlWorkflowService();
+        indexer = DSpaceServicesFactory.getInstance()
+                .getServiceManager()
+                .getServiceByName(IndexingService.class.getName(), IndexingService.class);
+        indexObjectServiceFactory = IndexObjectFactoryFactory.getInstance();
     }
 
     protected void buildOptions() {
@@ -200,7 +212,6 @@ public class RabbitMQPackager extends AbstractCLICommand {
         }
     }
 
-
     /**
      * Create and return a connection to a RabbitMQServer from application configured factory
      * @return A connection to the RabbitMQServer
@@ -214,7 +225,6 @@ public class RabbitMQPackager extends AbstractCLICommand {
             .getBean("rabbitConnectionFactory")
         )).newConnection();
     }
-
 
     /**
      * Ingests/replaces a METS SIP archive into DSpace repository.
@@ -266,13 +276,13 @@ public class RabbitMQPackager extends AbstractCLICommand {
                 }
             }
 
+            DSpaceObject ingestedObject = null;
             // Ingest the object into DSpace system
             //   * If the `objectToReplace` is null, the `replace` function will simply ingest.
             //   * If ingest/replace is well done, we can remove the working packager file.
             //   * If ingest/replace failed, move the working file to `error` directory and raise exception.
             try {
                 String mRecordStatus = manifest.getRecordStatus();
-                DSpaceObject ingestedObject = null;
                 PackageParameters pkgParams = new PackageParameters();
                 pkgParams.setWorkflowEnabled(mRecordStatus != null && mRecordStatus.equalsIgnoreCase("workflow"));
                 logger.debug("\tIs workflow item ? " + pkgParams.workflowEnabled());
@@ -288,11 +298,16 @@ public class RabbitMQPackager extends AbstractCLICommand {
                 }
                 logger.info("\tObject [" + Constants.typeText[ingestedObject.getType()] + "#" + ingestedObject.getID()
                         + "] ingested");
+
+                // Just to be sure: reindex the object (to solve issue with dcterms.accessRights)
             } catch (CrosswalkException | WorkflowException ex) {
                 throw new PackageException(ex.getClass().getSimpleName() + "::" + ex.getMessage());
             }
             workingFile.delete();
             context.commit();
+            if (ingestedObject != null) {
+                forceReindex(context, ingestedObject);
+            }
         } catch (Exception ex) {
             context.rollback();
             logger.error(ex.getMessage(), ex);
@@ -335,7 +350,6 @@ public class RabbitMQPackager extends AbstractCLICommand {
         }
     }
 
-
     /**
      * Load a packer file to determine if this file exists;
      * Rename the file to avoid paralleling ingest problems.
@@ -362,7 +376,6 @@ public class RabbitMQPackager extends AbstractCLICommand {
         return workingSpace;
     }
 
-
     /**
      * Get the package ingester based on the configured package type.
      *
@@ -377,7 +390,6 @@ public class RabbitMQPackager extends AbstractCLICommand {
         }
         return sip;
     }
-
 
     /**
      * Get any DspaceObject that already exists into the system referencing an identifier value.
@@ -408,7 +420,6 @@ public class RabbitMQPackager extends AbstractCLICommand {
         }
     }
 
-
     /**
      * Move a working packager file into the error directory.
      *
@@ -423,6 +434,28 @@ public class RabbitMQPackager extends AbstractCLICommand {
             Files.move(fileToMove.toPath(), errorFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ignored) {
             // do nothing
+        }
+    }
+
+    private void forceReindex(Context context, DSpaceObject obj) {
+        IndexFactory indexableObjectService = IndexObjectFactoryFactory
+                .getInstance()
+                .getIndexFactoryByType(Constants.typeText[obj.getType()]);
+        String uniqueID = indexableObjectService.getType() + "-" + obj.getID();
+        logger.info("Reindex object :: " + uniqueID);
+        try {
+            indexer.unIndexContent(context, uniqueID, false);
+            logger.debug("  * unIndex object done !");
+            for (IndexableObject idxObj : indexObjectServiceFactory.getIndexableObjects(context, obj)) {
+                idxObj.setIndexedObject(context.reloadEntity(idxObj.getIndexedObject()));
+                uniqueID = idxObj.getUniqueIndexID();  // should not change, just to be sure
+                if (uniqueID != null) {
+                    indexer.indexContent(context, idxObj, true, true, false);
+                    logger.info("  * Indexing object [" + uniqueID + "] into Solr done !");
+                }
+            }
+        } catch (Exception e) {
+            logger.error("Error reindexing object :: " + e.getMessage(), e);
         }
     }
 }
