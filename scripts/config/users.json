@@ -4,6 +4,11 @@
         "lastname": "Bambelle",
         "firstname": "Larry",
         "password": "admin"
+    }, {
+        "email": "import@dspace.org",
+        "lastname": "Importer",
+        "firstname": "Batch",
+        "password": "import"
     }],
     "users":[{
         "email": "librarian@dspace.org",
