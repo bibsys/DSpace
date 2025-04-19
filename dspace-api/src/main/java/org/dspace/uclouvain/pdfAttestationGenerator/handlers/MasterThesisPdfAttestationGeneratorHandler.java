@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.pdfAttestationGenerator.handlers;
 
+import static org.dspace.uclouvain.constants.AccessConditions.EMBARGO;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,8 +18,10 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
@@ -29,7 +33,8 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
 import org.apache.fop.apps.MimeConstants;
-import org.dspace.access.status.service.AccessStatusService;
+import org.dspace.access.status.DefaultAccessStatusHelper;
+import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
@@ -41,6 +46,7 @@ import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.pdfAttestationGenerator.configuration.PDFAttestationGeneratorConfiguration;
 import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.PDFGenerationException;
 import org.dspace.uclouvain.pdfAttestationGenerator.model.MasterThesisPDFAttestationModel;
+import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** 
@@ -48,12 +54,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 */
 public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestationGeneratorHandler {
 
+    private final Map<String, String> ACCESS_TYPE_LABELS = Map.of(
+        "openaccess", "Accès libre",
+        "administrator", "Accès interdit",
+        "restricted", "Accès restreint UCLouvain",
+        "embargo", "Accès embargo",
+        "unknown", "Accès inconnu"
+    );
+
     @Autowired
     ItemService itemService;
     @Autowired
     PDFAttestationGeneratorConfiguration config;
     @Autowired
-    AccessStatusService accessStatusService;
+    UCLouvainResourcePolicyService uclouvainResourcePolicyService;
 
     private String templateName;
 
@@ -162,7 +176,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         for (Bitstream bitstream: ItemUtils.extractItemFiles(dspaceItem)) {
             pdfModel.addFile(
                 bitstream.getName(),
-                accessStatusService.getBitstreamAccessStatus(context, bitstream)
+                getFileAccessType(context, bitstream)
             );
         }
         pdfModel.abstractText = map.get("dc_description_abstract").get(0);
@@ -170,7 +184,29 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         return pdfModel.getRenderedXML();
     }
 
-    /** 
+    /**
+     * Extract and translate the access type related to a bitstream depending on restriction policies
+     *
+     * @param context the application context
+     * @param bitstream the bitstream to analyze
+     * @return the readable access type corresponding to the bitstream
+     */
+    private String getFileAccessType(Context context, Bitstream bitstream) {
+        try {
+            List<ResourcePolicy> policies = uclouvainResourcePolicyService.find(context, bitstream);
+            ResourcePolicy masterPolicy = uclouvainResourcePolicyService.getMasterPolicy(policies);
+            String accessStatus = ACCESS_TYPE_LABELS.getOrDefault(masterPolicy.getRpName(), masterPolicy.getRpName());
+            if (masterPolicy.getRpName().equals(EMBARGO)) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                accessStatus += " -- " + formatter.format(masterPolicy.getStartDate());
+            }
+            return accessStatus;
+        } catch (Exception e) {
+            return DefaultAccessStatusHelper.UNKNOWN;
+        }
+    }
+
+    /**
      * Utils method to convert a ByteArrayOutputStream to an InputStream
      * 
      * @param out A ByteArrayOutputStream that contains the data to put in the inputStream
