@@ -8,9 +8,10 @@
 package org.dspace.uclouvain.core.mails;
 
 import static org.dspace.core.Constants.CONTENT_BUNDLE_NAME;
+import static org.dspace.uclouvain.constants.AccessConditions.EMBARGO;
 
 import java.io.InputStream;
-import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,8 +25,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.access.status.DefaultAccessStatusHelper;
-import org.dspace.access.status.factory.AccessStatusServiceFactory;
-import org.dspace.access.status.service.AccessStatusService;
+import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
@@ -38,6 +38,7 @@ import org.dspace.uclouvain.exceptions.ResumeGenerationException;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.FacultyManagerService;
+import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
 /**
  * Main class to send an email for the submission attestation to the authors of the item.
@@ -58,6 +59,13 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
             "supervisors", Map.of("fr", "Promoteur(s)", "en", "Supervisor(s)"),
             "title", Map.of("fr", "Titre", "en", "Title")
     );
+    private static final Map<String, String> ACCESS_TYPE_LABELS = Map.of(
+            "openaccess", "Accès libre | Open access",
+            "administrator", "Accès interdit | Closed access",
+            "restricted", "Accès restreint UCLouvain | UCLouvain restricted access",
+            "embargo", "Accès embargo | Embargo access",
+            "unknown", "Accès inconnu | Unknown access"
+    );
 
     // ATTRIBUTES ======================================================================================================
     protected String authorNameField = configService.getProperty(
@@ -74,9 +82,9 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
     private static final DirectLinkService uclouvainDirectLinkService = UCLouvainServiceFactory
             .getInstance()
             .getDirectLinkService();
-    private static final AccessStatusService accessStatusService = AccessStatusServiceFactory
+    private static final UCLouvainResourcePolicyService uclouvainResourcePolicyService = UCLouvainServiceFactory
             .getInstance()
-            .getAccessStatusService();
+            .getResourcePolicyService();
 
     // CONSTRUCTOR =====================================================================================================
     public ThesisAuthorAttestationEmail(Context context, Item item, InputStream attachment) {
@@ -231,8 +239,15 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
 
     private String getBitstreamAccessStatus(Bitstream bitstream) {
         try {
-            return accessStatusService.getBitstreamAccessStatus(context, bitstream);
-        } catch (SQLException e) {
+            List<ResourcePolicy> policies = uclouvainResourcePolicyService.find(context, bitstream);
+            ResourcePolicy masterPolicy = uclouvainResourcePolicyService.getMasterPolicy(policies);
+            String accessStatus = ACCESS_TYPE_LABELS.getOrDefault(masterPolicy.getRpName(), masterPolicy.getRpName());
+            if (masterPolicy.getRpName().equals(EMBARGO)) {
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                accessStatus += " -- " + formatter.format(masterPolicy.getStartDate());
+            }
+            return accessStatus;
+        } catch (Exception e) {
             return DefaultAccessStatusHelper.UNKNOWN;
         }
     }
