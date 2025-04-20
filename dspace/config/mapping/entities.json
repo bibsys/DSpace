@@ -368,13 +368,13 @@
             "code": "COHM2MS/CC",
             "name": "Master [120] en communication, à finalité spécialisée (horaire décalé): culture et communication",
             "type": "degree"
+          },
+          {
+            "code": "COHM2MS/CI",
+            "name": "Master [120] en communication, à finalité spécialisée (horaire décalé): communication interne et ressources humaines",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "COHM2MS/CI",
-        "name": "Master [120] en communication, à finalité spécialisée (horaire décalé): communication interne et ressources humaines",
-        "type": "degree"
       },
       {
         "code": "COIN9CE",
@@ -400,17 +400,17 @@
             "code": "COMM2MS/CW",
             "name": "Master [120] en communication, à finalité spécialisée: stratégie et communication Web",
             "type": "degree"
+          },
+          {
+            "code": "COMM2MS/MN",
+            "name": "Master [120] en communication, à finalité spécialisée: médias et stratégies numériques",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "COMM2M1",
         "name": "Master [60] en information et communication",
-        "type": "degree"
-      },
-      {
-        "code": "COMM2MS/MN",
-        "name": "Master [120] en communication, à finalité spécialisée: médias et stratégies numériques",
         "type": "degree"
       },
       {
@@ -452,13 +452,13 @@
             "code": "CORP2MS/IC",
             "name": "Master [120] en communication, à finalité spécialisée: étude des industries culturelles",
             "type": "degree"
+          },
+          {
+            "code": "CORP2MS/G",
+            "name": "Master [120] en communication, à finalité spécialisée: gestion de la communication d'organisation et des relations publiques",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "CORP2MS/G",
-        "name": "Master [120] en communication, à finalité spécialisée: gestion de la communication d'organisation et des relations publiques",
-        "type": "degree"
       },
       {
         "code": "DVLP2MC",
@@ -751,22 +751,22 @@
             "code": "SPOL2MD",
             "name": "Master [120] en sciences politiques, orientation générale, à finalité didactique",
             "type": "degree"
+          },
+          {
+            "code": "SPOL2MS/BC",
+            "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: belgian and comparative politics",
+            "type": "degree"
+          },
+          {
+            "code": "SPOL2MS/DI",
+            "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: democratic innovations and transformations",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "SPOL2M1",
         "name": "Master [60] en sciences politiques, orientation générale",
-        "type": "degree"
-      },
-      {
-        "code": "SPOL2MS/BC",
-        "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: belgian and comparative politics",
-        "type": "degree"
-      },
-      {
-        "code": "SPOL2MS/DI",
-        "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: democratic innovations and transformations",
         "type": "degree"
       },
       {
@@ -797,16 +797,16 @@
             "type": "degree"
           },
           {
+            "code": "STIC2MS/G",
+            "name": "Master [120] en sciences et technologies de l'information et de la communication, à finalité spécialisée: ingénierie et technologies de la connaissance",
+            "type": "degree"
+          },
+          {
             "code": "STIC2MS/GI",
             "name": "Master [120] en sciences et technologies de l'information et de la communication, à finalité spécialisée: gestion de l'information numérique",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "STIC2MS/G",
-        "name": "Master [120] en sciences et technologies de l'information et de la communication, à finalité spécialisée: ingénierie et technologies de la connaissance",
-        "type": "degree"
       },
       {
         "code": "TIS2M",
@@ -932,13 +932,13 @@
             "code": "ETHI2MA",
             "name": "Master [120] en éthique, à finalité approfondie",
             "type": "degree"
+          },
+          {
+            "code": "ETHI2MS/NS",
+            "name": "Master [120] en éthique, à finalité spécialisée: éthique, normes et sociétés",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "ETHI2MS/NS",
-        "name": "Master [120] en éthique, à finalité spécialisée: éthique, normes et sociétés",
-        "type": "degree"
       },
       {
         "code": "FIAL IN",
@@ -974,17 +974,17 @@
             "code": "FILO2MD",
             "name": "Master [120] en philosophie, à finalité didactique",
             "type": "degree"
+          },
+          {
+            "code": "FILO2MS/AF",
+            "name": "Master [120] en philosophie, à finalité spécialisée: philosophies allemandes et françaises : enjeux contemporains",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "FILO2M1",
         "name": "Master [60] en philosophie",
-        "type": "degree"
-      },
-      {
-        "code": "FILO2MS/AF",
-        "name": "Master [120] en philosophie, à finalité spécialisée: philosophies allemandes et françaises : enjeux contemporains",
         "type": "degree"
       },
       {
@@ -1133,6 +1133,10 @@
         "type": "degree",
         "children": [
           {
+            "code": "LAFR2MA",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité approfondie",
+            "type": "degree"
+          },{
             "code": "LAFR2MD",
             "name": "Master [120] en langues et lettres anciennes et modernes, à finalité didactique",
             "type": "degree"
@@ -1157,11 +1161,6 @@
       {
         "code": "LAFR2M1",
         "name": "Master [60] en langues et lettres anciennes et modernes",
-        "type": "degree"
-      },
-      {
-        "code": "LAFR2MA",
-        "name": "Master [120] en langues et lettres anciennes et modernes, à finalité approfondie",
         "type": "degree"
       },
       {
@@ -1746,13 +1745,13 @@
             "code": "SEX2MS/FC",
             "name": "Master [120] en sciences de la famille et de la sexualité, à finalité spécialisée: approche interdisciplinaire de la famille et du couple",
             "type": "degree"
+          },
+          {
+            "code": "SEX2MS/SE",
+            "name": "Master [120] en sciences de la famille et de la sexualité, à finalité spécialisée: sexologie",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "SEX2MS/SE",
-        "name": "Master [120] en sciences de la famille et de la sexualité, à finalité spécialisée: sexologie",
-        "type": "degree"
       },
       {
         "code": "SEX IS",
@@ -2637,13 +2636,13 @@
             "code": "SAIV2MS/S",
             "name": "Master [120] en sciences agronomiques et industries du vivant, à finalité spécialisée: sciences du sol",
             "type": "degree"
+          },
+          {
+            "code": "SAIV2MS/U",
+            "name": "Master [120] en sciences agronomiques et industries du vivant , à finalité spécialisée: aménagement du territoire, urbanisme et développement territorial",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "SAIV2MS/U",
-        "name": "Master [120] en sciences agronomiques et industries du vivant , à finalité spécialisée: aménagement du territoire, urbanisme et développement territorial",
-        "type": "degree"
       },
       {
         "code": "SGED2MC",
@@ -2705,13 +2704,13 @@
             "code": "DATI2MS/CS",
             "name": "Master [120] en science des données, orientation technologies de l'information, à finalité spécialisée: cybersécurité",
             "type": "degree"
+          },
+          {
+            "code": "DATI2MS/G",
+            "name": "Master [120] en science des données, orientation technologies de l'information, à finalité spécialisée",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "DATI2MS/G",
-        "name": "Master [120] en science des données, orientation technologies de l'information, à finalité spécialisée",
-        "type": "degree"
       },
       {
         "code": "ELEC2M",
@@ -2731,16 +2730,16 @@
         "type": "degree",
         "children": [
           {
+            "code": "ELME2MS/E",
+            "name": "Master [120] : ingénieur civil électromécanicien, à finalité spécialisée: énergie",
+            "type": "degree"
+          },
+          {
             "code": "ELME2MS/M",
             "name": "Master [120] : ingénieur civil électromécanicien, à finalité spécialisée: mécatronique",
             "type": "degree"
           }
         ]
-      },
-      {
-        "code": "ELME2MS/E",
-        "name": "Master [120] : ingénieur civil électromécanicien, à finalité spécialisée: énergie",
-        "type": "degree"
       },
       {
         "code": "EPL IN",
@@ -3045,13 +3044,13 @@
             "code": "BOE2MD",
             "name": "Master [120] en biologie des organismes et écologie, à finalité didactique",
             "type": "degree"
+          },
+          {
+            "code": "BOE2MS/BE",
+            "name": "Master [120] en biologie des organismes et écologie, à finalité spécialisée: biologie environnementale",
+            "type": "degree"
           }
         ]
-      },
-      {
-        "code": "BOE2MS/BE",
-        "name": "Master [120] en biologie des organismes et écologie, à finalité spécialisée: biologie environnementale",
-        "type": "degree"
       },
       {
         "code": "BSTA2M",
