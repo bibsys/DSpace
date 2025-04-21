@@ -283,8 +283,18 @@
         "type": "degree",
         "children": [
           {
+            "code": "ADPM2MS/G",
+            "name": "Master [120] en administration publique, à finalité spécialisée",
+            "type": "degree"
+          },
+          {
             "code": "ADPM2MS/IP",
             "name": "Master [120] en administration publique, à finalité spécialisée: insertion professionnelle",
+            "type": "degree"
+          },
+          {
+            "code": "ADPM2MS/LI",
+            "name": "Master [120] en administration publique, à finalité spécialisée: Leading Public Sector Innovation",
             "type": "degree"
           }
         ]
@@ -314,6 +324,11 @@
           {
             "code": "ANTR2MD",
             "name": "Master [120] en anthropologie, à finalité didactique",
+            "type": "degree"
+          },
+          {
+            "code": "ANTR2MS/ID",
+            "name": "Master [120] en anthropologie, à finalité spécialisée: socio-anthropologie de l'interculturalité & du développement",
             "type": "degree"
           }
         ]
@@ -416,6 +431,11 @@
       {
         "code": "COMU2A",
         "name": "Agrégation de l'enseignement secondaire supérieur (information et communication)",
+        "type": "degree"
+      },
+      {
+        "code": "COMU2M",
+        "name": "Master [120] en information et communication",
         "type": "degree"
       },
       {
@@ -660,6 +680,11 @@
         "type": "degree",
         "children": [
           {
+            "code": "PRIM2MS/G",
+            "name": "Master [120] en sciences politiques, orientation relations internationales, à finalité spécialisée: gouvernance globale et politique internationale",
+            "type": "degree"
+          },
+          {
             "code": "PRIM2MS/GG",
             "name": "Master [120] en sciences politiques, orientation relations internationales, à finalité spécialisée: enjeux contemporains de la gouvernance globale",
             "type": "degree"
@@ -694,6 +719,16 @@
           {
             "code": "SOC2MD",
             "name": "Master [120] en sociologie, à finalité didactique",
+            "type": "degree"
+          },
+          {
+            "code": "SOC2MS/GM",
+            "name": "Master [120] en sociologie, à finalité spécialisée: globalisation et multiculturalité",
+            "type": "degree"
+          },
+          {
+            "code": "SOC2MS/IS",
+            "name": "Master [120] en sociologie, à finalité spécialisée: recherche et intervention sociale",
             "type": "degree"
           }
         ]
@@ -761,12 +796,27 @@
             "code": "SPOL2MS/DI",
             "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: democratic innovations and transformations",
             "type": "degree"
+          },
+          {
+            "code": "SPOL2MS/IT",
+            "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: innovations et transformations démocratiques",
+            "type": "degree"
+          },
+          {
+            "code": "SPOL2MS/PC",
+            "name": "Master [120] en sciences politiques, orientation générale, à finalité spécialisée: politique belge et comparée",
+            "type": "degree"
           }
         ]
       },
       {
         "code": "SPOL2M1",
         "name": "Master [60] en sciences politiques, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "SPOM2M",
+        "name": "Master [120] en sciences politiques, orientation générale",
         "type": "degree"
       },
       {
@@ -931,6 +981,16 @@
           {
             "code": "ETHI2MA",
             "name": "Master [120] en éthique, à finalité approfondie",
+            "type": "degree"
+          },
+          {
+            "code": "ETHI2MS/BM",
+            "name": "Master [120] en éthique, à finalité spécialisée: éthique biomédicale et bioéthique",
+            "type": "degree"
+          },
+          {
+            "code": "ETHI2MS/EP",
+            "name": "Master [120] en éthique, à finalité spécialisée: éthique et politiques publiques",
             "type": "degree"
           },
           {
@@ -1155,6 +1215,11 @@
             "code": "LAFR2MS/RF",
             "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: civilisation romaine et études françaises contemporaines",
             "type": "degree"
+          },
+          {
+            "code": "LAFR2MS/SL",
+            "name": "Master [120] en langues et lettres anciennes et modernes, à finalité spécialisée: sciences et métiers du livre (édition, librairie, bibliothèque)",
+            "type": "degree"
           }
         ]
       },
@@ -1273,6 +1338,11 @@
             "code": "ROGE2MS/ML",
             "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
             "type": "degree"
+          },
+          {
+            "code": "ROGE2MS/SL",
+            "name": "Master [120] en langues et lettres modernes, orientation générale, à finalité spécialisée: sciences et métiers du livre (édition, librairie, bibliothèque)",
+            "type": "degree"
           }
         ]
       },
@@ -1304,6 +1374,11 @@
           {
             "code": "ROM2MS/ML",
             "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité spécialisée: sciences et métiers du livre",
+            "type": "degree"
+          },
+          {
+            "code": "ROM2MS/SL",
+            "name": "Master [120] en langues et lettres françaises et romanes, orientation générale, à finalité spécialisée: sciences et métiers du livre (édition, librairie, bibliothèque)",
             "type": "degree"
           }
         ]
@@ -2424,6 +2499,11 @@
         "type": "degree"
       },
       {
+        "code": "PSIE2FC",
+        "name": "Certificat interuniversitaire (UCL/ULG) : Psychothérapie - Intervention et évaluation psychologiques",
+        "type": "degree"
+      },
+      {
         "code": "PSIN2MC",
         "name": "Master de spécialisation en psychiatrie, orientation psychiatrie infanto juvénile",
         "type": "degree"
@@ -2571,6 +2651,11 @@
         ]
       },
       {
+        "code": "ENVI2M1",
+        "name": "Master [60] en sciences et gestion de l'environnement",
+        "type": "degree"
+      },
+      {
         "code": "ENVI2MC",
         "name": "Master de spécialisation interdisciplinaire en sciences et gestion de l'environnement et du développement durable",
         "type": "degree"
@@ -2686,6 +2771,11 @@
           {
             "code": "DATE2MS/CS",
             "name": "Master [120] : ingénieur civil en science des données, à finalité spécialisée: cybersécurité",
+            "type": "degree"
+          },
+          {
+            "code": "DATE2MS/G",
+            "name": "Master [120] : ingénieur civil en science des données, à finalité spécialisée",
             "type": "degree"
           }
         ]
@@ -3253,6 +3343,11 @@
         "name": "Master [120] en statistique, orientation générale",
         "type": "degree",
         "children": [
+          {
+            "code": "STAT2MA",
+            "name": "Master [120] en statistique, orientation générale, à finalité approfondie",
+            "type": "degree"
+          },
           {
             "code": "STAT2MS/G",
             "name": "Master [120] en statistique, orientation générale, à finalité spécialisée",
