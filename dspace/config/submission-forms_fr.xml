@@ -202,7 +202,7 @@
           <repeatable>true</repeatable>
           <label>Résumé</label>
           <input-type>textarea</input-type>
-          <hint>Entrez le résumé du mémoire. Si vous désirez ajouter un second résumé dans une autre langue, utilisez le bouton "+".&lt;br&gt;&lt;b class="text-danger"&gt;Attention&lt;/b&gt;, une fois votre mémoire validé par la faculté, &lt;span class="text-danger"&gt;le résumé sera rendu public&lt;/span&gt;. Soyez particulièrement attentif ou attentive à ne pas introduire d’informations confidentielles dans le résumé du mémoire</hint>
+          <hint>Entrez le résumé du mémoire. Si vous désirez ajouter un second résumé dans une autre langue, utilisez le bouton "+".&lt;br&gt;&lt;b class="text-danger"&gt;Attention&lt;/b&gt;, une fois votre mémoire validé par la faculté, &lt;span class="text-danger"&gt;le résumé sera rendu public&lt;/span&gt;. Soyez particulièrement attentif ou attentive à ne pas introduire d’informations confidentielles dans le résumé du mémoire.</hint>
           <required>Vous devez spécifier un résumé</required>
         </field>
       </row>
