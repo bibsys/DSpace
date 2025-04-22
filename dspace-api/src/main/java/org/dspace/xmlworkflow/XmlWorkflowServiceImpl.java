@@ -283,6 +283,9 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             // suppress email, and delete key
             noEMail.remove(wfi.getItem().getID());
         } else {
+            if (configurationService.getBooleanProperty("mail.message.step.notifyOfTaskActivation.disabled", true)) {
+                return;
+            }
             Email mail = Email.getEmail(I18nUtil.getEmailFilename(c.getCurrentLocale(), emailTemplate));
             for (String argument : arguments) {
                 mail.addArgument(argument);
