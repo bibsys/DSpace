@@ -285,6 +285,7 @@ public class RabbitMQPackager extends AbstractCLICommand {
                 String mRecordStatus = manifest.getRecordStatus();
                 PackageParameters pkgParams = new PackageParameters();
                 pkgParams.setWorkflowEnabled(mRecordStatus != null && mRecordStatus.equalsIgnoreCase("workflow"));
+                pkgParams.setUseCollectionTemplate(true);
                 logger.debug("\tIs workflow item ? " + pkgParams.workflowEnabled());
                 if (objectToReplace != null) {
                     logger.info("\tObject already exists ? [TRUE] --> [" + Constants.typeText[objectToReplace.getType()]
