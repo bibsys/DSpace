@@ -34,9 +34,12 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bitstream;
+import org.dspace.content.Collection;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
+import org.dspace.content.MetadataSchema;
+import org.dspace.content.MetadataValue;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.crosswalk.CrosswalkException;
 import org.dspace.content.crosswalk.MetadataValidationException;
@@ -99,11 +102,10 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
      * Ingest/import a single DSpace Object, based on the associated METS
      * Manifest and the parameters passed to the METSIngester
      *
-     * @param context  DSpace Context
+     * @param context  DSpace context
      * @param parent   Parent DSpace Object
      * @param manifest the parsed METS Manifest
-     * @param pkgFile  the full package file (which may include content files if a
-     *                 zip)
+     * @param pkgFile  the full package file (which may include content files if a zip)
      * @param params   Parameters passed to METSIngester
      * @param license  DSpace license agreement
      * @return completed result as a DSpace object
@@ -126,6 +128,70 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         this.updateObjectStatus(context, dso, manifest, params);
         context.restoreAutomaticCommentCreation();
         return dso;
+    }
+
+    @Override
+    public DSpaceObject replace(Context context, DSpaceObject dsoToReplace, File pkgFile, PackageParameters params)
+            throws PackageValidationException, CrosswalkException, AuthorizeException, SQLException, IOException,
+                   WorkflowException {
+        DSpaceObject dso = super.replace(context, dsoToReplace, pkgFile, params);
+        if (dso.getType() == Constants.ITEM) {
+            updateOwningCollection(context, (Item) dso, pkgFile, params);
+            if (params.useCollectionTemplate()) {
+                applyCollectionTemplate(context, (Item) dso);
+            }
+        }
+        return dso;
+    }
+
+    // PRIVATE METHODS =================================================================================================
+
+    /**
+     * Analyze the manifest to determine if the object must be moved from the current collection to new one.
+     *
+     * @param context DSpace context
+     * @param item    Dspace Item to update
+     * @param pkgFile The full package file (which may include content files if a zip)
+     * @param params  Parameters passed to METSIngester
+     */
+    private void updateOwningCollection(Context context, Item item, File pkgFile, PackageParameters params)
+        throws PackageValidationException, SQLException, MetadataValidationException, AuthorizeException, IOException {
+        METSManifest manifest = parsePackage(context, pkgFile, params);
+        DSpaceObject mColl = getParentObject(context, manifest);
+        DSpaceObject cColl = itemService.getParentObject(context, item);
+        if (mColl.getType() != Constants.COLLECTION || cColl.getType() != Constants.COLLECTION) {
+            log.warn("Collection replacement will only work with COLLECTION objects");
+            log.warn("  --> current  :: (" + Constants.typeText[cColl.getType()] + ") " + cColl.getID());
+            log.warn("  --> manifest :: (" + Constants.typeText[mColl.getType()] + ") " + mColl.getID());
+        }
+        itemService.move(context, item, (Collection) cColl, (Collection) mColl);
+    }
+
+    /**
+     * Apply collection template to item
+     *
+     * @param context DSpace context
+     * @param item Dspace item to update
+     */
+    private void applyCollectionTemplate(Context context, Item item) throws SQLException {
+        Collection collection = item.getOwningCollection();
+        Item templateItem = collection.getTemplateItem();
+        if (templateItem != null) {
+            List<MetadataValue> mdValues = itemService.getMetadata(templateItem, Item.ANY, Item.ANY,Item.ANY, Item.ANY);
+            for (MetadataValue mdValue : mdValues) {
+                MetadataField mdField = mdValue.getMetadataField();
+                MetadataSchema mdSchema = mdField.getMetadataSchema();
+                List<MetadataValue> itemMetadata = itemService.getMetadata(
+                        item, mdSchema.getName(), mdField.getElement(), mdField.getQualifier(), Item.ANY);
+                if (itemMetadata.isEmpty()) {
+                    itemService.addMetadata(
+                            context, item,
+                            mdSchema.getName(), mdField.getElement(), mdField.getQualifier(), mdValue.getLanguage(),
+                            mdValue.getValue(), mdValue.getAuthority(), mdValue.getConfidence()
+                    );
+                }
+            }
+        }
     }
 
     /**
