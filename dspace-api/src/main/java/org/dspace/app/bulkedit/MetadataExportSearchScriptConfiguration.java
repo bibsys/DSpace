@@ -8,13 +8,24 @@
 
 package org.dspace.app.bulkedit;
 
+import java.sql.SQLException;
+import java.util.List;
+
 import org.apache.commons.cli.Options;
+import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
+import org.dspace.scripts.DSpaceCommandLineParameter;
 import org.dspace.scripts.configuration.ScriptConfiguration;
+import org.dspace.uclouvain.core.utils.AuthorizationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The {@link ScriptConfiguration} for the {@link MetadataExportSearch} script
  */
 public class MetadataExportSearchScriptConfiguration<T extends MetadataExportSearch> extends ScriptConfiguration<T> {
+
+    @Autowired
+    AuthorizationUtils authorizationUtils;
 
     private Class<T> dspaceRunnableclass;
 
@@ -26,6 +37,21 @@ public class MetadataExportSearchScriptConfiguration<T extends MetadataExportSea
     @Override
     public void setDspaceRunnableClass(Class<T> dspaceRunnableClass) {
         this.dspaceRunnableclass = dspaceRunnableClass;
+    }
+
+    @Override
+    public boolean isAllowedToExecute(Context context, List<DSpaceCommandLineParameter> params) {
+        EPerson currentUser = context.getCurrentUser();
+        if (currentUser == null) {
+            return false;
+        }
+        try {
+            return authorizeService.isAdmin(context, currentUser)
+                || authorizationUtils.isManager(context, currentUser)
+                || authorizationUtils.isLibrarian(context, currentUser);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     @Override
