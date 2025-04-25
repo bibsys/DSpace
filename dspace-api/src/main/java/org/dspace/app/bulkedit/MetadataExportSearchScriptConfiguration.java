@@ -13,26 +13,21 @@ import java.util.List;
 
 import org.apache.commons.cli.Options;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.dspace.scripts.DSpaceCommandLineParameter;
 import org.dspace.scripts.configuration.ScriptConfiguration;
+import org.dspace.uclouvain.core.utils.AuthorizationUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * The {@link ScriptConfiguration} for the {@link MetadataExportSearch} script
  */
 public class MetadataExportSearchScriptConfiguration<T extends MetadataExportSearch> extends ScriptConfiguration<T> {
 
-    private Class<T> dspaceRunnableclass;
+    @Autowired
+    AuthorizationUtils authorizationUtils;
 
-    @Override
-    public boolean isAllowedToExecute(Context context, List<DSpaceCommandLineParameter> commandLineParameters) {
-        try {
-            return authorizeService.isAdmin(context) || authorizeService.isComColAdmin(context) ||
-                authorizeService.isItemAdmin(context);
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                "SQLException occurred when checking if the current user is eligible to run the script", e);
-        }
-    }
+    private Class<T> dspaceRunnableclass;
 
     @Override
     public Class<T> getDspaceRunnableClass() {
@@ -42,6 +37,21 @@ public class MetadataExportSearchScriptConfiguration<T extends MetadataExportSea
     @Override
     public void setDspaceRunnableClass(Class<T> dspaceRunnableClass) {
         this.dspaceRunnableclass = dspaceRunnableClass;
+    }
+
+    @Override
+    public boolean isAllowedToExecute(Context context, List<DSpaceCommandLineParameter> params) {
+        EPerson currentUser = context.getCurrentUser();
+        if (currentUser == null) {
+            return false;
+        }
+        try {
+            return authorizeService.isAdmin(context, currentUser)
+                || authorizationUtils.isManager(context, currentUser)
+                || authorizationUtils.isLibrarian(context, currentUser);
+        } catch (SQLException e) {
+            return false;
+        }
     }
 
     @Override
