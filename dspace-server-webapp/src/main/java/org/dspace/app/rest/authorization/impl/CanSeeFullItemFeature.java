@@ -66,7 +66,10 @@ public class CanSeeFullItemFeature implements AuthorizationFeature {
                 return false;
             }
             EPerson currentUser = context.getCurrentUser();
-            if (authorizeService.isAdmin(context) || authUtils.isManagerOfItem(context, dsItem, currentUser)) {
+            if (authorizeService.isAdmin(context)
+                || authUtils.isManagerOfItem(context, dsItem, currentUser)
+                || authUtils.isLibrarian(context, currentUser)
+            ) {
                 return true;
             }
             return false;
