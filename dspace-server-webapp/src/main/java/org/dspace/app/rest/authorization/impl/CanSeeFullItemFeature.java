@@ -67,7 +67,9 @@ public class CanSeeFullItemFeature implements AuthorizationFeature {
                 return false;
             }
             EPerson currentUser = context.getCurrentUser();
-            return authorizeService.isAdmin(context) || authUtils.isManagerOfItem(context, dsItem, currentUser);
+            return authorizeService.isAdmin(context)
+                    || authUtils.isManagerOfItem(context, dsItem, currentUser)
+                    || authUtils.isLibrarian(context, currentUser);
         } catch (Exception e) {
             logger.warn("Could not check for item visibility", e);
             return false;
