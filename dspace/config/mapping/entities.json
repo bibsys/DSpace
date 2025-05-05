@@ -129,6 +129,91 @@
         "code": "NOTA2MC",
         "name": "Master de spécialisation en notariat",
         "type": "degree"
+      },
+      {
+        "code": "BONA2FC",
+        "name": "Certificat d'université en bonne administration : de l'élaboration de l'acte à la résolution des litiges",
+        "type": "degree"
+      },
+      {
+        "code": "DPAF2FC",
+        "name": "Certificat inter-universités : Droit pénal des affaires",
+        "type": "degree"
+      },
+      {
+        "code": "DRAS2FC",
+        "name": "Certificat d'université : Droit des assurances (15/20 crédits)",
+        "type": "degree"
+      },
+      {
+        "code": "DRBF2FC",
+        "name": "Certificat d'université : Droit bancaire et financier",
+        "type": "degree"
+      },
+      {
+        "code": "DRDI2FC",
+        "name": "Certificat d'université : Gestion des droits intellectuels - Régulation du numérique",
+        "type": "degree"
+      },
+      {
+        "code": "DRDV2FC",
+        "name": "Certificat inter-universités : Droits des débiteurs vulnérables",
+        "type": "degree"
+      },
+      {
+        "code": "DREF2FC",
+        "name": "Certificat inter-universités :  Approche interdisciplinaire des droits de l'enfant",
+        "type": "degree"
+      },
+      {
+        "code": "DRFP2FC",
+        "name": "Certificat inter-universités : Finances publiques (20/22 crédits)",
+        "type": "degree"
+      },
+      {
+        "code": "DRIN2FC",
+        "name": "Certificat inter-universités : Droit de l'insolvabilité de l'entreprise",
+        "type": "degree"
+      },
+      {
+        "code": "EXJU2FC",
+        "name": "Certificat inter-universités : Expertise judiciaire  : formation de base",
+        "type": "degree"
+      },
+      {
+        "code": "FIIM2FC",
+        "name": "Certificat d'université : Fiscalité immobilière",
+        "type": "degree"
+      },
+      {
+        "code": "JUTR2FC",
+        "name": "Certificat inter-universités : Justices transitionnelles",
+        "type": "degree"
+      },
+      {
+        "code": "LLMI2FC",
+        "name": "Certificat d'université : LL.M. in International Law",
+        "type": "degree"
+      },
+      {
+        "code": "MEFA2FC",
+        "name": "Certificat inter-universités : Médiation familiale",
+        "type": "degree"
+      },
+      {
+        "code": "POSU2FC",
+        "name": "Certificat inter-universités : Gestion des politiques de sécurité urbaine",
+        "type": "degree"
+      },
+      {
+        "code": "PRAS2FC",
+        "name": "Certificat d'université : Pratiques professionnelles des assurances",
+        "type": "degree"
+      },
+      {
+        "code": "REMI2FC",
+        "name": "Certificat d'université : droit des réfugiés et des migrations",
+        "type": "degree"
       }
     ]
   },
@@ -165,6 +250,26 @@
       {
         "code": "KULB IS",
         "name": "Cours isolé(s) - Trajet bilingue en droit pour les étudiants KULeuven",
+        "type": "degree"
+      },
+      {
+        "code": "EXIB2FC",
+        "name": "Certificat inter-universités en expertise judiciaire : spécialisation en expertise immobilière",
+        "type": "degree"
+      },
+      {
+        "code": "MECB2FC",
+        "name": "Certificat inter-universités en médiation : spécialisation en médiation civile, commerciale et sociale",
+        "type": "degree"
+      },
+      {
+        "code": "MEGB2FC",
+        "name": "Certificat inter-universités en médiation : formation générale",
+        "type": "degree"
+      },
+      {
+        "code": "MELB2FC",
+        "name": "Certificat inter-universités en médiation : spécialisation en médiation locale, scolaire, pénale et soins de santé",
         "type": "degree"
       }
     ]
@@ -214,6 +319,11 @@
       {
         "code": "PSP2A",
         "name": "Agrégation de l'enseignement secondaire supérieur (sciences psychologiques et sciences de l'éducation)",
+        "type": "degree"
+      },
+      {
+        "code": "ACSS2FC",
+        "name": "Certificat d'université : Accompagnement des pratiques professionnelles",
         "type": "degree"
       }
     ]
@@ -268,6 +378,11 @@
       {
         "code": "SPOB BS",
         "name": "Bachelier supplémentaire en sciences politiques, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "IMOB2FC",
+        "name": "Certificat inter-université et haute école : Executive Master Immobilier (EMI)",
         "type": "degree"
       }
     ]
@@ -896,6 +1011,86 @@
         "code": "TRAV IS",
         "name": "Unité(s) d'enseignement isolée(s) en sciences du travail",
         "type": "degree"
+      },
+      {
+        "code": "ANMS2FC",
+        "name": "Certificat d'université en anthropologie médicale et de la santé",
+        "type": "degree"
+      },
+      {
+        "code": "ASBL2FC",
+        "name": "Certificat d'université : Management des associations sans but lucratif",
+        "type": "degree"
+      },
+      {
+        "code": "CAGE2FC",
+        "name": "Certificat d'université : Analyse géopolitique des puissances",
+        "type": "degree"
+      },
+      {
+        "code": "COWE2FC",
+        "name": "Certificat d'université : Communication Web",
+        "type": "degree"
+      },
+      {
+        "code": "CRIA2FC",
+        "name": "Certificat d'université : Relations internationales et analyse des conflits",
+        "type": "degree"
+      },
+      {
+        "code": "DEPA2FC",
+        "name": "Certificat inter-universités : Démocratie participative",
+        "type": "degree"
+      },
+      {
+        "code": "ECSO2FC",
+        "name": "Certificat inter-universités : Management des entreprises d'économie sociale",
+        "type": "degree"
+      },
+      {
+        "code": "EVPP2FC",
+        "name": "Certificat inter-universités : Evaluation des politiques publiques",
+        "type": "degree"
+      },
+      {
+        "code": "GOTE2FC",
+        "name": "Certificat d'université : Gouvernance des territoires : élaboration et pilotage de projets",
+        "type": "degree"
+      },
+      {
+        "code": "LEAD2FC",
+        "name": "Certificat d'université : Leadership collaboratif",
+        "type": "degree"
+      },
+      {
+        "code": "MAPU2FC",
+        "name": "Certificat inter-universités : Management Public",
+        "type": "degree"
+      },
+      {
+        "code": "MEST2FC",
+        "name": "Certificat d'université : Memory studies (15/20 crédits)",
+        "type": "degree"
+      },
+      {
+        "code": "PLUR2FC",
+        "name": "Certificat inter-universités  : Gestion de crise et planification d'urgence",
+        "type": "degree"
+      },
+      {
+        "code": "POAS2FC",
+        "name": "Certificat inter-universités : Politique et action sociale",
+        "type": "degree"
+      },
+      {
+        "code": "PROS2FC",
+        "name": "Certificat inter-universités : Analyse prospective",
+        "type": "degree"
+      },
+      {
+        "code": "SORE2FC",
+        "name": "Certificat d'université en transitions sociales et résistances",
+        "type": "degree"
       }
     ]
   },
@@ -1196,7 +1391,8 @@
             "code": "LAFR2MA",
             "name": "Master [120] en langues et lettres anciennes et modernes, à finalité approfondie",
             "type": "degree"
-          },{
+          },
+          {
             "code": "LAFR2MD",
             "name": "Master [120] en langues et lettres anciennes et modernes, à finalité didactique",
             "type": "degree"
@@ -1451,6 +1647,51 @@
         "code": "VISU2MC",
         "name": "Master de spécialisation en cultures visuelles",
         "type": "degree"
+      },
+      {
+        "code": "DIES2FC",
+        "name": "Certificat d'université : Didactique de l'espagnol langue étrangère (ELE)",
+        "type": "degree"
+      },
+      {
+        "code": "DIFL2FC",
+        "name": "Certificat d'université : Didactique du français langue étrangère",
+        "type": "degree"
+      },
+      {
+        "code": "DIIM2FC",
+        "name": "Certificat d'université : Didactique de l'enseignement en immersion",
+        "type": "degree"
+      },
+      {
+        "code": "DINE2FC",
+        "name": "Certificat d'université en didactique du néerlandais langue étrangère",
+        "type": "degree"
+      },
+      {
+        "code": "ECOL2FC",
+        "name": "Certificat d'université en Transition écologique : approche systémique et enjeux culturels, philosophiques et psychologiques",
+        "type": "degree"
+      },
+      {
+        "code": "INCO2FC",
+        "name": "Certificat d'université : Interprétation de conférence",
+        "type": "degree"
+      },
+      {
+        "code": "JURE2FC",
+        "name": "Certificat d'université : Connaissances juridiques pour le traducteur et/ou l'interprète juré",
+        "type": "degree"
+      },
+      {
+        "code": "RISQ2FC",
+        "name": "Certificat inter-universités en gestion anticipative et interdisciplinaire des risques et des crises",
+        "type": "degree"
+      },
+      {
+        "code": "TRAD2FC",
+        "name": "Certificat d'université : Approfondissement des connaissances pour le traducteur et/ou l'interprète juré",
+        "type": "degree"
       }
     ]
   },
@@ -1697,6 +1938,51 @@
         "code": "REC9CE",
         "name": "Certificat en révisorat et expertise comptable",
         "type": "degree"
+      },
+      {
+        "code": "EMAN2FC",
+        "name": "Certificat inter-universités : Transformation digitale des entreprises",
+        "type": "degree"
+      },
+      {
+        "code": "EMBA2FC",
+        "name": "Certificat d'université : International Executive MBA",
+        "type": "degree"
+      },
+      {
+        "code": "GOUV2FC",
+        "name": "Certificat d'université : Gouvernance et droit des sociétés et associations",
+        "type": "degree"
+      },
+      {
+        "code": "IFRS2FC",
+        "name": "Certificat d'université : Normes IAS / IFRS",
+        "type": "degree"
+      },
+      {
+        "code": "IMPO2FC",
+        "name": "Certificat d'université : Gestion et pratique de l'impôt des sociétés",
+        "type": "degree"
+      },
+      {
+        "code": "INNO2FC",
+        "name": "Certificat d'université : Gestion de l'innovation",
+        "type": "degree"
+      },
+      {
+        "code": "MCRI2FC",
+        "name": "Certificat d'université : Gestion de la restructuration et de l'insolvabilité des entreprises",
+        "type": "degree"
+      },
+      {
+        "code": "PLPA2FC",
+        "name": "Certificat d'université : Planification patrimoniale",
+        "type": "degree"
+      },
+      {
+        "code": "POMA2FC",
+        "name": "Certificat d'université : Management Humain Innovant",
+        "type": "degree"
       }
     ]
   },
@@ -1738,6 +2024,16 @@
       {
         "code": "ROMB BS",
         "name": "Bachelier supplémentaire en langues et lettres françaises et romanes, orientation générale",
+        "type": "degree"
+      },
+      {
+        "code": "ISLB2FC",
+        "name": "Certificat d'université en sciences religieuses et sociales : Islam dans le monde contemporain",
+        "type": "degree"
+      },
+      {
+        "code": "METB2FC",
+        "name": "Certificat inter-universités et haute école en Management et Traitement des Archives et de l'information - MET@",
         "type": "degree"
       }
     ]
@@ -1844,6 +2140,86 @@
             "type": "degree"
           }
         ]
+      },
+      {
+        "code": "PSIE2FC",
+        "name": "Certificat d'université  : Psychothérapie - Intervention et évaluation psychologiques",
+        "type": "degree"
+      },
+      {
+        "code": "ABUS2FC",
+        "name": "Certificat d'université : Approche multidisciplinaire de l'abus sexuel",
+        "type": "degree"
+      },
+      {
+        "code": "ACPA2FC",
+        "name": "Certificat d'université : Accompagnement psychologique de la parentalité",
+        "type": "degree"
+      },
+      {
+        "code": "ANPC2FC",
+        "name": "Certificat d'université : Animation de groupes d'entraînement à la pleine conscience",
+        "type": "degree"
+      },
+      {
+        "code": "ATTA2FC",
+        "name": "Certificat d'université en clinique de l'attachement au cours de la vie",
+        "type": "degree"
+      },
+      {
+        "code": "BUPP2FC",
+        "name": "Certificat d'université : Diagnostic, Prévention et Traitement du Burnout Professionnel et Parental",
+        "type": "degree"
+      },
+      {
+        "code": "DIVE2FC",
+        "name": "Certificat inter-universités : Les atouts de la diversité : prévenir les discriminations et promouvoir l'inclusion",
+        "type": "degree"
+      },
+      {
+        "code": "HIPP2FC",
+        "name": "Certificat d'université : Hippothérapie",
+        "type": "degree"
+      },
+      {
+        "code": "LICO2FC",
+        "name": "Certificat d'université : Life coaching",
+        "type": "degree"
+      },
+      {
+        "code": "ORSP2FC",
+        "name": "Certificat d'université : Orientation scolaire et professionnelle",
+        "type": "degree"
+      },
+      {
+        "code": "ORTH2FC",
+        "name": "Certificat d'université : Orthopédagogie Clinique",
+        "type": "degree"
+      },
+      {
+        "code": "PCSA2FC",
+        "name": "Certificat d'université : Interv. psychol. basées sur la pleine conscience",
+        "type": "degree"
+      },
+      {
+        "code": "PCSE2FC",
+        "name": "Certificat d'université : Interv. psychol. basées sur la pleine conscience - Enfants/Adolescents/Parents",
+        "type": "degree"
+      },
+      {
+        "code": "PSPE2FC",
+        "name": "Certificat d'université : Psychothérapie centrée sur la personne et expérientielle",
+        "type": "degree"
+      },
+      {
+        "code": "PSPS2FC",
+        "name": "Certificat d'université : Psychologie de la performance sportive",
+        "type": "degree"
+      },
+      {
+        "code": "SEXO2FC",
+        "name": "Certificat d'université : Sexologie clinique appliquée",
+        "type": "degree"
       }
     ]
   },
@@ -1937,6 +2313,16 @@
         "code": "THEO2M1",
         "name": "Master [60] en théologie",
         "type": "degree"
+      },
+      {
+        "code": "PALI2FC",
+        "name": "Certificat d'université : Pastorale liturgique et sacramentelle",
+        "type": "degree"
+      },
+      {
+        "code": "PASA2FC",
+        "name": "Certificat d'université : Pastorale de santé",
+        "type": "degree"
       }
     ]
   },
@@ -1953,6 +2339,11 @@
       {
         "code": "TIMB IS",
         "name": "Cours isolé(s) de la Faculté de traduction et interprétation Marie Haps Saint-Louis",
+        "type": "degree"
+      },
+      {
+        "code": "LSFB2FC",
+        "name": "Certificat inter-universités en langues des signes de Belgique francophone et français : enseignement, bilinguisme et pratique de l'interprétation par les sourds",
         "type": "degree"
       }
     ]
@@ -2082,6 +2473,11 @@
         "code": "SBIM IS",
         "name": "Unité(s) d'enseignement isolée(s)",
         "type": "degree"
+      },
+      {
+        "code": "SOPH2FC",
+        "name": "Certificat d'université : Soins pharmaceutiques",
+        "type": "degree"
       }
     ]
   },
@@ -2153,6 +2549,81 @@
             "type": "degree"
           }
         ]
+      },
+      {
+        "code": "APHY2FC",
+        "name": "Certificat inter-universités : Activité physique santé et thérapie par l'exercice",
+        "type": "degree"
+      },
+      {
+        "code": "EMBC2FC",
+        "name": "Certificat d'université : Executive Master Business Coaching et Développement des Organisations",
+        "type": "degree"
+      },
+      {
+        "code": "EXMD2FC",
+        "name": "Certificat d'université : Exercise medicine",
+        "type": "degree"
+      },
+      {
+        "code": "EXTH2FC",
+        "name": "Certificat d'université : Exercise therapy",
+        "type": "degree"
+      },
+      {
+        "code": "KIPD2FC",
+        "name": "Certificat inter-universités : Kinésithérapie pédiatrique",
+        "type": "degree"
+      },
+      {
+        "code": "KIPE2FC",
+        "name": "Certificat d'université : Rééducation abdomino-pelvienne et kinésithérapie périnatale",
+        "type": "degree"
+      },
+      {
+        "code": "KIRE2FC",
+        "name": "Certificat d'université: Kinésithérapie respiratoire",
+        "type": "degree"
+      },
+      {
+        "code": "KISP2FC",
+        "name": "Certificat inter-universités : Kinésithérapie du sport",
+        "type": "degree"
+      },
+      {
+        "code": "MOSP2FC",
+        "name": "Certificat inter-universités : Management des organisations sportives",
+        "type": "degree"
+      },
+      {
+        "code": "MSPO2FC",
+        "name": "Certificat inter-universités : Médecine du sport",
+        "type": "degree"
+      },
+      {
+        "code": "NERH2FC",
+        "name": "Certificat d'université : Neuroréhabilitation fonctionnelle et intensive (Orientation pédiatrique)",
+        "type": "degree"
+      },
+      {
+        "code": "PETR2FC",
+        "name": "Certificat d'université : Personal training",
+        "type": "degree"
+      },
+      {
+        "code": "REFI2FC",
+        "name": "Certificat d'université : Rééducation fonctionnelle et intensive en neurologie adulte",
+        "type": "degree"
+      },
+      {
+        "code": "THMA2FC",
+        "name": "Certificat d'université : Thérapie manuelle",
+        "type": "degree"
+      },
+      {
+        "code": "THMS2FC",
+        "name": "Certificat d'université : Thérapie manuelle musculo-squelettique",
+        "type": "degree"
       }
     ]
   },
@@ -2225,6 +2696,41 @@
       {
         "code": "SPIN2MC",
         "name": "Master de spécialisation en santé publique - analyse et évaluation des politiques, programmes et systèmes de santé internationale",
+        "type": "degree"
+      },
+      {
+        "code": "ACGP2FC",
+        "name": "Certificat inter-universités et hautes écoles : Accompagnement de la grande précarité",
+        "type": "degree"
+      },
+      {
+        "code": "ECOS2FC",
+        "name": "Certificat inter-universités :  Economie de la santé",
+        "type": "degree"
+      },
+      {
+        "code": "HESS2FC",
+        "name": "Certificat inter-universités : Ethique des soins de santé",
+        "type": "degree"
+      },
+      {
+        "code": "HGES2FC",
+        "name": "Certificat d'université : Gestion hospitalière",
+        "type": "degree"
+      },
+      {
+        "code": "HQUA2FC",
+        "name": "Certificat inter-universités : Management de la qualité dans les établissements de soins",
+        "type": "degree"
+      },
+      {
+        "code": "HYHO2FC",
+        "name": "Certificat inter-universités : Prévention des infections et hygiène hospitalière",
+        "type": "degree"
+      },
+      {
+        "code": "MSCO2FC",
+        "name": "Certificat d'université : Médecine scolaire",
         "type": "degree"
       }
     ]
@@ -2499,11 +3005,6 @@
         "type": "degree"
       },
       {
-        "code": "PSIE2FC",
-        "name": "Certificat interuniversitaire (UCL/ULG) : Psychothérapie - Intervention et évaluation psychologiques",
-        "type": "degree"
-      },
-      {
         "code": "PSIN2MC",
         "name": "Master de spécialisation en psychiatrie, orientation psychiatrie infanto juvénile",
         "type": "degree"
@@ -2566,6 +3067,186 @@
       {
         "code": "URO2MC",
         "name": "Master de spécialisation en urologie",
+        "type": "degree"
+      },
+      {
+        "code": "ACSP2FC",
+        "name": "Certificat inter-universités européen : Accompagnement et soins palliatifs",
+        "type": "degree"
+      },
+      {
+        "code": "ALCO2FC",
+        "name": "Certificat inter-universités : Alcoologie",
+        "type": "degree"
+      },
+      {
+        "code": "ALGO2FC",
+        "name": "Certificat inter-universités : Algologie",
+        "type": "degree"
+      },
+      {
+        "code": "ALIG2FC",
+        "name": "Certificat d'université : Traitement orthodontique par \" Aligneurs \"",
+        "type": "degree"
+      },
+      {
+        "code": "AUTI2FC",
+        "name": "Certificat inter-universités : Trouble du spectre de l'autisme",
+        "type": "degree"
+      },
+      {
+        "code": "CHGE2FC",
+        "name": "Certificat inter-universités : Chirurgie gynécologique endoscopique",
+        "type": "degree"
+      },
+      {
+        "code": "COLP2FC",
+        "name": "Certificat inter-universités de colposcopie et de pathologie cervico-vaginales et vulvaires",
+        "type": "degree"
+      },
+      {
+        "code": "DESC2FC",
+        "name": "Certificat d'université : Soins dentaires sous sédation consciente par inhalation de MEOPA",
+        "type": "degree"
+      },
+      {
+        "code": "ECHG2FC",
+        "name": "Certificat inter-universités : Echographie gynécologique",
+        "type": "degree"
+      },
+      {
+        "code": "ECHO2FC",
+        "name": "Certificat inter-universités :  Echographie obstétricale et gynécologique",
+        "type": "degree"
+      },
+      {
+        "code": "EEDI2FC",
+        "name": "Certificat d'université : Digestive endosonography",
+        "type": "degree"
+      },
+      {
+        "code": "EPIL2FC",
+        "name": "Certificat inter-universités : Epileptologie clinique",
+        "type": "degree"
+      },
+      {
+        "code": "EXME2FC",
+        "name": "Certificat d'université : Expertise médicale et médecine d'assurance (120 / 180 crédits)",
+        "type": "degree"
+      },
+      {
+        "code": "GENE2FC",
+        "name": "Certificat inter-universités : Génétique humaine",
+        "type": "degree"
+      },
+      {
+        "code": "GMSE2FC",
+        "name": "Certificat inter-universités : Gestion multidisciplinaire des situations d’exception",
+        "type": "degree"
+      },
+      {
+        "code": "HUSU2FC",
+        "name": "Certificat inter-universités : Humanitarian surgery in austere environments",
+        "type": "degree"
+      },
+      {
+        "code": "ICEC2FC",
+        "name": "Certificat inter-universités : Imagerie cardiaque par échocardiographie",
+        "type": "degree"
+      },
+      {
+        "code": "INCA2FC",
+        "name": "Certificat inter-universités : Education thérapeutique du patient insuffisant cardiaque",
+        "type": "degree"
+      },
+      {
+        "code": "INCL2FC",
+        "name": "Certificat inter-universités : Infectiologie et microbiologie clinique",
+        "type": "degree"
+      },
+      {
+        "code": "INFE2FC",
+        "name": "Certificat d'université de compétence en infectiologie clinique",
+        "type": "degree"
+      },
+      {
+        "code": "INSO2FC",
+        "name": "Certificat inter-universités : Traitements cognitivo-comportementaux de l'insomnie",
+        "type": "degree"
+      },
+      {
+        "code": "MAIJ2FC",
+        "name": "Certificat inter-universités : Approche multidisciplinaire des maltraitances infanto-juvéniles",
+        "type": "degree"
+      },
+      {
+        "code": "MAIN2FC",
+        "name": "Certificat inter-universités : The Belgian hand surgery",
+        "type": "degree"
+      },
+      {
+        "code": "MIME2FC",
+        "name": "Certificat d'université de compétence en microbiologie médicale",
+        "type": "degree"
+      },
+      {
+        "code": "MMPE2FC",
+        "name": "Certificat inter-universités : Médecine maternelle périnatale",
+        "type": "degree"
+      },
+      {
+        "code": "NUCL2FC",
+        "name": "Certificat inter-universités : Nutrition clinique",
+        "type": "degree"
+      },
+      {
+        "code": "PAIN2FC",
+        "name": "Certificat inter-universités et hautes écoles : Paramedical Intervention Team",
+        "type": "degree"
+      },
+      {
+        "code": "PERI2FC",
+        "name": "Certificat inter-universités : Périnatalité : approche transdisciplinaire",
+        "type": "degree"
+      },
+      {
+        "code": "PESI2FC",
+        "name": "Certificat inter-universités : Enseignement et pédagogie par la simulation",
+        "type": "degree"
+      },
+      {
+        "code": "PLCI2FC",
+        "name": "Certificat inter-universités : Plaies et cicatrisation",
+        "type": "degree"
+      },
+      {
+        "code": "PPES2FC",
+        "name": "Certificat inter-universités : Approche pratique et pluridisciplinaire de la physiologie et des pathologies de l'éveil et du sommeil",
+        "type": "degree"
+      },
+      {
+        "code": "PSCF2FC",
+        "name": "Certificat d'université : Psychothérapie - Cliniques systémiques",
+        "type": "degree"
+      },
+      {
+        "code": "PSCP2FC",
+        "name": "Certificat d'université : Psychothérapie - Cliniques psychanalytiques (Adultes / Enfants)",
+        "type": "degree"
+      },
+      {
+        "code": "SADU2FC",
+        "name": "Certificat inter-universités et haute école : Soins de santé durables : Agir pour transformer",
+        "type": "degree"
+      },
+      {
+        "code": "SOMM2FC",
+        "name": "Certificat inter-universités : Médecine du sommeil",
+        "type": "degree"
+      },
+      {
+        "code": "VACC2FC",
+        "name": "Certificat inter-universités : Vaccinologie",
         "type": "degree"
       }
     ]
@@ -2732,6 +3413,16 @@
       {
         "code": "SGED2MC",
         "name": "Master de spécialisation en sciences et gestion de l'environnement dans les pays en développement",
+        "type": "degree"
+      },
+      {
+        "code": "APIC2FC",
+        "name": "Certificat inter-universités : Apiculture",
+        "type": "degree"
+      },
+      {
+        "code": "GEOM2FC",
+        "name": "Certificat d'université : Géomatique appliquée",
         "type": "degree"
       }
     ]
@@ -2968,6 +3659,41 @@
         "code": "SINF IS",
         "name": "Unité(s) d'enseignement isolée(s) en informatique",
         "type": "degree"
+      },
+      {
+        "code": "CPHT2FC",
+        "name": "Certificat d'université : Conseiller en prévention spécialisé en hygiène du travail",
+        "type": "degree"
+      },
+      {
+        "code": "CPPN2FC",
+        "name": "Certificat d'université : Conseiller en prévention de niveau 1",
+        "type": "degree"
+      },
+      {
+        "code": "CRES2FC",
+        "name": "Certificat inter-universités : Systèmes embarqués critiques",
+        "type": "degree"
+      },
+      {
+        "code": "CYBE2FC",
+        "name": "Certificat d'université : Cybersécurité",
+        "type": "degree"
+      },
+      {
+        "code": "ELEN2FC",
+        "name": "Certificat inter-universités : Electronique de l'énergie",
+        "type": "degree"
+      },
+      {
+        "code": "MEDE2FC",
+        "name": "Certificat d'université : Clinical, regulatory and quality affairs for medical devices and in-vitro diagnostic",
+        "type": "degree"
+      },
+      {
+        "code": "TRAN2FC",
+        "name": "Certificat d'université en Média Innovation Accelerator (MIA)",
+        "type": "degree"
       }
     ]
   },
@@ -3057,6 +3783,21 @@
       {
         "code": "URBA2MC",
         "name": "Master de spécialisation en urbanisme et aménagement du territoire",
+        "type": "degree"
+      },
+      {
+        "code": "BIMM2FC",
+        "name": "Certificat d'université : Building information management (BIM)",
+        "type": "degree"
+      },
+      {
+        "code": "BOIS2FC",
+        "name": "Certificat d'université : Bois dans la construction",
+        "type": "degree"
+      },
+      {
+        "code": "PRAR2FC",
+        "name": "Certificat inter-universités : Pratique professionnelle et gestion de projet d'architecture",
         "type": "degree"
       }
     ]
@@ -3358,6 +4099,51 @@
       {
         "code": "STAT IS",
         "name": "Unité(s) d'enseignement isolée(s)",
+        "type": "degree"
+      },
+      {
+        "code": "ACTI2FC",
+        "name": "Certificat d'université : Initiation à l'actuariat (10/22 crédits)",
+        "type": "degree"
+      },
+      {
+        "code": "ADAV2FC",
+        "name": "Certificat d'université : Analyse de données appliquée en R&D - niveau avancé",
+        "type": "degree"
+      },
+      {
+        "code": "ADBA2FC",
+        "name": "Certificat d'université : Analyse de données appliquée en R&D - niveau de base",
+        "type": "degree"
+      },
+      {
+        "code": "JDAI2FC",
+        "name": "Certificat d'université : Junior data analyst (formule intensive)",
+        "type": "degree"
+      },
+      {
+        "code": "JDAN2FC",
+        "name": "Certificat d'université : Junior data analyst",
+        "type": "degree"
+      },
+      {
+        "code": "MAFI2FC",
+        "name": "Certificat d'université : Initiation aux mathématiques financières",
+        "type": "degree"
+      },
+      {
+        "code": "PENS2FC",
+        "name": "Certificat d'université : Droit et financement des pensions",
+        "type": "degree"
+      },
+      {
+        "code": "QUPR2FC",
+        "name": "Certificat inter-universités : Gestion statistique de la qualité des procédés",
+        "type": "degree"
+      },
+      {
+        "code": "STAT2FC",
+        "name": "Certificat d'université : Statistique et science des données (15/30 crédits)",
         "type": "degree"
       }
     ]
