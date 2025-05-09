@@ -1713,7 +1713,8 @@
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterFunding" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+                <!-- <ref bean="searchFilterEntityType"/> -->
+                <ref bean="searchFilterPublicationType"/>
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -1730,7 +1731,8 @@
                 <ref bean="searchFilterContentInOriginalBundle"/>
                 <ref bean="searchFilterFileNameInOriginalBundle" />
                 <ref bean="searchFilterFileDescriptionInOriginalBundle" />
-                <ref bean="searchFilterEntityType"/>
+                <!-- <ref bean="searchFilterEntityType"/> -->
+                <ref bean="searchFilterPublicationType"/>
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -1755,7 +1757,9 @@
         <property name="defaultFilterQueries">
             <list>
                 <!--Only find items, communities and collections-->
-                <value>search.resourcetype:Item AND (entityType_keyword:Publication OR entityType_keyword:Patent OR entityType_keyword:Product)</value>
+                <!-- <value>search.resourcetype:Item AND (entityType_keyword:Publication OR entityType_keyword:Patent OR entityType_keyword:Product)</value> -->
+                <!-- Only search on Publication items. -->
+                <value>search.resourcetype:Item AND (entityType_keyword:Publication)</value>
                 <value>-withdrawn:true AND -discoverable:false</value>
             </list>
         </property>
@@ -2991,8 +2995,9 @@
         <property name="indexFieldName" value="editor"/>
         <property name="metadataFields">
             <list>
-                <value>dc.contributor.editor</value>
-                <value>dc.creator</value>
+                <!-- <value>dc.contributor.editor</value>
+                <value>dc.creator</value> -->
+                <value>publication.editor.name</value>
             </list>
         </property>
         <property name="facetLimit" value="5"/>
@@ -3007,8 +3012,9 @@
         <property name="indexFieldName" value="organization"/>
         <property name="metadataFields">
             <list>
-                <value>oairecerif.author.affiliation</value>
-                <value>oairecerif.editor.affiliation</value>
+                <!-- <value>oairecerif.author.affiliation</value>
+                <value>oairecerif.editor.affiliation</value> -->
+                <value>oairecerif.affiliation.orgunitDepartment</value>
             </list>
         </property>
         <property name="facetLimit" value="5"/>
@@ -3023,7 +3029,8 @@
         <property name="indexFieldName" value="funding"/>
         <property name="metadataFields">
             <list>
-                <value>dc.relation.funding</value>
+                <!-- <value>dc.relation.funding</value> -->
+                <value>funding.organization</value>
             </list>
         </property>
         <property name="facetLimit" value="5"/>
@@ -3200,6 +3207,16 @@
         <property name="metadataFields">
             <list/>
         </property>
+    </bean>
+
+    <bean id="searchFilterPublicationType" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="itempublicationtype" />
+        <property name="metadataFields">
+            <list>
+                <value>dc.type.maintype</value>
+            </list>
+        </property>
+        <property name="exposeFilter" value="false"/>
     </bean>
 
     <bean id="searchFilterType" class="org.dspace.discovery.configuration.HierarchicalSidebarFacetConfiguration">
