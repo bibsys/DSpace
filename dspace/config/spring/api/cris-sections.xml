@@ -20,7 +20,7 @@
         <constructor-arg name="sectionComponents">
             <list>
                 <list>
-                    <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
+                    <!-- <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
                         <property name="browseNames">
                             <list>
                                 <value>rodept</value>
@@ -32,13 +32,13 @@
                             </list>
                         </property>
                         <property name="style" value="col-md-4"/>
-                    </bean>
+                    </bean> -->
                     <bean class="org.dspace.layout.CrisLayoutSearchComponent">
                         <property name="discoveryConfigurationName" value="researchoutputs" />
-                        <property name="style" value="col-md-8"/>
+                        <property name="style" value="col-md-12"/>
                     </bean>
                 </list>
-                <list>
+                <!-- <list>
                     <bean class="org.dspace.layout.CrisLayoutTopComponent">
                         <property name="discoveryConfigurationName" value="researchoutputs" />
                         <property name="sortField" value="dc.date.accessioned" />
@@ -59,7 +59,7 @@
                         <property name="discoveryConfigurationName" value="researchoutputs" />
                         <property name="style" value="col-md-12"/>
                     </bean>
-                </list>
+                </list> -->
             </list>
         </constructor-arg>
     </bean>
