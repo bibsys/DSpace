@@ -26,8 +26,9 @@ public class IdentifierServiceFactoryImpl extends IdentifierServiceFactory {
     private IdentifierService identifierService;
     @Autowired(required = true)
     private DOIService doiService;
-    @Autowired(required = true)
-    private Set<DoiGenerationStrategy> doiGenerationStrategies;
+    // Temporary fix for factory not able to load
+    // @Autowired(required = true)
+    // private Set<DoiGenerationStrategy> doiGenerationStrategies;
 
     @Override
     public IdentifierService getIdentifierService() {
@@ -40,6 +41,7 @@ public class IdentifierServiceFactoryImpl extends IdentifierServiceFactory {
     }
 
     public Set<DoiGenerationStrategy> getDoiGenerationStrategies() {
-        return doiGenerationStrategies;
+        // Temporary fix for factory not able to load
+        return null;
     }
 }
