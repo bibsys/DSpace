@@ -21,7 +21,7 @@
         "email": "user1@dspace.org",
         "lastname": "Affeu",
         "firstname": "Pierre",
-        "groups": [],
+        "groups": ["Researcher"],
         "password": "user"
     }, {
         "email": "user2@dspace.org",
