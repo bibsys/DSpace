@@ -268,11 +268,9 @@ do
   do
     permission=$(jq .collections[${i}].permissions[$j].type "${PERMISSIONS_FILE}")
     mode=$(jq .collections[${i}].permissions[$j].mode "${PERMISSIONS_FILE}")
-    groups=$(jq ".collections[${i}].permissions[$j].groups[] | @sh" "${PERMISSIONS_FILE}" \
-             | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
-    IFS=',' groups=($groups)
-    for group_name in "${groups[@]}"
-    do
+    groups=$(jq -r ".collections[${i}].permissions[$j].groups[]" "${PERMISSIONS_FILE}" | sort -u | tr '\n' ',')
+    IFS=',' read -ra groups_array <<< "$groups"
+    for group_name in "${groups_array[@]}"; do
       echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${permission}${NC}..."
       docker exec ${BACKEND} sh -c "\
             /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement \
