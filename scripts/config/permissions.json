@@ -1,5 +1,14 @@
 {
     "collections": [{
+        "collection_name": "Publication",
+        "permissions": [{
+            "mode": "role",
+            "type": "submitter",
+            "groups": [
+                "Authenticated users"
+            ]
+        }]
+    }, {
         "collection_name": "OrgUnit",
         "permissions": [{
             "mode": "role",
