@@ -2,7 +2,7 @@
 <import_structure>
 	<community>
 		<name>UCLouvain</name>
-		<collection identifier="123456789/master_thesis_collection">
+		<collection identifier="2078.2/master_thesis_collection">
 			<name>Master thesis</name>
 			<entity-type>MasterThesis</entity-type>
 			<submission-type>master-thesis</submission-type>
@@ -12,7 +12,7 @@
 				</metadata>
 			</templateItem>
 		</collection>
-		<collection identifier="123456789/master_thesis_cataretro_collection">
+		<collection identifier="2078.2/master_thesis_cataretro_collection">
 			<name>Master thesis - Cataretro</name>
 			<entity-type>MasterThesis</entity-type>
 			<submission-type>master-thesis-cataretro</submission-type>
