@@ -11,7 +11,7 @@
         <property name="workflowMapping">
             <util:map>
                 <entry key="defaultWorkflow" value-ref="defaultWorkflow"/>
-                <entry key="123456789/master_thesis_collection" value-ref="masterThesisWorkflow"/>
+                <entry key="2078.2/master_thesis_collection" value-ref="masterThesisWorkflow"/>
 <!--                <entry key="123456789/5" value-ref="scoreReview"/>-->
             </util:map>
         </property>
