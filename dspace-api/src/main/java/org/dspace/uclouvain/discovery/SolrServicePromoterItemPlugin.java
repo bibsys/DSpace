@@ -25,7 +25,7 @@ public class SolrServicePromoterItemPlugin implements SolrServiceSearchPlugin {
         EPerson currentPerson = context.getCurrentUser();
         if (currentPerson != null && isPromoterDiscovery) {
             // Add a filter to the query that checks for the item field 'advisors.email'
-            solrQuery.addFilterQuery("advisors.email:" + currentPerson.getEmail());
+            solrQuery.addFilterQuery("advisors.email:\"" + currentPerson.getEmail() + "\"");
         }
     }
 }
