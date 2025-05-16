@@ -51,7 +51,7 @@ RUN mkdir $ANT_HOME && \
     tar -zx --strip-components=1 -f /tmp/apache-ant.tar.gz -C $ANT_HOME && \
     rm /tmp/apache-ant.tar.gz
 # Run necessary 'ant' deploy scripts
-RUN ant init_installation update_configs update_code update_webapps
+RUN ant init_installation copy_assets update_configs update_code update_webapps
 
 # Step 3 - Start up DSpace via Runnable JAR
 FROM docker.io/eclipse-temurin:${JDK_VERSION}
