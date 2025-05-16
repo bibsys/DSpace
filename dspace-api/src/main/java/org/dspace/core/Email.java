@@ -384,14 +384,20 @@ public class Email {
 
         // Set the recipients of the message
         if (disabled && fixedRecipients.length > 0) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Sending email TO fixed recipients :: " + String.join(", ", fixedRecipients));
+            }
             for (String recipient : fixedRecipients) {
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             }
         } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Sending email TO recipients :: " + String.join(", ", recipients));
+                LOG.debug("Sending email CC recipients :: " + String.join(", ", ccAddresses));
+            }
             for (String recipient : recipients) {
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
             }
-
             for (String ccAddress : ccAddresses) {
                 message.addRecipient(Message.RecipientType.CC, new InternetAddress(ccAddress));
             }
