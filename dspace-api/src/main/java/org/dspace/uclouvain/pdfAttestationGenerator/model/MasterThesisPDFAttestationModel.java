@@ -36,7 +36,6 @@ public class MasterThesisPDFAttestationModel {
     public List<Advisor> advisors = new ArrayList<>();
     public List<Program> programs = new ArrayList<>();
     public String submitter;
-    public String handle;
     public List<File> files = new ArrayList<>();
     @XStreamAlias("abstract")
     public String abstractText;
