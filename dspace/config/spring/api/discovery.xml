@@ -2998,6 +2998,7 @@
                 <value>masterthesis.faculty.name</value>
             </list>
         </property>
+        <property name="facetLimit" value="#{T(java.lang.Integer).MAX_VALUE}"/>
     </bean>
 
     <bean id="searchFilterFacultyCombined" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
@@ -3009,8 +3010,7 @@
                 <value>masterthesis.faculty.name</value>
             </list>
         </property>
-        <!-- Setting this to 100 to see all faculties (useful for the FacetFocusSection) -->
-        <property name="facetLimit" value="100"/>
+        <property name="facetLimit" value="#{T(java.lang.Integer).MAX_VALUE}"/>
     </bean>
 
     <bean id="searchFilterDiscoverable" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
