@@ -733,6 +733,17 @@ Common usage:
     	<mkdir dir="${dspace.dir}/var/oai" />
     </target>
 
+    <!-- ============================================================= -->
+    <!-- Copy local assets                                             -->
+    <!-- ============================================================= -->
+
+    <target name="copy_assets">
+        <mkdir dir="${dspace.dir}/assets" />
+        <copy todir="${dspace.dir}/assets" preservelastmodified="true">
+            <fileset dir="assets" includes="**/*" excludes="**/.*" />
+        </copy>
+    </target>
+
 
     <!-- ============================================================= -->
     <!-- Fresh install of config files                                 -->
