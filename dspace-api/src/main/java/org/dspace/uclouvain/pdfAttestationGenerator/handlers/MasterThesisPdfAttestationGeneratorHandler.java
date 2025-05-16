@@ -71,7 +71,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
 
     private String templateName;
 
-    private final String source = DSpaceServicesFactory
+    private final String basedir = DSpaceServicesFactory
         .getInstance()
         .getConfigurationService()
         .getProperty("dspace.dir");
@@ -90,7 +90,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
     public void getAttestation(OutputStream out, UUID uuid) throws PDFGenerationException {
         try {
             Context context = new Context();
-            File templateFile = new File(this.source + templateDir + this.templateName);
+            File templateFile = new File(basedir + templateDir + this.templateName);
 
             // Generate the input xml with item data
             String renderedXml = this.generatePDFMasterThesisAttestationFromObjectId(context, uuid);
@@ -169,8 +169,6 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         }
 
         pdfModel.submitter = dspaceItem.getSubmitter().getFullName();
-        // TODO: Manage Handle recovery
-        pdfModel.handle = "https://handle.net/";
 
         // Add files to model
         for (Bitstream bitstream: ItemUtils.extractItemFiles(dspaceItem)) {
@@ -181,7 +179,7 @@ public class MasterThesisPdfAttestationGeneratorHandler implements PDFAttestatio
         }
 
         pdfModel.abstractText = map.get("dc_description_abstract").get(0);
-        pdfModel.imagePath = this.source + "/assets/images/dial_mem.png";
+        pdfModel.imagePath = "url('file://" + this.basedir + "/assets/images/dial_mem.png" + "')";
         return pdfModel.getRenderedXML();
     }
 

@@ -49,7 +49,7 @@ public class AuthorizationUtils {
     /**
      * Check if a user is a librarian by checking his group membership.
      * @param context The current DSpace context.
-     * @param currentUser The user to evaluate.
+     * @param user The user to evaluate.
      * @return True if the user is a librarian, false otherwise.
      */
     public boolean isLibrarian(Context context, EPerson user) {
@@ -61,7 +61,7 @@ public class AuthorizationUtils {
     /**
      * Check if a user is a manager by checking his group membership.
      * @param context The current DSpace context.
-     * @param currentUser The user to evaluate.
+     * @param user The user to evaluate.
      * @return True if the user is a manager, false otherwise.
      */
     public boolean isManager(Context context, EPerson user) {

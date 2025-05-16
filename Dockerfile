@@ -47,7 +47,7 @@ RUN apt-get update \
 RUN mkdir $ANT_HOME && \
     wget -qO- "https://archive.apache.org/dist/ant/binaries/apache-ant-$ANT_VERSION-bin.tar.gz" | tar -zx --strip-components=1 -C $ANT_HOME
 # Run necessary 'ant' deploy scripts
-RUN ant init_installation update_configs update_code update_webapps
+RUN ant init_installation copy_assets update_configs update_code update_webapps
 
 # Step 3 - Run tomcat
 # Create a new tomcat image that does not retain the the build directory contents
