@@ -4,8 +4,7 @@
       xmlns:fo="http://www.w3.org/1999/XSL/Format">
   <xsl:output method="xml" indent="yes"/>
   <xsl:template match="data">
-    <fo:root
-    xmlns:fo="http://www.w3.org/1999/XSL/Format">
+    <fo:root xmlns:fo="http://www.w3.org/1999/XSL/Format">
       <fo:layout-master-set>
         <fo:simple-page-master master-name="A4" page-height="29.7cm" page-width="21cm">
           <fo:region-body margin-top="3.2cm" margin-bottom="2.2cm"/>
@@ -30,9 +29,7 @@
             <fo:block border-bottom="1px solid #444" color="#444" font-size="16pt" text-align="center" margin-top="1.5em">Attestation de dépôt en ligne du mémoire</fo:block>
             <fo:block margin-top="2em" font-family="arial-uni">Le <xsl:value-of select="today"/>,</fo:block>
             <xsl:for-each select="authors/author">
-              <fo:block margin-top="1em" >
-                Monsieur/Madame <xsl:value-of select="name"/>
-              </fo:block>
+              <fo:block margin-top="1em" >Monsieur/Madame <xsl:value-of select="name"/></fo:block>
             </xsl:for-each>  
             <fo:block margin-top="2em" font-family="arial-uni">Le mémoire suivant dont vous êtes l'auteur·rice (ou un·e des co-auteurs·rices), a été déposé dans le répertoire des mémoires de l'UCLouvain</fo:block>
             <fo:table table-layout="fixed" border-style="solid" margin-top="1em">
@@ -94,14 +91,6 @@
                 </fo:table-row>
                 <fo:table-row>
                   <fo:table-cell padding="0.25em" font-weight="bold" width="4.5cm" color="#999999" font-size="0.8em">
-                    <fo:block>Identifiant :</fo:block>
-                  </fo:table-cell>
-                  <fo:table-cell padding="0.25em" border-bottom="1px solid #DDDDDD">
-                    <fo:block><xsl:value-of select="handle"/></fo:block>
-                  </fo:table-cell>
-                </fo:table-row>
-                <fo:table-row>
-                  <fo:table-cell padding="0.25em" font-weight="bold" width="4.5cm" color="#999999" font-size="0.8em">
                     <fo:block>Résumé :</fo:block>
                   </fo:table-cell>
                   <fo:table-cell padding="0.25em">
@@ -112,31 +101,11 @@
             </fo:table>
             <fo:block border-bottom="1pt solid #000000" margin-top="2em" margin-bottom="2em"/>
             <fo:block margin-top="1.5em" font-family="arial-uni">
-            Vous (ou la personne ayant déposé le mémoire avec votre accord) avez souhaité que les fichiers déposés puissent être communiqués au public d'après les modalités suivantes :
-            
+              Vous (ou la personne ayant déposé le mémoire avec votre accord) avez souhaité que les fichiers déposés puissent être communiqués au public d'après les modalités suivantes :
               <fo:list-block provisional-label-separation="3mm" provisional-distance-between-starts="1cm" margin-top="1em" margin-bottom="1em" margin-left="1cm">
-                <!-- <xsl:choose>
-                  <xsl:when test="files/file"> -->
-                    <xsl:apply-templates select="files/file" />
-                  <!-- </xsl:when>
-                  <xsl:otherwise>
-                    <fo:list-item>
-                      <fo:list-item-label end-indent="label-end()">
-                        <fo:block>
-                          *
-                        </fo:block>  
-                      </fo:list-item-label>
-                      <fo:list-item-body start-indent="body-start()">
-                        <fo:block>
-                          No item provided
-                        </fo:block>
-                      </fo:list-item-body>
-                    </fo:list-item>
-                  </xsl:otherwise>    
-                </xsl:choose>      -->
+                <xsl:apply-templates select="files/file" />
               </fo:list-block>
-            À cette fin vous avez concédé une licence à l'UCLouvain dont les termes sont répétés ci-dessous.
-            
+              À cette fin vous avez concédé une licence à l'UCLouvain dont les termes sont répétés ci-dessous.
             </fo:block>
             <fo:block margin-top="1cm" font-family="arial-uni" font-size="0.6em">LICENCE</fo:block>
             <fo:block font-family="arial-uni" font-size="0.6em">En déposant son mémoire (ci-après « l’œuvre ») dans le répertoire des mémoires de l’UCLouvain (DIAL.mem), l’auteur·rice concède à l’UCLouvain le droit non-exclusif d’archivage, de reproduction, de transcription (tel que défini ci-dessous) et de communication au public de l’œuvre (en ce compris l’abstract) en format électronique, et suivant les modalités définies au moment du dépôt.</fo:block>
@@ -161,12 +130,12 @@
       <!-- closes the page-sequence -->
     </fo:root>
   </xsl:template>
+
+ <!-- FILE TEMPLATE ================================================================================================ -->
   <xsl:template match="files/file">
     <fo:list-item>
       <fo:list-item-label end-indent="label-end()">
-        <fo:block>
-          *
-        </fo:block>  
+        <fo:block>•</fo:block>
       </fo:list-item-label>
       <fo:list-item-body start-indent="body-start()">
         <fo:block>
@@ -175,4 +144,5 @@
       </fo:list-item-body>
     </fo:list-item>
   </xsl:template>
+
 </xsl:stylesheet>
