@@ -116,10 +116,14 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
 
     /** Get the author email addresses that will be used as recipients. */
     protected List<String> getRecipientAddresses() {
-        return itemService.getMetadataByMetadataString(item, authorEmailField)
+        List<String> recipients = itemService.getMetadataByMetadataString(item, authorEmailField)
                 .stream()
                 .map(MetadataValue::getValue)
                 .collect(Collectors.toList());
+        if (log.isDebugEnabled()) {
+            log.debug("Initial TO recipient addresses are :: " + String.join(", ", recipients));
+        }
+        return recipients;
     }
 
     /** Get the faculty thesis manager corresponding to master thesis as CC recipients. */
@@ -133,7 +137,11 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
                 log.error("Error getting faculty managers", e);
             }
         }
-        return facultyManagers.stream().map(EPerson::getEmail).collect(Collectors.toList());
+        List<String> recipients = facultyManagers.stream().map(EPerson::getEmail).collect(Collectors.toList());
+        if (log.isDebugEnabled()) {
+            log.debug("Initial CC recipient addresses are :: " + String.join(", ", recipients));
+        }
+        return recipients;
     }
 
     /**
