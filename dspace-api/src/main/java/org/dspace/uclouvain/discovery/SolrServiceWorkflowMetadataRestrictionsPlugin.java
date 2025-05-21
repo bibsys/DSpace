@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
@@ -39,6 +40,8 @@ public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServic
     ItemService itemService;
     @Autowired
     ResearcherProfileService researcherProfileService;
+    @Autowired
+    AuthorizeService authorizeService;
 
     private String degreeMetadataFilterFieldName = DSpaceServicesFactory
             .getInstance()
@@ -55,32 +58,41 @@ public class SolrServiceWorkflowMetadataRestrictionsPlugin implements SolrServic
     @Override
     public void additionalSearchParameters(Context context, DiscoverQuery discoveryQuery, SolrQuery solrQuery)
             throws SearchServiceException {
-        try {
-            boolean isWorkflow = StringUtils.startsWith(
-                discoveryQuery.getDiscoveryConfigurationName(),
-                DISCOVER_WORKFLOW_CONFIGURATION_NAME
-            );
-            EPerson currentUser = context.getCurrentUser();
-            if (currentUser != null && isWorkflow) {
-                // Retrieve the current user's researcher profile that can contain metadata about the degree codes
-                ResearcherProfile currentProfile = researcherProfileService.findById(context, currentUser.getID());
-                StringBuilder controllerQuery = new StringBuilder();
 
-                List<MetadataValue> degreeCodes = (currentProfile != null)
-                    ? itemService.getMetadataByMetadataString(currentProfile.getItem(), degreeMetadataFieldName)
-                    : new ArrayList<>();
-                // If the profile has no degree codes, just return nothing in the solr search
-                if (degreeCodes == null || degreeCodes.isEmpty()) {
-                    controllerQuery.append("dc.title:(\"\")");
-                } else { // Else add a filter argument for each code
-                    String degreeQuery = degreeCodes
-                            .stream()
-                            .map(x -> x.getValue().trim())
-                            .collect(Collectors.joining(" OR "));
-                    controllerQuery.append(this.degreeMetadataFilterFieldName + ":(" + degreeQuery + ")");
-                }
-                solrQuery.addFilterQuery(controllerQuery.toString());
+        // skip all queries except for workflow (aka validation) query
+        // If user isn't connected (anonymous), no restriction can be created
+        EPerson currentUser = context.getCurrentUser();
+        boolean isWorkflow = StringUtils.startsWith(
+            discoveryQuery.getDiscoveryConfigurationName(),
+            DISCOVER_WORKFLOW_CONFIGURATION_NAME
+        );
+        if (!isWorkflow || currentUser == null) {
+            return;
+        }
+        try {
+            // If the current-logged user is an administrator, don't create any restriction.
+            // Admin can manage any workflow item
+            if (authorizeService.isAdmin(context)) {
+                return;
             }
+            // Retrieve the profile related to the current-logged user.
+            // This profile contains metadata about the degree codes that user is manager for
+            ResearcherProfile currentProfile = researcherProfileService.findById(context, currentUser.getID());
+            List<MetadataValue> degreeCodes = (currentProfile != null)
+                ? itemService.getMetadataByMetadataString(currentProfile.getItem(), degreeMetadataFieldName)
+                : new ArrayList<>();
+            // If the profile doesn't contain any degree codes, force Solr to return empty response
+            if (degreeCodes == null || degreeCodes.isEmpty()) {
+                solrQuery.addFilterQuery("-*:*");  // `-*:*` --> exclude result with a defined field
+                return;
+            }
+            String degreeQuery = degreeCodes
+                .stream()
+                .map(x -> x.getValue().trim())
+                .collect(Collectors.joining(" OR ")
+            );
+            String fqTerm = this.degreeMetadataFilterFieldName + ":(" + degreeQuery + ")";
+            solrQuery.addFilterQuery(fqTerm);
         } catch (SQLException e) {
             throw new SearchServiceException("SQL error occurred while searching for the profile", e);
         } catch (AuthorizeException e) {
