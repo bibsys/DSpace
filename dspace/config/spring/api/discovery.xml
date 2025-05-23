@@ -1774,10 +1774,11 @@
         <!--Which sidebar facets are to be displayed-->
         <property name="sidebarFacets">
             <list>
-                <ref bean="searchFilterAuthor" />
+                <!--<ref bean="searchFilterAuthor" />-->
                 <ref bean="searchFilterAdvisor" />
-                <ref bean="searchFilterFacultyCombined" />
-                <ref bean="searchFilterDegreeCombined" />
+                <ref bean="searchFilterFaculty" />
+                <ref bean="searchFilterRootDegreeLabel" />
+                <ref bean="searchFilterIssued" />
                 <!--<ref bean="searchFilterEditor" />
                 <ref bean="searchFilterOrgUnit" />-->
                 <!--<ref bean="searchFilterSubject" />-->
@@ -1795,8 +1796,9 @@
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterAdvisor" />
-                <ref bean="searchFilterFacultyCombined" />
-                <ref bean="searchFilterDegreeCombined" />
+                <ref bean="searchFilterFaculty" />
+                <ref bean="searchFilterRootDegreeLabel" />
+                <ref bean="searchFilterIssued" />
                 <!--<ref bean="searchFilterEditor" />-->
                 <!--<ref bean="searchFilterOrgUnit" />-->
                 <ref bean="searchFilterSubject" />
