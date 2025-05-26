@@ -33,6 +33,7 @@ import org.dspace.core.Context;
 import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
+import org.dspace.eperson.service.GroupService;
 import org.dspace.event.Event;
 import org.dspace.identifier.DOI;
 import org.dspace.identifier.DOIIdentifierProvider;
@@ -67,6 +68,8 @@ public class WorkspaceItemServiceImpl implements WorkspaceItemService {
     protected ItemService itemService;
     @Autowired(required = true)
     protected WorkflowService workflowService;
+    @Autowired
+    protected GroupService groupService;
 
     @Autowired
     private MetadataFieldService metadataFieldService;
@@ -119,6 +122,16 @@ public class WorkspaceItemServiceImpl implements WorkspaceItemService {
         // Check the user has permission to ADD to the collection
         authorizeService.authorizeAction(context, collection, Constants.ADD);
 
+        if (!multipleSubmissionAllowed(context, collection)) {
+            log.debug("Collection {} has restriction form multiple submission...", collection.getID());
+            WorkspaceItem existingWsi = getPendingSubmission(context, collection);
+            if (existingWsi != null) {
+                log.info("Found existing WorkspaceItem#{}. Don't create a new one!", existingWsi.getID());
+                return existingWsi;
+            } else {
+                log.debug("No pending submission found. Creation of new submission allowed");
+            }
+        }
         WorkspaceItem workspaceItem = workspaceItemDAO.create(context, new WorkspaceItem());
         workspaceItem.setCollection(collection);
 
@@ -342,6 +355,36 @@ public class WorkspaceItemServiceImpl implements WorkspaceItemService {
         return !authorizeService.isAdmin(context)
             && (submitter == null || (currentUser == null) || (!submitter.getID().equals(currentUser.getID())))
             && !authorizeService.authorizeActionBoolean(context, item, Constants.DELETE);
+    }
+
+    /** Is the current logged user could create multiple submission into a specific collection, possibly overriding
+     *  collection restriction?
+     * @param context The DSpace application context
+     * @param collection The collection to check
+     * @return True|False
+     * @throws SQLException raised if any database exception occurred
+     */
+    private boolean multipleSubmissionAllowed(Context context, Collection collection) throws SQLException {
+        // Administrator users are superman, they can always create multiple submission
+        if (authorizeService.isAdmin(context)) {
+            return true;
+        }
+        // Is the user member of the UNRESTRICTED_SUBMISSION group related to the collection?
+        String groupName = "COLLECTION_" + collection.getID() + "_UNRESTRICTED_SUBMISSION";
+        return groupService.isMember(context, groupName);
+    }
+
+    /**
+     * Find a pending submission into a collection for the current logged user.
+     * @param context The DSpace application context
+     * @param collection The collection to inspect
+     * @return A pending submission if exists, otherwise return null;
+     * @throws SQLException For any database exception
+     */
+    private WorkspaceItem getPendingSubmission(Context context, Collection collection) throws SQLException {
+        return this.findByCollection(context, collection).stream()
+            .filter(i -> i.getSubmitter() == context.getCurrentUser())
+            .findFirst().orElse(null);
     }
 
 }
