@@ -357,7 +357,6 @@
           <label>Abstract</label>
           <input-type>textarea</input-type>
           <hint>Enter the abstract of the item.</hint>
-          <required>You must enter an abstract for this item.</required>
         </field>
       </row>
       <row>
@@ -380,7 +379,6 @@
           <label>Subject Keywords</label>
           <input-type>tag</input-type>
           <hint>Enter appropriate subject keywords or phrases.</hint>
-          <required>You must enter some keywords for this item.</required>
         </field>
       </row>
       <row>
@@ -419,7 +417,6 @@
           <label>Degree label</label>
           <input-type>onebox</input-type>
           <hint>Enter degree labels related to this master thesis.</hint>
-          <required>You must choose a degree label for this item.</required>
         </field>
       </row>
     </form>
