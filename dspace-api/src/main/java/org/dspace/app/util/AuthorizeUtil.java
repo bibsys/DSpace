@@ -35,6 +35,7 @@ import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.utils.DSpace;
+import org.dspace.workflow.WorkflowItemService;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
 import org.dspace.xmlworkflow.storedcomponents.service.CollectionRoleService;
@@ -711,5 +712,34 @@ public class AuthorizeUtil {
             isAble = true;
         }
         return isAble;
+    }
+
+    public static boolean canCreateNewWorkspaceInCollection(Context context, Collection collection)
+        throws SQLException {
+        // 1) Check UNRESTRICTED_SUBMISSION group exists
+        //    If such a group with this name exists, then some restriction could be applicable.
+        //    If not, then no limitation could be determined.
+        GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
+        String groupName = "COLLECTION_" + collection.getID() + "_UNRESTRICTED_SUBMISSION";
+        Group group = groupService.findByName(context, groupName);
+        if (group == null) {
+            return true;
+        }
+        // 2) Check current user is member of the group
+        //    If the current-logged user is member of the previously found group, we can stop additional check.
+        if (groupService.isMember(context, group)) {
+            return true;
+        }
+        // 3) Is any workflow item exists?
+        //    At this time, the current-logged user is allowed to submit only one not-archived object.
+        //    Check any workflow item exists for the current-logged user in this collection.
+        //    No need to check about workspace item (if any exists, then the API should return it).
+        WorkflowItemService<?> workflowService = XmlWorkflowServiceFactory.getInstance().getWorkflowItemService();
+        boolean workflowExists = workflowService
+            .findBySubmitter(context, context.getCurrentUser())
+            .stream()
+            .anyMatch(i -> i.getCollection().equals(collection));
+        return !workflowExists;
+
     }
 }
