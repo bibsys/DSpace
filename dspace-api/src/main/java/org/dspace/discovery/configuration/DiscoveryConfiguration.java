@@ -44,6 +44,12 @@ public class DiscoveryConfiguration implements InitializingBean {
 
     private DiscoverySortConfiguration searchSortConfiguration;
 
+    /** Define which kind of object type should be exported */
+    private String exportableDSOType = "Item";
+
+    /** Is all metadata should be included during exportation processes? */
+    private boolean exportAllMetadata = true;
+
     private int defaultRpp = 10;
 
     private String id;
@@ -171,6 +177,22 @@ public class DiscoveryConfiguration implements InitializingBean {
 
     public void setSpellCheckEnabled(boolean spellCheckEnabled) {
         this.spellCheckEnabled = spellCheckEnabled;
+    }
+
+    public String getExportableDSOType() {
+        return exportableDSOType;
+    }
+
+    public void setExportableDSOType(String dsoType) {
+        this.exportableDSOType = dsoType;
+    }
+
+    public boolean getExportAllMetadata()  {
+        return this.exportAllMetadata;
+    }
+
+    public void setExportAllMetadata(boolean exportAll) {
+        this.exportAllMetadata = exportAll;
     }
 
     /**
