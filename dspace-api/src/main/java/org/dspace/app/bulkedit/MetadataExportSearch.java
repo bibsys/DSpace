@@ -11,6 +11,7 @@ package org.dspace.app.bulkedit;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +36,6 @@ import org.dspace.discovery.utils.DiscoverQueryBuilder;
 import org.dspace.discovery.utils.parameter.QueryBuilderSearchFilter;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
-import org.dspace.eperson.service.EPersonService;
 import org.dspace.scripts.DSpaceRunnable;
 import org.dspace.sort.SortOption;
 import org.dspace.utils.DSpace;
@@ -55,7 +55,6 @@ public class MetadataExportSearch extends DSpaceRunnable<MetadataExportSearchScr
 
     private SearchService searchService;
     private MetadataDSpaceCsvExportService metadataDSpaceCsvExportService;
-    private EPersonService ePersonService;
     private DiscoveryConfigurationService discoveryConfigurationService;
     private CommunityService communityService;
     private CollectionService collectionService;
@@ -75,7 +74,6 @@ public class MetadataExportSearch extends DSpaceRunnable<MetadataExportSearchScr
                                                          MetadataDSpaceCsvExportServiceImpl.class.getCanonicalName(),
                                                          MetadataDSpaceCsvExportService.class
                                                      );
-        ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
         discoveryConfigurationService = SearchUtils.getConfigurationService();
         communityService = ContentServiceFactory.getInstance().getCommunityService();
         collectionService = ContentServiceFactory.getInstance().getCollectionService();
@@ -140,20 +138,37 @@ public class MetadataExportSearch extends DSpaceRunnable<MetadataExportSearchScr
         }
         try {
             handler.logDebug("building query");
-            DiscoverQuery discoverQuery =
-                queryBuilder.buildQuery(context, dso, discoveryConfiguration, query, queryBuilderSearchFilters,
-                "Item", 10, Long.getLong("0"), null, SortOption.DESCENDING);
-
+            // Special check if we want to export "XmlWorkflowItem".
+            //   In this case, we don't need to define an exportable DSO type because `defaultFilterQueries` of the
+            //   discovery configuration already define DSOType for `PoolTask` OR `ClaimTask`
+            DiscoverQuery discoverQuery = null;
+            if (discoveryConfiguration.getExportableDSOType().equals("XmlWorkflowItem")) {
+                discoverQuery = queryBuilder.buildQuery(
+                    context, dso, discoveryConfiguration,
+                    query, queryBuilderSearchFilters,
+                    Collections.EMPTY_LIST,
+                    10, Long.getLong("0"), null, SortOption.DESCENDING
+                );
+            } else {
+                discoverQuery = queryBuilder.buildQuery(
+                    context, dso, discoveryConfiguration,
+                    query, queryBuilderSearchFilters,
+                    discoveryConfiguration.getExportableDSOType(),
+                    10, Long.getLong("0"), null, SortOption.DESCENDING
+                );
+            }
             handler.logDebug("creating iterator");
             Iterator<Item> itemIterator = searchService.iteratorSearch(context, dso, discoverQuery);
             handler.logDebug("creating dspacecsv");
-            DSpaceCSV dSpaceCSV = metadataDSpaceCsvExportService.export(context, itemIterator, true);
-
+            DSpaceCSV dSpaceCSV = metadataDSpaceCsvExportService.export(
+                context,
+                itemIterator,
+                discoveryConfiguration.getExportAllMetadata()
+            );
             try (InputStream is = dSpaceCSV.getInputStream()) {
                 handler.logDebug("writing to file " + getFileNameOrExportFile());
                 handler.writeFilestream(context, getFileNameOrExportFile(), is, EXPORT_CSV);
             }
-
             handleAuthorizationSystem(context);
             context.complete();
         } catch (Exception e) {
