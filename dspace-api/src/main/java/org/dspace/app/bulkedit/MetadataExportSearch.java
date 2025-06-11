@@ -10,6 +10,7 @@ package org.dspace.app.bulkedit;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -136,14 +137,34 @@ public class MetadataExportSearch extends DSpaceRunnable<MetadataExportSearchScr
             }
         }
         handler.logDebug("building query");
-        DiscoverQuery discoverQuery =
-            queryBuilder.buildQuery(context, dso, discoveryConfiguration, query, queryBuilderSearchFilters,
-            "Item", 10, Long.getLong("0"), null, SortOption.DESCENDING);
+        // Special check if we want to export "XmlWorkflowItem".
+        //   In this case, we don't need to define an exportable DSO type because `defaultFilterQueries` of the
+        //   discovery configuration already define DSOType for `PoolTask` OR `ClaimTask`
+        DiscoverQuery discoverQuery = null;
+        if (discoveryConfiguration.getExportableDSOType().equals("XmlWorkflowItem")) {
+            discoverQuery = queryBuilder.buildQuery(
+                context, dso, discoveryConfiguration,
+                query, queryBuilderSearchFilters,
+                Collections.EMPTY_LIST,
+                10, Long.getLong("0"), null, SortOption.DESCENDING
+            );
+        } else {
+            discoverQuery = queryBuilder.buildQuery(
+                context, dso, discoveryConfiguration,
+                query, queryBuilderSearchFilters,
+                discoveryConfiguration.getExportableDSOType(),
+                10, Long.getLong("0"), null, SortOption.DESCENDING
+            );
+        }
         handler.logDebug("creating iterator");
 
         Iterator<Item> itemIterator = searchService.iteratorSearch(context, dso, discoverQuery);
         handler.logDebug("creating dspacecsv");
-        DSpaceCSV dSpaceCSV = metadataDSpaceCsvExportService.export(context, itemIterator, true);
+        DSpaceCSV dSpaceCSV = metadataDSpaceCsvExportService.export(
+            context,
+            itemIterator,
+            discoveryConfiguration.getExportAllMetadata()
+        );
         handler.logDebug("writing to file " + getFileNameOrExportFile());
         handler.writeFilestream(context, getFileNameOrExportFile(), dSpaceCSV.getInputStream(), EXPORT_CSV);
         context.restoreAuthSystemState();

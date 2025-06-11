@@ -7,6 +7,8 @@
  */
 package org.dspace.app.bulkedit;
 
+import static org.dspace.core.CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -422,17 +425,13 @@ public class DSpaceCSV implements Serializable {
      * @throws Exception if something goes wrong with adding the Item
      */
     public final void addItem(Item i) throws Exception {
-        // If the item does not have an "owningCollection" the the below "getHandle()" call will fail
-        // This should not happen but is here for safety.
-        if (i.getOwningCollection() == null) {
-            return;
-        }
-
         // Create the CSV line
         DSpaceCSVLine line = new DSpaceCSVLine(i.getID());
 
-        // Add in owning collection
-        String owningCollectionHandle = i.getOwningCollection().getHandle();
+        // The item should always be linked to an "owningCollection" except if this item isn't yet published
+        String owningCollectionHandle = (i.getOwningCollection() != null)
+            ? i.getOwningCollection().getHandle()
+            : null;
         line.add("collection", owningCollectionHandle);
 
         // Add in any mapped collections
@@ -466,11 +465,7 @@ public class DSpaceCSV implements Serializable {
             // Store the item
             if (exportAll || okToExport(metadataField)) {
                 // Add authority and confidence if authority is not null
-                String mdValue = value.getValue();
-                if (value.getAuthority() != null && !"".equals(value.getAuthority())) {
-                    mdValue += authoritySeparator + value.getAuthority() + authoritySeparator + (value
-                        .getConfidence() != -1 ? value.getConfidence() : Choices.CF_ACCEPTED);
-                }
+                String mdValue = getMetadataValue(value);
                 line.add(key, mdValue);
                 if (!headings.contains(key)) {
                     headings.add(key);
@@ -479,6 +474,17 @@ public class DSpaceCSV implements Serializable {
         }
         lines.add(line);
         counter++;
+    }
+
+    private String getMetadataValue(MetadataValue value) {
+        String mdValue = (!Objects.equals(value.getValue(), PLACEHOLDER_PARENT_METADATA_VALUE))
+            ? value.getValue()
+            : "";
+        if (value.getAuthority() != null && !"".equals(value.getAuthority())) {
+            mdValue += authoritySeparator + value.getAuthority() + authoritySeparator + (value
+                .getConfidence() != -1 ? value.getConfidence() : Choices.CF_ACCEPTED);
+        }
+        return mdValue;
     }
 
     /**

@@ -91,6 +91,8 @@ import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.util.UUIDUtils;
+import org.dspace.xmlworkflow.storedcomponents.ClaimedTask;
+import org.dspace.xmlworkflow.storedcomponents.PoolTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -855,7 +857,14 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             IndexableObject res = discoverResult.getIndexableObjects().get(relativeCursor);
             relativeCursor++;
             absoluteCursor++;
-            return (Item) res.getIndexedObject();
+
+            if (res.getIndexedObject() instanceof ClaimedTask) {
+                return ((ClaimedTask) res.getIndexedObject()).getWorkflowItem().getItem();
+            } else if (res.getIndexedObject() instanceof PoolTask) {
+                return ((PoolTask) res.getIndexedObject()).getWorkflowItem().getItem();
+            } else {
+                return (Item) res.getIndexedObject();
+            }
         }
     }
 
