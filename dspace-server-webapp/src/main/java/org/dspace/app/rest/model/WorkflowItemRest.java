@@ -18,7 +18,8 @@ import org.dspace.app.rest.RestResourceController;
     @LinkRest(name = WorkflowItemRest.STEP, method = "getStep"),
     @LinkRest(name = WorkflowItemRest.SUBMITTER, method = "getWorkflowItemSubmitter"),
     @LinkRest(name = WorkflowItemRest.ITEM, method = "getWorkflowItemItem"),
-    @LinkRest(name = WorkflowItemRest.COLLECTION, method = "getWorkflowItemCollection")
+    @LinkRest(name = WorkflowItemRest.COLLECTION, method = "getWorkflowItemCollection"),
+    @LinkRest(name = WorkflowItemRest.CLAIMED, method = "getWorkflowItemClaimedTasks"),
 })
 public class WorkflowItemRest extends AInprogressSubmissionRest<Integer> {
     public static final String NAME = "workflowitem";
@@ -30,6 +31,7 @@ public class WorkflowItemRest extends AInprogressSubmissionRest<Integer> {
     public static final String SUBMITTER = "submitter";
     public static final String ITEM = "item";
     public static final String COLLECTION = "collection";
+    public static final String CLAIMED = "claimedTasks";
 
 
     @Override
