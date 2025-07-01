@@ -23,7 +23,7 @@
             "mode": "role",
             "type": "submitter",
             "groups": [
-                "Manager"
+                "Journal manager"
             ]
         }, {
             "mode": "role",

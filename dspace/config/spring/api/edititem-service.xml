@@ -171,8 +171,14 @@
                             <property name="name" value="FULL" />
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
-                                    ITEM_ADMIN
+                                    GROUP
                                 </value>
+                            </property>
+                            <property name="groups">
+                                <list>
+                                    <value>Administrator</value>
+                                    <value>Journal manager</value>
+                                </list>
                             </property>
                             <property name="submissionDefinition" value="journal-edit" />
                         </bean>
