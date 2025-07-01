@@ -73,9 +73,21 @@
     </dc-type>
     <dc-type>
         <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>eissn</qualifier>
+        <scope-note>Electronic International Standard Serial Number</scope-note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
         <element>language</element>
         <qualifier>iso-639-2</qualifier>
         <scope_note>ISO 639-2 code language</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>publisher</element>
+        <qualifier>location</qualifier>
+        <scope-note>The location of the entity responsible for publication, distribution, or imprint.</scope-note>
     </dc-type>
     <dc-type>
         <schema>dc</schema>
@@ -515,7 +527,13 @@
         <schema>publication</schema>
         <element>serial</element>
         <qualifier>issn</qualifier>
-        <scope_note>To specify a potential issn identifier for the serial</scope_note>
+        <scope_note>To specify a issn identifier for the serial</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>serial</element>
+        <qualifier>eissn</qualifier>
+        <scope_note>To specify a potential e-issn identifier for the serial</scope_note>
     </dc-type>
     <!-- DISSERTATION SCHEMA -->
     <dc-schema>
@@ -562,5 +580,20 @@
         <element>affiliation</element>
         <qualifier>department</qualifier>
         <scope_note>A department for a person's affiliation</scope_note>
+    </dc-type>
+    <!-- JOURNAL SCHEMA -->
+    <dc-schema>
+        <name>journal</name>
+        <namespace>https://uclouvain.be/ontology/journal</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>journal</schema>
+        <element>peerReviewed</element>
+        <scope_note>If the journal has been reviewed by pairs.</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>journal</schema>
+        <element>statusCode</element>
+        <scope_note>The status code of the journal (Active, Ceased or Unknown)</scope_note>
     </dc-type>
 </dspace-dc-types>

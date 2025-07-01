@@ -20,7 +20,7 @@
         "permissions": [{
             "type": "submitter",
             "groups": [
-                "Manager"
+                "Journal manager"
             ]
         }, {
             "type": "reviewer",
