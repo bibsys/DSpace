@@ -203,65 +203,6 @@
         </field>
       </row>
     </form>
-
-    <form name="journal">
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>issn</dc-qualifier>
-          <label>ISSN</label>
-          <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>title</dc-element>
-          <label>Title</label>
-          <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required>You must enter a main title for this item.</required>
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>publisher</dc-element>
-          <label>Publisher</label>
-          <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>subject</dc-element>
-          <label>Subject Keywords</label>
-          <input-type>tag</input-type>
-          <repeatable>true</repeatable>
-          <required />
-          <hint>Type the appropriate keyword or phrase and press Enter to add it.</hint>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>description</dc-element>
-          <label>Description</label>
-          <input-type>textarea</input-type>
-          <repeatable>false</repeatable>
-          <required />
-          <hint />
-        </field>
-      </row>
-    </form>
     <form name="person-person-affiliation-institution">
       <row>
         <field>
@@ -1250,7 +1191,7 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>name</dc-qualifier>
           <label>Editor name</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1259,7 +1200,7 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>location</dc-qualifier>
           <label>Editor location</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1653,6 +1594,97 @@
         <field>
           <dc-schema>publication</dc-schema>
           <dc-element>serial</dc-element>
+          <dc-qualifier>issn</dc-qualifier>
+          <label>ISSN</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the ISSN of the host serial</hint>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>eissn</dc-qualifier>
+          <label>e-ISSN</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the e-ISSN of the host serial</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>issn</dc-qualifier>
+          <label>ISSN</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the ISSN of the host serial</hint>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>eissn</dc-qualifier>
+          <label>e-ISSN</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the e-ISSN of the host serial</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>peerReviewed</dc-qualifier>
+          <label>Journal peer-reviewed</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>checkbox</input-type>
+          <hint>The linked journal is peer-reviewed</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>peerReviewed</dc-qualifier>
+          <label>Journal peer-reviewed</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
+          <input-type>checkbox</input-type>
+          <hint>The linked journal is peer-reviewed</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <label>Editor name</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the editor of this journal.</hint>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>location</dc-qualifier>
+          <label>Editor location</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the editor location of this journal.</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
           <dc-qualifier>volume</dc-qualifier>
           <label>Volume</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
@@ -1744,58 +1776,6 @@
             <setting name="useCurrentYearAsDefault">false</setting>
             <setting name="maxYearDelta">2</setting>
             <setting name="minYear">1925</setting>
-          </settings>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>publication</dc-schema>
-          <dc-element>serial</dc-element>
-          <dc-qualifier>issn</dc-qualifier>
-          <label>ISSN</label>
-          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the ISSN of the host serial</hint>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>publication</dc-schema>
-          <dc-element>serial</dc-element>
-          <dc-qualifier>issn</dc-qualifier>
-          <label>ISSN</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
-          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the ISSN of the host serial</hint>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>publication</dc-schema>
-          <dc-element>serial</dc-element>
-          <dc-qualifier>peerReviewed</dc-qualifier>
-          <label>Journal peer-reviewed</label>
-          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
-          <input-type>checkbox</input-type>
-          <hint>The linked journal is peer-reviewed</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>publication</dc-schema>
-          <dc-element>serial</dc-element>
-          <dc-qualifier>peerReviewed</dc-qualifier>
-          <label>Journal peer-reviewed</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
-          <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
-          <input-type>checkbox</input-type>
-          <hint>The linked journal is peer-reviewed</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
           </settings>
         </field>
       </row>
@@ -2301,6 +2281,98 @@
           <input-type>date</input-type>
           <hint>Please provide the defned date of the dissertation.</hint>
           <required>You must enter at least the year.</required>
+        </field>
+      </row>
+    </form>
+    <form name="journal">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>title</dc-element>
+          <repeatable>false</repeatable>
+          <label>Title</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required>You must enter a main title for this journal.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>issn</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>ISSN</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+          <regex>^\d{4}-\d{3}[\dX]$</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid ISSN format</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>eissn</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>eISSN</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+          <regex>^\d{4}-\d{3}[\dX]$</regex>
+          <settings>
+            <setting name="regexErrorMessage">Invalid eISSN format</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>publisher</dc-element>
+          <repeatable>false</repeatable>
+          <label>Publisher</label>
+          <input-type>onebox</input-type>
+          <hint>Provide the publisher name.</hint>
+          <required>Please provide a publisher name.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>publisher</dc-element>
+          <dc-qualifier>location</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Publisher location</label>
+          <input-type>onebox</input-type>
+          <hint>Provide the publisher location (could be a city, country, etc).</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>journal</dc-schema>
+          <dc-element>peerReviewed</dc-element>
+          <repeatable>flase</repeatable>
+          <label>Journal peer-reviewed</label>
+          <input-type>checkbox</input-type>
+          <hint>Has the journal been reviewed by the pairs ?</hint>
+          <required />
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>journal</dc-schema>
+          <dc-element>statusCode</dc-element>
+          <repeatable>false</repeatable>
+          <label>Journal status code</label>
+          <input-type value-pairs-name="journal_status_codes">dropdown</input-type>
+          <hint />
+          <required />
         </field>
       </row>
     </form>
@@ -4074,6 +4146,20 @@
       <pair>
           <displayed-value>Ingénierie biologique, agronomique et environnementale</displayed-value>
           <stored-value>Ingénierie biologique, agronomique et environnementale</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="journal_status_codes" dc-term="journal_status_codes">
+      <pair>
+        <displayed-value>Active</displayed-value>
+        <stored-value>active</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Ceased</displayed-value>
+        <stored-value>ceased</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Unknown</displayed-value>
+        <stored-value>unknown</stored-value>
       </pair>
     </value-pairs>
   </form-value-pairs>
