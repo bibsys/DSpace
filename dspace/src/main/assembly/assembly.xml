@@ -66,6 +66,11 @@
          <directory>solr</directory>
          <outputDirectory>solr</outputDirectory>
       </fileSet>
+      <!-- UCLouvain addition, copy all assets. -->
+      <fileSet>
+         <directory>assets</directory>
+         <outputDirectory>assets</outputDirectory>
+      </fileSet>
    </fileSets>
 
    <!--
