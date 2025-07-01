@@ -25,14 +25,20 @@
         <property name="enhancers">
             <util:list>
                 <!-- Put enhancer configuration bean here -->
-                 <ref bean="publicationAuthorEnhancer"/>
-                 <ref bean="publicationAuthorEmailEnhancer"/>
-                 <ref bean="publicationAuthorORCIDEnhancer"/>
-                 <ref bean="publicationInstitutionEnhancer"/>
-                 <ref bean="publicationDepartmentEnhancer"/>
-                 <ref bean="personInstitutionEnhancer"/>
-                 <ref bean="personDepartmentEnhancer"/>
-                 <ref bean="affiliationParentEnhancer"/>
+                <ref bean="publicationAuthorEnhancer"/>
+                <ref bean="publicationAuthorEmailEnhancer"/>
+                <ref bean="publicationAuthorORCIDEnhancer"/>
+                <ref bean="publicationInstitutionEnhancer"/>
+                <ref bean="publicationDepartmentEnhancer"/>
+                <ref bean="publicationJournalTitleEnhancer"/>
+                <ref bean="publicationJournalISSNEnhancer"/>
+                <ref bean="publicationJournalEISSNEnhancer"/>
+                <ref bean="publicationJournalPeerReviewedEnhancer"/>
+                <ref bean="publicationJournalPublisherEnhancer"/>
+                <ref bean="publicationJournalPublisherLocationEnhancer"/>
+                <ref bean="personInstitutionEnhancer"/>
+                <ref bean="personDepartmentEnhancer"/>
+                <ref bean="affiliationParentEnhancer"/>
             </util:list>
         </property>
     </bean>
@@ -104,6 +110,90 @@
         <property name="targetMetadataFields">
             <util:list>
                 <value>oairecerif.affiliation.orgunitDepartment</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationJournalTitleEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Journal"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.title</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>dc.relation.journal</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationJournalISSNEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Journal"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.identifier.issn</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>publication.serial.issn</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationJournalEISSNEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Journal"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.identifier.eissn</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>publication.serial.eissn</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationJournalPeerReviewedEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Journal"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>journal.peerReviewed</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>publication.serial.peerReviewed</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationJournalPublisherEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Journal"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.publisher</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>publication.editor.name</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationJournalPublisherLocationEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Journal"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.publisher.location</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>publication.editor.location</value>
             </util:list>
         </property>
     </bean>
