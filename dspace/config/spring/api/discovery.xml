@@ -153,6 +153,9 @@
                 <!-- "supervision" is a special entry to search for all workspace and workflow items if you are an administrator -->
                 <entry key="supervision" value-ref="supervisionConfiguration" />
 
+                <!-- "journals" is a special entry to search for all 'journal' items for managing purposes. -->
+                <entry key="journals" value-ref="journalsConfiguration" />
+
                 <entry key="undiscoverable" value-ref="unDiscoverableItems" />
                 <entry key="administrativeView" value-ref="administrativeView" />
 
@@ -258,6 +261,43 @@
                     </list>
                 </entry>
             </map>
+        </property>
+    </bean>
+
+    <bean id="journalsConfiguration" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
+        <property name="id" value="journalsConfiguration"/>
+        <property name="sidebarFacets">
+            <list>
+                <ref bean="searchFilterJournalPublisher" />
+                <ref bean="searchFilterJournalPeerReviewed" />
+                <ref bean="searchFilterJournalStatusCode" />
+            </list>
+        </property>
+        <property name="searchFilters">
+            <list>
+                <ref bean="searchFilterJournalPublisher" />
+                <ref bean="searchFilterJournalPeerReviewed" />
+                <ref bean="searchFilterJournalStatusCode" />
+            </list>
+        </property>
+        <property name="searchSortConfiguration">
+            <bean class="org.dspace.discovery.configuration.DiscoverySortConfiguration">
+                <property name="defaultSortField" ref="sortLastModified" />
+                <property name="sortFields">
+                    <list>
+                        <ref bean="sortLastModified" />
+                        <ref bean="sortTitleAsc" />
+                        <ref bean="sortDateIssuedDesc" />
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="defaultFilterQueries">
+            <list>
+                <value>search.resourcetype:Item OR search.resourcetype:WorkspaceItem OR search.resourcetype:XmlWorkflowItem</value>
+                <value>search.entitytype:Journal</value>
+                <!-- <value>withdrawn:false AND discoverable:true</value> -->
+            </list>
         </property>
     </bean>
 
@@ -748,6 +788,9 @@
                 <ref bean="searchFilterIsJournalOfPublicationRelation"/>
                 <ref bean="searchFilterLanguage" />
                 <ref bean="searchFilterAccessType"/>
+                <ref bean="searchFilterJournalPublisher"/>
+                <ref bean="searchFilterJournalPeerReviewed"/>
+                <ref bean="searchFilterJournalStatusCode"/>
             </list>
         </property>
         <!--The sort filters for the discovery search (same as defaultConfiguration above)-->
@@ -878,6 +921,7 @@
             <list>
                 <!--Only find items, workspace and accepted for workflow -->
                 <value>search.resourcetype:Item OR search.resourcetype:WorkspaceItem OR search.resourcetype:XmlWorkflowItem</value>
+                <value>search.entitytype:Publication OR search.entitytype:Person</value>
             </list>
         </property>
         <!--Default result per page  -->
@@ -2866,6 +2910,42 @@
     </bean>
 
     <!--Search filter configuration beans-->
+
+    <bean id="searchFilterJournalPublisher" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="journalPublisher" />
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.publisher</value>
+            </list>
+        </property>
+        <property name="exposeFilter" value="true" />
+        <property name="isOpenByDefault" value="true"/>
+    </bean>
+
+    <bean id="searchFilterJournalPeerReviewed" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="journalPeerReviewed" />
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>journal.peerReviewed</value>
+            </list>
+        </property>
+        <property name="exposeFilter" value="false" />
+        <property name="isOpenByDefault" value="true"/>
+    </bean>
+
+    <bean id="searchFilterJournalStatusCode" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="journalStatusCode" />
+        <property name="type" value="text"/>
+        <property name="metadataFields">
+            <list>
+                <value>journal.statusCode</value>
+            </list>
+        </property>
+        <property name="exposeFilter" value="false" />
+        <property name="isOpenByDefault" value="true"/>
+    </bean>
 
     <bean id="searchFilterAccessType" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
         <property name="indexFieldName" value="accessType"/>
