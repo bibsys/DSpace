@@ -187,7 +187,7 @@ public class DedupUtils implements IDedupUtils {
         findDuplicateBySignature.addFilterQuery(filter);
 
         findDuplicateBySignature.setFields("dedup.ids", "dedup.note", "dedup.flag");
-        findDuplicateBySignature.setRows(Integer.MAX_VALUE);
+        findDuplicateBySignature.setRows(99999);
 
         if (configurationService.getBooleanProperty("deduplication.tool.duplicatechecker.ignorewithdrawn")) {
             findDuplicateBySignature.addFilterQuery("-" + SolrDedupServiceImpl.RESOURCE_WITHDRAWN_FIELD + ":true");
@@ -625,7 +625,7 @@ public class DedupUtils implements IDedupUtils {
                         .addFilterQuery(SolrDedupServiceImpl.RESOURCE_SIGNATURETYPE_FIELD + ":" + signatureType);
                 solrQueryInternal.addFilterQuery(facetHit.getAsFilterQuery());
                 solrQueryInternal.addFilterQuery(SolrDedupServiceImpl.RESOURCE_RESOURCETYPE_FIELD + ":" + resourceType);
-                solrQueryInternal.setRows(Integer.MAX_VALUE);
+                solrQueryInternal.setRows(99999);
                 solrQueryInternal.addFilterQuery(SolrDedupServiceImpl.RESOURCE_FLAG_FIELD + ":"
                         + SolrDedupServiceImpl.DeduplicationFlag.MATCH.getDescription());
                 if (configurationService.getBooleanProperty("deduplication.tool.duplicatechecker.ignorewithdrawn")) {
