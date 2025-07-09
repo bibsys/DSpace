@@ -9,154 +9,16 @@
 
 	Developed by DSpace @ Lyncode <dspace@lyncode.com>
  -->
-<Configuration indented="false" maxListIdentifiersSize="100" maxListRecordsSize="100"
+<Configuration indented="true" maxListIdentifiersSize="100" maxListRecordsSize="100"
     maxListSetsSize="100" stylesheet="static/style.xsl" xmlns="http://www.lyncode.com/XOAIConfiguration">
 
     <Contexts>
         <Context baseurl="request" name="Default Context">
-            <!-- Restrict access to hidden items by default -->
-            <Filter ref="defaultFilter"/>
-
+            <Filter ref="masterThesisFilter"/>
             <Format ref="oaidc"/>
-            <Format ref="mets"/>
-            <!--  <Format ref="xoai"/>-->
-            <Format ref="didl"/>
-            <Format ref="dim"/>
-            <Format ref="ore"/>
-            <Format ref="rdf"/>
-            <Format ref="etdms"/>
             <Format ref="mods"/>
-            <Format ref="qdc"/>
-            <Format ref="marc"/>
-            <Format ref="uketd_dc"/>
-            <Format ref="rioxx"/>
-            <!--<Format ref="junii2" />-->
-            <Description>
-                This is the default context of the DSpace OAI-PMH data provider.
-            </Description>
+            <Description>This context is used to list all master theses</Description>
         </Context>
-
-        <!--
-            Driver Guidelines:
-
-            - https://guidelines.openaire.eu/en/latest/literature/use_of_oai_pmh.html
-         -->
-        <Context baseurl="driver" name="Driver Context">
-            <!-- Date format, field prefixes, etc are ensured by the transformer -->
-            <Transformer ref="driverTransformer"/>
-            <!-- The driver filter -->
-            <Filter ref="driverFilter"/>
-            <!-- Just an alias, in fact it returns all items within the driver context -->
-            <Set ref="driverSet"/>
-            <!-- Metadata Formats -->
-            <Format ref="oaidc"/>
-            <Format ref="mets"/>
-            <Format ref="didl"/>
-            <Description>
-                This context complies with Driver rules.
-            </Description>
-        </Context>
-
-        <!--
-            Openaire Guidelines 3.0:
-
-            - https://guidelines.openaire.eu/
-
-            There is a limitation over the embargoedEndDate parameter:
-
-            - Predefined DSpace fields don't allow to set this up with a default.
-         -->
-        <Context baseurl="openaire" name="Openaire Context">
-            <!-- Date format, field prefixes, etc are ensured by the transformer -->
-            <Transformer ref="openaireTransformer"/>
-            <!-- Openaire filter -->
-            <Filter ref="openAireFilter"/>
-            <!-- Just an alias, in fact it returns all items within the driver context -->
-            <Set ref="openaireFundedResourcesSet"/>
-            <!-- Metadata Formats -->
-            <Format ref="oaidc"/>
-            <Format ref="mets"/>
-            <Description>
-                This context complies with OpenAIRE Guidelines for Literature Repositories v3.0.
-            </Description>
-        </Context>
-
-        <!--
-            Openaire Guidelines 4.0:
-
-            - https://openaire-guidelines-for-literature-repository-managers.readthedocs.io/en/v4.0.0/
-
-            There is a limitation over the embargoedEndDate parameter:
-
-            - Predefined DSpace fields don't allow to set this up with a default.
-         -->
-        <Context baseurl="openaire4" name="Openaire 4 Context">
-            <!-- Date format, field prefixes, etc are ensured by the transformer -->
-            <Transformer ref="openaire4Transformer"/>
-            <!-- Openaire filter -->
-            <Filter ref="openaire4Filter"/>
-            <!-- Metadata Formats -->
-            <Format ref="oaidc"/>
-            <Format ref="oaiopenaire"/>
-            <Description>
-                This contexts complies with Openaire Guidelines for Literature Repositories v4.0.
-            </Description>
-        </Context>
-        <!--
-            Rioxx Guidelines v3.0 Final:
-            - https://www.rioxx.net/profiles/v3-0-final
-
-         -->
-        <Context baseurl="rioxx" name="Rioxx Context">
-            <!-- Date format, field prefixes, etc are ensured by the transformer -->
-            <Transformer ref="rioxxTransformer"/>
-            <Filter ref="rioxxFilter"/>
-            <!-- Metadata Formats -->
-            <Format ref="oaidc"/>
-            <Format ref="rioxx"/>
-            <Format ref="qdc"/>
-            <Description>
-                This context complies with the Rioxx metadata profile version 3
-            </Description>
-        </Context>
-
-
-        <Context baseurl="openairecris" name="OpenAIRE Context for CRIS System">
-            <!-- Date format, field prefixes, etc are ensured by the transformer -->
-            <Transformer ref="openairecrisTransformer"/>
-            <Filter ref="openAireCRISFilter"/>
-            <!-- Just an alias, in fact it returns all items within the driver context -->
-            <Set ref="openairePublicationsCrisSet"/>
-            <Set ref="openaireProductsCrisSet"/>
-            <Set ref="openairePatentsCrisSet"/>
-            <Set ref="openairePersonsCrisSet"/>
-            <Set ref="openaireOrgunitsCrisSet"/>
-            <Set ref="openaireProjectsCrisSet"/>
-            <Set ref="openaireEventsCrisSet"/>
-            <Set ref="openaireEquipmentsCrisSet"/>
-            <Set ref="openaireFundingCrisSet"/>
-            <!-- Metadata Formats -->
-            <Format ref="oaidc"/>
-            <Format ref="oai_cerif"/>
-            <Description>
-                This contexts complies with OpenAIRE rules for CRIS system v 1.1.1
-            </Description>
-        </Context>
-
-        <Context baseurl="openairedata" name="OpenAIRE Data Repository Context">
-            <!-- OpenAIRE DataArchive filter -->
-            <Filter ref="openaireDataFilter"/>
-            <!-- Just an alias, in fact it returns all items within the driver context -->
-            <Set ref="openaireDataSet"/>
-            <!-- Metadata Formats -->
-            <Format ref="oaidc"/>
-            <!-- set the reference at the new format called datacite41_openaire -->
-            <Format ref="datacite41_openaire"/>
-            <Description>
-                This contexts complies with Data Archive OpenAIRE rules.
-            </Description>
-        </Context>
-
     </Contexts>
 
 
@@ -302,6 +164,36 @@
 
 
     <Filters>
+        <!-- MasterThesis filter for records returned by OAI-PMH.
+             By default, return records:
+                * If dspace.entity.type is "MasterThesis",
+                * AND "title" & "author" fields both exist
+                * AND Item is either publicly accessible OR Withdrawn (for tombstones)  //TODO :: test for refused thesis
+             This filter is used by the default context ([oai]/masterthesis).
+        -->
+        <Filter id="masterThesisFilter">
+            <Definition>
+                <And>
+                    <LeftCondition>
+                        <And>
+                            <LeftCondition><Custom ref="masterThesisSetFilter"/></LeftCondition>
+                            <RightCondition>
+                                <And>
+                                    <LeftCondition><Custom ref="titleExistsCondition"/></LeftCondition>
+                                    <RightCondition><Custom ref="authorExistsCondition"/></RightCondition>
+                                </And>
+                            </RightCondition>
+                        </And>
+                    </LeftCondition>
+                    <RightCondition>
+                        <Or>
+                            <LeftCondition><Custom ref="itemAccessCondition"/></LeftCondition>
+                            <RightCondition><Custom ref="itemWithdrawnCondition"/></RightCondition>
+                        </Or>
+                    </RightCondition>
+                </And>
+            </Definition>
+        </Filter>
         <!-- DRIVER filter for records returned by OAI-PMH.
              By default, return an Item record:
                * If a Title & Author field both exist
@@ -634,6 +526,16 @@
                 </And>
             </Definition>
         </Filter>
+
+        <!-- This condition determine if an Item has a "dspace.entity.type" field equals to "MasterThesis -->
+        <CustomCondition id="masterThesisSetFilter">
+            <Class>org.dspace.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
+            <Configuration>
+                <string name="field">dspace.entity.type</string>
+                <string name="operator">equal</string>
+                <string name="value">MasterThesis</string>
+            </Configuration>
+        </CustomCondition>
 
         <!-- This condition determines if an Item has a "dc.type" field
              which contains "Thesis". -->
