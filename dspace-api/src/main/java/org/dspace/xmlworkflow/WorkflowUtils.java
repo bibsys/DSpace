@@ -154,6 +154,9 @@ public class WorkflowUtils extends Util {
      * @param exception the exception causing the error, or null
      */
     public static void sendAlert(HttpServletRequest request, Exception exception) {
+        if (!configurationService.getBooleanProperty("mail.message.step.notifyOfStepError", false)) {
+            return;
+        }
         String logInfo = WorkflowUtils.getRequestLogInfo(request);
         Context c = (Context) request.getAttribute("dspace.context");
 
