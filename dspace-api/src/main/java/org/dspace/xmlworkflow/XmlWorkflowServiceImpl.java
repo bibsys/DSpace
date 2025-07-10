@@ -288,6 +288,9 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             // suppress email, and delete key
             noEMail.remove(wfi.getItem().getID());
         } else {
+            if (configurationService.getBooleanProperty("mail.message.step.notifyOfTaskActivation.disabled", true)) {
+                return;
+            }
             Email mail = Email.getEmail(I18nUtil.getEmailFilename(c.getCurrentLocale(), emailTemplate));
             for (String argument : arguments) {
                 mail.addArgument(argument);
@@ -714,6 +717,10 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
      */
     protected void notifyOfArchive(Context context, Item item, Collection coll)
         throws SQLException, IOException {
+        // Check into the configuration if this notification must be sent
+        if (configurationService.getBooleanProperty("mail.message.step.notifyOfArchive.disabled", true)) {
+            return;
+        }
         try {
             // Get submitter
             EPerson ep = item.getSubmitter();
@@ -757,6 +764,10 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
     public void notifyOfCuration(Context c, XmlWorkflowItem wi,
             List<EPerson> ePeople, String taskName, String action, String message)
             throws SQLException, IOException {
+        // Check into the configuration if this notification must be sent
+        if (configurationService.getBooleanProperty("mail.message.step.notifyOfCuration.disabled", true)) {
+            return;
+        }
         try {
             // Get the item title
             String title = getItemTitle(wi);
