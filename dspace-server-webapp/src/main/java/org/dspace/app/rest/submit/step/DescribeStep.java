@@ -95,7 +95,7 @@ public class DescribeStep extends AbstractProcessingStep {
         for (DCInput[] row : inputConfig.getFields()) {
             for (DCInput input : row) {
                 List<String> fieldsName = new ArrayList<String>();
-                if (input.isQualdropValue()) {
+                if (input.isQualdropValue() && input.isAllowedFor(typeBindFields)) {
                     for (Object qualifier : input.getPairs()) {
                         fieldsName.add(input.getFieldName() + "." + (String) qualifier);
                     }
@@ -108,7 +108,7 @@ public class DescribeStep extends AbstractProcessingStep {
                     readField(obj, config, data, inputConfigChild);
                 } else {
                     String fieldName = input.getFieldName();
-                    if (fieldName != null) {
+                    if (fieldName != null && input.isAllowedFor(typeBindFields)) {
                         fieldsName.add(fieldName);
                     }
                 }
