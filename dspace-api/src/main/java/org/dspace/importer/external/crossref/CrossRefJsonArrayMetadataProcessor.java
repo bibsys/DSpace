@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 /**
  * Base processor to extract a value from an array of nodes.
- * This is handy if you whish to extract a value from a specific node
+ * This is handy if you wish to extract a value from a specific node
  * in an array that has a given property value.
  * 
  * For example, if we have the following json array:

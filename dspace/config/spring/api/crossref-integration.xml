@@ -28,6 +28,7 @@
         <entry key-ref="dcJournalTitle" value-ref="crossrefJournalContrib"/>
         <entry key-ref="crossref.id" value-ref="crossrefIDContrib"/>
         <entry key-ref="publication.serial.issn" value-ref="crossrefIdentifierISSN" />
+        <entry key-ref="publication.serial.eissn" value-ref="crossrefIdentifierEISSN" />
         <entry key-ref="publication.serial.volume" value-ref="crossrefVolume" />
         <entry key-ref="publication.serial.issue" value-ref="crossrefIssue" />
         <entry key-ref="publication.serial.pages" value-ref="crossrefSerialPagination"/>
@@ -119,10 +120,30 @@
 
     <bean id="crossrefIdentifierISSN" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
         <property name="field" ref="publication.serial.issn"/>
-        <property name="query" value="/ISSN"/>
+        <property name="metadataProcessor" ref="crossrefISSNMetadataProcessor"/>
     </bean>
+
+    <bean id="crossrefISSNMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefJsonArrayMetadataProcessor">
+        <property name="pathToArray" value="/issn-type"/>
+        <property name="nodeKeyToCheck" value="type"/>
+        <property name="nodeValueToCheck" value="print"/>
+        <property name="nodeKeyToExtract" value="value"/>
+    </bean>
+
     <bean id="crossref.issn" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
         <constructor-arg value="dc.relation.issn"/>
+    </bean>
+
+    <bean id="crossrefIdentifierEISSN" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+        <property name="field" ref="publication.serial.eissn"/>
+        <property name="metadataProcessor" ref="crossrefEISSNMetadataProcessor"/>
+    </bean>
+
+    <bean id="crossrefEISSNMetadataProcessor" class="org.dspace.importer.external.crossref.CrossRefJsonArrayMetadataProcessor">
+        <property name="pathToArray" value="/issn-type"/>
+        <property name="nodeKeyToCheck" value="type"/>
+        <property name="nodeValueToCheck" value="electronic"/>
+        <property name="nodeKeyToExtract" value="value"/>
     </bean>
 
     <bean id="crossrefVolume" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
