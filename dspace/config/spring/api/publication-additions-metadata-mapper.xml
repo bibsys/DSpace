@@ -19,6 +19,9 @@
     <bean id="publication.serial.issn" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
         <constructor-arg value="publication.serial.issn"/>
     </bean>
+    <bean id="publication.serial.eissn" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="publication.serial.eissn"/>
+    </bean>
     <bean id="publication.serial.volume" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
         <constructor-arg value="publication.serial.volume"/>
     </bean>
