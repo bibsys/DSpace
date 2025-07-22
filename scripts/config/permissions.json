@@ -31,6 +31,12 @@
             "groups": [
                 "Journal manager"
             ]
+        }, {
+            "mode": "permission",
+            "type": "remove",
+            "groups": [
+                "Journal manager"
+            ]
         }]
     }, {
         "collection_name": "Dissertation",
