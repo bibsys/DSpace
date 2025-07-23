@@ -264,19 +264,21 @@ do
   permissions_length=$(jq ".collections[${i}].permissions | length" "${PERMISSIONS_FILE}")
   for (( j=0; j<permissions_length; j++))
   do
-    workflow_role=$(jq .collections[${i}].permissions[$j].type "${PERMISSIONS_FILE}")
+    permission=$(jq .collections[${i}].permissions[$j].type "${PERMISSIONS_FILE}")
+    mode=$(jq .collections[${i}].permissions[$j].mode "${PERMISSIONS_FILE}")
     groups=$(jq ".collections[${i}].permissions[$j].groups[] | @sh" "${PERMISSIONS_FILE}" \
              | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
     IFS=',' groups=($groups)
     for group_name in "${groups[@]}"
     do
-      echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${workflow_role}${NC}..."
+      echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${permission}${NC}..."
       docker exec ${BACKEND} sh -c "\
             /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement \
             --enable \
             --collection ${collection_name} \
-            --role ${workflow_role} \
-            --group ${group_name}" >> "${LOG_PATH}"
+            --permission ${permission} \
+            --group ${group_name} \
+            --mode ${mode}" >> "${LOG_PATH}"
       if [ $? -ne 0 ]
       then
           error_msg+exit "❌ Error during permission management"
