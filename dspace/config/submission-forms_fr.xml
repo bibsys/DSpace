@@ -352,7 +352,6 @@
           <label>Résumé</label>
           <input-type>textarea</input-type>
           <hint>Entrez le résumé du mémoire</hint>
-          <required>Vous devez spécifier un résumé</required>
         </field>
       </row>
       <row>
@@ -375,7 +374,6 @@
           <label>Mots-clés</label>
           <input-type>tag</input-type>
           <hint>Entrez des mots-clés permettant de décrire le mémoire</hint>
-          <required>Vous devez spécifier un résumé</required>
         </field>
       </row>
       <row>
@@ -414,7 +412,6 @@
           <label>Diplôme</label>
           <input-type>onebox</input-type>
           <hint>Entrez le ou les noms des diplômes reliés à ce mémoire. (Exemple: "Master [120] en imagerie médicale")</hint>
-          <required>Vous devez spécifier un diplôme</required>
         </field>
       </row>
     </form>
