@@ -327,7 +327,7 @@
           <required />
           <hint />
         </field>
-        <field>
+        <!-- <field>
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>institution</dc-qualifier>
@@ -335,6 +335,30 @@
           <input-type>group</input-type>
           <repeatable>true</repeatable>
           <hint>Give information about your affiliations (institution and department).</hint>
+        </field> -->
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>institution</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Institution</label>
+          <style>col-3</style>
+          <input-type>institution-affiliation-select</input-type>
+          <hint>Enter the name of the institution of the affiliation.</hint>
+          <required>Please enter an affiliation institution for this profile.</required>
+        </field>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>department</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Affiliation Department</label>
+          <style>col-9</style>
+          <input-type>department-affiliation-select</input-type>
+          <hint>Enter the department of the affiliation.</hint>
+          <required>Please enter an affiliation department for this profile.</required>
         </field>
       </row>
       <row>
@@ -875,7 +899,8 @@
           <repeatable>false</repeatable>
           <label>Author's ORCID</label>
           <input-type>onebox</input-type>
-          <hint>Enter the ORCID of the author.</hint>
+          <hint>The ORCID of the selected author.</hint>
+          <readonly>all</readonly>
         </field>
       </row>
       <!-- The role depends on the selected main document type -->
@@ -961,6 +986,18 @@
           <input-type value-pairs-name="publication_roles_patent">dropdown</input-type>
           <hint>Enter the role of the author regarding the publication.</hint>
           <required>Please provide a role for this author.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>institution</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Author's Institution</label>
+          <input-type>hidden</input-type>
+          <hint>Enter the institution of the author</hint>
+          <readonly>all</readonly>
         </field>
       </row>
     </form>
