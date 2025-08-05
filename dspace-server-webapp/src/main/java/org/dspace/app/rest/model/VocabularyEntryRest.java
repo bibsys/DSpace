@@ -12,15 +12,17 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.dspace.app.rest.RestResourceController;
 
 /**
  * An entry in a Vocabulary
  *
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
-public class VocabularyEntryRest implements RestModel {
+public class VocabularyEntryRest extends RestAddressableModel {
     public static final String NAME = "vocabularyEntry";
     public static final String PLURAL_NAME = "vocabularyEntries";
+    public static final String CATEGORY = RestAddressableModel.SUBMISSION;
 
     @JsonInclude(Include.NON_NULL)
     private String authority;
@@ -91,5 +93,15 @@ public class VocabularyEntryRest implements RestModel {
     @Override
     public String getTypePlural() {
         return PLURAL_NAME;
+    }
+
+    @Override
+    public Class getController() {
+        return RestResourceController.class;
+    }
+
+    @Override
+    public String getCategory() {
+        return CATEGORY;
     }
 }
