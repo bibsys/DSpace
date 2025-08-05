@@ -38,6 +38,12 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
         Map<String, String> extras = new HashMap<String, String>();
         String email = this.itemService.getMetadataFirstValue(item, "person", "email", null, null);
         String orcid = this.itemService.getMetadataFirstValue(item, "person", "identifier", "orcid", null);
+        String institution = this.itemService.getMetadataFirstValue(item, "person", "affiliation", "institution", null);
+
+        extras.put("data-authors_email", "");
+        extras.put("data-authors_identifier_orcid", "");
+        extras.put("data-authors_institution_code", "");
+
         if (email != null) {
             extras.put("data-authors_email", email);
             extras.put("authority-authors_email", item.getID().toString());
@@ -46,6 +52,11 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
             extras.put("data-authors_identifier_orcid", orcid);
             extras.put("authority-authors_identifier_orcid", item.getID().toString());
         }
+        if (institution != null) {
+            extras.put("data-authors_institution_code", institution);
+            extras.put("authority-authors_institution_code", item.getID().toString());
+        }
+
         return extras;
     }
 
