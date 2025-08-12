@@ -1020,6 +1020,22 @@ public class Utils {
         if (StringUtils.isBlank(dspaceSSRUrl)) {
             dspaceSSRUrl = dspaceUrl;
         }
+        // Check if URI is a trusted proxied URI (from EZProxy, ...).
+        // If yes, then update the URI to use the dspace basic URL
+        String[] proxyUrls = configurationService.getArrayProperty("proxies.trusted.urls");
+        for (String proxyUrl : proxyUrls) {
+            // If the URI is prefixed with the proxy URL, replace it with the DSpace URL.
+            if (urlIsPrefixOf(proxyUrl, uri)) {
+                try {
+                    uri = uri.replace(proxyUrl + new URL(dspaceUrl).getPath(), dspaceUrl);
+                    log.info("Replaced proxy URL '{}' with DSpace URL for '{}'", proxyUrl, uri);
+                    break;
+                } catch (MalformedURLException ex) {
+                    throw new IllegalArgumentException(
+                            String.format("Configuration '%s' or proxy '%s' is malformed", dspaceUrl, proxyUrl));
+                }
+            }
+        }
 
         // Convert strings to URL objects.
         // Do this early to check that inputs are well-formed.
