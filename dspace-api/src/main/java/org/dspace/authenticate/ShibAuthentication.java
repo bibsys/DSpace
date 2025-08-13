@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -388,9 +389,8 @@ public class ShibAuthentication implements AuthenticationMethod {
                 } // foreach affiliations
             } // if affiliations
 
-
-            log.info("Added current EPerson to special groups: " + groups);
-
+            String groupNames = groups.stream().map(Group::getName).collect(Collectors.joining(","));
+            log.info("Added current EPerson to special groups: " + groupNames);
             return new ArrayList<>(groups);
 
         } catch (Throwable t) {
