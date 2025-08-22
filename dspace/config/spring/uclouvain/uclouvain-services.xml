@@ -44,6 +44,16 @@
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
     <bean id="authorizationUtils" class="org.dspace.uclouvain.core.utils.AuthorizationUtils" />
 
+    <!-- CLIENTS ========================================================== -->
+    <bean id="esbClient" class="org.dspace.uclouvain.external.esb.client.ESBClientImpl">
+        <property name="httpClient">
+            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
+                <property name="baseUrl" value="${uclouvain.esb.base_url}"/>
+                <property name="token" value="${uclouvain.esb.secret}"/>
+            </bean>
+        </property>
+    </bean>
+
     <!-- OTHER BEANS ====================================================== -->
     <util:list id="resourcePolicyPriorities">
         <bean class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
