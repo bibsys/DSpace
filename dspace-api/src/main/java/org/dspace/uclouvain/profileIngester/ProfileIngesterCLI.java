@@ -27,6 +27,8 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.uclouvain.administer.AbstractCLICommand;
 import org.dspace.uclouvain.core.model.PersonEventModel;
 import org.dspace.uclouvain.exceptions.UserNotFoundException;
+import org.dspace.uclouvain.profileIngester.actions.factory.ProfileActionFactory;
+import org.dspace.uclouvain.profileIngester.exceptions.ProfileActionException;
 import org.dspace.uclouvain.rabbitMQ.connectors.PersonEventConnector;
 import org.dspace.uclouvain.rabbitMQ.connectors.PersonEventErrorConnector;
 import org.dspace.utils.DSpace;
@@ -170,9 +172,8 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
      * @param context The current DSpace context.
      * @param event The event to get a profile action class for.
      */
-    private void processEvent(Context context, PersonEventModel event) {
-        // TODO: Process the correct action.
-        System.out.println("Processing event for action: " + event.getAction());
+    private void processEvent(Context context, PersonEventModel event) throws ProfileActionException {
+        ProfileActionFactory.getInstance().getProfileActionClass(event.getAction()).process(context, event);
     }
 
     /**
