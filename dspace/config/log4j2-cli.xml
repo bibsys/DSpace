@@ -62,6 +62,26 @@
             </DefaultRolloverStrategy>
             -->
         </Appender>
+
+        <!-- A3 is for person ingester CLI -->
+        <Appender name="A3"
+                  filePattern="${log.dir}/person-ingester.log%d{yyyy-MM-dd}"
+                  type="RollingFile"
+                  fileName="${log.dir}/person-ingester.log">
+            <Layout type='PatternLayout' pattern='%d %-5p (jobID=%X{jobId}{unknown}) -- %c :: %m%n'/>
+            <policies>
+                <policy type='TimeBasedTriggeringPolicy'>yyyy-MM-dd</policy>
+            </policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath='${log.dir}'>
+                    <IfFileName glob='person-ingester.log-*'/>
+                    <IfAccumulatedFileCount exceeds='${logging.server.retention-accumulated-to-keep}'/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </Appender>
+        <Appender name='Console' type='Console' follow='true'>
+            <Layout type='PatternLayout' pattern='%d %-5p @ %m%n'/>
+        </Appender>
     </Appenders>
 
     <Loggers>
@@ -95,6 +115,15 @@
         <!-- Block passwords from being exposed in Axis logs. (DEBUG exposes passwords in Basic Auth) -->
         <Logger name='org.apache.axis.handlers.http.HTTPAuthHandler'
                 level='INFO'/>
+
+        <!-- Person Event Ingester -->
+        <Logger name="org.dspace.uclouvain.profileIngester"
+                level='INFO'
+                additivity='true'>
+            <AppenderRef ref='A3'/>
+            <!-- <AppenderRef ref='Sentry'/> -->
+            <AppenderRef ref='Console'/>
+        </Logger>
         <!-- Anything not a part of DSpace -->
         <Root level='${loglevel.other}'>
             <AppenderRef ref='A1'/>
