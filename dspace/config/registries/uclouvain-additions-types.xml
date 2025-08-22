@@ -581,6 +581,12 @@
         <qualifier>department</qualifier>
         <scope_note>A department for a person's affiliation</scope_note>
     </dc-type>
+    <dc-type>
+        <schema>person</schema>
+        <element>identifier</element>
+        <qualifier>fgs</qualifier>
+        <scope_note>The unique fsg identifier of the person</scope_note>
+    </dc-type>
     <!-- JOURNAL SCHEMA -->
     <dc-schema>
         <name>journal</name>

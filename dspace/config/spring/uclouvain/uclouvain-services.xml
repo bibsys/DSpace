@@ -23,6 +23,8 @@
         <property name="virtualHost" value="${uclouvain.rabbitmq.server.vhost}"/>
     </bean>
 
+    <bean id="profileActionFactory" class="org.dspace.uclouvain.profileIngester.actions.factory.ProfileActionFactoryImpl"/>
+
     <!-- SERVICES ========================================================= -->
 
     <bean id="publicationAuthorAuthority" class="org.dspace.uclouvain.authority.PublicationAuthorAuthority"/>
@@ -39,6 +41,8 @@
     <bean id="uclouvainCitationsService" class="org.dspace.uclouvain.citations.UCLouvainCitationsServiceImpl"/>
 
     <bean id="journalService" class="org.dspace.uclouvain.journals.JournalServiceImpl" />
+
+    <bean id="uclouvainProfileService" class="org.dspace.uclouvain.services.UCLouvainProfileServiceImpl"/>
 
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
@@ -80,5 +84,50 @@
     <bean id="defaultResourcePolicyPriority" class="org.dspace.uclouvain.core.model.ResourcePolicyPriority">
         <property name="rpName" value="defaultPriority"/>
         <property name="weight" value="#{T(java.lang.Integer).MAX_VALUE}"/>
+    </bean>
+
+    <!-- PROFILE ACTION BEANS -->
+    <bean id="createOrUpdateProfileAction" class="org.dspace.uclouvain.profileIngester.actions.CreateOrUpdateProfileAction"/>
+    <bean id="deleteProfileAction" class="org.dspace.uclouvain.profileIngester.actions.DeleteProfileAction"/>
+
+    <!-- Action field mapping configuration -->
+    <!-- This configuration describes how to link the retrieved information from esb to dspace metadata fields. -->
+    <bean id="actionFieldMappingConfiguration" class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionFieldMappingConfiguration">
+        <property name="fieldMapping">
+            <map>
+                <entry key="email">
+                    <bean class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionField">
+                        <property name="field" value="person.email"/>
+                        <property name="security" value="1"/>
+                    </bean>
+                </entry>
+                <entry key="fullName">
+                    <bean class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionField">
+                        <property name="field" value="crisrp.name"/>
+                        <property name="security" value="1"/>
+                        <property name="copyFields">
+                            <list>
+                                <bean class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionField">
+                                    <property name="field" value="dc.title"/>
+                                    <property name="security" value="0"/>
+                                </bean>
+                            </list>
+                        </property>
+                    </bean>
+                </entry>
+                <entry key="birthDate">
+                    <bean class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionField">
+                        <property name="field" value="person.birthDate"/>
+                        <property name="security" value="1"/>
+                    </bean>
+                </entry>
+                <!-- <entry key="gender">
+                    <bean class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionField">
+                        <property name="field" value="oairecerif.person.gender"/>
+                        <property name="security" value="1"/>
+                    </bean>
+                </entry> -->
+            </map>
+        </property>
     </bean>
 </beans>
