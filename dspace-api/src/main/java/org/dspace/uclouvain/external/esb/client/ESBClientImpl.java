@@ -1,0 +1,148 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.dspace.uclouvain.external.esb.client;
+
+import java.net.http.HttpResponse;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dspace.uclouvain.core.GenericHttpClient;
+import org.dspace.uclouvain.core.GenericResponse;
+import org.dspace.uclouvain.core.utils.DateUtils;
+import org.dspace.uclouvain.external.esb.model.ESBPersonProfile;
+import org.dspace.uclouvain.external.esb.model.responses.ESBPersonEmailResponse;
+import org.dspace.uclouvain.external.esb.model.responses.ESBPersonMainResponse;
+
+/**
+ * ESB client for requests to the ESB. This can call multiple API's (Digit, Organisation...)
+ * 
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ */
+public class ESBClientImpl implements ESBClient {
+
+    private static Logger logger = LogManager.getLogger(ESBClientImpl.class);
+
+    private GenericHttpClient httpClient;
+    private final String DIGIT_PATH = "/digit/v1.0";
+
+    // ---------- DIGIT ENDPOINTS ----------
+    /**
+     * Get email information for a given fgs identifier.
+     * This endpoint can return multiple emails for a single person.
+     * 
+     * @param fgs The identifier of the person to get the emails of.
+     * @return An array of emails for the given fgs identifier.
+     */
+    public ESBPersonEmailResponse[] getEmailForFGS(String fgs) {
+        String url = DIGIT_PATH + "/persons/" + fgs + "/email";
+        ESBPersonEmailResponse[] emails = {};
+        try {
+            HttpResponse<String> response = httpClient.get(url);
+            emails = Optional.ofNullable(
+                new GenericResponse(response.body())
+                    .extractJsonResponseDataToClass("email", ESBPersonEmailResponse[].class)
+            ).orElse(new ESBPersonEmailResponse[0]);
+        } catch (Exception e) {
+            logger.error("Could not fetch email of person with fgs: " + fgs, e);
+        }
+        return emails;
+    }
+
+    /**
+     * Get a single 'master' email address for a given fgs.
+     * 
+     * @param fgs The fgs to get an email address for.
+     */
+    public ESBPersonEmailResponse getMainEmailForFGS(String fgs) {
+        ESBPersonEmailResponse[] emails = getEmailForFGS(fgs);
+        // TODO: Find a logic to extract only one mail from a pool.
+        return Arrays.asList(emails).stream().findFirst().orElse(null);
+    }
+
+    /**
+     * Get main data about a person. Returns many useful data like first and last name, gender...
+     * 
+     * @param fgs The identifier of the person.
+     */
+    public ESBPersonMainResponse getDataForFGS(String fgs) {
+        String url = DIGIT_PATH + "/persons/" + fgs;
+        ESBPersonMainResponse mainData = null;
+        try {
+            HttpResponse<String> response = httpClient.get(url);
+            mainData = new GenericResponse(response.body())
+                .extractJsonResponseDataToClass("personalData", ESBPersonMainResponse.class);
+            return mainData;
+        } catch (Exception e) {
+            logger.error("Could not fetch main data of person with fgs: " + fgs, e);
+        }
+        return mainData;
+    }
+
+    /**
+     * Get a complete profile object for a given person fgs.
+     * The object contains all the recoverable data for a person.
+     * 
+     * @param fgs The identifier of the person.
+     */
+    public ESBPersonProfile getProfileForFGS(String fgs) {
+        // Do the requests to gather information about the person.
+        ESBPersonEmailResponse email = getMainEmailForFGS(fgs);
+        ESBPersonMainResponse main = getDataForFGS(fgs);
+
+        ESBPersonProfile profileData = new ESBPersonProfile();
+        if (email != null) {
+            profileData.setEmail(email.getEmailAddress());
+        }
+
+        if (main != null) {
+            profileData.setFullName(
+                // Concatenate last and first name (and avoid empty values).
+                Stream.of(main.getLastName(), main.getFirstName())
+                    .filter(StringUtils::isNotEmpty)
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse(null)
+            );
+            profileData.setBirthDate(getDSpaceDate(main.getBirthDate()));
+            if (main.getGender() != null) {
+                profileData.setGender(main.getGender().toLowerCase());
+            }
+            profileData.setTitle(main.getTitle());
+        }
+        return profileData;
+    }
+
+    /**
+     * Converts a given date to the dspace format.
+     * If the conversion fails, it returns the non-converted date + log.
+     * 
+     * @param date The date to convert to DSpace format.
+     * @return The date converted to DSpace format.
+     */
+    private String getDSpaceDate(String date) {
+        try {
+            return DateUtils.toDSpaceDate(date, "dd/MM/yyyy");
+        } catch (ParseException e) {
+            logger.warn("Could not parse date" + date + " to DSpace format, adding it like it is.");
+            return date;
+        }
+    }
+
+    // GETTERS && SETTERS
+    public GenericHttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public void setHttpClient(GenericHttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+}
