@@ -7,6 +7,8 @@
  */
 package org.dspace.app.requestitem;
 
+import java.util.Objects;
+
 import org.dspace.eperson.EPerson;
 
 /**
@@ -48,5 +50,23 @@ public class RequestItemAuthor {
 
     public String getFullName() {
         return fullName;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RequestItemAuthor that = (RequestItemAuthor) o;
+        return Objects.equals(email, that.email);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fullName, email);
     }
 }

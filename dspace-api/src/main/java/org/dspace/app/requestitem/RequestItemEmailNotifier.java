@@ -11,6 +11,7 @@ package org.dspace.app.requestitem;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.annotation.ManagedBean;
 import jakarta.inject.Inject;
@@ -78,66 +79,43 @@ public class RequestItemEmailNotifier {
             throws IOException, SQLException {
         // Who is making this request?
         List<RequestItemAuthor> authors = requestItemAuthorExtractor
-                .getRequestItemAuthor(context, ri.getItem());
-
+                .getRequestItemAuthor(context, ri.getItem())
+                .stream().distinct().toList();
         // Build an email to the approver.
-        Email email = Email.getEmail(I18nUtil.getEmailFilename(context.getCurrentLocale(),
-                "request_item.author"));
+        Email email = Email.getEmail(I18nUtil.getEmailFilename(context.getCurrentLocale(), "request_item.author"));
         for (RequestItemAuthor author : authors) {
             email.addRecipient(author.getEmail());
         }
-        email.setReplyTo(ri.getReqEmail()); // Requester's address
-
-        email.addArgument(ri.getReqName()); // {0} Requester's name
-
-        email.addArgument(ri.getReqEmail()); // {1} Requester's address
-
-        email.addArgument(ri.isAllfiles() // {2} All bitstreams or just one?
-            ? I18nUtil.getMessage("itemRequest.all") : ri.getBitstream().getName());
-
-        email.addArgument(handleService.getCanonicalForm(ri.getItem().getHandle())); // {3}
-
+        email.setReplyTo(ri.getReqEmail());        // Requester's address
+        email.addArgument(ri.getReqName());        // {0} Requester's name
+        email.addArgument(ri.getReqEmail());       // {1} Requester's address
+        email.addArgument(ri.isAllfiles()          // {2} All bitstreams or just one?
+            ? I18nUtil.getMessage("itemRequest.all")
+            : ri.getBitstream().getName());
+        email.addArgument(handleService.getCanonicalForm(ri.getItem().getHandle())); // {3} requested item's handle URI
         email.addArgument(ri.getItem().getName()); // {4} requested item's title
+        email.addArgument(ri.getReqMessage());     // {5} message from requester
+        email.addArgument(responseLink);           // {6} Link back to DSpace for action
 
-        email.addArgument(ri.getReqMessage()); // {5} message from requester
-
-        email.addArgument(responseLink); // {6} Link back to DSpace for action
-
-        StringBuilder names = new StringBuilder();
-        StringBuilder addresses = new StringBuilder();
-        for (RequestItemAuthor author : authors) {
-            if (names.length() > 0) {
-                names.append("; ");
-                addresses.append("; ");
-            }
-            names.append(author.getFullName());
-            addresses.append(author.getEmail());
-        }
-        email.addArgument(names.toString()); // {7} corresponding author name
-        email.addArgument(addresses.toString()); // {8} corresponding author email
-
+        String authorNames = authors.stream().map(RequestItemAuthor::getFullName).collect(Collectors.joining("; "));
+        String authorAddresses = authors.stream().map(RequestItemAuthor::getEmail).collect(Collectors.joining("; "));
+        email.addArgument(authorNames);            // {7} corresponding author name
+        email.addArgument(authorAddresses);        // {8} corresponding author email
         email.addArgument(configurationService.getProperty("dspace.name")); // {9}
-
         email.addArgument(configurationService.getProperty("mail.helpdesk")); // {10}
 
         // Send the email.
         try {
             email.send();
             Bitstream bitstream = ri.getBitstream();
-            String bitstreamID;
-            if (null == bitstream) {
-                bitstreamID = "null";
-            } else {
-                bitstreamID = ri.getBitstream().getID().toString();
-            }
+            String bitstreamID = (bitstream == null) ? ri.getBitstream().getID().toString() : "null";
             LOG.info(LogHelper.getHeader(context,
                     "sent_email_requestItem",
                     "submitter_id={},bitstream_id={},requestEmail={}"),
                     ri.getReqEmail(), bitstreamID, ri.getReqEmail());
         } catch (MessagingException e) {
-            LOG.warn(LogHelper.getHeader(context,
-                    "error_mailing_requestItem", e.getMessage()));
-            throw new IOException("Request not sent:  " + e.getMessage());
+            LOG.warn(LogHelper.getHeader(context, "error_mailing_requestItem", e.getMessage()));
+            throw new IOException("Request not sent: " + e.getMessage());
         }
     }
 
