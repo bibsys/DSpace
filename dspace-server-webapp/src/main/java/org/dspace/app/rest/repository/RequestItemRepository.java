@@ -153,37 +153,23 @@ public class RequestItemRepository
             throw new IncompleteItemRequestException("That item does not exist");
         }
 
-        // Requester's email address.
-        String email;
-        if (null != user) { // Prefer authenticated user's email.
-            email = user.getEmail();
-        } else { // Require an anonymous session to provide an email address.
-            email = rir.getRequestEmail();
-            if (isBlank(email)) {
-                throw new IncompleteItemRequestException("A submitter's email address is required");
-            }
-            EmailValidator emailValidator = EmailValidator.getInstance(false, false);
-            if (!emailValidator.isValid(email)) {
-                throw new UnprocessableEntityException("Invalid email address");
-            }
+        // Requester's email data.
+        String email = rir.getRequestEmail();
+        if (isBlank(email)) {
+            throw new IncompleteItemRequestException("A submitter's email address is required");
         }
-
-        // Requester's human-readable name.
-        String username;
-        if (null != user) { // Prefer authenticated user's name.
-            username = user.getFullName();
-        } else { // An anonymous session may provide a name.
-            // Escape username to evade nasty XSS attempts
-            username = HtmlUtils.htmlEscape(rir.getRequestName(),"UTF-8");
+        EmailValidator emailValidator = EmailValidator.getInstance(false, false);
+        if (!emailValidator.isValid(email)) {
+            throw new UnprocessableEntityException("Invalid email address");
         }
+        String username = HtmlUtils.htmlEscape(rir.getRequestName(),"UTF-8");
 
         // Requester's message text, escaped to evade nasty XSS attempts
         String message = HtmlUtils.htmlEscape(rir.getRequestMessage(),"UTF-8");
 
         // Create the request.
         String token;
-        token = requestItemService.createRequest(ctx, bitstream, item,
-                allFiles, email, username, message);
+        token = requestItemService.createRequest(ctx, bitstream, item, allFiles, email, username, message);
 
         // Some fields are given values during creation, so return created request.
         RequestItem ri = requestItemService.findByToken(ctx, token);
@@ -195,8 +181,7 @@ public class RequestItemRepository
         try {
             responseLink = getLinkTokenEmail(ri.getToken());
         } catch (URISyntaxException | MalformedURLException e) {
-            LOG.warn("Impossible URL error while composing email:  {}",
-                    e::getMessage);
+            LOG.warn("Impossible URL error while composing email:  {}", e::getMessage);
             throw new RuntimeException("Request not sent:  " + e.getMessage());
         }
 
