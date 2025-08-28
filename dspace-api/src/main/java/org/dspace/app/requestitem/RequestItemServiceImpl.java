@@ -12,11 +12,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.access.status.factory.AccessStatusServiceFactory;
+import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.app.requestitem.dao.RequestItemDAO;
 import org.dspace.app.requestitem.service.RequestItemService;
-import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.content.Bitstream;
@@ -26,6 +28,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.LogHelper;
 import org.dspace.core.Utils;
+import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -48,6 +51,10 @@ public class RequestItemServiceImpl implements RequestItemService {
 
     @Autowired(required = true)
     protected ResourcePolicyService resourcePolicyService;
+
+    private final AccessStatusService accessStatusService = AccessStatusServiceFactory
+            .getInstance()
+            .getAccessStatusService();
 
     protected RequestItemServiceImpl() {
 
@@ -117,15 +124,15 @@ public class RequestItemServiceImpl implements RequestItemService {
     }
 
     @Override
-    public boolean isRestricted(Context context, DSpaceObject o)
-            throws SQLException {
-        List<ResourcePolicy> policies = authorizeService
-                .getPoliciesActionFilter(context, o, Constants.READ);
-        for (ResourcePolicy rp : policies) {
-            if (resourcePolicyService.isDateValid(rp)) {
-                return false;
-            }
+    public boolean isRestricted(Context context, DSpaceObject o) throws SQLException {
+        if (o instanceof Bitstream) {
+            String accessType = accessStatusService.getBitstreamAccessStatus(context, (Bitstream) o);
+            return !StringUtils.isEmpty(accessType) && !accessType.equals(UCLouvainAccessStatusHelper.OPEN_ACCESS);
+        } else { // default logic
+            return authorizeService
+                .getPoliciesActionFilter(context, o, Constants.READ)
+                .stream()
+                .noneMatch(rp -> resourcePolicyService.isDateValid(rp));
         }
-        return true;
     }
 }

@@ -11,6 +11,7 @@ package org.dspace.app.requestitem;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import jakarta.annotation.ManagedBean;
 import jakarta.inject.Inject;
@@ -48,13 +49,10 @@ public class RequestItemEmailNotifier {
 
     @Inject
     protected BitstreamService bitstreamService;
-
     @Inject
     protected ConfigurationService configurationService;
-
     @Inject
     protected HandleService handleService;
-
     @Inject
     protected RequestItemService requestItemService;
 
@@ -78,66 +76,43 @@ public class RequestItemEmailNotifier {
             throws IOException, SQLException {
         // Who is making this request?
         List<RequestItemAuthor> authors = requestItemAuthorExtractor
-                .getRequestItemAuthor(context, ri.getItem());
-
+                .getRequestItemAuthor(context, ri.getItem())
+                .stream().distinct().toList();
         // Build an email to the approver.
-        Email email = Email.getEmail(I18nUtil.getEmailFilename(context.getCurrentLocale(),
-                "request_item.author"));
+        Email email = Email.getEmail(I18nUtil.getEmailFilename(context.getCurrentLocale(), "request_item.author"));
         for (RequestItemAuthor author : authors) {
             email.addRecipient(author.getEmail());
         }
-        email.setReplyTo(ri.getReqEmail()); // Requester's address
-
-        email.addArgument(ri.getReqName()); // {0} Requester's name
-
-        email.addArgument(ri.getReqEmail()); // {1} Requester's address
-
-        email.addArgument(ri.isAllfiles() // {2} All bitstreams or just one?
-            ? I18nUtil.getMessage("itemRequest.all") : ri.getBitstream().getName());
-
-        email.addArgument(handleService.getCanonicalForm(ri.getItem().getHandle())); // {3}
-
+        email.setReplyTo(ri.getReqEmail());        // Requester's address
+        email.addArgument(ri.getReqName());        // {0} Requester's name
+        email.addArgument(ri.getReqEmail());       // {1} Requester's address
+        email.addArgument(ri.isAllfiles()          // {2} All bitstreams or just one?
+            ? I18nUtil.getMessage("itemRequest.all")
+            : ri.getBitstream().getName());
+        email.addArgument(handleService.getCanonicalForm(ri.getItem().getHandle())); // {3} requested item's handle URI
         email.addArgument(ri.getItem().getName()); // {4} requested item's title
+        email.addArgument(ri.getReqMessage());     // {5} message from requester
+        email.addArgument(responseLink);           // {6} Link back to DSpace for action
 
-        email.addArgument(ri.getReqMessage()); // {5} message from requester
-
-        email.addArgument(responseLink); // {6} Link back to DSpace for action
-
-        StringBuilder names = new StringBuilder();
-        StringBuilder addresses = new StringBuilder();
-        for (RequestItemAuthor author : authors) {
-            if (names.length() > 0) {
-                names.append("; ");
-                addresses.append("; ");
-            }
-            names.append(author.getFullName());
-            addresses.append(author.getEmail());
-        }
-        email.addArgument(names.toString()); // {7} corresponding author name
-        email.addArgument(addresses.toString()); // {8} corresponding author email
-
+        String authorNames = authors.stream().map(RequestItemAuthor::getFullName).collect(Collectors.joining("; "));
+        String authorAddresses = authors.stream().map(RequestItemAuthor::getEmail).collect(Collectors.joining("; "));
+        email.addArgument(authorNames);            // {7} corresponding author name
+        email.addArgument(authorAddresses);        // {8} corresponding author email
         email.addArgument(configurationService.getProperty("dspace.name")); // {9}
-
         email.addArgument(configurationService.getProperty("mail.helpdesk")); // {10}
 
         // Send the email.
         try {
             email.send();
             Bitstream bitstream = ri.getBitstream();
-            String bitstreamID;
-            if (null == bitstream) {
-                bitstreamID = "null";
-            } else {
-                bitstreamID = ri.getBitstream().getID().toString();
-            }
+            String bitstreamID = (bitstream != null) ? ri.getBitstream().getID().toString() : "null";
             LOG.info(LogHelper.getHeader(context,
                     "sent_email_requestItem",
                     "submitter_id={},bitstream_id={},requestEmail={}"),
                     ri.getReqEmail(), bitstreamID, ri.getReqEmail());
         } catch (MessagingException e) {
-            LOG.warn(LogHelper.getHeader(context,
-                    "error_mailing_requestItem", e.getMessage()));
-            throw new IOException("Request not sent:  " + e.getMessage());
+            LOG.warn(LogHelper.getHeader(context, "error_mailing_requestItem", e.getMessage()));
+            throw new IOException("Request not sent: " + e.getMessage());
         }
     }
 
@@ -182,7 +157,7 @@ public class RequestItemEmailNotifier {
         email.addArgument(ri.getItem().getName()); // {2} title of the requested Item
         email.addArgument(grantorName);     // {3} name of the grantor
         email.addArgument(grantorAddress);  // {4} email of the grantor
-        email.addArgument(message); //         {5} grantor's optional message
+        email.addArgument(message);         // {5} grantor's optional message
         email.setSubject(subject);
         email.addRecipient(ri.getReqEmail());
         // Attach bitstreams.
@@ -237,63 +212,45 @@ public class RequestItemEmailNotifier {
     }
 
     /**
-     * Send, to a repository administrator, a request to open access to a
-     * requested object.
+     * Send, to a repository administrator, a request to open access to a requested object.
      *
      * @param context current DSpace session
      * @param ri the item request that the approver is handling
-     * @throws IOException if the message body cannot be loaded or the message
-     *          cannot be sent.
+     * @throws IOException if the message body cannot be loaded or the message cannot be sent.
      */
-    public void requestOpenAccess(Context context, RequestItem ri)
-            throws IOException {
-        Email message = Email.getEmail(I18nUtil.getEmailFilename(context.getCurrentLocale(),
-                "request_item.admin"));
-
+    public void requestOpenAccess(Context context, RequestItem ri) throws IOException {
+        Email message = Email.getEmail(I18nUtil.getEmailFilename(context.getCurrentLocale(), "request_item.admin"));
         // Which Bitstream(s) requested?
         Bitstream bitstream = ri.getBitstream();
-        String bitstreamName;
-        if (bitstream != null) {
-            bitstreamName = bitstream.getName();
-        } else {
-            bitstreamName = "all"; // TODO localize
-        }
-
+        String bitstreamName = (bitstream != null)
+            ? bitstream.getName()
+            : "all"; // TODO localize
         // Which Item?
         Item item = ri.getItem();
-
         // Fill the message's placeholders.
         EPerson approver = context.getCurrentUser();
-        message.addArgument(bitstreamName);          // {0} bitstream name or "all"
-        message.addArgument(item.getHandle());       // {1} Item handle
-        message.addArgument(ri.getToken());          // {2} Request token
+        message.addArgument(bitstreamName); // {0} bitstream name or "all"
+        message.addArgument(handleService.getCanonicalForm(ri.getItem().getHandle())); // {1} URL of the requested Item
+        message.addArgument(item.getName()); // {2} title of the requested Item
+        message.addArgument(ri.getToken());  // {3} Request token
         if (approver != null) {
-            message.addArgument(approver.getFullName()); // {3} Approver's name
-            message.addArgument(approver.getEmail());    // {4} Approver's address
+            message.addArgument(approver.getFullName()); // {4} Approver's name
+            message.addArgument(approver.getEmail());    // {5} Approver's address
         } else {
-            message.addArgument("anonymous approver");                           // [3] Approver's name
-            message.addArgument(configurationService.getProperty("mail.admin")); // [4] Approver's address
+            message.addArgument("anonymous approver");                           // [4] Approver's name
+            message.addArgument(configurationService.getProperty("mail.admin")); // [5] Approver's address
         }
-
         // Who gets this message?
-        String recipient;
-        EPerson submitter = item.getSubmitter();
-        if (submitter != null) {
-            recipient = submitter.getEmail();
-        } else {
-            recipient = configurationService.getProperty("mail.helpdesk");
-        }
-        if (null == recipient) {
-            recipient = configurationService.getProperty("mail.admin");
-        }
-        message.addRecipient(recipient);
-
+        message.addRecipient(
+            configurationService.getProperty("mail.helpdesk",
+                configurationService.getProperty("mail.admin")
+            )
+        );
         // Send the message.
         try {
             message.send();
         } catch (MessagingException ex) {
-            LOG.warn(LogHelper.getHeader(context, "error_mailing_requestItem",
-                    ex.getMessage()));
+            LOG.warn(LogHelper.getHeader(context, "error_mailing_requestItem", ex.getMessage()));
             throw new IOException("Open Access request not sent:  " + ex.getMessage());
         }
     }
