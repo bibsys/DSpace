@@ -7,11 +7,16 @@
  */
 package org.dspace.uclouvain.core.utils;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.ItemService;
+import org.dspace.core.Context;
 
 /**
  * Set of util methods for `MetadataValues`
@@ -88,5 +93,41 @@ public class MetadataUtils {
             hashMap.putIfAbsent(metadataField, currentValueForFieldId);
         }
         return hashMap;
+    }
+
+    /**
+     * Set a secured metadata for a specific metadata field.
+     * This method overrides the existing values and sets a unique secured one.
+     * Be aware of committing to save changes.
+     * 
+     * @param context The current DSpace context.
+     * @param item The item to perform the change on.
+     * @param schema The schema of the field to set.
+     * @param element The element of the field to set.
+     * @param qualifier The qualifier of the field to set.
+     * @param language The language of the field to set.
+     * @param value The value of the field to set.
+     * @param authority The authority of the field to set.
+     * @param confidence The confidence of the field to set.
+     * @param security The security option of the field to set (0 to 2).
+     * @throws SQLException
+     */
+    public static void setSecuredMetadataSingleValue(
+        Context context, Item item, String schema, String element, String qualifier,
+        String language, String value, String authority, int confidence, Integer security
+    ) throws SQLException {
+        ItemService itemService = ContentServiceFactory.getInstance().getItemService();
+        // Clear all present metadata and add a single secured metadata.
+        List<MetadataValue> presentMetadata = itemService.getMetadata(
+            item, schema, element, qualifier, language
+        );
+        // Clear all those metadata
+        itemService.removeMetadataValues(context, item, presentMetadata);
+        // add a single secured metadata value.
+        itemService.addSecuredMetadata(
+            context, item,
+            schema, element, qualifier,
+            language, value, authority, confidence, security
+        );
     }
 }
