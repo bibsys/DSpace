@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.core.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -14,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
+import java.util.Date;
 import java.util.Locale;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
@@ -25,6 +28,8 @@ import org.dspace.uclouvain.exceptions.DateConversionException;
  * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class DateUtils {
+
+    public static final String DSPACE_FORMAT = "yyyy-MM-dd";
 
     protected DateUtils() {
         throw new UnsupportedOperationException();  // required by "(design) HideUtilityClassConstructor" code checker
@@ -80,5 +85,19 @@ public class DateUtils {
         } catch (Exception e) {
             throw new DateConversionException(e.getMessage());
         }
+    }
+
+    /**
+     * Converts a date of the given format into a well-formed dspace date.
+     * @param date The date to convert to DSpace format.
+     * @param inputFormat The format of the given date.
+     * @return The converted date into a DSpace friendly format.
+     * @throws ParseException
+     */
+    public static String toDSpaceDate(String date, String inputFormat) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat(inputFormat);
+        Date inputDate = sdf.parse(date);
+        sdf.applyPattern(DSPACE_FORMAT);
+        return sdf.format(inputDate);
     }
 }
