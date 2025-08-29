@@ -775,6 +775,8 @@
                 <ref bean="graphPublicationByDate" />
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
+                <!-- Index author authority -->
+                <ref bean="authoritySearchFilterAuthor"/>
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
@@ -3091,6 +3093,19 @@
         <property name="isOpenByDefault" value="true"/>
         <property name="pageSize" value="10"/>
         <property name="exposeMinAndMaxValue" value="true"/>
+    </bean>
+
+    <!-- Index the authority value of each author (UUID of the objects) in the publication document. -->
+    <!-- This is later used to find all related publications for a given author UUID. -->
+    <bean id="authoritySearchFilterAuthor" class="org.dspace.discovery.configuration.AuthorityDiscoverySearchFilter">
+        <property name="indexFieldName" value="authorAuthority"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.contributor.author</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
     </bean>
 
     <bean id="searchFilterEditor" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">

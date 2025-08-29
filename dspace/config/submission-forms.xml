@@ -245,11 +245,12 @@
         <field>
           <dc-schema>crisrp</dc-schema>
           <dc-element>name</dc-element>
-          <label>Fullname</label>
+          <label>Official name</label>
           <input-type>name</input-type>
           <repeatable>false</repeatable>
           <required />
           <hint />
+          <readonly>all</readonly>
         </field>
       </row>
       <row>

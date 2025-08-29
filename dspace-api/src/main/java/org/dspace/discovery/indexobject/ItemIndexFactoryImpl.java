@@ -51,6 +51,7 @@ import org.dspace.core.CrisConstants;
 import org.dspace.core.LogHelper;
 import org.dspace.discovery.FullTextContentStreams;
 import org.dspace.discovery.SearchUtils;
+import org.dspace.discovery.configuration.AuthorityDiscoverySearchFilter;
 import org.dspace.discovery.configuration.DiscoveryConfiguration;
 import org.dspace.discovery.configuration.DiscoveryConfigurationParameters;
 import org.dspace.discovery.configuration.DiscoveryHitHighlightFieldConfiguration;
@@ -450,6 +451,15 @@ public class ItemIndexFactoryImpl extends DSpaceObjectIndexFactoryImpl<Indexable
                                 //TODO: make this date format configurable !
                                 value = DateFormatUtils.formatUTC(date, "yyyy-MM-dd");
                             }
+                        }
+                        // For AuthorityDiscoverySearchFilter we want to index the authority of the value only.
+                        if (searchFilter instanceof AuthorityDiscoverySearchFilter) {
+                            if (authority != null) {
+                                doc.addField(searchFilter.getIndexFieldName(), authority);
+                                doc.addField(searchFilter.getIndexFieldName() + "_keyword", authority);
+                            }
+                            // Skip to the next searchFilter.
+                            continue;
                         }
                         doc.addField(searchFilter.getIndexFieldName(), value);
                         doc.addField(searchFilter.getIndexFieldName() + "_keyword", value);
