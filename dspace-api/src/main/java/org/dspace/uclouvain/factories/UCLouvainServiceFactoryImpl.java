@@ -10,6 +10,7 @@ package org.dspace.uclouvain.factories;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
+import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +28,12 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainEntityService uclouvainEntityService;
     @Autowired
     private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
-    @Autowired(required = true)
+    @Autowired
     private UCLouvainItemEnhancerUpdatePoller uclouvainItemEnhancerUpdatePoller;
-    @Autowired(required = true)
+    @Autowired
     private CommentService commentService;
+    @Autowired
+    private DirectLinkService uclouvainDirectLinkService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -51,5 +54,9 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public CommentService getCommentService() {
         return commentService;
+    }
+    @Override
+    public DirectLinkService getDirectLinkService() {
+        return uclouvainDirectLinkService;
     }
 }
