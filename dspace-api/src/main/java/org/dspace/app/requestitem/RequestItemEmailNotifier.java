@@ -8,9 +8,12 @@
 
 package org.dspace.app.requestitem;
 
+import static org.dspace.core.Constants.CONTENT_BUNDLE_NAME;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.ManagedBean;
@@ -20,9 +23,7 @@ import jakarta.mail.MessagingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.requestitem.service.RequestItemService;
-import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
 import org.dspace.content.Item;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.core.Context;
@@ -32,6 +33,8 @@ import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.core.directLink.LimitedTimeDirectLinkGenerator;
+import org.dspace.uclouvain.services.DirectLinkService;
 
 /**
  * Send item requests and responses by email.
@@ -55,6 +58,8 @@ public class RequestItemEmailNotifier {
     protected HandleService handleService;
     @Inject
     protected RequestItemService requestItemService;
+    @Inject
+    protected DirectLinkService uclouvainDirectLinkService;
 
     protected final RequestItemAuthorExtractor requestItemAuthorExtractor;
 
@@ -148,6 +153,7 @@ public class RequestItemEmailNotifier {
             grantorName = grantor.getFullName();
             grantorAddress = grantor.getEmail();
         }
+        Long linkDelay = configurationService.getLongProperty("uclouvain.request_item.url.validity", 14);
 
         // Build an email back to the requester.
         Email email = Email.getEmail(I18nUtil.getEmailFilename(context.getCurrentLocale(),
@@ -158,57 +164,44 @@ public class RequestItemEmailNotifier {
         email.addArgument(grantorName);     // {3} name of the grantor
         email.addArgument(grantorAddress);  // {4} email of the grantor
         email.addArgument(message);         // {5} grantor's optional message
+        email.addArgument(linkDelay);       // {6} link validity delay
         email.setSubject(subject);
         email.addRecipient(ri.getReqEmail());
         // Attach bitstreams.
-        try {
-            if (ri.isAccept_request()) {
-                if (ri.isAllfiles()) {
-                    Item item = ri.getItem();
-                    List<Bundle> bundles = item.getBundles("ORIGINAL");
-                    for (Bundle bundle : bundles) {
-                        List<Bitstream> bitstreams = bundle.getBitstreams();
-                        for (Bitstream bitstream : bitstreams) {
-                            if (!bitstream.getFormat(context).isInternal() &&
-                                    requestItemService.isRestricted(context,
-                                    bitstream)) {
-                                // #8636 Anyone receiving the email can respond to the
-                                // request without authenticating into DSpace
-                                context.turnOffAuthorisationSystem();
-                                email.addAttachment(
-                                        bitstreamService.retrieve(context, bitstream),
-                                        bitstream.getName(),
-                                        bitstream.getFormat(context).getMIMEType());
-                                context.restoreAuthSystemState();
-                            }
-                        }
-                    }
-                } else {
-                    Bitstream bitstream = ri.getBitstream();
-                    // #8636 Anyone receiving the email can respond to the request without authenticating into DSpace
-                    context.turnOffAuthorisationSystem();
-                    email.addAttachment(bitstreamService.retrieve(context, bitstream),
+        //      As UCLouvain SMTP server has some restrictions on the size and length of attached files,
+        //      we won't send requested bitstreams as email attachment.
+        //      Instead, for each bitstream, we will create an unrestricted download URL valid for a limited time.
+        //      URLs will be part of the email arguments (and could be used to build the email content)
+        if (ri.isAccept_request()) {
+            List<Bitstream> bitstreams = (ri.isAllfiles())
+                    ? ri.getItem()
+                    .getBundles(CONTENT_BUNDLE_NAME)
+                    .stream()
+                    .flatMap(bundle -> bundle.getBitstreams().stream())
+                    .filter(bitstream -> filterRestrictedBitstream(context, bitstream))
+                    .toList()
+                    : List.of(ri.getBitstream());
+            List<String[]> bitstreamsData = bitstreams
+                    .stream()
+                    .map(bitstream -> new String[]{
                             bitstream.getName(),
-                            bitstream.getFormat(context).getMIMEType());
-                    context.restoreAuthSystemState();
-                }
-                email.send();
-            } else {
-                boolean sendRejectEmail = configurationService
-                    .getBooleanProperty("request.item.reject.email", true);
-                // Not all sites want the "refusal" to be sent back to the requester via
-                // email. However, by default, the rejection email is sent back.
-                if (sendRejectEmail) {
-                    email.send();
-                }
-            }
-        } catch (MessagingException | IOException | SQLException | AuthorizeException e) {
-            LOG.warn(LogHelper.getHeader(context,
-                    "error_mailing_requestItem", e.getMessage()));
-            throw new IOException("Reply not sent:  " + e.getMessage());
+                            getDirectDownloadUrl(context, bitstream)
+                    })
+                    .toList();
+            email.addArgument(bitstreamsData);
         }
-        LOG.info(LogHelper.getHeader(context,
-                "sent_attach_requestItem", "token={}"), ri.getToken());
+        // Sending email
+        //      If the request was accepted, always send the email.
+        //      If the request was rejected, not all sites want the "refusal" to be sent back to the requester via email
+        if (ri.isAccept_request() || configurationService.getBooleanProperty("request.item.reject.email", true)) {
+            try {
+                email.send();
+            } catch (MessagingException | IOException e) {
+                LOG.warn(LogHelper.getHeader(context, "error_mailing_requestItem", e.getMessage()));
+                throw new IOException("Reply not sent:  " + e.getMessage());
+            }
+        }
+        LOG.info(LogHelper.getHeader(context, "sent_attach_requestItem", "token={}"), ri.getToken());
     }
 
     /**
@@ -252,6 +245,45 @@ public class RequestItemEmailNotifier {
         } catch (MessagingException ex) {
             LOG.warn(LogHelper.getHeader(context, "error_mailing_requestItem", ex.getMessage()));
             throw new IOException("Open Access request not sent:  " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Check if a bitstream must be considered as a restricted bitstream.
+     *
+     * @param context The Dspace application context
+     * @param bitstream The bitstream to analyze
+     * @return True if the bitstream is restricted for anonymous user, False otherwise
+     */
+    private boolean filterRestrictedBitstream(Context context, Bitstream bitstream) {
+        try {
+            return !bitstream.getFormat(context).isInternal() && requestItemService.isRestricted(context, bitstream);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Build the direct download URL for a specific bitstream.
+     *
+     * @param context The DSpace application context
+     * @param bitstream The bitstream for which we want build the URL
+     * @return The URL to download this bitstream skipping all DSpace policy restrictions.
+     */
+    private String getDirectDownloadUrl(Context context, Bitstream bitstream) {
+        try {
+            return uclouvainDirectLinkService.buildURL(
+                context,
+                bitstream,
+                LimitedTimeDirectLinkGenerator.LINK_TYPE,
+                Map.of("days", configurationService.getLongProperty("uclouvain.request_item.url.validity", 14))
+            );
+        } catch (Exception e) {
+            LOG.warn(
+                "Failed to build direct download URL for bitstream#" + bitstream.getID() + " :: " + e.getMessage(),
+                e
+            );
+            return null;
         }
     }
 }
