@@ -15,6 +15,16 @@
     <!-- FACTORIES ======================================================== -->
     <bean id="uclouvainServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainServiceFactoryImpl"/>
 
+    <bean id="directLinkGeneratorFactory" class="org.dspace.uclouvain.core.directLink.DirectLinkGeneratorFactory">
+        <property name="generators">
+            <util:map>
+                <entry key="limitedTime" value-ref="limitedTimeDirectLinkGenerator"/>
+            </util:map>
+        </property>
+    </bean>
+    <bean id="limitedTimeDirectLinkGenerator" class="org.dspace.uclouvain.core.directLink.LimitedTimeDirectLinkGenerator"/>
+
+
     <bean id="rabbitConnectionFactory" class="com.rabbitmq.client.ConnectionFactory">
         <property name="host" value="${uclouvain.rabbitmq.server.url}"/>
         <property name="port" value="${uclouvain.rabbitmq.server.port}"/>
@@ -24,6 +34,7 @@
     </bean>
 
     <!-- SERVICES ========================================================= -->
+    <bean id="uclouvainDirectLinkService" class="org.dspace.uclouvain.services.DirectLinkServiceImpl"/>
     <bean id="uclouvainEntityService" class="org.dspace.uclouvain.services.UCLouvainEntityServiceImpl"/>
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl">
         <property name="resourcePolicyPriorities" ref="resourcePolicyPriorities"/>
