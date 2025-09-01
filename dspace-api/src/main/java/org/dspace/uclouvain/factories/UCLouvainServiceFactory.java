@@ -11,6 +11,7 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
+import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
@@ -27,6 +28,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract UCLouvainItemEnhancerService getItemEnhancerService();
     public abstract UCLouvainItemEnhancerPoller getItemEnhancerUpdatePoller();
     public abstract CommentService getCommentService();
+    public abstract DirectLinkService getDirectLinkService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory

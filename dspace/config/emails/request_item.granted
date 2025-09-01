@@ -8,6 +8,8 @@
 ##  {3} name of the grantor
 ##  {4} email address of the grantor (unused)
 ##  {5} custom message sent by the grantor.
+##  {6} Link delay validity
+##  {7} List of attached files. Each row is a tuple of filename and file url
 #set($subject = 'Request for Copy of Restricted Document is Granted')
 Dear ${params[0]}:
 
