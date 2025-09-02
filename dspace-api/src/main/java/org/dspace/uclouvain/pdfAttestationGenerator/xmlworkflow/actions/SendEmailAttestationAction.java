@@ -7,14 +7,12 @@
  */
 package org.dspace.uclouvain.pdfAttestationGenerator.xmlworkflow.actions;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
@@ -27,9 +25,6 @@ import org.dspace.uclouvain.core.mails.ThesisErrorAttestationEmail;
 import org.dspace.uclouvain.core.mails.ThesisSupervisorAttestationEmail;
 import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
-import org.dspace.uclouvain.pdfAttestationGenerator.exceptions.HandlerNotFoundException;
-import org.dspace.uclouvain.pdfAttestationGenerator.factory.PDFAttestationGeneratorFactory;
-import org.dspace.uclouvain.pdfAttestationGenerator.handlers.PDFAttestationGeneratorHandler;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
 import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
@@ -73,10 +68,6 @@ public class SendEmailAttestationAction extends ProcessingAction {
         // UUID of the current workflow item
         UUID uuid = wfi.getItem().getID();
         try {
-            // Recover the correct handler for this submission
-            PDFAttestationGeneratorHandler handler = PDFAttestationGeneratorFactory
-                .getInstance()
-                .getHandlerInstance(uuid);
             dspaceItem = itemService.find(context, uuid);
             HashMap<String, List<String>> map = MetadataUtils.getValuesHashMap(dspaceItem.getMetadata());
             // Checks if authors and promoter are present
@@ -85,26 +76,17 @@ public class SendEmailAttestationAction extends ProcessingAction {
                     + "--> Aborting email attestation generation.");
                 return staticResponse;
             }
-            // We need to use a `ByteArrayInputStream` to be able to reset the stream after sending
-            // the email to the submitter(s).
-            ByteArrayInputStream pdfAttestation = new ByteArrayInputStream(
-                IOUtils.toByteArray(handler.getAttestationAsInputStream(uuid))
-            );
-            // Mark the position to reset to
-            pdfAttestation.mark(pdfAttestation.available());
+
             // Send email to authors
-            new ThesisAuthorAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
-            // Reset to the previously marked position.
-            // We need to do that because the stream has been consumed by the previous email.
-            pdfAttestation.reset();
+            new ThesisAuthorAttestationEmail(context, dspaceItem).sendEmail();
+
             // Send email to promoters
-            new ThesisSupervisorAttestationEmail(context, dspaceItem, pdfAttestation).sendEmail();
-        } catch (HandlerNotFoundException e) {
-            logger.error("[" + uuid + "] No handler found for item with uuid:" + e.getMessage());
+            new ThesisSupervisorAttestationEmail(context, dspaceItem).sendEmail();
         } catch (Exception e) {
-            logger.error("[" + uuid + "] Exception occurred during email attestation generation: " + e.getMessage());
+            logger.error("[" + uuid + "] Exception occurred sending attestation email: " + e.getMessage(), e);
             if (dspaceItem != null) {
                 try {
+                    // try to send an error email to the author.
                     new ThesisErrorAttestationEmail(context, dspaceItem, e).sendEmail();
                 } catch (Exception ignored) {
                     // do nothing
