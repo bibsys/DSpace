@@ -224,12 +224,12 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
                 String commentContent = "Send back to submitter for modifications :: " + reason;
                 commentService.create(context, item, context.getCurrentUser(), commentContent);
                 // Send email to submitter to notify for the change request.
-                new ThesisChangeRequestEmail(context, item, reason).sendEmail();
+                new ThesisChangeRequestEmail(context, item).sendEmail();
             }
             context.restoreAuthSystemState();
             return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
         } catch (Exception e) {
-            logger.error("Error while returning the item to the submitter: " + e.getMessage());
+            logger.error("Error while returning the item to the submitter: " + e.getMessage(), e);
             return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
         }
     }

@@ -7,13 +7,13 @@
  */
 package org.dspace.uclouvain.core.mails;
 
-import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.core.Context;
+import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 
 /**
  * Main class to send an email for the submission attestation to the promoters of the item.
@@ -23,9 +23,22 @@ import org.dspace.core.Context;
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class ThesisSupervisorAttestationEmail extends ThesisAuthorAttestationEmail {
+    public ThesisSupervisorAttestationEmail(Context context, Item item) throws EmailFailedInitException {
+        super(context, item);
+    }
 
-    public ThesisSupervisorAttestationEmail(Context context, Item item, InputStream attachment) {
-        super(context, item, attachment);
+    public boolean isValidForItem(Context context, Item item) {
+        return super.isValidForItem(context, item) && hasAnyPromoter(item);
+    }
+
+    /**
+     * Check if the item contains at least one promoter address.
+     * @param item The item to check promoters of.
+     * @return True if any promoter in the item metadata, false otherwise.
+     */
+    private boolean hasAnyPromoter(Item item) {
+        List<String> promoterEmails = getPromoterAdresses(item);
+        return promoterEmails != null && !promoterEmails.isEmpty();
     }
 
     /**
@@ -43,9 +56,17 @@ public class ThesisSupervisorAttestationEmail extends ThesisAuthorAttestationEma
      */
     @Override
     protected List<String> getRecipientAddresses() {
-        return itemService.getMetadataByMetadataString(item, supervisorEmailField)
+        return getPromoterAdresses(item);
+    }
+
+    private List<String> getPromoterAdresses(Item item) {
+        List<String> promoters = itemService.getMetadataByMetadataString(item, supervisorEmailField)
                 .stream()
                 .map(MetadataValue::getValue)
                 .collect(Collectors.toList());
+        if (log.isDebugEnabled()) {
+            log.debug("Initial TO recipient addresses for promoter attestation are :: " + String.join(", ", promoters));
+        }
+        return promoters;
     }
 }

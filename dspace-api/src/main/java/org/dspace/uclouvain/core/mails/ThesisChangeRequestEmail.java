@@ -17,6 +17,8 @@ import org.dspace.content.MetadataValue;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.eperson.EPerson;
+import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.FacultyManagerService;
@@ -31,18 +33,20 @@ import org.dspace.uclouvain.services.FacultyManagerService;
 public class ThesisChangeRequestEmail extends GenericThesisEmail {
 
     protected String changeRequest;
-    protected String authorEmailField = configService
-            .getProperty("uclouvain.global.metadata.authoremail.field", "advisors.email");
     protected String rootDegreeCodeField = configService.getProperty(
-            "uclouvain.global.metadata.rootdegreecode.field", "masterthesis.rootdegree.code");
+        "uclouvain.global.metadata.rootdegreecode.field", "masterthesis.rootdegree.code"
+    );
+    private MetadataField activeRequestField = new MetadataField(
+        configService.getProperty("uclouvain.global.metadata.activerequestchange.field")
+    );
 
     private static final FacultyManagerService facultyManagerService = UCLouvainServiceFactory
-            .getInstance()
-            .getFacultyManagerService();
+        .getInstance()
+        .getFacultyManagerService();
 
-    public ThesisChangeRequestEmail(Context context, Item item, String reason) {
+    public ThesisChangeRequestEmail(Context context, Item item) throws EmailFailedInitException {
         super(context, item);
-        changeRequest = reason;
+        changeRequest = itemService.getMetadataFirstValue(item, activeRequestField, null);
     }
 
     @Override
@@ -54,6 +58,9 @@ public class ThesisChangeRequestEmail extends GenericThesisEmail {
         String submitterEmail = item.getSubmitter().getEmail();
         if (!recipients.contains(submitterEmail)) {
             recipients.add(submitterEmail);
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("Initial TO recipient addresses for change request are :: " + String.join(", ", recipients));
         }
         return recipients;
     }
@@ -68,7 +75,11 @@ public class ThesisChangeRequestEmail extends GenericThesisEmail {
                 log.error("Error getting faculty managers", e);
             }
         }
-        return facultyManagers.stream().map(EPerson::getEmail).collect(Collectors.toList());
+        List<String> recipients = facultyManagers.stream().map(EPerson::getEmail).collect(Collectors.toList());
+        if (log.isDebugEnabled()) {
+            log.debug("Initial CC recipient addresses for change request are :: " + String.join(", ", recipients));
+        }
+        return recipients;
     }
 
     @Override
@@ -87,7 +98,7 @@ public class ThesisChangeRequestEmail extends GenericThesisEmail {
     }
 
     @Override
-    protected void generateEmail(Email email) throws EmailGenerationException {
+    protected void generateEmail(Email email, Item item) throws EmailGenerationException {
         try {
             email.addArgument(itemService.getMetadata(item, "dc.title"));
             email.addArgument(this.changeRequest);
