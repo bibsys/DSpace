@@ -60,7 +60,7 @@
             </tbody>
         </table>
         <p>
-          Veuillez vous rendre dans l'espace <a href="$params[3]">DIAL.mem</a> de votre dépôt et éditer celui-ci en y
+          Veuillez vous rendre dans votre espace <a href="$params[3]">DIAL.mem</a> et éditer votre dépôt en y
           apportant les modifications nécessaires. Ensuite, finalisez-le à nouveau.
         </p>
         <p>Bien à vous,</p>
