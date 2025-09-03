@@ -4,7 +4,7 @@
 ##    {0} Date and time
 ##    {1} Information about the submission (title, abstract...) in french
 ##    {2} Information about the submission (title, abstract...) in english
-##    {3} List of attached files. Each row is a tuple of filename, file access type and file url
+##    {3} List of attached files. Each row is a tuple of filename and file access type
 <html>
     <head>
         <meta charset="UTF-8">
