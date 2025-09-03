@@ -8,16 +8,16 @@
 package org.dspace.uclouvain.exceptions;
 
 /**
- * An email exception thrown when a {@link org.dspace.uclouvain.core.mails.UCLouvainEmail} could not be sent.
+ * Email exception thrown when a {@link org.dspace.uclouvain.core.mails.UCLouvainEmail} failed to initialized.
  * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
-public class SendEmailException extends Exception {
-    public SendEmailException(String message) {
+public class EmailFailedInitException extends Exception {
+    public EmailFailedInitException(String message) {
         super(message);
     }
 
-    public SendEmailException(String message, Exception e) {
+    public EmailFailedInitException(String message, Exception e) {
         super(message, e);
     }
 }
