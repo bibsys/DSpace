@@ -43,11 +43,11 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private MailMetadataParserService mailMetadataParserService;
     @Autowired
     private UCLouvainAffiliationEntityRestService uclouvainAffiliationEntityRestService;
-    @Autowired(required = true)
+    @Autowired
     private UCLouvainFWBValidationService uclouvainFWBValidationService;
-    @Autowired(required = true)
+    @Autowired
     private UCLouvainCitationsService uclouvainCitationsService;
-    @Autowired(required = true)
+    @Autowired
     private JournalService journalService;
 
     @Override
