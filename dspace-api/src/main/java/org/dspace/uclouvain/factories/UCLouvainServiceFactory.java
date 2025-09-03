@@ -9,6 +9,7 @@ package org.dspace.uclouvain.factories;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.content.service.CommentService;
+import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.services.DirectLinkService;
@@ -29,6 +30,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract UCLouvainItemEnhancerUpdatePoller getItemEnhancerUpdatePoller();
     public abstract CommentService getCommentService();
     public abstract DirectLinkService getDirectLinkService();
+    public abstract MailMetadataParserService getMailMetadataParserService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
