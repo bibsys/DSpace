@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.factories;
 
 import org.dspace.uclouvain.content.service.CommentService;
+import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
 import org.dspace.uclouvain.services.DirectLinkService;
@@ -34,6 +35,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private CommentService commentService;
     @Autowired
     private DirectLinkService uclouvainDirectLinkService;
+    @Autowired
+    private MailMetadataParserService mailMetadataParserService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -58,5 +61,9 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public DirectLinkService getDirectLinkService() {
         return uclouvainDirectLinkService;
+    }
+    @Override
+    public MailMetadataParserService getMailMetadataParserService() {
+        return mailMetadataParserService;
     }
 }
