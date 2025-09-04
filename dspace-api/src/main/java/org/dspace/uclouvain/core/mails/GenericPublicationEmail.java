@@ -25,7 +25,9 @@ public abstract class GenericPublicationEmail extends AbstractUCLouvainEmail {
 
     // ATTRIBUTES ======================================================================================================
     protected String authorEmailField = configService.getProperty(
-            "uclouvain.global.metadata.authoremail.field", "authors.email");
+        "uclouvain.global.metadata.authoremail.field", "authors.email");
+    protected String advisorEmailField = configService.getProperty(
+        "uclouvain.global.metadata.advisoremail.field", "advisors.email");
 
     // ABSTRACT METHODS ================================================================================================
     protected abstract String getTemplatePath();

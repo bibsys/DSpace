@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -38,7 +37,6 @@ import org.dspace.content.DCDate;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataSchemaEnum;
-import org.dspace.content.MetadataValue;
 import org.dspace.content.WorkspaceItem;
 import org.dspace.content.service.BitstreamFormatService;
 import org.dspace.content.service.BitstreamService;
@@ -60,6 +58,8 @@ import org.dspace.event.Event;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.EventService;
+import org.dspace.uclouvain.core.mails.DissertationArchivedEmail;
+import org.dspace.uclouvain.core.mails.PublicationNotifyAuthorsEmail;
 import org.dspace.usage.UsageWorkflowEvent;
 import org.dspace.workflow.WorkflowException;
 import org.dspace.xmlworkflow.factory.XmlWorkflowFactory;
@@ -722,38 +722,24 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             return;
         }
         try {
-            // Get submitter
-            EPerson ep = item.getSubmitter();
-            // send the notification to the submitter unless the submitter eperson has been deleted
-            if (null != ep) {
-                // Get the Locale
-                Locale supportedLocale = I18nUtil.getEPersonLocale(ep);
-                Email email = Email.getEmail(I18nUtil.getEmailFilename(supportedLocale, "submit_archive"));
-
-                // Get the item handle to email to user
-                String handle = handleService.findHandle(context, item);
-
-                // Get title
-                List<MetadataValue> titles = itemService
-                    .getMetadata(item, MetadataSchemaEnum.DC.getName(), "title", null, Item.ANY);
-                String title = "";
-                try {
-                    title = I18nUtil.getMessage("org.dspace.xmlworkflow.XMLWorkflowService.untitled");
-                } catch (MissingResourceException e) {
-                    title = "Untitled";
+            if ("Publication".equals(itemService.getEntityType(item))) {
+                String type = itemService.getMetadataFirstValue(item, "dc", "type", "maintype", null);
+                if (type == null) {
+                    log.warn("Detected a publication with no maintype; item_id=" + item.getID());
+                    return;
                 }
-                if (titles.size() > 0) {
-                    title = titles.iterator().next().getValue();
+                switch (type) {
+                    // Special case for doctoral theses.
+                    case "text::thesis":
+                        new DissertationArchivedEmail(context, item).sendEmail();
+                        break;
+                    // For any other publication types, we send a classic publication notify email.
+                    default:
+                        new PublicationNotifyAuthorsEmail(context, item).sendEmail();
+                        break;
                 }
-
-                email.addRecipient(ep.getEmail());
-                email.addArgument(title);
-                email.addArgument(coll.getName());
-                email.addArgument(handleService.getCanonicalForm(handle));
-
-                email.send();
             }
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             log.warn(LogHelper.getHeader(context, "notifyOfArchive",
                     "cannot email user" + " item_id=" + item.getID()), e);
         }
