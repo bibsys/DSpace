@@ -58,9 +58,9 @@
     </div>
     <p>Madame/Monsieur,</p>
     <p>
-      Nous tenons à vous informer qu'une publication dont vous êtes l'auteur/autrice vient d'être déposée sur DIAL.pr.<br/>
+      Suite à votre réussite, votre thèse a bien été publiée dans DIAL.pr.<br/>
     </p>
-    <h4 class="heading">Informations relatives à la publication</h4>
+    <h4 class="heading">Informations relatives à la thèse</h4>
     <table class="metadata-table" style="border: 1px solid #777">
       <tbody>
         #foreach ($mapEntry in $params[2].entrySet())
@@ -70,7 +70,7 @@
           </tr>
         #end
         <tr>
-          <th style="border-right: 1px solid #777">Lien vers la publication</th>
+          <th style="border-right: 1px solid #777">Lien vers la thèse</th>
           <td>
             <a href="${params[1]}">${params[1]}</a>
           </td>
@@ -91,9 +91,9 @@
     <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
     <p>Dear Sir/Madam,</p>
     <p>
-      We would like to inform you that a publication where you are mentioned as an author has been submitted in DIAL.pr.<br/>
+      Following your success, your dissertation has well been published in DIAL.pr.<br/>
     </p>
-    <h4 class="heading">Publication data</h4>
+    <h4 class="heading">Dissertation data</h4>
     <table class="metadata-table" style="border: 1px solid #777">
       <tbody>
         #foreach ($mapEntry in $params[3].entrySet())
@@ -103,7 +103,7 @@
           </tr>
         #end
         <tr>
-          <th style="border-right: 1px solid #777">Link to publication</th>
+          <th style="border-right: 1px solid #777">Link to dissertation</th>
           <td>
             <a href="${params[1]}">${params[1]}</a>
           </td>
