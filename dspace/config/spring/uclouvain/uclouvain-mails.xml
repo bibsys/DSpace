@@ -22,6 +22,7 @@
                 <ref bean="titleMailParser"/>
                 <ref bean="dateIssuedParser"/>
                 <ref bean="authorsMailParser"/>
+                <ref bean="supervisorsMailParser"/>
                 <ref bean="abstractMailParser"/>
             </util:list>
         </property>
@@ -64,6 +65,15 @@
             <map key-type="java.lang.String" value-type="java.lang.String">
                 <entry key="fr" value="Auteurs"/>
                 <entry key="en" value="Authors"/>
+            </map>
+        </property>
+    </bean>
+    <bean id="supervisorsMailParser" class="org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParser">
+        <property name="metadataField" value="dc.contributor.advisor"/>
+        <property name="labels">
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="fr" value="Promoteurs"/>
+                <entry key="en" value="Supervisors"/>
             </map>
         </property>
     </bean>

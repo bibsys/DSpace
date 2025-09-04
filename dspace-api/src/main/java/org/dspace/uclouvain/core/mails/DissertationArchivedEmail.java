@@ -15,25 +15,30 @@ import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
-/**
- * Mail to notify the authors of a publication that it has been submitted.
- */
-public class PublicationNotifyAuthorsEmail extends AbstractNotifyEmail {
 
+/**
+ * Notify the authors of a dissertation when it is validated and it enters the archive.
+ * 
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ */
+public class DissertationArchivedEmail extends DissertationNotifyEmail {
     protected final List<String> fieldsToExpose = Arrays.asList(getConfigurationAttributes("metadata"));
 
-    public PublicationNotifyAuthorsEmail(Context context, Item item) throws EmailFailedInitException {
+    protected static final String CONFIG_NAME = "dissertation_notify_archive";
+    protected static final String TEMPLATE_PATH = "/config/emails/dissertation_notify_archive";
+
+    public DissertationArchivedEmail(Context context, Item item) throws EmailFailedInitException {
         super(context, item);
     }
 
     @Override
     protected String getConfigurationName() {
-        return "notify_authors";
+        return CONFIG_NAME;
     }
 
     @Override
     protected String getTemplatePath() {
-        return this.source + "/config/emails/publication_notify_authors";
+        return this.source + TEMPLATE_PATH;
     }
 
     @Override

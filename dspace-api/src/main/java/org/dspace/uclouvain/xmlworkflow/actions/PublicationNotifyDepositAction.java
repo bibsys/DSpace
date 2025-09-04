@@ -15,19 +15,26 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
-import org.dspace.uclouvain.core.mails.PublicationNotifyAuthorsEmail;
+import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.mails.DissertationDepositEmail;
+import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
 import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 
 /**
- * Action to notify all the authors of a publication when it is deposited.
+ * Action to notify all the authors of a publication item.
+ * The email to send changes base on the publication type of the item.
  *
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
-public class NotifyAuthorsAction extends ProcessingAction {
-    protected static final Logger logger = LogManager.getLogger(NotifyAuthorsAction.class);
+public class PublicationNotifyDepositAction extends ProcessingAction {
+    protected static final Logger logger = LogManager.getLogger(PublicationNotifyDepositAction.class);
+    protected final String MAINTYPE_FIELD = DSpaceServicesFactory
+        .getInstance()
+        .getConfigurationService()
+        .getProperty("uclouvain.global.metadata.maintype.field", "dc.type.maintype");
 
     @Override
     public void activate(Context c, XmlWorkflowItem wf) {}
@@ -35,12 +42,22 @@ public class NotifyAuthorsAction extends ProcessingAction {
     @Override
     public ActionResult execute(Context context, XmlWorkflowItem wfi, Step step, HttpServletRequest request) {
         final ActionResult result = new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
-        // 1. Retrieve the item.
-        // 2. If item is not null, send an email to all the authors.
+        // Retrieve the item.
         Item item = wfi.getItem();
-        if (item != null) {
+        if (item != null && "Publication".equals(itemService.getEntityType(item))) {
+            // If item is not null and of type publication, send a specific email depending on its publication type.
+            String publicationType = itemService.getMetadataFirstValue(item, new MetadataField(MAINTYPE_FIELD), null);
             try {
-                new PublicationNotifyAuthorsEmail(context, item).sendEmail();
+                switch (publicationType) {
+                    case "text::thesis":
+                        new DissertationDepositEmail(context, item).sendEmail();
+                        break;
+                    default:
+                        logger.warn(
+                            "Reached the notifyAuthorsAction with an non-processable publication type "
+                            + "'" + publicationType + "', UUID: " + item.getID()
+                        );
+                }
             } catch (Exception e) {
                 logger.error(
                     "Could not build or send the publication notification email",
