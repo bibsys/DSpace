@@ -2,10 +2,9 @@
 ## This email comes with an attachment: an attestation that confirms the submission.
 ## Parameters:
 ##    {0} Date and time
-##    {1} The handle of the publication
-##    {2} Information about the submission (title, abstract...) in french
-##    {3} Information about the submission (title, abstract...) in english
-##    {4} List of attached files. Each row is a tuple of filename and file access type
+##    {1} Information about the submission (title, abstract...) in french
+##    {2} Information about the submission (title, abstract...) in english
+##    {3} List of attached files. Each row is a tuple of filename and file access type
 <html>
   <head>
     <meta charset="UTF-8">
@@ -58,23 +57,18 @@
     </div>
     <p>Madame/Monsieur,</p>
     <p>
-      Nous tenons à vous informer qu'une publication dont vous êtes l'auteur/autrice vient d'être déposée sur DIAL.pr.<br/>
+      Votre thèse a bien été encodée dans le dépôt DIAL.pr avec les détails ci-dessous.
+      Après votre défense publique, quand nous aurons reçu toutes les informations nécessaires (avis de réussite et autorisation de diffusion de la thèse signée par l'ADRE), votre thèse sera publiée dans DIAL.pr et vous en serez averti.e.<br/>
     </p>
-    <h4 class="heading">Informations relatives à la publication</h4>
+    <h4 class="heading">Informations relatives à la thèse</h4>
     <table class="metadata-table" style="border: 1px solid #777">
       <tbody>
-        #foreach ($mapEntry in $params[2].entrySet())
+        #foreach ($mapEntry in $params[1].entrySet())
           <tr>
             <th style="border-right: 1px solid #777">$mapEntry.key</th>
             <td>$mapEntry.value</td>
           </tr>
         #end
-        <tr>
-          <th style="border-right: 1px solid #777">Lien vers la publication</th>
-          <td>
-            <a href="${params[1]}">${params[1]}</a>
-          </td>
-        </tr>
       </tbody>
     </table>
     #if (!$params[4].isEmpty())
@@ -91,23 +85,18 @@
     <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
     <p>Dear Sir/Madam,</p>
     <p>
-      We would like to inform you that a publication where you are mentioned as an author has been submitted in DIAL.pr.<br/>
+      Your dissertation has been well deposited into DIAL.pr with the following details.
+      After you public defense, when we will have received all the necessary informations (notice of success and authorization to disseminate the dissertation signed by the ADRE), your dissertation will be published in DIAL.pr and you will be notified.<br/>
     </p>
-    <h4 class="heading">Publication data</h4>
+    <h4 class="heading">Dissertation data</h4>
     <table class="metadata-table" style="border: 1px solid #777">
       <tbody>
-        #foreach ($mapEntry in $params[3].entrySet())
+        #foreach ($mapEntry in $params[2].entrySet())
           <tr>
             <th style="border-right: 1px solid #777">$mapEntry.key</th>
             <td>$mapEntry.value</td>
           </tr>
         #end
-        <tr>
-          <th style="border-right: 1px solid #777">Link to publication</th>
-          <td>
-            <a href="${params[1]}">${params[1]}</a>
-          </td>
-        </tr>
       </tbody>
     </table>
     #if (!$params[4].isEmpty())
