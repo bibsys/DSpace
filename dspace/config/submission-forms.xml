@@ -575,6 +575,28 @@
       <row>
         <field>
           <dc-schema>organization</dc-schema>
+          <dc-element>isSelectable</dc-element>
+          <label>Selectable</label>
+          <input-type>checkbox</input-type>
+          <hint>The affiliation should be selectable</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>organization</dc-schema>
+          <dc-element>weight</dc-element>
+          <label>Organization weight</label>
+          <input-type>number</input-type>
+          <hint>The weight of the affiliation specifying its priority level (default is 50).</hint>
+          <required>You must provide a weight for this affiliation.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>organization</dc-schema>
           <dc-element>parentOrganization</dc-element>
           <label>Parent Organisation</label>
           <input-type>onebox</input-type>
