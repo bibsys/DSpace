@@ -18,6 +18,7 @@ public class AffiliationEntityRestModel {
     public String acronym;
     public String type;
     public boolean isSelectable;
+    public int weight;
     public UUID parent;
     public List<AffiliationEntityRestModel> children = new ArrayList<AffiliationEntityRestModel>();
 
@@ -30,6 +31,7 @@ public class AffiliationEntityRestModel {
         this.acronym = model.acronym;
         this.type = model.type;
         this.isSelectable = model.isSelectable;
+        this.weight = model.weight;
         this.parent = model.parent;
         model.children.forEach(modelChild -> this.children.add(new AffiliationEntityRestModel(modelChild)));
     }
