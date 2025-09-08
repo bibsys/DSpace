@@ -339,8 +339,12 @@
     <dc-type>
         <schema>organization</schema>
         <element>isSelectable</element>
-        <qualifier></qualifier>
         <scope_note>Is this entity could be selected when a publication is submitted</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>organization</schema>
+        <element>weight</element>
+        <scope_note>The weight of the affiliation specifying its priority level.</scope_note>
     </dc-type>
     <!-- PUBLICATION SCHEMA -->
     <dc-schema>

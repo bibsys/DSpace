@@ -13,6 +13,7 @@
       {
         "name": "Anciens départements (publication pré 2010)",
         "selectable": false,
+        "weight": 60,
         "children": [
           {
             "name": "Département de biologie appliquée et des productions agricoles",
@@ -237,12 +238,14 @@
         ]
       },
       {
-        "name": "Autre"
+        "name": "Autre",
+        "weight": 50
       },
       {
         "name": "Cliniques Universitaires Saint-Luc",
         "acronym": "SLuc",
         "selectable": false,
+        "weight": 65,
         "identifiers": [
           {"type": "ror", "value": "https://ror.org/03s4khd80"},
           {"type": "isni", "value": "http://isni.org/isni/0000000404616320"},
@@ -587,6 +590,7 @@
       {
         "name": "Entités administratives UCL",
         "selectable": false,
+        "weight": 75,
         "children": [
           {
             "name": "Administration des affaires étudiantes",
@@ -644,6 +648,7 @@
         "name": "Mont-Godinne",
         "acronym": "MGD",
         "selectable": false,
+        "weight": 70,
         "identifiers": [
           {"type": "ror", "value": "https://ror.org/00ntbvq76"}
         ],
@@ -804,6 +809,7 @@
         "name": "secteur des sciences humaines",
         "acronym": "SSH",
         "selectable": false,
+        "weight": 90,
         "children": [
           {
             "name": "Institute of Analysis of Change in Contemporary and Historical Societies",
@@ -1009,6 +1015,7 @@
         "name": "Secteur des sciences de la santé",
         "acronym": "SSS",
         "selectable": false,
+        "weight": 85,
         "children": [
           {
             "name": "Institut de Duve",
@@ -1216,6 +1223,7 @@
         "name": "Secteur des sciences et technologies",
         "acronym": "SST",
         "selectable": false,
+        "weight": 80,
         "children": [
           {
             "name": "Centre de ressources du cyclotron",
@@ -1357,11 +1365,13 @@
     ],
     "children": [
       {
-        "name": "Autre"
+        "name": "Autre",
+        "weight": 50
       },
       {
         "name": "Départements",
         "selectable": false,
+        "weight": 60,
         "children": [
           {
             "name": "DRO_Centre Droits fondamentaux et Lien social (DF&amp;LS)"
@@ -1573,6 +1583,7 @@
       {
         "name": "Anciennes dénominations",
         "selectable": false,
+        "weight": 60,
         "children": [
           {
             "name": "Centre d'études sociologiques (CES)"
@@ -1586,11 +1597,13 @@
         ]
       },
       {
-        "name": "Autre"
+        "name": "Autre",
+        "weight": 50
       },
       {
         "name": "Centres et des séminaires de recherche",
         "selectable": false,
+        "weight": 70,
         "children": [
           {
             "name": "Center for Applied Public Economics (CAPE)"
@@ -1669,6 +1682,7 @@
       {
         "name": "Instituts fédérant des centres de recherche et des chercheurs",
         "selectable": false,
+        "weight": 75,
         "children": [
           {
             "name": "Institut d'études européennes (IEE)"
@@ -1684,6 +1698,7 @@
       {
         "name": "Pôle de recherche",
         "selectable": false,
+        "weight": 65,
         "children": [
           {
             "name": "Pôle de recherche en droit privé",
