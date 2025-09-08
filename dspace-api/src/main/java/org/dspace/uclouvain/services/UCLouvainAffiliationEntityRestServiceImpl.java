@@ -101,6 +101,9 @@ public class UCLouvainAffiliationEntityRestServiceImpl implements UCLouvainAffil
                 String selectable = documentExtract(document, "organization.isSelectable");
                 model.isSelectable = (selectable != null) ? selectable.equals("true") : true;
 
+                String weight = documentExtract(document, "organization.weight");
+                model.weight = (weight != null && !weight.isEmpty()) ? Integer.parseInt(weight) : 50;
+
                 // Extract parent UUID
                 String parentAuthority = documentExtract(document, "organization.parentOrganization_authority");
                 try {
