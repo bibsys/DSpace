@@ -11,6 +11,14 @@
             <name>OrgUnit</name>
             <entity-type>OrgUnit</entity-type>
             <submission-type>orgunit</submission-type>
+            <templateItem>
+                <metadata schema="organization" element="isSelectable">
+                    <value>true</value>
+                </metadata>
+                <metadata schema="organization" element="weight">
+                    <value>50</value>
+                </metadata>
+            </templateItem>
         </collection>
         <collection identifier="2078.5/Journal">
             <name>Journal</name>

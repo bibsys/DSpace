@@ -165,7 +165,7 @@ public class OrgUnitImporter extends AbstractCLICommand {
 
         // Create the DSO object and assign it metadata.
         PackageParameters params = new PackageParameters();
-        params.setUseCollectionTemplate(true);
+        params.setUseCollectionTemplate(false);
         params.setWorkflowEnabled(false);
         Item item = (Item)PackageUtils.createDSpaceObject(context, collection, Constants.ITEM, null, null, params);
         addEntityMetadata(item, entity, parent);
@@ -223,6 +223,10 @@ public class OrgUnitImporter extends AbstractCLICommand {
             mdField = metadataFieldService.findByString(context, "organization.parentOrganization", '.');
             itemService.addMetadata(context, item, mdField, null, parent.getName(), parent.getID().toString(), 600);
         }
+
+        // Add a weight (priority level) to the affiliation.
+        mdField = metadataFieldService.findByString(context, "organization.weight", '.');
+        itemService.addMetadata(context, item, mdField, null, String.valueOf(entity.weight));
     }
 
     /**
@@ -257,6 +261,7 @@ class Entity {
     public boolean selectable = true;
     public List<Entity> children;
     public String type;
+    public int weight = 50;
 
     public String toString() {
         return (acronym != null)
