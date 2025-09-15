@@ -3954,8 +3954,8 @@
         <stored-value>scientific_director_editor</stored-value>
       </pair>
       <pair>
-        <displayed-value>Preface writter</displayed-value>
-        <stored-value>preface_writter</stored-value>
+        <displayed-value>Preface writer</displayed-value>
+        <stored-value>preface_writer</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="publication_roles_book" dc-term="publication_roles_book">
@@ -3976,8 +3976,8 @@
         <stored-value>scientific_director_editor</stored-value>
       </pair>
       <pair>
-        <displayed-value>Preface writter</displayed-value>
-        <stored-value>preface_writter</stored-value>
+        <displayed-value>Preface writer</displayed-value>
+        <stored-value>preface_writer</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="publication_roles_book_chapter" dc-term="publication_roles_book_chapter">
@@ -3998,8 +3998,8 @@
         <stored-value>scientific_director_editor</stored-value>
       </pair>
       <pair>
-        <displayed-value>Preface writter</displayed-value>
-        <stored-value>preface_writter</stored-value>
+        <displayed-value>Preface writer</displayed-value>
+        <stored-value>preface_writer</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="publication_roles_working_paper" dc-term="publication_roles_working_paper">
