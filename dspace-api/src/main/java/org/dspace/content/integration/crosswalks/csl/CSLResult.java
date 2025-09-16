@@ -50,8 +50,9 @@ public class CSLResult {
 
     }
 
-    public static CSLResult fromBibliography(String format, Bibliography bibliogr) {
-        UUID[] entryIds = convertToUUIDs(bibliogr.getEntryIds());
+    public static CSLResult fromBibliography(String format, Bibliography bibliogr, String[] ids) {
+        // Here we need to use provided ids since we cannot extract ids anymore from the Bibliography in citeproc 3.0.0.
+        UUID[] entryIds = convertToUUIDs(ids);
         return new CSLResult(format, entryIds, bibliogr.getEntries(), bibliogr.makeString());
     }
 
