@@ -47,8 +47,7 @@ public class UCLouvainCitationsServiceImpl implements UCLouvainCitationsService 
 
     @PostConstruct
     protected void init() {
-        this.crosswalkMapper =
-            new DSpace().getSingletonService(StreamDisseminationCrosswalkMapper.class);
+        this.crosswalkMapper = new DSpace().getSingletonService(StreamDisseminationCrosswalkMapper.class);
     }
 
     public boolean isValidFormat(Context context, String citationFormat) {
@@ -77,7 +76,10 @@ public class UCLouvainCitationsServiceImpl implements UCLouvainCitationsService 
         try {
             // Write the result in an output stream and then extract the content from it.
             ByteArrayOutputStream output = new ByteArrayOutputStream();
+            long start = System.currentTimeMillis();
             citationCrosswalk.disseminate(context, item, output);
+            long end = System.currentTimeMillis();
+            logger.debug("Generated citation in " + (end - start) + "ms");
             String citationResult = output.toString(StandardCharsets.UTF_8);
             logger.debug("Processed citation, got: " + citationResult);
             // The processor may return an error in certain cases.
@@ -91,7 +93,7 @@ public class UCLouvainCitationsServiceImpl implements UCLouvainCitationsService 
             }
             return new ItemCitation(citationFormat, citationResult);
         } catch (Exception e) {
-            logger.error("Citation({}) generation error for {}", citationFormat, item.getID());
+            logger.warn("Citation({" + citationFormat + "}) generation error for {" + item.getID() + "}", e);
             return null;
         }
     }
