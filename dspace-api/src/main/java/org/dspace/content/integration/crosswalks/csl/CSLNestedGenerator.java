@@ -42,7 +42,7 @@ public class CSLNestedGenerator implements CSLGenerator {
             return null;
         }
         Bibliography bibliography = citeproc.makeBibliography();
-        return CSLResult.fromBibliography(format, bibliography);
+        return CSLResult.fromBibliography(format, bibliography, itemDataProvider.getIds().toArray(new String[0]));
     }
 
     private CSL createCitationProcessor(DSpaceListItemDataProvider itemDataProvider, String style, String format) {
