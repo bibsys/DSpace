@@ -13,6 +13,7 @@ import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.journals.JournalService;
+import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
@@ -49,6 +50,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private UCLouvainCitationsService uclouvainCitationsService;
     @Autowired
     private JournalService journalService;
+    @Autowired
+    private IDMPersonValidityService idmPersonValidityService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -92,6 +95,10 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public JournalService getJournalService() {
         return journalService;
+    }
+    @Override
+    public IDMPersonValidityService getIDMPersonValidityService() {
+        return idmPersonValidityService;
     }
 
 }
