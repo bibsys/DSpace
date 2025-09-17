@@ -59,14 +59,24 @@ public class ESBClientImpl implements ESBClient {
     }
 
     /**
-     * Get a single 'master' email address for a given fgs.
+     * Get a single 'main' email address for a given fgs.
+     * The best email possible is the one which is 'Actif' and 'Primaire'.
+     * If none are found with those criteria, we return the first found email or null if none exist.
      * 
      * @param fgs The fgs to get an email address for.
      */
     public ESBPersonEmailResponse getMainEmailForFGS(String fgs) {
         ESBPersonEmailResponse[] emails = getEmailForFGS(fgs);
-        // TODO: Find a logic to extract only one mail from a pool.
-        return Arrays.asList(emails).stream().findFirst().orElse(null);
+        return Arrays.stream(emails)
+            .filter(email -> {
+                return ESBPersonEmailResponse.ACTIVITY_ACTIVE_EMAIL.equals(email.getActivity())
+                    && ESBPersonEmailResponse.SORTING_MAIN_EMAIL.equals(email.getSorting());
+            })
+            .findFirst()
+            .orElse(
+                // Get the first email in case a main email is not found.
+                Arrays.stream(emails).findFirst().orElse(null)
+            );
     }
 
     /**
