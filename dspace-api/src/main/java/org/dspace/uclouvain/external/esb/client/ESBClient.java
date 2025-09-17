@@ -9,6 +9,7 @@ package org.dspace.uclouvain.external.esb.client;
 
 import org.dspace.uclouvain.external.esb.model.ESBPersonProfile;
 import org.dspace.uclouvain.external.esb.model.responses.ESBPersonEmailResponse;
+import org.dspace.uclouvain.external.esb.model.responses.ESBPersonIDMMembershipResponse;
 import org.dspace.uclouvain.external.esb.model.responses.ESBPersonMainResponse;
 
 public interface ESBClient {
@@ -16,4 +17,5 @@ public interface ESBClient {
     public ESBPersonEmailResponse getMainEmailForFGS(String fgs);
     public ESBPersonMainResponse getDataForFGS(String fgs);
     public ESBPersonProfile getProfileForFGS(String fgs);
+    public ESBPersonIDMMembershipResponse[] getIDMMembershipsForFGS(String fgs);
 }

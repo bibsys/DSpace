@@ -17,4 +17,7 @@
     <bean id="entitiesConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.EntitiesConfigurationFile">
         <constructor-arg value="/config/mapping/entities.json"/>
     </bean>
+    <bean id="idmPersonFilterConfigurationFile" class="org.dspace.uclouvain.configurationFiles.files.IDMPersonFilterConfigurationFile">
+        <constructor-arg value="/config/idm/idm-filters.json"/>
+    </bean>
 </beans>

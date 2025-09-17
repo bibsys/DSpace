@@ -23,12 +23,13 @@ import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.profile.service.ResearcherProfileService;
-import org.dspace.services.ConfigurationService;
 import org.dspace.uclouvain.administer.AbstractCLICommand;
 import org.dspace.uclouvain.core.model.PersonEventModel;
 import org.dspace.uclouvain.exceptions.UserNotFoundException;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.profileIngester.actions.factory.ProfileActionFactory;
 import org.dspace.uclouvain.profileIngester.exceptions.ProfileActionException;
+import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.rabbitMQ.connectors.PersonEventConnector;
 import org.dspace.uclouvain.rabbitMQ.connectors.PersonEventErrorConnector;
 import org.dspace.utils.DSpace;
@@ -64,12 +65,13 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
     // EXTERNAL SERVICES
     protected EPersonService ePersonService;
     protected ResearcherProfileService researcherProfileService;
-    protected ConfigurationService configService;
     protected PersonEventConnector personEventConnector;
+    protected IDMPersonValidityService idmService;
 
     // CONSTRUCTOR------------------------------------------------
     ProfileIngesterCLI() throws IOException, TimeoutException {
         researcherProfileService = new DSpace().getSingletonService(ResearcherProfileService.class);
+        idmService = UCLouvainServiceFactory.getInstance().getIDMPersonValidityService();
     }
 
     // COMMON CLICommand METHODS----------------------------------
@@ -168,12 +170,19 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
 
     /**
      * Using the recovered event, try to find and execute a profile action class.
+     * Only process the event if the person has a valid IDM entry id.
      * 
      * @param context The current DSpace context.
      * @param event The event to get a profile action class for.
      */
     private void processEvent(Context context, PersonEventModel event) throws ProfileActionException {
-        ProfileActionFactory.getInstance().getProfileActionClass(event.getAction()).process(context, event);
+        if (idmService.isPersonIDMValid(event.getFgs())) {
+            ProfileActionFactory.getInstance().getProfileActionClass(event.getAction()).process(context, event);
+        } else {
+            logger.info(
+                "[IGNORED EVENT] Received person with fgs " + event.getFgs() + " has no valid IDM membership..."
+            );
+        }
     }
 
     /**
