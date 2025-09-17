@@ -14,6 +14,7 @@ import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.journals.JournalService;
+import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
@@ -39,6 +40,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract UCLouvainFWBValidationService getFWBValidationService();
     public abstract UCLouvainCitationsService getCitationsService();
     public abstract JournalService getJournalService();
+    public abstract IDMPersonValidityService getIDMPersonValidityService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
