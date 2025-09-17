@@ -21,6 +21,7 @@ import org.dspace.uclouvain.core.GenericResponse;
 import org.dspace.uclouvain.core.utils.DateUtils;
 import org.dspace.uclouvain.external.esb.model.ESBPersonProfile;
 import org.dspace.uclouvain.external.esb.model.responses.ESBPersonEmailResponse;
+import org.dspace.uclouvain.external.esb.model.responses.ESBPersonIDMMembershipResponse;
 import org.dspace.uclouvain.external.esb.model.responses.ESBPersonMainResponse;
 
 /**
@@ -81,7 +82,6 @@ public class ESBClientImpl implements ESBClient {
             HttpResponse<String> response = httpClient.get(url);
             mainData = new GenericResponse(response.body())
                 .extractJsonResponseDataToClass("personalData", ESBPersonMainResponse.class);
-            return mainData;
         } catch (Exception e) {
             logger.error("Could not fetch main data of person with fgs: " + fgs, e);
         }
@@ -119,6 +119,25 @@ public class ESBClientImpl implements ESBClient {
             profileData.setTitle(main.getTitle());
         }
         return profileData;
+    }
+
+    /**
+     * Retrieve all the IDM ids for a given person fgs.
+     * 
+     * @param fgs The FGS identifier of the person to get IDM information of.
+     * @return A list of IDM membership object concerning the user.
+     */
+    public ESBPersonIDMMembershipResponse[] getIDMMembershipsForFGS(String fgs) {
+        String url = DIGIT_PATH + "/identityGrid/" + fgs + "/membership";
+        ESBPersonIDMMembershipResponse[] memberships = {};
+        try {
+            HttpResponse<String> response = httpClient.get(url);
+            memberships = new GenericResponse(response.body())
+                .extractJsonResponseDataToClass("Element", ESBPersonIDMMembershipResponse[].class);
+        } catch (Exception e) {
+            logger.error("Could not get IDM membership for fgs " + fgs, e);
+        }
+        return memberships;
     }
 
     /**
