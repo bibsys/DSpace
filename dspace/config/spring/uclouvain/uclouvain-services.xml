@@ -55,6 +55,8 @@
 
     <bean id="uclouvainProfileService" class="org.dspace.uclouvain.services.UCLouvainProfileServiceImpl"/>
 
+    <bean id="idmPersonValidityService" class="org.dspace.uclouvain.profileIngester.services.IDMPersonValidityServiceImpl"/>
+
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
     <bean id="authorizationUtils" class="org.dspace.uclouvain.core.utils.AuthorizationUtils" />
