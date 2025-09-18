@@ -44,20 +44,8 @@
     <dc-type>
         <schema>dc</schema>
         <element>identifier</element>
-        <qualifier>patentDepositID</qualifier>
+        <qualifier>patentID</qualifier>
         <scope-note>Patent deposit ID</scope-note>
-    </dc-type>
-    <dc-type>
-        <schema>dc</schema>
-        <element>identifier</element>
-        <qualifier>patentDeliveryID</qualifier>
-        <scope-note>Patent delivery ID</scope-note>
-    </dc-type>
-    <dc-type>
-        <schema>dc</schema>
-        <element>identifier</element>
-        <qualifier>patentPublishID</qualifier>
-        <scope-note>Patent published ID</scope-note>
     </dc-type>
     <dc-type>
         <schema>dc</schema>
@@ -134,7 +122,7 @@
     <!-- AUTHORS SCHEMA -->
     <dc-schema>
         <name>authors</name>
-        <namespace>https://uclouvain.be/ontology/persons</namespace>
+        <namespace>https://uclouvain.be/ontology/authors</namespace>
     </dc-schema>
     <dc-type>
         <schema>authors</schema>
@@ -188,12 +176,18 @@
         <schema>advisors</schema>
         <element>email</element>
         <qualifier/>
-        <scope_note>Supervisor email</scope_note>
+        <scope_note>Supervisor's email</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>institution</element>
+        <qualifier/>
+        <scope_note>Supervisor's institution</scope_note>
     </dc-type>
     <!-- FEDORA SCHEMA -->
     <dc-schema>
         <name>fedora</name>
-        <namespace>https://fedora.lyrasis.org/resources/schema</namespace>
+        <namespace>https://uclouvain.be/ontology/fedora</namespace>
     </dc-schema>
     <dc-type>
         <schema>fedora</schema>
@@ -208,7 +202,7 @@
     <!-- TAG SCHEMA -->
     <dc-schema>
         <name>tag</name>
-        <namespace>https://uclouvain.be/ontology/tags</namespace>
+        <namespace>https://uclouvain.be/ontology/tag</namespace>
     </dc-schema>
     <dc-type>
         <schema>tag</schema>
@@ -519,13 +513,13 @@
         <schema>publication</schema>
         <element>serial</element>
         <qualifier>dateIssued</qualifier>
-        <scope_note>To specify the date issued of the serial the publication belongs</scope_note>
+        <scope_note>To specify the issue date of the serial</scope_note>
     </dc-type>
     <dc-type>
         <schema>publication</schema>
         <element>serial</element>
         <qualifier>peerReviewed</qualifier>
-        <scope_note>To specify if the serial the publication belongs is peer-reviewed</scope_note>
+        <scope_note>To specify if the serial is peer-reviewed</scope_note>
     </dc-type>
     <dc-type>
         <schema>publication</schema>
@@ -538,6 +532,12 @@
         <element>serial</element>
         <qualifier>eissn</qualifier>
         <scope_note>To specify a potential e-issn identifier for the serial</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>publication</schema>
+        <element>book</element>
+        <qualifier>peerReviewed</qualifier>
+        <scope_note>To specify if the book is peer-reviewed</scope_note>
     </dc-type>
     <!-- DISSERTATION SCHEMA -->
     <dc-schema>

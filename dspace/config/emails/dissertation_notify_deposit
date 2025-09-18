@@ -71,10 +71,10 @@
         #end
       </tbody>
     </table>
-    #if (!$params[4].isEmpty())
+    #if (!$params[3].isEmpty())
       <h4 class="heading">Fichiers attachés</h4>
       <ul>
-        #foreach ($attached_file in $params[4])
+        #foreach ($attached_file in $params[3])
           <li>$attached_file[0] ($attached_file[1])</li>
         #end
       </ul>
@@ -99,10 +99,10 @@
         #end
       </tbody>
     </table>
-    #if (!$params[4].isEmpty())
+    #if (!$params[3].isEmpty())
       <h4 class="heading">Attached files</h4>
       <ul>
-        #foreach ($attached_file in $params[4])
+        #foreach ($attached_file in $params[3])
           <li>$attached_file[0] ($attached_file[1])</li>
         #end
       </ul>

@@ -136,12 +136,12 @@
                         </property>
                     </bean>
                 </entry>
-                <entry key="birthDate">
+                <!-- <entry key="birthDate">
                     <bean class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionField">
                         <property name="field" value="person.birthDate"/>
                         <property name="security" value="1"/>
                     </bean>
-                </entry>
+                </entry> -->
                 <!-- <entry key="gender">
                     <bean class="org.dspace.uclouvain.profileIngester.actions.configuration.ActionField">
                         <property name="field" value="oairecerif.person.gender"/>
