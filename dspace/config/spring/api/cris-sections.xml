@@ -7,9 +7,9 @@
         <property name="components">
             <list>
                 <ref bean="sectionresearchoutputs" />
-                <ref bean="sectionfundings_and_projects" />
+                <!-- <ref bean="sectionfundings_and_projects" />
                 <ref bean="sectionresearcherprofiles" />
-                <ref bean="sectionsite" />
+                <ref bean="sectionsite" /> -->
             </list>
         </property>
     </bean>

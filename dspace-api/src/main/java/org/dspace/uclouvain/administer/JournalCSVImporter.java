@@ -285,7 +285,7 @@ public class JournalCSVImporter extends AbstractCLICommand {
         }
 
         public void setStatusCode(String statusCode) {
-            this.statusCode = statusCode;
+            this.statusCode = statusCode.toLowerCase();
         }
     }
 }
