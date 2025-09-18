@@ -26,12 +26,6 @@
                 "Journal manager"
             ]
         }, {
-            "mode": "role",
-            "type": "reviewer",
-            "groups": [
-                "Journal manager"
-            ]
-        }, {
             "mode": "permission",
             "type": "remove",
             "groups": [
