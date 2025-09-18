@@ -7,22 +7,21 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
+          <repeatable>false</repeatable>
           <label>Enter the name of the file</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required>You must enter a title for the file.</required>
           <hint />
+          <required>You must enter a title for the file.</required>
         </field>
       </row>
       <row>
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
-          <label>Enter a description for the file</label>
-          <input-type>textarea</input-type>
           <repeatable>false</repeatable>
-          <required />
-          <hint />
+          <label>Description of the file</label>
+          <input-type>textarea</input-type>
+          <hint>You can enter a description for this file or a specific version comment ('preprint', 'postprint'...).</hint>
         </field>
       </row>
       <row>
@@ -31,10 +30,10 @@
           <dc-element>rights</dc-element>
           <dc-qualifier>license</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Select the license type for the file</label>
+          <label>If applicable, select a creative commons license to apply to the file</label>
           <input-type value-pairs-name="bitstream_licenses">dropdown</input-type>
           <hint>License type: CC-BY, CC-BY-SA...</hint>
-          <required>You must select a license for the file</required>
+          <!-- <required>You must select a license for the file</required> -->
         </field>
       </row>
       <!-- <row>
@@ -756,7 +755,7 @@
           <label>Program name</label>
           <input-type>onebox</input-type>
           <hint>Enter the funding program name.</hint>
-          <required>Program name is required</required>
+          <required>Program name is required.</required>
         </field>
       </row>
       <row>
@@ -765,7 +764,7 @@
           <dc-element>project</dc-element>
           <label>Project name</label>
           <input-type>onebox</input-type>
-          <hint>Enter the funding project name for this item.</hint>
+          <hint>Enter the funding project name for this document.</hint>
         </field>
       </row>
       <row>
@@ -774,7 +773,7 @@
           <dc-element>number</dc-element>
           <label>Grant ID</label>
           <input-type>onebox</input-type>
-          <hint>Enter the grant ID/number used for this item.</hint>
+          <hint>Enter the grant ID/number used for this document.</hint>
         </field>
       </row>
     </form>
@@ -785,10 +784,10 @@
           <dc-element>type</dc-element>
           <dc-qualifier>maintype</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Type</label>
+          <label>Document type</label>
           <input-type value-pairs-name="publication_maintypes">dropdown</input-type>
-          <hint>Select the type(s) of content of the item.</hint>
-          <required>You must select a publication type</required>
+          <hint>Select the type(s) of content of the document.</hint>
+          <required>You must select a publication type.</required>
         </field>
       </row>
       <row>
@@ -797,11 +796,11 @@
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Subtype</label>
+          <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type value-pairs-name="publication_subtypes_book">dropdown</input-type>
-          <hint>Select the subtype of the item.</hint>
-          <required>You must select a publication subtype</required>
+          <hint>Select the subtype of the document.</hint>
+          <required>You must select a publication subtype.</required>
         </field>
       </row>
       <row>
@@ -810,11 +809,11 @@
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Subtype</label>
+          <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_subtypes_bookchapter">dropdown</input-type>
-          <hint>Select the subtype of the item.</hint>
-          <required>You must select a publication subtype</required>
+          <hint>Select the subtype of the document.</hint>
+          <required>You must select a publication subtype.</required>
         </field>
       </row>
       <row>
@@ -823,11 +822,11 @@
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Subtype</label>
+          <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_subtypes_speech">dropdown</input-type>
-          <hint>Select the subtype of the item.</hint>
-          <required>You must select a publication subtype</required>
+          <hint>Select the subtype of the document.</hint>
+          <required>You must select a publication subtype.</required>
         </field>
       </row>
       <row>
@@ -836,11 +835,11 @@
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Subtype</label>
+          <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type value-pairs-name="publication_subtypes_article">dropdown</input-type>
-          <hint>Select the subtype of the item.</hint>
-          <required>You must select a publication subtype</required>
+          <hint>Select the subtype of the document.</hint>
+          <required>You must select a publication subtype.</required>
         </field>
       </row>
       <row>
@@ -849,11 +848,11 @@
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Subtype</label>
+          <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type value-pairs-name="publication_subtypes_report">dropdown</input-type>
-          <hint>Select the subtype of the item.</hint>
-          <required>You must select a publication subtype</required>
+          <hint>Select the subtype of the document.</hint>
+          <required>You must select a publication subtype.</required>
         </field>
       </row>
     </form>
@@ -866,10 +865,10 @@
           <label>DOI</label>
           <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article,text::conference-speech</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the DOI (Digital object identifier) of the item.</hint>
+          <hint>Enter the DOI (Digital object identifier) of the document starting with '10.'.</hint>
           <regex>^10\.\d*\/.*</regex>
           <settings>
-            <setting name="regexErrorMessage">Invalid DOI format: DOI must start with "10."</setting>
+            <setting name="regexErrorMessage">Invalid DOI format: DOI must start with '10.'</setting>
           </settings>
         </field>
       </row>
@@ -881,7 +880,7 @@
           <label>ISBN</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the ISBN of the item.</hint>
+          <hint>Enter the ISBN of the document.</hint>
           <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISBN format</setting>
@@ -893,9 +892,21 @@
           <dc-schema>dc</dc-schema>
           <dc-element>identifier</dc-element>
           <repeatable>true</repeatable>
+          <label>Patent identifiers</label>
+          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <input-type value-pairs-name="patent_identifiers">qualdrop_value</input-type>
+          <hint>If the patent has any specific identifiers, please enter the types and the actual numbers or codes.</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>identifier</dc-element>
+          <repeatable>true</repeatable>
           <label>Identifiers</label>
+          <type-bind type-bind-field="dc.type.maintype">text::report,text::book,text::book-part,text::journal-article,text::conference-speech,text::working-paper</type-bind>
           <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
-          <hint>If the item has any identification numbers or codes associated with it, please enter the types and the actual numbers or codes.</hint>
+          <hint>If the document has any identification numbers or codes associated with it, please enter the types and the actual numbers or codes.</hint>
         </field>
       </row>
     </form>
@@ -909,7 +920,7 @@
           <input-type>onebox</input-type>
           <repeatable>false</repeatable>
           <required>You must enter at least the author.</required>
-          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+          <hint>Enter the names of the authors of this document in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
         </field>
       </row>
       <row>
@@ -1048,7 +1059,7 @@
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
           <hint>Enter the name of the institution of the affiliation.</hint>
-          <required>Please enter an institution for this additional affiliation.</required>
+          <required>Please enter an institution for this affiliation.</required>
         </field>
         <field>
           <dc-schema>oairecerif</dc-schema>
@@ -1059,7 +1070,7 @@
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
           <hint>Enter the department of the affiliation.</hint>
-          <required>Please enter a department for this additional affiliation.</required>
+          <required>Please enter a department for this affiliation.</required>
         </field>
       </row>
     </form>
@@ -1072,7 +1083,7 @@
           <repeatable>true</repeatable>
           <label>Authors</label>
           <input-type>inline-labeled-group</input-type>
-          <hint>Enter the names of the authors of this item.</hint>
+          <hint>Enter the names of the authors of this document.</hint>
           <required>You must enter at least one author</required>
           <settings>
             <setting name="displayIndex">true</setting>
@@ -1086,10 +1097,12 @@
           <dc-qualifier>etal</dc-qualifier>
           <repeatable>false</repeatable>
           <label>et.al</label>
-          <input-type>checkbox</input-type>
-          <hint>This publication has additional authors than those mentionned above</hint>
-          <required>Please indicate if there are additional non-mentionned authors.</required>
           <style>mt-2 border-top w-100 pt-2</style>
+          <input-type>checkbox</input-type>
+          <hint>Check this box if the document has additional authors than those mentioned above.</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
         </field>
       </row>
     </form>
@@ -1101,8 +1114,8 @@
           <repeatable>false</repeatable>
           <label>Title</label>
           <input-type>onebox</input-type>
-          <hint>Enter the main title of the item.</hint>
-          <required>You must enter a main title for this item.</required>
+          <hint>Enter the main title of the document.</hint>
+          <required>You must enter a main title for this document.</required>
         </field>
       </row>
       <row>
@@ -1111,12 +1124,12 @@
           <dc-element>date</dc-element>
           <dc-qualifier>issued</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Date of Issue</label>
+          <label>Publication date</label>
           <input-type>date</input-type>
           <hint>Please give the date of previous publication or public distribution.
                         You can leave out the day and/or month if they aren't
                         applicable.</hint>
-          <required>You must enter at least the year.</required>
+          <required>Please enter at least the year of the publication date.</required>
         </field>
       </row>
       <row>
@@ -1127,8 +1140,8 @@
           <repeatable>false</repeatable>
           <label>Language</label>
           <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
-          <hint>Select the language of the main content of the item. If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
-          <required>You need to choose a language for the item.</required>
+          <hint>Select the language of the main content of the document. If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
+          <required>You need to choose a language for the document.</required>
         </field>
       </row>
       <row>
@@ -1140,7 +1153,7 @@
           <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the item.</hint>
+          <hint>Enter the abstract of the document.</hint>
         </field>
       </row>
       <row>
@@ -1150,7 +1163,7 @@
           <repeatable>true</repeatable>
           <label>Keywords</label>
           <input-type>tag</input-type>
-          <hint>Type the appropriate keyword or phrase and press Enter to add it.</hint>
+          <hint>Add any keyword to describe this document. Add a coma or press Enter to add a keyword.</hint>
         </field>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1159,7 +1172,7 @@
           <repeatable>true</repeatable>
           <label>Internal keywords</label>
           <input-type>tag</input-type>
-          <hint>Type the appropriate keyword or phrase and press Enter to add it.</hint>
+          <hint>Add any internal keyword to describe this document. Add a coma or press Enter to add a keyword.</hint>
         </field>
       </row>
       <row>
@@ -1168,9 +1181,9 @@
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunit</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Additional affiliations</label>
+          <label>Publication affiliations</label>
           <input-type>inline-labeled-group</input-type>
-          <hint>Enter additional affiliation not yet linked to any author's affiliation.</hint>
+          <hint>Enter affiliations linked to the authors of this document.</hint>
         </field>
       </row>
       <row>
@@ -1203,7 +1216,7 @@
           <label>Publication status</label>
           <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
-          <hint>Select the appropriate publication status for the item.</hint>
+          <hint>Select the appropriate publication status for the document.</hint>
         </field>
       </row>
       <row>
@@ -1214,7 +1227,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
-          <hint>Select the appropriate publication status for the item.</hint>
+          <hint>Select the appropriate publication status for the document.</hint>
         </field>
       </row>
       <row>
@@ -1224,7 +1237,7 @@
           <label>Number of pages</label>
           <type-bind type-bind-field="dc.type.maintype">text::book,text::report,text::working-paper</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the number of pages of the item.</hint>
+          <hint>Enter the number of pages of the document.</hint>
           <regex>^\d+$</regex>
           <settings>
             <setting name="regexErrorMessage">Only digits are accepted</setting>
@@ -1238,22 +1251,20 @@
           <label>Edition statement</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the edition statement of the item. e.g: 1st edition, 2nd edition, …</hint>
+          <hint>Enter the edition statement of the document. e.g: 1st edition, 2nd edition, …</hint>
         </field>
       </row>
       <row>
         <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>isbn</dc-qualifier>
-          <label>Book ISBN</label>
+          <dc-schema>publication</dc-schema>
+          <dc-element>book</dc-element>
+          <dc-qualifier>peerReviewed</dc-qualifier>
+          <label>Peer-reviewed</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the ISBN of the book</hint>
-          <required>Book ISBN is required</required>
-          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
+          <input-type>checkbox</input-type>
+          <hint>The book has been reviewed by the pairs</hint>
           <settings>
-            <setting name="regexErrorMessage">Invalid ISBN format</setting>
+            <setting name="showFieldLabel">false</setting>
           </settings>
         </field>
       </row>
@@ -1379,7 +1390,7 @@
           <label>Host document type</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_host_documentType">dropdown</input-type>
-          <hint>Select the host document type of the item.</hint>
+          <hint>Select the host document type of the document.</hint>
         </field>
       </row>
       <row>
@@ -1391,7 +1402,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type value-pairs-name="publication_host_documentType">dropdown</input-type>
-          <hint>Select the host document type of the item.</hint>
+          <hint>Select the host document type of the document.</hint>
         </field>
       </row>
       <row>
@@ -1402,7 +1413,7 @@
           <label>Host document title</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document title</hint>
+          <hint>Enter the host document title.</hint>
         </field>
       </row>
       <row>
@@ -1414,7 +1425,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document title</hint>
+          <hint>Enter the host document title.</hint>
         </field>
       </row>
       <row>
@@ -1425,7 +1436,7 @@
           <label>Host edition statement</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document edition statement</hint>
+          <hint>Enter the host document edition statement.</hint>
         </field>
       </row>
       <row>
@@ -1437,7 +1448,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document edition statement</hint>
+          <hint>Enter the host document edition statement.</hint>
         </field>
       </row>
       <row>
@@ -1448,7 +1459,7 @@
           <label>Host document authors</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document authors. Each author should be separated by ','</hint>
+          <hint>Enter the host document authors. Each author should be separated by ','.</hint>
         </field>
       </row>
       <row>
@@ -1460,7 +1471,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document authors. Each author should be separated by ','</hint>
+          <hint>Enter the host document authors. Each author should be separated by ','.</hint>
         </field>
       </row>
       <row>
@@ -1471,7 +1482,7 @@
           <label>Host document pagination</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
         </field>
       </row>
       <row>
@@ -1483,7 +1494,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
         </field>
       </row>
       <row>
@@ -1495,7 +1506,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>year</input-type>
           <hint>Enter date issued of the host document.</hint>
-          <required>You need to select a date</required>
+          <required>You need to select a date.</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
             <setting name="maxYearDelta">2</setting>
@@ -1513,7 +1524,7 @@
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>year</input-type>
           <hint>Enter date issued of the host document.</hint>
-          <required>You need to select a date</required>
+          <required>You need to select a date.</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
             <setting name="maxYearDelta">2</setting>
@@ -1529,8 +1540,8 @@
           <label>Host document ISBN</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document ISBN</hint>
-          <required>Host document ISBN is required</required>
+          <hint>Enter the host document ISBN.</hint>
+          <required>Host document ISBN is required.</required>
           <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISBN format</setting>
@@ -1546,8 +1557,8 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document ISBN</hint>
-          <required>Host document ISBN is required</required>
+          <hint>Enter the host document ISBN.</hint>
+          <required>Host document ISBN is required.</required>
           <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISBN format</setting>
@@ -1594,7 +1605,7 @@
           <label>Conference name</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the conference name where the item was presented</hint>
+          <hint>Enter the conference name where the document was presented.</hint>
         </field>
       </row>
       <row>
@@ -1605,7 +1616,7 @@
           <label>Conference location</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the conference location where the item was presented</hint>
+          <hint>Enter the conference location where the document was presented.</hint>
         </field>
       </row>
       <row>
@@ -1636,7 +1647,10 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type>checkbox</input-type>
-          <hint>If this item is only an abstract of another publication.</hint>
+          <hint>This document is only an abstract of another publication.</hint>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
         </field>
       </row>
       <!-- Serial fields -->
@@ -1648,7 +1662,7 @@
           <label>Journal title</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host journal title</hint>
+          <hint>Enter the host journal title.</hint>
         </field>
       </row>
       <row>
@@ -1660,7 +1674,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host journal title</hint>
+          <hint>Enter the host journal title.</hint>
         </field>
       </row>
       <row>
@@ -1671,7 +1685,7 @@
           <label>ISSN</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the ISSN of the host serial</hint>
+          <hint>Enter the ISSN of the host serial.</hint>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1680,7 +1694,7 @@
           <label>e-ISSN</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the e-ISSN of the host serial</hint>
+          <hint>Enter the e-ISSN of the host serial.</hint>
         </field>
       </row>
       <row>
@@ -1692,7 +1706,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the ISSN of the host serial</hint>
+          <hint>Enter the ISSN of the host serial.</hint>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1702,7 +1716,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the e-ISSN of the host serial</hint>
+          <hint>Enter the e-ISSN of the host serial.</hint>
         </field>
       </row>
       <row>
@@ -1762,7 +1776,7 @@
           <label>Volume</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the volume number of the serial the item belongs</hint>
+          <hint>Enter the volume number of the serial the document belongs.</hint>
           <required>You need to specify volume number (or 'n/a')</required>
         </field>
         <field>
@@ -1772,7 +1786,7 @@
           <label>Issue</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the issue number of the serial the item belongs</hint>
+          <hint>Enter the issue number of the serial the document belongs.</hint>
           <required>You need to specify issue number (or 'n/a')</required>
         </field>
         <field>
@@ -1782,7 +1796,7 @@
           <label>Pagination</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
           <required>You need to specify pagination (or 'n/a')</required>
         </field>
         <field>
@@ -1793,7 +1807,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>year</input-type>
           <hint>Enter date issued of the serial.</hint>
-          <required>You need to select a date</required>
+          <required>You need to select a date.</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
             <setting name="maxYearDelta">2</setting>
@@ -1810,7 +1824,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the volume number of the serial the item belongs</hint>
+          <hint>Enter the volume number of the serial the document belongs.</hint>
           <required>You need to specify volume number (or 'n/a')</required>
         </field>
         <field>
@@ -1821,7 +1835,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the issue number of the serial the item belongs</hint>
+          <hint>Enter the issue number of the serial the document belongs.</hint>
           <required>You need to specify issue number (or 'n/a')</required>
         </field>
         <field>
@@ -1832,7 +1846,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the item into the host document. Page interval separator must be '-'</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
           <required>You need to specify pagination (or 'n/a')</required>
         </field>
         <field>
@@ -1844,7 +1858,7 @@
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>year</input-type>
           <hint>Enter date issued of the serial.</hint>
-          <required>You need to select a date</required>
+          <required>You need to select a date.</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
             <setting name="maxYearDelta">2</setting>
@@ -1861,7 +1875,7 @@
           <label>Organization name</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the organization name of the item.</hint>
+          <hint>Enter the organization name of the document.</hint>
         </field>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1879,32 +1893,10 @@
           <label>Period</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the period time for the item</hint>
+          <hint>Enter the period time for the document</hint>
         </field>
       </row>
       <!-- Patent -->
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>ipc</dc-qualifier>
-          <label>IPC identifier</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the invention IPC identifier</hint>
-          <required>Please provide an IPC identifier for this patent.</required>
-        </field>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>ecla</dc-qualifier>
-          <label>ECLA identifier</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the invention ECLA identifier</hint>
-          <required>Please provide an ECLA identifier for this patent.</required>
-        </field>
-      </row>
       <row>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1914,168 +1906,8 @@
           <label>Submitter</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter name(s) of the inventor; one submitter by fields</hint>
+          <hint>Enter name(s) of the inventor; one submitter by fields.</hint>
           <required>Please enter at least one submitter for this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>depositLevel</dc-element>
-          <label>Deposit level</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type value-pairs-name="patent_depositLevel">dropdown</input-type>
-          <hint>Select the invention deposit level</hint>
-          <required>Please select the deposit level of this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>patentOffice</dc-element>
-          <label>Patent office</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the office beside of which the patent request was submitted</hint>
-          <required>Please provide an office for this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>priorityNumber</dc-qualifier>
-          <label>Priority number</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the priority number attributed to the invention</hint>
-          <required>Please provide the priority number of this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>place</dc-element>
-          <dc-qualifier>country</dc-qualifier>
-          <label>Country/Organization</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type>onebox</input-type>
-          <hint>Enter the scope of the patent protection. Use ISO code separated by comma</hint>
-          <required>Please provide the countries for the scope of this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>type</dc-qualifier>
-          <label>Patent type</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <input-type value-pairs-name="publication_patent_types">dropdown</input-type>
-          <hint>Please provide a status type for this patent.</hint>
-          <required>Please select a type for this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>patentDepositID</dc-qualifier>
-          <label>Deposit ID</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">deposited</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-          <required>Please provide an id for this patent.</required>
-        </field>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>deposit</dc-element>
-          <dc-qualifier>code</dc-qualifier>
-          <label>Deposit code</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">deposited</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-          <required>Please provide a deposit code for this patent.</required>
-        </field>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>deposit</dc-element>
-          <dc-qualifier>date</dc-qualifier>
-          <label>Deposit date</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">deposited</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-          <required>Please provide a deposit date for this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>patentPublishID</dc-qualifier>
-          <label>Publish ID</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">published</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-          <required>Please provide an id for the patent.</required>
-        </field>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>publish</dc-element>
-          <dc-qualifier>code</dc-qualifier>
-          <label>Publish code</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">published</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-          <required>Please provide a published code for this patent.</required>
-        </field>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>publish</dc-element>
-          <dc-qualifier>date</dc-qualifier>
-          <label>Publish date</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">published</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-          <required>Please provide a published date for this patent.</required>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>patentDeliveryID</dc-qualifier>
-          <label>Delivery ID</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">delivered</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-        </field>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>delivery</dc-element>
-          <dc-qualifier>code</dc-qualifier>
-          <label>Delivery code</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">delivered</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-        </field>
-        <field>
-          <dc-schema>crispatent</dc-schema>
-          <dc-element>delivery</dc-element>
-          <dc-qualifier>date</dc-qualifier>
-          <label>Delivery date</label>
-          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
-          <type-bind type-bind-field="crispatent.identifier.type">delivered</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
         </field>
       </row>
     </form>
@@ -2087,7 +1919,7 @@
           <repeatable>true</repeatable>
           <label>Funding</label>
           <input-type>group</input-type>
-          <hint>Add any funding data used for the item.</hint>
+          <hint>Add any funding data used for the document.</hint>
         </field>
       </row>
     </form>
@@ -2100,7 +1932,7 @@
           <repeatable>false</repeatable>
           <label>Author's name</label>
           <input-type>onebox</input-type>
-          <hint>Enter the names of the authors of this item in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+          <hint>Enter the names of the authors of this dissertation in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
           <required>You must enter at least the author.</required>
         </field>
       </row>
@@ -2138,7 +1970,7 @@
           <dc-qualifier>fgs</dc-qualifier>
           <repeatable>false</repeatable>
           <label>FGS Identifier</label>
-          <input-type>onebox</input-type>
+          <input-type>hidden</input-type>
           <hint>Enter the FGS identifier of the author.</hint>
           <required>You must provide the FGS number of this author.</required>
         </field>
@@ -2153,7 +1985,7 @@
           <repeatable>false</repeatable>
           <label>Supervisor's name</label>
           <input-type>onebox</input-type>
-          <hint>Enter the supervisor name of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J]</hint>
+          <hint>Enter the supervisor name of this dissertation in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].</hint>
           <required>You must enter at least the supervisor.</required>
         </field>
       </row>
@@ -2170,6 +2002,17 @@
           <settings>
             <setting name="regexErrorMessage">Invalid email format.</setting>
           </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>advisors</dc-schema>
+          <dc-element>institution</dc-element>
+          <repeatable>false</repeatable>
+          <label>Supervisor's institution</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the institution of the supervisor.</hint>
+          <required>Please provide an institution for this supervisor.</required>
         </field>
       </row>
     </form>
@@ -2269,7 +2112,7 @@
           <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the item. For additional abstract, use the below "add" link.</hint>
+          <hint>Enter the abstract of the dissertation. For additional abstract, use the below "add" link.</hint>
           <required>You must enter at least one abstract.</required>
         </field>
       </row>
@@ -2378,7 +2221,7 @@
           <label>ISSN</label>
           <input-type>onebox</input-type>
           <hint />
-          <required />
+          <required>You have to enter an ISSN for this journal.</required>
           <regex>^\d{4}-\d{3}[\dX]$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISSN format</setting>
@@ -2470,7 +2313,7 @@
         <displayed-value>arXiv ID</displayed-value>
         <stored-value>arxiv</stored-value>
       </pair>
-      <pair>
+      <!-- <pair>
         <displayed-value>Other</displayed-value>
         <stored-value>other</stored-value>
       </pair>
@@ -2481,20 +2324,42 @@
       <pair>
         <displayed-value>Gov't Doc #</displayed-value>
         <stored-value>govdoc</stored-value>
-      </pair>
+      </pair> -->
       <pair>
         <displayed-value>URI</displayed-value>
         <stored-value>uri</stored-value>
       </pair>
-      <pair>
+      <!-- <pair>
         <displayed-value>Ads Code</displayed-value>
         <stored-value>adsbibcode</stored-value>
+      </pair> -->
+    </value-pairs>
+    <value-pairs value-pairs-name="patent_identifiers" dc-term="patent_identifiers">
+      <pair>
+        <displayed-value>IPC</displayed-value>
+        <stored-value>ipc</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>ECLA</displayed-value>
+        <stored-value>ecla</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Patent ID</displayed-value>
+        <stored-value>patentID</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Priority number</displayed-value>
+        <stored-value>priorityNumber</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="common_iso_languages" dc-term="common_iso_languages">
       <pair>
         <displayed-value>N/A</displayed-value>
         <stored-value />
+      </pair>
+      <pair>
+        <displayed-value>Chinese</displayed-value>
+        <stored-value>zh</stored-value>
       </pair>
       <pair>
         <displayed-value>English (United States)</displayed-value>
@@ -2505,16 +2370,12 @@
         <stored-value>en</stored-value>
       </pair>
       <pair>
-        <displayed-value>Spanish</displayed-value>
-        <stored-value>es</stored-value>
+        <displayed-value>French</displayed-value>
+        <stored-value>fr</stored-value>
       </pair>
       <pair>
         <displayed-value>German</displayed-value>
         <stored-value>de</stored-value>
-      </pair>
-      <pair>
-        <displayed-value>French</displayed-value>
-        <stored-value>fr</stored-value>
       </pair>
       <pair>
         <displayed-value>Italian</displayed-value>
@@ -2525,8 +2386,8 @@
         <stored-value>ja</stored-value>
       </pair>
       <pair>
-        <displayed-value>Chinese</displayed-value>
-        <stored-value>zh</stored-value>
+        <displayed-value>Spanish</displayed-value>
+        <stored-value>es</stored-value>
       </pair>
       <pair>
         <displayed-value>Turkish</displayed-value>
@@ -3793,8 +3654,8 @@
     </value-pairs>
     <value-pairs value-pairs-name="publication_subtypes_bookchapter" dc-term="publication_subtypes_bookchapter">
       <pair>
-        <displayed-value>Book part</displayed-value>
-        <stored-value>book-part</stored-value>
+        <displayed-value>Book chapter</displayed-value>
+        <stored-value>book-chapter</stored-value>
       </pair>
       <pair>
         <displayed-value>Preface/Postface/Foreword</displayed-value>
