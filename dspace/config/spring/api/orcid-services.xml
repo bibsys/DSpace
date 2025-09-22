@@ -226,7 +226,7 @@
     </bean>
     
     <bean name="mapConverterDSpaceToOrcidPublicationType" class="org.dspace.util.SimpleMapConverter" init-method="init">
-		<property name="converterNameFile" value="orcid/mapConverter-dspace-to-orcid-publication-type.properties" />
+		<property name="converterNameFile" value="orcid/mapConverter-uclouvain-to-orcid-publication-type.properties" />
 		<property name="configurationService" ref="org.dspace.services.ConfigurationService" />
 		<property name="defaultValue" value="other"/>
 	</bean>
@@ -278,7 +278,7 @@
 	</bean>
 
     <bean name="mapConverterOrcidToDSpacePublicationType" class="org.dspace.util.SimpleMapConverter" init-method="init">
-		<property name="converterNameFile" value="orcid/mapConverter-orcid-to-dspace-publication-type.properties" />
+		<property name="converterNameFile" value="orcid/mapConverter-orcid-to-uclouvain-publication-type.properties" />
 		<property name="configurationService" ref="org.dspace.services.ConfigurationService" />
 		<property name="defaultValue" value="Controlled Vocabulary for Resource Type Genres::other"/>
 	</bean>
