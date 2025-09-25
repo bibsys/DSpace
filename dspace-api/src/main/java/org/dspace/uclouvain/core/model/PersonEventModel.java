@@ -11,6 +11,8 @@ package org.dspace.uclouvain.core.model;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 /** 
  * Model representing an event on a person.
  * @param fgs The id of the person.
@@ -44,7 +46,7 @@ public class PersonEventModel {
     }
 
     public void setFgs(String fgs) {
-        this.fgs = fgs;
+        this.fgs = StringUtils.stripStart(fgs, "0");
     }
 
     public String getAction() {
