@@ -14,6 +14,7 @@ import org.dspace.core.Context;
 
 public interface UCLouvainProfileService {
     public Item findById(Context context, String fgs) throws Exception;
+    public Item findByEmail(Context context, String email) throws Exception;
     public List<Item> findLinkedPublications(Context context, Item profile) throws Exception;
     public Item createEmptyProfile(Context context, String fgs) throws Exception;
 }
