@@ -39,7 +39,7 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
 
     /**
      * Extract the fgs from the provided event:
-     * - If no other profile exist with the fgs, create one using the provided data.
+     * - If no other profile exist with the email, create one by using the provided data.
      * - If a profile already exists, exit the action.
      * Perform a commit in the database only if a change occurred.
      * 
@@ -50,12 +50,14 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
     public void process(Context context, PersonEventModel event) throws ProfileActionException {
         String fgs = event.getFgs();
         try {
-            Item profile = uclouvainProfileService.findById(context, fgs);
             ESBPersonProfile profileData = esbClient.getProfileForFGS(fgs);
             if (profileData.getEmail() == null) {
                 logger.info("[CANCEL PROCESSING] No email found for the fgs \"" + fgs + "\" aborting processing...");
                 return;
             }
+            // Try to find an existing profile with the user email.
+            Item profile = uclouvainProfileService.findByEmail(context, profileData.getEmail());
+
             boolean changed = false;
             if (profile == null) {
                 profile = uclouvainProfileService.createEmptyProfile(context, fgs);
