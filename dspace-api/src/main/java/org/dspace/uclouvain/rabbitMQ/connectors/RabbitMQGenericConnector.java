@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.rabbitMQ.connectors;
 
 import java.io.IOException;
+import java.util.concurrent.TimeoutException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
@@ -25,8 +26,10 @@ public abstract class RabbitMQGenericConnector {
     protected Connection rabbitClient = getRabbitMQConnection();
     protected ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
+    private Channel channel;
+
     /**
-     * Publish a basic JSON message to RabbitMQ queue.
+     * Publish a basic JSON message to a RabbitMQ queue.
      * @param message An object that will be converted to a JSON string.
      * @throws IOException
      */
@@ -34,7 +37,16 @@ public abstract class RabbitMQGenericConnector {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonEncoded = objectMapper.writeValueAsString(message);
         // Get a channel for RabbitMQ and publish the message into queue.
-        publishMessage(getChannel(), jsonEncoded);
+        if (channel == null || !channel.isOpen()) {
+            channel = getChannel();
+        }
+        publishMessage(channel, jsonEncoded);
+    }
+
+    public void closeChannel() throws IOException, TimeoutException {
+        if (channel != null && channel.isOpen()) {
+            channel.close();
+        }
     }
 
     /**

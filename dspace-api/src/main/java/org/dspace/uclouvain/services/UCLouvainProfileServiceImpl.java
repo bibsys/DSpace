@@ -61,12 +61,36 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
      * @return Returns the profile that has the given identifier, null otherwise.
      */
     public Item findById(Context context, String fgs) throws Exception {
+        // Add the fgs as a filter
+        return findOneByAttribute(context, "person.identifier.fgs:" + fgs);
+    }
+
+    /**
+     * Find a profile item using an email. Returns null if nothing is found.
+     * 
+     * @param context The current DSpace context.
+     * @param email The email to use in order to find the right profile.
+     * @return Returns the profile that has the given email, null otherwise.
+     */
+    public Item findByEmail(Context context, String email) throws Exception {
+        // Add the email as a filter
+        return findOneByAttribute(context, "person.email:" + email);
+    }
+
+    /**
+     * Find a profile item using a given attribute filter. Returns null if nothing is found.
+     * 
+     * @param context The current DSpace context.
+     * @param attributeFilter The filter to use to find a specific profile item.
+     * @return Returns the profile that passes the given filter, null if nothing found.
+     */
+    private Item findOneByAttribute(Context context, String attributeFilter) throws Exception {
         DiscoverQuery dq = new DiscoverQuery();
         // Take only archived items.
         dq.addDSpaceObjectFilter(IndexableItem.TYPE);
         dq.addFilterQueries("search.entitytype:" + PROFILE_ENTITY_TYPE);
-        // Add the fgs as a filter
-        dq.addFilterQueries("person.identifier.fgs:" + fgs);
+        // Add the attribute filter
+        dq.addFilterQueries(attributeFilter);
         dq.setMaxResults(1);
         // Convert the search result into a list of item and only keep the first one.
         return searchService.search(context, dq)
