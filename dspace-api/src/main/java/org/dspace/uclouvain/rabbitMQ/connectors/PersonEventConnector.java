@@ -19,7 +19,7 @@ import com.rabbitmq.client.Channel;
 public class PersonEventConnector extends RabbitMQGenericConnector {
     protected String queueName = configService.getProperty("uclouvain.person_event.rabbit.queue");
 
-    public Channel getChannel() throws IOException {
+    protected Channel declareChannel() throws IOException {
         Channel channel = rabbitClient.createChannel();
         channel.queueDeclare(queueName, true, false, false, null);
         channel.basicQos(1);
