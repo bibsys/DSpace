@@ -26,7 +26,7 @@ public abstract class RabbitMQGenericConnector {
     protected Connection rabbitClient = getRabbitMQConnection();
     protected ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-    private Channel channel;
+    protected Channel channel;
 
     /**
      * Publish a basic JSON message to a RabbitMQ queue.
@@ -37,11 +37,25 @@ public abstract class RabbitMQGenericConnector {
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonEncoded = objectMapper.writeValueAsString(message);
         // Get a channel for RabbitMQ and publish the message into queue.
-        if (channel == null || !channel.isOpen()) {
-            channel = getChannel();
-        }
-        publishMessage(channel, jsonEncoded);
+        publishMessage(getChannel(), jsonEncoded);
     }
+
+    /**
+     * Retrieve a channel for a rabbitMQ connection.
+     */
+    public Channel getChannel() throws Exception {
+        if (channel == null || !channel.isOpen()) {
+            channel = declareChannel();
+        }
+        return channel;
+    }
+
+    /**
+     * Create a channel for a rabbitMQ connection.
+     * @return
+     * @throws Exception
+     */
+    protected abstract Channel declareChannel() throws Exception;
 
     public void closeChannel() throws IOException, TimeoutException {
         if (channel != null && channel.isOpen()) {
@@ -49,10 +63,6 @@ public abstract class RabbitMQGenericConnector {
         }
     }
 
-    /**
-     * Retrieve a channel for a rabbitMQ connection.
-     */
-    public abstract Channel getChannel() throws Exception;
     /**
      * Publish a message using the provided channel.
      * @param channel The channel to use to publish the message.
