@@ -123,6 +123,7 @@ public class DSpaceMETSIngester
 
         String groupID = null;
         if (found >= 0) {
+            prepareItemDmd(context, dmds[found]);
             manifest.crosswalkItemDmd(context, params, dso, dmds[found], callback);
             groupID = dmds[found].getAttributeValue("GROUPID");
 
@@ -130,6 +131,7 @@ public class DSpaceMETSIngester
                 for (int i = 0; i < dmds.length; ++i) {
                     String g = dmds[i].getAttributeValue("GROUPID");
                     if (g != null && !g.equals(groupID)) {
+                        prepareItemDmd(context, dmds[i]);
                         manifest.crosswalkItemDmd(context, params, dso, dmds[i], callback);
                     }
                 }
@@ -138,9 +140,24 @@ public class DSpaceMETSIngester
             // otherwise take the first.  Don't xwalk more than one because
             // each xwalk _adds_ metadata, and could add duplicate fields.
             if (dmds.length > 0) {
+                prepareItemDmd(context, dmds[0]);
                 manifest.crosswalkItemDmd(context, params, dso, dmds[0], callback);
             }
         }
+    }
+
+    /**
+     * This function could prepare a manifest DMD section just before this section processed was crosswalk.
+     * It could be useful to correct/add/manipulate the DMD section depending on data found.
+     *
+     * @param context the Dspace application context
+     * @param dmdSec the DMD section to prepare
+     * @throws SQLException               if database error
+     * @throws AuthorizeException         if authorization error
+     */
+    public void prepareItemDmd(Context context, Element dmdSec) throws AuthorizeException, SQLException {
+        // do nothing
+        //   Override this function to create custom DMD manipulation behaviors.
     }
 
 
