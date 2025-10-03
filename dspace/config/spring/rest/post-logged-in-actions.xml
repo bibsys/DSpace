@@ -7,7 +7,7 @@
 
 	<bean id="researcherProfileClaimByEmail" class="org.dspace.app.rest.login.impl.ResearcherProfileAutomaticClaim">
 		<constructor-arg name="ePersonField" value="email" />
-		<constructor-arg name="profileField" value="person.email" />
+		<constructor-arg name="profileField" value="person.email.official" />
 	</bean>
 
 	<bean id="researcherProfileClaimByOrcid" class="org.dspace.app.rest.login.impl.ResearcherProfileAutomaticClaim">

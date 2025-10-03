@@ -389,11 +389,24 @@
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>email</dc-element>
+          <dc-qualifier>official</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Official email</label>
+          <input-type>onebox</input-type>
+          <hint>This is your official email, it cannot be changed and it will be used has a reference email in your publications.</hint>
+          <required />
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>email</dc-element>
+          <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
+          <hint>This is your personal email, it can be used to contact you if your official email is not valid anymore.</hint>
           <required />
-          <hint />
         </field>
       </row>
       <row>
