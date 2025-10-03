@@ -36,7 +36,7 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
     @Override
     protected Map<String, String> generateExtras(Item item) throws SQLException {
         Map<String, String> extras = new HashMap<String, String>();
-        String email = this.itemService.getMetadataFirstValue(item, "person", "email", null, null);
+        String email = this.itemService.getMetadataFirstValue(item, "person", "email", "official", null);
         String orcid = this.itemService.getMetadataFirstValue(item, "person", "identifier", "orcid", null);
         String institution = this.itemService.getMetadataFirstValue(item, "person", "affiliation", "institution", null);
 
