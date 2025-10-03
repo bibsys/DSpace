@@ -78,6 +78,7 @@ public class XSLTIngestionCrosswalk
         throws CrosswalkException, SQLException, AuthorizeException {
         for (Element elt : dimList) {
             if ("field".equals(elt.getName()) && DIM_NS.equals(elt.getNamespace())) {
+                log.debug("\t" + new XMLOutputter(Format.getPrettyFormat()).outputString(elt));
                 applyDimField(context, elt, item, createMissingMetadataFields);
             } else if ("dim".equals(elt.getName()) && DIM_NS.equals(elt.getNamespace())) {
                 // if it's a <dim> container, apply its guts
@@ -99,22 +100,38 @@ public class XSLTIngestionCrosswalk
         String authority = field.getAttributeValue("authority");
         String sconf = field.getAttributeValue("confidence");
 
-        CrosswalkMetadataValidator metadataValidator = new CrosswalkMetadataValidator();
-        MetadataField metadataField = metadataValidator
-            .checkMetadata(context, schema, element, qualifier, createMissingMetadataFields);
         // sanity check: some XSL puts an empty string in qualifier,
-        // change it to null so we match the unqualified DC field:
-        if (qualifier != null && qualifier.equals("")) {
+        // change it to null, so we match the unqualified DC field:
+        if (qualifier != null && qualifier.isEmpty()) {
             qualifier = null;
         }
+        CrosswalkMetadataValidator metadataValidator = new CrosswalkMetadataValidator();
+        MetadataField metadataField = metadataValidator.checkMetadata(
+            context,
+            schema, element, qualifier,
+            createMissingMetadataFields
+        );
 
-        if ((authority != null && authority.length() > 0) ||
-            (sconf != null && sconf.length() > 0)) {
-            int confidence = (sconf != null && sconf.length() > 0) ?
-                Choices.getConfidenceValue(sconf) : Choices.CF_UNSET;
+        if ((authority != null && !authority.isEmpty()) || (sconf != null && !sconf.isEmpty())) {
+            int confidence = (sconf != null && !sconf.isEmpty()) ? Choices.getConfidenceValue(sconf) : Choices.CF_UNSET;
             itemService.addMetadata(context, item, metadataField, lang, field.getText(), authority, confidence);
         } else {
-            itemService.addMetadata(context, item, metadataField, lang, field.getText());
+            //DevNote:
+            //  Using `addMetadata(ctx, item, md, lang, value)` method will trigger the automatic authority assignment
+            //  base on "bestMatch" possible for "fieldValue" depending on relation defines for the metadata field.
+            //
+            //  For example, "dc.contributor.author" is configured to be linked to authority using
+            //  `PublicationAuthorAuthority` (see authority.cfg). Then, despite if we won't any authority, this class
+            //  will check if a possible match is possible. If "yes" this match will be the authority with a
+            //  `CF_AMBIGUOUS` confidence.
+            //
+            //  In our case (UCLouvain) we prepare the DMDSection to link ingested data with accepted authorities. So
+            //  we won't use automatic authority assignment. The "best" solution should be to use a new specific
+            //  PackagerParams to turn off this behavior, but it's complicated to pass this params from `IngesterClass`.
+            //  So, as a solution, we choose the `addMetadata(ctx, item, md, lang, value, authority, confidence)`
+            //  method with empty authority and UNSET confidence
+            //itemService.addMetadata(context, item, metadataField, lang, field.getText());
+            itemService.addMetadata(context, item, metadataField, lang, field.getText(), null, Choices.CF_UNSET);
         }
     }
 
