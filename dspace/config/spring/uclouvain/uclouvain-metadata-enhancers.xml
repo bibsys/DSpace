@@ -25,9 +25,10 @@
         <property name="enhancers">
             <util:list>
                 <!-- Put enhancer configuration bean here -->
-                <ref bean="publicationAuthorEnhancer"/>
+                <ref bean="publicationAuthorNameEnhancer"/>
                 <ref bean="publicationAuthorEmailEnhancer"/>
                 <ref bean="publicationAuthorORCIDEnhancer"/>
+                <ref bean="publicationAuthorFGSEnhancer"/>
                 <ref bean="publicationInstitutionEnhancer"/>
                 <ref bean="publicationDepartmentEnhancer"/>
                 <ref bean="publicationJournalTitleEnhancer"/>
@@ -43,7 +44,7 @@
         </property>
     </bean>
     <!-- Enhancers configuration -->
-    <bean name="publicationAuthorEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+    <bean name="publicationAuthorNameEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
         <property name="sourceEntityType" value="Person"/>
         <property name="sourceMetadataFields">
             <util:list>
@@ -82,6 +83,20 @@
         <property name="targetMetadataFields">
             <util:list>
                 <value>authors.identifier.orcid</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAuthorFGSEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.identifier.fgs</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>authors.identifier.fgs</value>
             </util:list>
         </property>
     </bean>
