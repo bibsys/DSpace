@@ -591,6 +591,12 @@
         <qualifier>fgs</qualifier>
         <scope_note>The unique fgs identifier of the person</scope_note>
     </dc-type>
+    <dc-type>
+        <schema>person</schema>
+        <element>email</element>
+        <qualifier>official</qualifier>
+        <scope_note>The official (institutional) email of a person</scope_note>
+    </dc-type>
     <!-- JOURNAL SCHEMA -->
     <dc-schema>
         <name>journal</name>
