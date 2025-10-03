@@ -61,7 +61,7 @@
         <property name="sourceEntityType" value="Person"/>
         <property name="sourceMetadataFields">
             <util:list>
-                <value>person.email</value>
+                <value>person.email.official</value>
             </util:list>
         </property>
         <property name="targetEntityType" value="Publication"/>
