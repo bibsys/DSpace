@@ -597,6 +597,12 @@
         <qualifier>official</qualifier>
         <scope_note>The official (institutional) email of a person</scope_note>
     </dc-type>
+    <!-- EPERSON SCHEMA -->
+    <dc-type>
+        <schema>eperson</schema>
+        <element>identifier</element>
+        <qualifier>fgs</qualifier>
+    </dc-type>
     <!-- JOURNAL SCHEMA -->
     <dc-schema>
         <name>journal</name>
