@@ -805,11 +805,13 @@ public class ShibAuthentication implements AuthenticationMethod {
         String emailHeader = configurationService.getProperty("authentication-shibboleth.email-header");
         String fnameHeader = configurationService.getProperty("authentication-shibboleth.firstname-header");
         String lnameHeader = configurationService.getProperty("authentication-shibboleth.lastname-header");
+        String fgsHeader = configurationService.getProperty("authentication-shibboleth.fgs-header");
 
         String netid = findSingleAttribute(request, netidHeader);
         String email = findSingleAttribute(request, emailHeader);
         String fname = findSingleAttribute(request, fnameHeader);
         String lname = findSingleAttribute(request, lnameHeader);
+        String fgs = findSingleAttribute(request, fgsHeader);
 
         // Truncate values of parameters that are too big.
         if (fname != null && fname.length() > NAME_MAX_SIZE) {
@@ -841,6 +843,10 @@ public class ShibAuthentication implements AuthenticationMethod {
         }
         if (lname != null) {
             eperson.setLastName(context, lname);
+        }
+
+        if (fgs != null) {
+            ePersonService.setMetadataSingleValue(context, eperson, "eperson", "identifier", "fgs", null, fgs);
         }
 
         if (log.isDebugEnabled()) {
