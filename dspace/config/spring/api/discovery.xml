@@ -28,6 +28,7 @@
     <!--<bean id="rPSourceIDSolrIndexPlugin" class="org.dspace.discovery.RPSourceIDSolrIndexer"/>-->
 
     <bean id="solrServicePublicationFWBValidityIndexingPlugin" class="org.dspace.uclouvain.discovery.indexing.SolrServicePublicationFWBValidityIndexingPlugin" scope="prototype"/>
+    <bean id="solrServicePublicationOrgUnitIndexingPlugin" class="org.dspace.uclouvain.discovery.indexing.SolrServicePublicationOrgUnitIndexingPlugin" scope="prototype"/>
     <bean id="solrServiceResourceIndexPlugin" class="org.dspace.discovery.SolrServiceResourceRestrictionPlugin" scope="prototype"/>
     <bean id="solrServiceWorkspaceWorkflowPlugin" class="org.dspace.discovery.SolrServiceWorkspaceWorkflowRestrictionPlugin" scope="prototype"/>
     <bean id="solrServiceSpellIndexingPlugin" class="org.dspace.discovery.SolrServiceSpellIndexingPlugin" scope="prototype"/>
