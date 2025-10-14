@@ -37,24 +37,18 @@
 
     <!-- SERVICES ========================================================= -->
     <bean id="uclouvainDirectLinkService" class="org.dspace.uclouvain.services.DirectLinkServiceImpl"/>
-
     <bean id="publicationAuthorAuthority" class="org.dspace.uclouvain.authority.PublicationAuthorAuthority"/>
     <bean id="publicationJournalAuthority" class="org.dspace.uclouvain.authority.PublicationJournalAuthority"/>
-
     <bean id="uclouvainAffiliationEntityRestService" class="org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestServiceImpl"/>
     <bean id="uclouvainEntityService" class="org.dspace.uclouvain.services.UCLouvainEntityServiceImpl"/>
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl">
         <property name="resourcePolicyPriorities" ref="resourcePolicyPriorities"/>
     </bean>
-
     <bean id="uclouvainFWBValidationService" class="org.dspace.uclouvain.services.UCLouvainFWBValidationServiceImpl"/>
-
     <bean id="uclouvainCitationsService" class="org.dspace.uclouvain.citations.UCLouvainCitationsServiceImpl"/>
-
-    <bean id="journalService" class="org.dspace.uclouvain.journals.JournalServiceImpl" />
-
+    <bean id="journalService" class="org.dspace.uclouvain.services.impl.JournalServiceImpl" />
+    <bean id="orgUnitService" class="org.dspace.uclouvain.services.impl.OrgUnitServiceImpl" />
     <bean id="uclouvainProfileService" class="org.dspace.uclouvain.services.UCLouvainProfileServiceImpl"/>
-
     <bean id="idmPersonValidityService" class="org.dspace.uclouvain.profileIngester.services.IDMPersonValidityServiceImpl"/>
 
     <!-- UTILS ============================================================ -->

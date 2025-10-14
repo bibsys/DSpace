@@ -5,9 +5,10 @@
  *
  * http://www.dspace.org/license/
  */
-package org.dspace.uclouvain.journals;
+package org.dspace.uclouvain.services;
 
 import org.dspace.core.Context;
+import org.dspace.uclouvain.core.model.Journal;
 
 public interface JournalService {
     public Journal findByIssn(Context context, String issn) throws Exception;
