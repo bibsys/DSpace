@@ -5,13 +5,15 @@
  *
  * http://www.dspace.org/license/
  */
-package org.dspace.uclouvain.journals;
+package org.dspace.uclouvain.services.impl;
 
 import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.DiscoverResult;
 import org.dspace.discovery.SearchService;
 import org.dspace.discovery.indexobject.IndexableItem;
+import org.dspace.uclouvain.core.model.Journal;
+import org.dspace.uclouvain.services.JournalService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class JournalServiceImpl implements JournalService {

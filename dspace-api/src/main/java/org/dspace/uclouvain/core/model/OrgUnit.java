@@ -1,0 +1,108 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.dspace.uclouvain.core.model;
+
+import java.sql.SQLException;
+import java.util.UUID;
+
+import org.apache.commons.lang3.StringUtils;
+import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
+
+/**
+ * Object representing an OrgUnit object.
+ *
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
+ */
+public class OrgUnit extends ItemModel {
+
+    // CLASS CONSTANTS =================================================================================================
+    public static final String ENTITY_TYPE = "OrgUnit";
+
+    public static final String RESEARCH_INSTITUTE = "Research Institute";
+    public static final String UNIVERSITY = "University";
+
+    // METADATA FIELDS DEFINITIONS =====================================================================================
+    public static final String TITLE_FIELD =
+            configService.getProperty(FIELD_PREFIX + "orgUnit.title.field", "dc.title");
+    public static final String TYPE_FIELD =
+            configService.getProperty(FIELD_PREFIX + "orgUnit.type.field", "dc.type");
+    public static final String ACRONYM_FIELD =
+            configService.getProperty(FIELD_PREFIX + "orgUnit.acronym.field", "oairecerif.acronym");
+
+
+    // CLASS ATTRIBUTES ================================================================================================
+    private OrgUnit parent;
+    private OrgUnit parentUniversity;
+
+    // CONSTRUCTOR =====================================================================================================
+    public OrgUnit(Item item) {
+        super(item);
+    }
+
+    // GETTER ==========================================================================================================
+    public String getType() {
+        return getFirstMetadataValue(TYPE_FIELD);
+    }
+    public String getAcronym() {
+        return getFirstMetadataValue(ACRONYM_FIELD);
+    }
+
+    // FUNCTIONS =======================================================================================================
+    /**
+     * Allows retrieving the direct parent ancestor of this OrgUnit
+     * @param useCache if the parent is already loaded, use this cached value.
+     * @return the parent OrgUnit; null if the current OrgUnit doesn't have any parent
+     */
+    public OrgUnit getParent(boolean useCache) {
+        if (useCache && parent != null) {
+            return parent;
+        }
+        MetadataValue parentOrg = itemService
+            .getMetadataByMetadataString(item, "organization.parentOrganization")
+            .stream()
+            .findFirst()
+            .orElse(null);
+        if (parentOrg != null && !StringUtils.isBlank(parentOrg.getAuthority())) {
+            try {
+                Item parentItem = itemService.find(context, UUID.fromString(parentOrg.getAuthority()));
+                return parent = new OrgUnit(parentItem);
+            } catch (SQLException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+    public OrgUnit getParent() {
+        return getParent(true);
+    }
+
+    /**
+     * Allows retrieving the closer parent ancestor of this OrgUnit with `University` type
+     * @param useCache if the parent is already loaded, use this cached value.
+     * * @return the university parent OrgUnit; null if the current OrgUnit doesn't have any university parent
+     */
+    public OrgUnit getParentUniversity(boolean useCache) {
+        if (useCache && parentUniversity != null) {
+            return parentUniversity;
+        }
+        OrgUnit parent = getParent();
+        if (parent == null) {
+            return null;
+        }
+        if (parent.getType().equals(UNIVERSITY)) {
+            return parentUniversity = parent;
+        }
+        return parent.getParentUniversity(useCache);
+    }
+    public OrgUnit getParentUniversity() {
+        return getParentUniversity(true);
+    }
+
+}
+

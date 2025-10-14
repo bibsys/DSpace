@@ -1,0 +1,76 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.dspace.uclouvain.core.model;
+
+import org.dspace.content.Item;
+
+/**
+ * This model represents a journal object.
+ * 
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ */
+public class Journal extends ItemModel {
+
+    // CLASS CONSTANTS =================================================================================================
+    public static final String JOURNAL_ENTITY_TYPE = "Journal";
+    public static final String JOURNAL_ACTIVE_ACCESS_TYPE = "Active";
+    public static final String JOURNAL_CEASED_ACCESS_TYPE = "Ceased";
+
+    public static final String ISSN_IDENTIFIER = "issn";
+    public static final String EISSN_IDENTIFIER = "eissn";
+
+    // METADATA FIELDS DEFINITIONS =====================================================================================
+    private static final String TITLE_FIELD =
+            configService.getProperty(FIELD_PREFIX + "title.field", "dc.title");
+    private static final String ISSN_FIELD =
+            configService.getProperty(FIELD_PREFIX + "journalissn.field", "dc.identifier.issn");
+    private static final String EISSN_FIELD =
+            configService.getProperty(FIELD_PREFIX + "journaleissn.field", "dc.identifier.eissn");
+    private static final String PUBLISHER_NAME_FIELD =
+            configService.getProperty(FIELD_PREFIX + "journal.publisher.name.field", "dc.publisher");
+    private static final String PUBLISHER_LOCATION_FIELD =
+        configService.getProperty(FIELD_PREFIX + "journal.publisher.location.field", "dc.publisher.location");
+    private static final String PEER_REVIEWED_FIELD =
+        configService.getProperty(FIELD_PREFIX + "journal.peerreviewed.field", "dc.description.peerreviewed");
+    private static final String STATUS_CODE_FIELD =
+            configService.getProperty(FIELD_PREFIX + "journal.statuscode.field", "dc.description.status");
+
+    // CONSTRUCTOR =====================================================================================================
+    public Journal(Item item) {
+        super(item);
+    }
+
+    // GETTER ==========================================================================================================
+    public String getTitle() {
+        return getFirstMetadataValue(TITLE_FIELD);
+    }
+
+    public String getIdentifier(String idType) {
+        return switch (idType) {
+            case ISSN_IDENTIFIER -> getFirstMetadataValue(ISSN_FIELD);
+            case EISSN_IDENTIFIER -> getFirstMetadataValue(EISSN_FIELD);
+            default -> throw new IllegalArgumentException(idType + " is not a valid identifier");
+        };
+    }
+
+    public String getPublisher() {
+        return getFirstMetadataValue(PUBLISHER_NAME_FIELD);
+    }
+
+    public String getPublisherLocation() {
+        return getFirstMetadataValue(PUBLISHER_LOCATION_FIELD);
+    }
+
+    public boolean isPeerReviewed() {
+        return Boolean.parseBoolean(getFirstMetadataValue(PEER_REVIEWED_FIELD));
+    }
+
+    public String getStatusCode() {
+        return getFirstMetadataValue(STATUS_CODE_FIELD);
+    }
+}
