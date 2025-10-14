@@ -850,10 +850,6 @@
                 "acronym": "SSH/IRIS-L/CASP"
               },
               {
-                "name": "Centre belge d'études bourguignonnes 1400-1600",
-                "acronym": "SSH/IRIS-L/CBEB"
-              },
-              {
                 "name": "Centre d'études du droit de l'environnement",
                 "acronym": "SSH/IRIS-L/CDRE"
               },
@@ -898,16 +894,12 @@
                 "acronym": "SSH/IRIS-L/IEE"
               },
               {
-                "name": "Institut de recherches interdisplinaires sur Bruxelles",
+                "name": "Institut de recherches interdisciplinaires sur Bruxelles",
                 "acronym": "SSH/IRIS-L/IRIB"
               },
               {
                 "name": "Centre Prospéro",
                 "acronym": "SSH/IRIS-L/PROS"
-              },
-              {
-                "name": "Réseau Interdisplinaire et Société",
-                "acronym": "SSH/IRIS-L/RIS"
               },
               {
                 "name": "Séminaire interdisciplinaire d'études juridiques",

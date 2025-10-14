@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.dspace.content.Item;
-import org.dspace.uclouvain.journals.Journal;
+import org.dspace.uclouvain.core.model.Journal;
 
 /**
  * Simple authority to search for journal objects in DSpace.
@@ -47,11 +47,11 @@ public class PublicationJournalAuthority extends PublicationAuthority {
     protected Map<String, String> generateExtras(Item item) throws Exception {
         Map<String, String> extras =  new HashMap<>();
         Journal journal = new Journal(item);
-        String issn = journal.getIssn();
-        String eissn = journal.getEissn();
+        String issn = journal.getIdentifier(Journal.ISSN_IDENTIFIER);
+        String eissn = journal.getIdentifier(Journal.EISSN_IDENTIFIER);
         String publisher = journal.getPublisher();
         String publisherLocation = journal.getPublisherLocation();
-        String peerReviewed = journal.getPeerReviewed();
+        String peerReviewed = String.valueOf(journal.isPeerReviewed());
         String statusCode = journal.getStatusCode();
 
         String authority = item.getID().toString();
