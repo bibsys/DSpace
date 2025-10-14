@@ -32,9 +32,9 @@ import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.uclouvain.core.model.Journal;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
-import org.dspace.uclouvain.journals.Journal;
-import org.dspace.uclouvain.journals.JournalService;
+import org.dspace.uclouvain.services.JournalService;
 
 /**
  * Import journals into DSpace using a CSV file as input.
