@@ -73,6 +73,10 @@ public class JournalDefaultDeletePolicyConsumer implements Consumer {
     }
 
     public void end(Context context) throws Exception {
+        if (journalsToProcess.isEmpty()) {
+            // Ensure that we do not continue if there are no IDs to process.
+            return;
+        }
         Group journalManagerGroup = groupService.findByName(context, jmgName);
         Assert.notNull(journalManagerGroup, "Unable to load group " + jmgName);
         for (UUID journalID: journalsToProcess) {
