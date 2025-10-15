@@ -9,6 +9,7 @@ package org.dspace.profile.service;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.Map;
 import java.util.UUID;
 
 import org.dspace.authorize.AuthorizeException;
@@ -38,6 +39,21 @@ public interface ResearcherProfileService {
      * @throws AuthorizeException
      */
     public ResearcherProfile findById(Context context, UUID id) throws SQLException, AuthorizeException;
+
+    /**
+     * Find a unique `ResearcherProfile` using search criteria.
+     * DEV_NOTE:
+     *   We returned an `Item` (instead of `ResearcherProfile`) because a `ResearcherProfile` must have an owner to
+     *   be valid, but for batch ingested profile, the owner could not be set.
+     *
+     * @param context the relevant DSpace Context.
+     * @param identifiers the list of identifier to search for. Each entry must be a combination of Solr key and value
+     * @return the found ResearcherProfile, null if not found
+     * @throws SQLException if any database occurred
+     * @throws AuthorizeException if any authorization occurred
+     */
+    public Item findByIdentifier(Context context, Map<String, String> identifiers)
+        throws SQLException, AuthorizeException;
 
     /**
      * Create a new researcher profile for the given ePerson.
