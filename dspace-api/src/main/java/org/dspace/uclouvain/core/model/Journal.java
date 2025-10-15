@@ -25,11 +25,11 @@ public class Journal extends ItemModel {
     public static final String EISSN_IDENTIFIER = "eissn";
 
     // METADATA FIELDS DEFINITIONS =====================================================================================
-    private static final String TITLE_FIELD =
+    public static final String TITLE_FIELD =
             configService.getProperty(FIELD_PREFIX + "title.field", "dc.title");
-    private static final String ISSN_FIELD =
+    public static final String ISSN_FIELD =
             configService.getProperty(FIELD_PREFIX + "journalissn.field", "dc.identifier.issn");
-    private static final String EISSN_FIELD =
+    public static final String EISSN_FIELD =
             configService.getProperty(FIELD_PREFIX + "journaleissn.field", "dc.identifier.eissn");
     private static final String PUBLISHER_NAME_FIELD =
             configService.getProperty(FIELD_PREFIX + "journal.publisher.name.field", "dc.publisher");
