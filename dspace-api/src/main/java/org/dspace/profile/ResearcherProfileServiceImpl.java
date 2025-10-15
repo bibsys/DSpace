@@ -21,9 +21,11 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.collections4.CollectionUtils;
@@ -48,6 +50,7 @@ import org.dspace.discovery.IndexableObject;
 import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.indexobject.IndexableCollection;
+import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
@@ -123,6 +126,28 @@ public class ResearcherProfileServiceImpl implements ResearcherProfileService {
         }
 
         return new ResearcherProfile(profileItem);
+    }
+
+    @Override
+    public Item findByIdentifier(Context context, Map<String, String> identifiers)
+            throws AuthorizeException, SQLException {
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
+        discoverQuery.addFilterQueries("dspace.entity.type:" + getProfileType());
+        discoverQuery.setQuery(
+            identifiers
+                .entrySet().stream()
+                .map(entry -> "%s:\"%s\"".formatted(entry.getKey(), entry.getValue()))
+                .collect(Collectors.joining(" OR ")
+            )
+        );
+
+        DiscoverResult discoverResult = search(context, discoverQuery);
+        List<IndexableObject> indexableObjects = discoverResult.getIndexableObjects();
+        if (CollectionUtils.isEmpty(indexableObjects)) {
+            return null;
+        }
+        return (Item) indexableObjects.get(0).getIndexedObject();
     }
 
     @Override
