@@ -11,34 +11,51 @@ import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.DiscoverResult;
 import org.dspace.discovery.SearchService;
+import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.uclouvain.core.model.Journal;
 import org.dspace.uclouvain.services.JournalService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Implementation of {@link JournalService}.
+ *
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ */
 public class JournalServiceImpl implements JournalService {
 
     @Autowired
     SearchService searchService;
 
-    /**
-     * Find a journal by its issn. Might return null if the Journal is not found.
-     * 
-     * @param context The current DSpace context.
-     * @param issn The issn of the journal to search for.
-     */
     @Override
-    public Journal findByIssn(Context context, String issn) throws Exception {
+    public Journal findByIssn(Context context, String issn) {
+        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.ISSN_FIELD, issn));
+    }
+    @Override
+    public Journal findByEissn(Context context, String eissn) {
+        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.EISSN_FIELD, eissn));
+    }
+    @Override
+    public Journal findByTitle(Context context, String journalTitle) {
+        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.TITLE_FIELD, journalTitle));
+    }
+
+    private Journal searchByQuery(Context context, String query) {
         DiscoverQuery dq = new DiscoverQuery();
         dq.setDSpaceObjectFilter(IndexableItem.TYPE);
         dq.setMaxResults(1);
         dq.addFilterQueries("search.entitytype:" + Journal.JOURNAL_ENTITY_TYPE);
-        dq.addFilterQueries("dc.identifier.issn:" + issn);
-        DiscoverResult dr = searchService.search(context, dq);
-        return dr.getIndexableObjects()
-            .stream()
-            .map(indexableObject -> new Journal(((IndexableItem) indexableObject).getIndexedObject()))
-            .findFirst()
-            .orElse(null);
+        dq.setQuery(query);
+        try {
+            DiscoverResult dr = searchService.search(context, dq);
+            return dr.getIndexableObjects()
+                    .stream()
+                    .map(indexableObject -> new Journal(((IndexableItem) indexableObject).getIndexedObject()))
+                    .findFirst()
+                    .orElse(null);
+        } catch (SearchServiceException e) {
+            throw new RuntimeException(e);
+        }
     }
+
 }
