@@ -603,6 +603,11 @@
         <element>identifier</element>
         <qualifier>fgs</qualifier>
     </dc-type>
+    <dc-type>
+        <schema>eperson</schema>
+        <element>idm</element>
+        <qualifier>id</qualifier>
+    </dc-type>
     <!-- JOURNAL SCHEMA -->
     <dc-schema>
         <name>journal</name>

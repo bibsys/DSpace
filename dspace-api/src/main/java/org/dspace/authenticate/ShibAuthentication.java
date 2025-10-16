@@ -806,12 +806,14 @@ public class ShibAuthentication implements AuthenticationMethod {
         String fnameHeader = configurationService.getProperty("authentication-shibboleth.firstname-header");
         String lnameHeader = configurationService.getProperty("authentication-shibboleth.lastname-header");
         String fgsHeader = configurationService.getProperty("authentication-shibboleth.fgs-header");
+        String idmIdHeader = configurationService.getProperty("authentication-shibboleth.idm-id-header");
 
         String netid = findSingleAttribute(request, netidHeader);
         String email = findSingleAttribute(request, emailHeader);
         String fname = findSingleAttribute(request, fnameHeader);
         String lname = findSingleAttribute(request, lnameHeader);
         String fgs = findSingleAttribute(request, fgsHeader);
+        List<String> idmIds = findMultipleAttributes(request, idmIdHeader);
 
         // Truncate values of parameters that are too big.
         if (fname != null && fname.length() > NAME_MAX_SIZE) {
@@ -847,6 +849,18 @@ public class ShibAuthentication implements AuthenticationMethod {
 
         if (fgs != null) {
             ePersonService.setMetadataSingleValue(context, eperson, "eperson", "identifier", "fgs", null, fgs);
+        }
+
+        if (idmIds != null && !idmIds.isEmpty()) {
+            idmIds.stream().forEach((idmId) -> {
+                try {
+                    ePersonService.setMetadataSingleValue(
+                        context, eperson, "eperson", "idm", "id", null, idmId.toString()
+                    );
+                } catch (SQLException e) {
+                    log.warn("Could not set idm id of person: " + idmId);
+                }
+            });
         }
 
         if (log.isDebugEnabled()) {
