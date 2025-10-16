@@ -13,9 +13,9 @@ import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -97,23 +97,22 @@ public class ResearcherProfileAutomaticClaim implements PostLoggedInAction {
     }
 
     private void claimProfile(Context context, EPerson currentUser) throws SQLException, AuthorizeException {
-
         UUID id = currentUser.getID();
         String fullName = currentUser.getFullName();
-
         if (currentUserHasAlreadyResearcherProfile(context)) {
             return;
         }
-
         Item item = findClaimableProfile(context, currentUser);
-        if (item == null) {
-            // If item is null, try to create a profile using eperson data.
+        if (item == null) {  // If item is null, try to create a profile using eperson data.
             try {
                 LOGGER.debug("Trying to create a fresh new profile from shibboleth metadata...");
                 context.turnOffAuthorisationSystem();
-                item = createNewProfile(context, currentUser);
+                item = uclouvainProfileService.createNewProfile(context, currentUser);
+            } catch (NoSuchElementException nse) {
+                LOGGER.warn("Automatic profile creation failed at login :: " + nse.getMessage());
+                return;
             } catch (Exception e) {
-                LOGGER.warn("Could not create profile for EPerson at login.", e);
+                LOGGER.warn("Automatic profile creation failed at login", e);
                 return;
             } finally {
                 context.restoreAuthSystemState();
@@ -149,43 +148,6 @@ public class ResearcherProfileAutomaticClaim implements PostLoggedInAction {
             .collect(Collectors.toList());
 
         return items.size() == 1 ? items.get(0) : null;
-    }
-
-    /**
-     * Create a fresh new profile for a user that just connected and has no matching profile.
-     * @param context The current DSpace context.
-     * @param currentUser The current user to create a profile for.
-     * @return The created profile for the given user.
-     */
-    private Item createNewProfile(Context context, EPerson currentUser) throws Exception {
-        String fgs = ePersonService.getMetadataFirstValue(currentUser, "eperson", "identifier", "fgs", null);
-        LOGGER.debug("Found person fgs form EPerson metadata: " + fgs);
-        if (fgs != null) {
-            // Create an empty profile with the fgs
-            Item profile = uclouvainProfileService.createEmptyProfile(context, fgs);
-            // Add required metadata: 'email' + concatenate first and last name to create 'dc.title'.
-            String email = currentUser.getEmail();
-            LOGGER.debug("Found person email form EPerson metadata: " + email);
-            itemService.addSecuredMetadata(context, profile, "person", "email", "official", null, email, null, 0, 1);
-            itemService.addSecuredMetadata(context, profile, "person", "email", null, null, email, null, 0, 1);
-
-            String fullName = Stream.of(currentUser.getLastName(), currentUser.getFirstName())
-                .filter(StringUtils::isNotEmpty)
-                .reduce((a, b) -> a + ", " + b)
-                .orElse(null);
-            LOGGER.debug("Found person fullname form EPerson metadata: " + fullName);
-            if (fullName != null) {
-                itemService.addSecuredMetadata(context, profile, "crisrp", "name", null, null, fullName, null, 0, 1);
-                itemService.addSecuredMetadata(context, profile, "dc", "title", null, null, fullName, null, 0, 0);
-            }
-
-            return profile;
-        } else {
-            throw new IllegalArgumentException(
-                "Missing fgs identifier (employeeNumber) to create profile at login. EPersonId: " + currentUser.getID()
-            );
-        }
-
     }
 
     private String getValueToSearchFor(Context context, EPerson currentUser) {

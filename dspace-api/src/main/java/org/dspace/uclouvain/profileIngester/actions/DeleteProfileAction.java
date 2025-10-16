@@ -28,22 +28,17 @@ public class DeleteProfileAction extends ProfileAction {
      */
     public void process(Context context, PersonEventModel event) throws ProfileActionException {
         String fgs = event.getFgs();
+        Item profile = uclouvainProfileService.findById(context, fgs);
+        if (profile == null) {
+            logger.info("[DELETE CANCELED] Profile<fgs=[" + fgs + "]> doesn't exists.");
+            return;
+        }
+        if (!uclouvainProfileService.findLinkedPublications(context, profile).isEmpty()) {
+            logger.info("[DELETE CANCELED] Profile<fgs=[" + fgs + "]> has linked publications.");
+            return;
+        }
         try {
-            Item profile = uclouvainProfileService.findById(context, fgs);
-            if (profile == null) {
-                logger.info(
-                    "[DELETE CANCELED] Profile with fgs " + fgs + " doesn't exists."
-                );
-                return;
-            }
-            if (!uclouvainProfileService.findLinkedPublications(context, profile).isEmpty()) {
-                logger.info(
-                    "[DELETE CANCELED] Profile with fgs " + fgs + " has linked publications."
-                );
-                return;
-            }
             itemService.delete(context, profile);
-            // Commit to apply changes
             context.commit();
             logger.info("[DELETE PROFILE] Deleted existing profile for fgs " + fgs);
         } catch (Exception e) {
