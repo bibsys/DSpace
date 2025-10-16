@@ -7,6 +7,9 @@
  */
 package org.dspace.uclouvain.profileIngester.services;
 
+import java.util.List;
+
 public interface IDMPersonValidityService {
     public boolean isPersonIDMValid(String fgs);
+    public boolean isPersonIDMValid(List<Integer> idmRows);
 }

@@ -33,6 +33,7 @@ import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataFieldName;
 import org.dspace.content.MetadataSchema;
 import org.dspace.content.MetadataSchemaEnum;
+import org.dspace.content.MetadataValue;
 import org.dspace.content.NonUniqueMetadataException;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.MetadataFieldService;
@@ -806,12 +807,14 @@ public class ShibAuthentication implements AuthenticationMethod {
         String fnameHeader = configurationService.getProperty("authentication-shibboleth.firstname-header");
         String lnameHeader = configurationService.getProperty("authentication-shibboleth.lastname-header");
         String fgsHeader = configurationService.getProperty("authentication-shibboleth.fgs-header");
+        String idmIdHeader = configurationService.getProperty("authentication-shibboleth.idm-id-header");
 
         String netid = findSingleAttribute(request, netidHeader);
         String email = findSingleAttribute(request, emailHeader);
         String fname = findSingleAttribute(request, fnameHeader);
         String lname = findSingleAttribute(request, lnameHeader);
         String fgs = findSingleAttribute(request, fgsHeader);
+        List<String> idmIds = findMultipleAttributes(request, idmIdHeader);
 
         // Truncate values of parameters that are too big.
         if (fname != null && fname.length() > NAME_MAX_SIZE) {
@@ -847,6 +850,24 @@ public class ShibAuthentication implements AuthenticationMethod {
 
         if (fgs != null) {
             ePersonService.setMetadataSingleValue(context, eperson, "eperson", "identifier", "fgs", null, fgs);
+        }
+
+        // Since we cannot use setMetadata because we have multiple data to add, clear existing data and then add.
+        List<MetadataValue> existingIDMs = ePersonService.getMetadata(eperson, "eperson", "idm", "id", null);
+        if (!existingIDMs.isEmpty()) {
+            ePersonService.removeMetadataValues(context, eperson, existingIDMs);
+        }
+
+        if (idmIds != null && !idmIds.isEmpty()) {
+            idmIds.stream().forEach((idmId) -> {
+                try {
+                    ePersonService.addMetadata(
+                        context, eperson, "eperson", "idm", "id", null, idmId.toString()
+                    );
+                } catch (SQLException e) {
+                    log.warn("Could not set idm id of person: " + idmId);
+                }
+            });
         }
 
         if (log.isDebugEnabled()) {

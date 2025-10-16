@@ -42,6 +42,10 @@ public class IDMPersonValidityServiceImpl implements IDMPersonValidityService {
      */
     public boolean isPersonIDMValid(String fgs) {
         List<Integer> idmEntries = getIDMEntriesForFGS(fgs);
+        return isPersonIDMValid(idmEntries);
+    }
+
+    public boolean isPersonIDMValid(List<Integer> idmEntries) {
         if (!idmEntries.isEmpty()) {
             try {
                 List<Integer> filters = idmPersonFilterConfigurationFile.getData();

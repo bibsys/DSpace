@@ -49,16 +49,15 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
      */
     public void process(Context context, PersonEventModel event) throws ProfileActionException {
         String fgs = event.getFgs();
+        ESBPersonProfile profileData = esbClient.getProfileForFGS(fgs);
+        if (profileData.getEmail() == null) {
+            logger.info("[CANCEL PROCESSING] No email found for the fgs \"" + fgs + "\" aborting processing...");
+            return;
+        }
+        // Try to find an existing profile with the user email.
+        Item profile = uclouvainProfileService.findByEmail(context, profileData.getEmail());
         try {
-            ESBPersonProfile profileData = esbClient.getProfileForFGS(fgs);
-            if (profileData.getEmail() == null) {
-                logger.info("[CANCEL PROCESSING] No email found for the fgs \"" + fgs + "\" aborting processing...");
-                return;
-            }
-            // Try to find an existing profile with the user email.
-            Item profile = uclouvainProfileService.findByEmail(context, profileData.getEmail());
-
-            boolean changed = false;
+            boolean changed;
             if (profile == null) {
                 profile = uclouvainProfileService.createEmptyProfile(context, fgs);
                 changed = processFields(context, profileData, profile, true);
@@ -67,9 +66,7 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
                 changed = processFields(context, profileData, profile, false);
                 logger.info("[UPDATE PROFILE] Updated profile for fgs " + fgs);
             }
-
             if (changed) {
-                // Update and commit to apply changes
                 itemService.update(context, profile);
                 context.commit();
             }
