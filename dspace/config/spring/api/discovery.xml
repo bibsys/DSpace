@@ -3023,11 +3023,11 @@
         <property name="pageSize" value="10"/>
     </bean>
 
-    <bean id="searchFilterIsAuthorOfPublicationRelation" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+    <bean id="searchFilterIsAuthorOfPublicationRelation" class="org.dspace.discovery.configuration.AuthorityDiscoverySearchFilter">
         <property name="indexFieldName" value="isAuthorOfPublication"/>
         <property name="metadataFields">
             <list>
-                <value>relation.isAuthorOfPublication</value>
+                <value>dc.contributor.author</value>
             </list>
         </property>
         <property name="isOpenByDefault" value="false"/>
@@ -3046,11 +3046,12 @@
     </bean>
 
 
-    <bean id="searchFilterIsOrgUnitOfPublicationRelation" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+    <bean id="searchFilterIsOrgUnitOfPublicationRelation" class="org.dspace.discovery.configuration.AuthorityDiscoverySearchFilter">
         <property name="indexFieldName" value="isOrgUnitOfPublication"/>
         <property name="metadataFields">
             <list>
-                <value>relation.isOrgUnitOfPublication</value>
+                <value>oairecerif.affiliation.orgunit</value>
+                <value>oairecerif.affiliation.orgunitDepartment</value>
             </list>
         </property>
         <property name="isOpenByDefault" value="false"/>
@@ -3068,11 +3069,11 @@
         <property name="pageSize" value="10"/>
     </bean>
 
-    <bean id="searchFilterIsJournalOfPublicationRelation" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+    <bean id="searchFilterIsJournalOfPublicationRelation" class="org.dspace.discovery.configuration.AuthorityDiscoverySearchFilter">
         <property name="indexFieldName" value="isJournalOfPublication"/>
         <property name="metadataFields">
             <list>
-                <value>relation.isJournalOfPublication</value>
+                <value>dc.relation.journal</value>
             </list>
         </property>
         <property name="isOpenByDefault" value="false"/>
