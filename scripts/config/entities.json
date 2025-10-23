@@ -5,9 +5,18 @@
     "selectable": false,
     "type": "University",
     "identifiers": [
-      {"type": "ror", "value": "https://ror.org/02495e989"},
-      {"type": "isni", "value": "http://isni.org/isni/000000012294713X"},
-      {"type": "crossrefid", "value": "https://api.crossref.org/funders/100007355"}
+      {
+        "type": "ror",
+        "value": "https://ror.org/02495e989"
+      },
+      {
+        "type": "isni",
+        "value": "http://isni.org/isni/000000012294713X"
+      },
+      {
+        "type": "crossrefid",
+        "value": "https://api.crossref.org/funders/100007355"
+      }
     ],
     "children": [
       {
@@ -16,224 +25,169 @@
         "weight": 60,
         "children": [
           {
-            "name": "Département de biologie appliquée et des productions agricoles",
-            "acronym": "AGRO/BAPA"
+            "name": "AGRO/BAPA - Département de biologie appliquée et des productions agricoles"
           },
           {
-            "name": "Département de chimie appliquée et des bio-industries",
-            "acronym": "AGRO/CABI"
+            "name": "AGRO/CABI - Département de chimie appliquée et des bio-industries"
           },
           {
-            "name": "Département des sciences du milieu et de l'aménagement du territoire",
-            "acronym": "AGRO/MILA"
+            "name": "AGRO/MILA - Département des sciences du milieu et de l'aménagement du territoire"
           },
           {
-            "name": "Centre de philosophie du droit",
-            "acronym": "DRT/CPDR"
+            "name": "DRT/CPDR - Centre de philosophie du droit"
           },
           {
-            "name": "Département de droit économique et social",
-            "acronym": "DRT/DESO"
+            "name": "DRT/DESO - Département de droit économique et social"
           },
           {
-            "name": "Département de criminologie et de droit pénal",
-            "acronym": "DRT/DPCR"
+            "name": "DRT/DPCR - Département de criminologie et de droit pénal"
           },
           {
-            "name": "Département de droit privé",
-            "acronym": "DRT/DPRI"
+            "name": "DRT/DPRI - Département de droit privé"
           },
           {
-            "name": "Département de droit international Charles De Visscher",
-            "acronym": "DRT/INT"
+            "name": "DRT/INT - Département de droit international Charles De Visscher"
           },
           {
-            "name": "Département de droit public",
-            "acronym": "DRT/PUBL"
+            "name": "DRT/PUBL - Département de droit public"
           },
           {
-            "name": "Département de communication",
-            "acronym": "ESPO/COMU"
+            "name": "ESPO/COMU - Département de communication"
           },
           {
-            "name": "Département des sciences économiques",
-            "acronym": "ESPO/ECON"
+            "name": "ESPO/ECON - Département des sciences économiques"
           },
           {
-            "name": "Département d'administration et de gestion",
-            "acronym": "ESPO/IAG"
+            "name": "ESPO/IAG - Département d'administration et de gestion"
           },
           {
-            "name": "Département des sciences politiques et sociales",
-            "acronym": "ESPO/POLS"
+            "name": "ESPO/POLS - Département des sciences politiques et sociales"
           },
           {
-            "name": "Département des sciences de la population et du développement",
-            "acronym": "ESPO/SPED"
+            "name": "ESPO/SPED - Département des sciences de la population et du développement"
           },
           {
-            "name": "Center for operations research and econometrics",
-            "acronym": "EUEN/CORE"
+            "name": "EUEN/CORE - Center for operations research and econometrics"
           },
           {
-            "name": "Faculté ouverte de politique économique et sociale",
-            "acronym": "EUEN/OPES"
+            "name": "EUEN/OPES - Faculté ouverte de politique économique et sociale"
           },
           {
-            "name": "Rattachement EUEN",
-            "acronym": "EUEN/REUE"
+            "name": "EUEN/REUE - Rattachement EUEN"
           },
           {
-            "name": "Institut de statistique",
-            "acronym": "EUEN/STAT"
+            "name": "EUEN/STAT - Institut de statistique"
           },
           {
-            "name": "Département d'archéologie et d'histoire de l'art",
-            "acronym": "FLTR/ARKE"
+            "name": "FLTR/ARKE - Département d'archéologie et d'histoire de l'art"
           },
           {
-            "name": "Département d'études germaniques",
-            "acronym": "FLTR/GERM"
+            "name": "FLTR/GERM - Département d'études germaniques"
           },
           {
-            "name": "Département d'études grecques, latines et orientales",
-            "acronym": "FLTR/GLOR"
+            "name": "FLTR/GLOR - Département d'études grecques, latines et orientales"
           },
           {
-            "name": "Département d'histoire",
-            "acronym": "FLTR/HIST"
+            "name": "FLTR/HIST - Département d'histoire"
           },
           {
-            "name": "Département d'études romanes",
-            "acronym": "FLTR/ROM"
+            "name": "FLTR/ROM - Département d'études romanes"
           },
           {
-            "name": "Département d'architecture, d'urbanisme et de génie civil environnemental",
-            "acronym": "FSA/AUCE"
+            "name": "FSA/AUCE - Département d'architecture, d'urbanisme et de génie civil environnemental"
           },
           {
-            "name": "Département d'électricité",
-            "acronym": "FSA/ELEC"
+            "name": "FSA/ELEC - Département d'électricité"
           },
           {
-            "name": "Département d'ingénierie informatique",
-            "acronym": "FSA/INGI"
+            "name": "FSA/INGI - Département d'ingénierie informatique"
           },
           {
-            "name": "Département d'ingénierie mathématique",
-            "acronym": "FSA/INMA"
+            "name": "FSA/INMA - Département d'ingénierie mathématique"
           },
           {
-            "name": "Département des sciences des matériaux et des procédés",
-            "acronym": "FSA/MAPR"
+            "name": "FSA/MAPR - Département des sciences des matériaux et des procédés"
           },
           {
-            "name": "Département de mécanique",
-            "acronym": "FSA/MECA"
+            "name": "FSA/MECA - Département de mécanique"
           },
           {
-            "name": "Institut supérieur de philosophie",
-            "acronym": "ISP"
+            "name": "ISP - Institut supérieur de philosophie"
           },
           {
-            "name": "Logique et philosophie des sciences",
-            "acronym": "ISP/LOFS"
+            "name": "ISP/LOFS - Logique et philosophie des sciences"
           },
           {
-            "name": "Orientations philosophiques fondamentales",
-            "acronym": "ISP/ORFI"
+            "name": "ISP/ORFI - Orientations philosophiques fondamentales"
           },
           {
-            "name": "Sources et histoire de la philosophie",
-            "acronym": "ISP/SOFI"
+            "name": "ISP/SOFI - Sources et histoire de la philosophie"
           },
           {
-            "name": "Département de biochimie et de biologie cellulaire",
-            "acronym": "MD/BICL"
+            "name": "MD/BICL - Département de biochimie et de biologie cellulaire"
           },
           {
-            "name": "Département de chirurgie",
-            "acronym": "MD/CHIR"
+            "name": "MD/CHIR - Département de chirurgie"
           },
           {
-            "name": "Ecole de santé publique",
-            "acronym": "MD/ESP"
+            "name": "MD/ESP - Ecole de santé publique"
           },
           {
-            "name": "Ecole de pharmacie",
-            "acronym": "MD/FARM"
+            "name": "MD/FARM - Ecole de pharmacie"
           },
           {
-            "name": "Unité de philosophie des sciences biomédicales",
-            "acronym": "MD/FIMD"
+            "name": "MD/FIMD - Unité de philosophie des sciences biomédicales"
           },
           {
-            "name": "Département de physiologie et pharmacologie",
-            "acronym": "MD/FSIO"
+            "name": "MD/FSIO - Département de physiologie et pharmacologie"
           },
           {
-            "name": "Département de gynécologie, d'obstétrique et de pédiatrie",
-            "acronym": "MD/GYPE"
+            "name": "MD/GYPE - Département de gynécologie, d'obstétrique et de pédiatrie"
           },
           {
-            "name": "Institut d'éducation physique et de réadaptation",
-            "acronym": "MD/IEPR"
+            "name": "MD/IEPR - Institut d'éducation physique et de réadaptation"
           },
           {
-            "name": "Ecole de médecine dentaire et de stomatologie",
-            "acronym": "MD/MDEN"
+            "name": "MD/MDEN - Ecole de médecine dentaire et de stomatologie"
           },
           {
-            "name": "Département de microbiologie, d'immunologie et de génétique",
-            "acronym": "MD/MIGE"
+            "name": "MD/MIGE - Département de microbiologie, d'immunologie et de génétique"
           },
           {
-            "name": "Département de médecine interne",
-            "acronym": "MD/MINT"
+            "name": "MD/MINT - Département de médecine interne"
           },
           {
-            "name": "Département de morphologie normale et pathologique",
-            "acronym": "MD/MNOP"
+            "name": "MD/MNOP - Département de morphologie normale et pathologique"
           },
           {
-            "name": "Département de neurologie et de psychiatrie",
-            "acronym": "MD/NOPS"
+            "name": "MD/NOPS - Département de neurologie et de psychiatrie"
           },
           {
-            "name": "Département de radiologie et d'imagerie médicale",
-            "acronym": "MD/RAIM"
+            "name": "MD/RAIM - Département de radiologie et d'imagerie médicale"
           },
           {
-            "name": "Centre académique de médecine générale",
-            "acronym": "MD/RMED/CAMG"
+            "name": "MD/RMED/CAMG - Centre académique de médecine générale"
           },
           {
-            "name": "Faculté de psychologie et des sciences de l'éducation",
-            "acronym": "PSP/PSP"
+            "name": "PSP/PSP - Faculté de psychologie et des sciences de l'éducation"
           },
           {
-            "name": "Département de biologie",
-            "acronym": "SC/BIOL"
+            "name": "SC/BIOL - Département de biologie"
           },
           {
-            "name": "Département de chimie",
-            "acronym": "SC/CHIM"
+            "name": "SC/CHIM - Département de chimie"
           },
           {
-            "name": "Département de géologie et de géographie",
-            "acronym": "SC/GEO"
+            "name": "SC/GEO - Département de géologie et de géographie"
           },
           {
-            "name": "Département de mathématique",
-            "acronym": "SC/MATH"
+            "name": "SC/MATH - Département de mathématique"
           },
           {
-            "name": "Département de physique",
-            "acronym": "SC/PHYS"
+            "name": "SC/PHYS - Département de physique"
           },
           {
-            "name": "Faculté de théologie",
-            "acronym": "TECO"
+            "name": "TECO - Faculté de théologie"
           }
         ]
       },
@@ -242,14 +196,22 @@
         "weight": 50
       },
       {
-        "name": "Cliniques Universitaires Saint-Luc",
-        "acronym": "SLuc",
+        "name": "SLuc - Cliniques Universitaires Saint-Luc",
         "selectable": false,
         "weight": 65,
         "identifiers": [
-          {"type": "ror", "value": "https://ror.org/03s4khd80"},
-          {"type": "isni", "value": "http://isni.org/isni/0000000404616320"},
-          {"type": "crossrefid", "value": "https://api.crossref.org/funders/501100005042"}
+          {
+            "type": "ror",
+            "value": "https://ror.org/03s4khd80"
+          },
+          {
+            "type": "isni",
+            "value": "http://isni.org/isni/0000000404616320"
+          },
+          {
+            "type": "crossrefid",
+            "value": "https://api.crossref.org/funders/501100005042"
+          }
         ],
         "children": [
           {
@@ -593,64 +555,54 @@
         "weight": 75,
         "children": [
           {
-            "name": "Administration des affaires étudiantes",
-            "acronym": "AC/ADAE"
+            "name": "AC/ADAE - Administration des affaires étudiantes"
           },
           {
-            "name": "Administration de l'enseignement et de la formation",
-            "acronym": "AC/ADEF",
+            "name": "AC/ADEF - Administration de l'enseignement et de la formation",
             "children": [
               {
-                "name": "Institut des langues vivantes",
-                "acronym": "AC/ADEF/ILV"
+                "name": "AC/ADEF/ILV - Institut des langues vivantes"
               }
             ]
           },
           {
-            "name": "Administration des finances",
-            "acronym": "AC/ADFI"
+            "name": "AC/ADFI - Administration des finances"
           },
           {
-            "name": "Administration du patrimoine immobilier et des infrastructures",
-            "acronym": "AC/ADPI"
+            "name": "AC/ADPI - Administration du patrimoine immobilier et des infrastructures"
           },
           {
-            "name": "Administration de la recherche",
-            "acronym": "AC/ADRE"
+            "name": "AC/ADRE - Administration de la recherche"
           },
           {
-            "name": "Administration des relations internationales",
-            "acronym": "AC/ADRI"
+            "name": "AC/ADRI - Administration des relations internationales"
           },
           {
-            "name": "Administration des relations extérieures et de la communication",
-            "acronym": "AC/AREC"
+            "name": "AC/AREC - Administration des relations extérieures et de la communication"
           },
           {
-            "name": "Service de gestion des ressources humaines",
-            "acronym": "AC/RHUM"
+            "name": "AC/RHUM - Service de gestion des ressources humaines"
           },
           {
-            "name": "Service du personnel",
-            "acronym": "AC/SPER"
+            "name": "AC/SPER - Service du personnel"
           },
           {
-            "name": "Les Bibliothèques de l'Université catholique de Louvain",
-            "acronym": "LS/BIUL"
+            "name": "LS/BIUL - Les Bibliothèques de l'Université catholique de Louvain"
           },
           {
-            "name": "Service général du système d'information",
-            "acronym": "LS/SGSI"
+            "name": "LS/SGSI - Service général du système d'information"
           }
         ]
       },
       {
-        "name": "Mont-Godinne",
-        "acronym": "MGD",
+        "name": "MGD - Mont-Godinne",
         "selectable": false,
         "weight": 70,
         "identifiers": [
-          {"type": "ror", "value": "https://ror.org/00ntbvq76"}
+          {
+            "type": "ror",
+            "value": "https://ror.org/00ntbvq76"
+          }
         ],
         "children": [
           {
@@ -806,540 +758,415 @@
         ]
       },
       {
-        "name": "secteur des sciences humaines",
-        "acronym": "SSH",
+        "name": "SSH - secteur des sciences humaines",
         "selectable": false,
         "weight": 90,
         "children": [
           {
-            "name": "Institute of Analysis of Change in Contemporary and Historical Societies",
-            "acronym": "SSH/IACS"
+            "name": "SSH/IACS - Institute of Analysis of Change in Contemporary and Historical Societies"
           },
           {
-            "name": "Institut Langage et Communication",
-            "acronym": "SSH/ILC",
+            "name": "SSH/ILC - Institut Langage et Communication",
             "children": [
               {
-                "name": "Pôle de recherche en communication",
-                "acronym": "SSH/ILC/PCOM"
+                "name": "SSH/ILC/PCOM - Pôle de recherche en communication"
               },
               {
-                "name": "Pôle de recherche en linguistique",
-                "acronym": "SSH/ILC/PLIN"
+                "name": "SSH/ILC/PLIN - Pôle de recherche en linguistique"
               }
             ]
           },
           {
-            "name": "Institut des civilisations, arts et lettres",
-            "acronym": "SSH/INCA"
+            "name": "SSH/INCA - Institut des civilisations, arts et lettres"
           },
           {
-            "name": "Psychological Sciences Research Institute",
-            "acronym": "SSH/IPSY"
+            "name": "SSH/IPSY - Psychological Sciences Research Institute"
           },
           {
-            "name": "Institut de recherche interdisciplinaire Saint-Louis",
-            "acronym": "SSH/IRIS-L",
+            "name": "SSH/IRIS-L - Institut de recherche interdisciplinaire Saint-Louis",
             "children": [
               {
-                "name": "Center for Applied Public Economics",
-                "acronym": "SSH/IRIS-L/CAPE"
+                "name": "SSH/IRIS-L/CAPE - Center for Applied Public Economics"
               },
               {
-                "name": "Centre d'anthropologie,sociologie et psychologie : études et recherches",
-                "acronym": "SSH/IRIS-L/CASP"
+                "name": "SSH/IRIS-L/CASP - Centre d'anthropologie,sociologie et psychologie : études et recherches"
               },
               {
-                "name": "Centre d'études du droit de l'environnement",
-                "acronym": "SSH/IRIS-L/CDRE"
+                "name": "SSH/IRIS-L/CDRE - Centre d'études du droit de l'environnement"
               },
               {
-                "name": "Centre de recherche en économie",
-                "acronym": "SSH/IRIS-L/CERE"
+                "name": "SSH/IRIS-L/CERE - Centre de recherche en économie"
               },
               {
-                "name": "Centre interdisciplinaire de recherches en droit constitutionnel et administratif",
-                "acronym": "SSH/IRIS-L/CIRC"
+                "name": "SSH/IRIS-L/CIRC - Centre interdisciplinaire de recherches en droit constitutionnel et administratif"
               },
               {
-                "name": "Centre de droit privé",
-                "acronym": "SSH/IRIS-L/CPRI"
+                "name": "SSH/IRIS-L/CPRI - Centre de droit privé"
               },
               {
-                "name": "Centre de recherche en histoire du droit, des institutions et de la société",
-                "acronym": "SSH/IRIS-L/CRID"
+                "name": "SSH/IRIS-L/CRID - Centre de recherche en histoire du droit, des institutions et de la société"
               },
               {
-                "name": "Centre de recherche en science politique",
-                "acronym": "SSH/IRIS-L/CRSP"
+                "name": "SSH/IRIS-L/CRSP - Centre de recherche en science politique"
               },
               {
-                "name": "Centre de recherches et d'interventions sociologiques",
-                "acronym": "SSH/IRIS-L/CSIR"
+                "name": "SSH/IRIS-L/CSIR - Centre de recherches et d'interventions sociologiques"
               },
               {
-                "name": "Engage",
-                "acronym": "SSH/IRIS-L/ENGA"
+                "name": "SSH/IRIS-L/ENGA - Engage"
               },
               {
-                "name": "Ecole des sciences philosophiques et religieuses",
-                "acronym": "SSH/IRIS-L/ESPR"
+                "name": "SSH/IRIS-L/ESPR - Ecole des sciences philosophiques et religieuses"
               },
               {
-                "name": "Groupe de recherche en matière pénale et criminelle",
-                "acronym": "SSH/IRIS-L/GREP"
+                "name": "SSH/IRIS-L/GREP - Groupe de recherche en matière pénale et criminelle"
               },
               {
-                "name": "Institut d'études européennes",
-                "acronym": "SSH/IRIS-L/IEE"
+                "name": "SSH/IRIS-L/IEE - Institut d'études européennes"
               },
               {
-                "name": "Institut de recherches interdisciplinaires sur Bruxelles",
-                "acronym": "SSH/IRIS-L/IRIB"
+                "name": "SSH/IRIS-L/IRIB - Institut de recherches interdisciplinaires sur Bruxelles"
               },
               {
-                "name": "Centre Prospéro",
-                "acronym": "SSH/IRIS-L/PROS"
+                "name": "SSH/IRIS-L/PROS - Centre Prospéro"
               },
               {
-                "name": "Séminaire interdisciplinaire d'études juridiques",
-                "acronym": "SSH/IRIS-L/SIEJ"
+                "name": "SSH/IRIS-L/SIEJ - Séminaire interdisciplinaire d'études juridiques"
               },
               {
-                "name": "Séminaire des Sciences du Langage",
-                "acronym": "SSH/IRIS-L/SSLA"
+                "name": "SSH/IRIS-L/SSLA - Séminaire des Sciences du Langage"
               },
               {
-                "name": "Centre TranSphères (traduction/Interprétation MH) ",
-                "acronym": "SSH/IRIS-L/TRSF"
+                "name": "SSH/IRIS-L/TRSF - Centre TranSphères (traduction/Interprétation MH) "
               }
             ]
           },
           {
-            "name": "Institut supérieur de philosophie",
-            "acronym": "SSH/ISP"
+            "name": "SSH/ISP - Institut supérieur de philosophie"
           },
           {
-            "name": "Fonds d'archives de littérature, de philosophie et des arts (plate-forme technologique)",
-            "acronym": "SSH/ISP/ALFA"
+            "name": "SSH/ISP/ALFA - Fonds d'archives de littérature, de philosophie et des arts (plate-forme technologique)"
           },
           {
-            "name": "Institut pour la recherche interdisciplinaire en sciences juridiques",
-            "acronym": "SSH/JURI",
+            "name": "SSH/JURI - Institut pour la recherche interdisciplinaire en sciences juridiques",
             "children": [
               {
-                "name": "Droit économique et social",
-                "acronym": "SSH/JURI/PJES"
+                "name": "SSH/JURI/PJES - Droit économique et social"
               },
               {
-                "name": "Droit international et européen",
-                "acronym": "SSH/JURI/PJIE"
+                "name": "SSH/JURI/PJIE - Droit international et européen"
               },
               {
-                "name": "Droit pénal et criminologie",
-                "acronym": "SSH/JURI/PJPC"
+                "name": "SSH/JURI/PJPC - Droit pénal et criminologie"
               },
               {
-                "name": "Droit privé",
-                "acronym": "SSH/JURI/PJPR"
+                "name": "SSH/JURI/PJPR - Droit privé"
               },
               {
-                "name": "Droit public",
-                "acronym": "SSH/JURI/PJPU"
+                "name": "SSH/JURI/PJPU - Droit public"
               },
               {
-                "name": "Théorie du droit",
-                "acronym": "SSH/JURI/PJTD"
+                "name": "SSH/JURI/PJTD - Théorie du droit"
               }
             ]
           },
           {
-            "name": "Louvain Institute of Data Analysis and Modeling in economics and statistics",
-            "acronym": "SSH/LIDAM",
+            "name": "SSH/LIDAM - Louvain Institute of Data Analysis and Modeling in economics and statistics",
             "children": [
               {
-                "name": "Center for operations research and econometrics",
-                "acronym": "SSH/LIDAM/CORE"
+                "name": "SSH/LIDAM/CORE - Center for operations research and econometrics"
               },
               {
-                "name": "Institut de recherches économiques et sociales",
-                "acronym": "SSH/LIDAM/IRES"
+                "name": "SSH/LIDAM/IRES - Institut de recherches économiques et sociales"
               },
               {
-                "name": "Institut de Statistique, Biostatistique et Sciences Actuarielles",
-                "acronym": "SSH/LIDAM/ISBA"
+                "name": "SSH/LIDAM/ISBA - Institut de Statistique, Biostatistique et Sciences Actuarielles"
               },
               {
-                "name": "Louvain Finance",
-                "acronym": "SSH/LIDAM/LFIN"
+                "name": "SSH/LIDAM/LFIN - Louvain Finance"
               },
               {
-                "name": "Support en méthodologie et calcul statistique (plate-forme technologique)",
-                "acronym": "SSH/LIDAM/SMCS"
+                "name": "SSH/LIDAM/SMCS - Support en méthodologie et calcul statistique (plate-forme technologique)"
               }
             ]
           },
           {
-            "name": "Louvain Research Institute in Management and Organizations",
-            "acronym": "SSH/LouRIM"
+            "name": "SSH/LouRIM - Louvain Research Institute in Management and Organizations"
           },
           {
-            "name": "Institut de recherche Religions, spiritualités, cultures, sociétés",
-            "acronym": "SSH/RSCS",
+            "name": "SSH/RSCS - Institut de recherche Religions, spiritualités, cultures, sociétés",
             "children": [
               {
-                "name": "Archives du monde catholique",
-                "acronym": "SSH/RSCS/ARCA"
+                "name": "SSH/RSCS/ARCA - Archives du monde catholique"
               }
             ]
           },
           {
-            "name": "Institut de sciences politiques Louvain-Europe",
-            "acronym": "SSH/SPLE"
+            "name": "SSH/SPLE - Institut de sciences politiques Louvain-Europe"
           },
           {
-            "name": "Centre de traitement automatique du langage",
-            "acronym": "SSH/TALN"
+            "name": "SSH/TALN - Centre de traitement automatique du langage"
           }
         ]
       },
       {
-        "name": "Secteur des sciences de la santé",
-        "acronym": "SSS",
+        "name": "SSS - Secteur des sciences de la santé",
         "selectable": false,
         "weight": 85,
         "children": [
           {
-            "name": "Institut de Duve",
-            "acronym": "SSS/DDUV",
+            "name": "SSS/DDUV - Institut de Duve",
             "children": [
               {
-                "name": "Biochimie-Recherche métabolique",
-                "acronym": "SSS/DDUV/BCHM"
+                "name": "SSS/DDUV/BCHM - Biochimie-Recherche métabolique"
               },
               {
-                "name": "Computational Biology and Bioinformatics",
-                "acronym": "SSS/DDUV/CBIO"
+                "name": "SSS/DDUV/CBIO - Computational Biology and Bioinformatics"
               },
               {
-                "name": "Biologie cellulaire",
-                "acronym": "SSS/DDUV/CELL"
+                "name": "SSS/DDUV/CELL - Biologie cellulaire"
               },
               {
-                "name": "Génétique cellulaire",
-                "acronym": "SSS/DDUV/GECE"
+                "name": "SSS/DDUV/GECE - Génétique cellulaire"
               },
               {
-                "name": "Genetics of Autoimmune Diseases and Cancer",
-                "acronym": "SSS/DDUV/GEDI"
+                "name": "SSS/DDUV/GEDI - Genetics of Autoimmune Diseases and Cancer"
               },
               {
-                "name": "Génétique",
-                "acronym": "SSS/DDUV/GEHU"
+                "name": "SSS/DDUV/GEHU - Génétique"
               },
               {
-                "name": "Epigénétique",
-                "acronym": "SSS/DDUV/GEPI"
+                "name": "SSS/DDUV/GEPI - Epigénétique"
               },
               {
-                "name": "Liver and pancreas differentiation",
-                "acronym": "SSS/DDUV/LPAD"
+                "name": "SSS/DDUV/LPAD - Liver and pancreas differentiation"
               },
               {
-                "name": "Cellular Metabolism & Microenvironment",
-                "acronym": "SSS/DDUV/MEMI"
+                "name": "SSS/DDUV/MEMI - Cellular Metabolism & Microenvironment"
               },
               {
-                "name": "Médecine expérimentale",
-                "acronym": "SSS/DDUV/MEXP"
+                "name": "SSS/DDUV/MEXP - Médecine expérimentale"
               },
               {
-                "name": "Protein phosphorylation",
-                "acronym": "SSS/DDUV/PHOS"
+                "name": "SSS/DDUV/PHOS - Protein phosphorylation"
               },
               {
-                "name": "Stem Cell Biology and Development",
-                "acronym": "SSS/DDUV/SCBD"
+                "name": "SSS/DDUV/SCBD - Stem Cell Biology and Development"
               },
               {
-                "name": "Cell signalling",
-                "acronym": "SSS/DDUV/SIGN"
+                "name": "SSS/DDUV/SIGN - Cell signalling"
               },
               {
-                "name": "Médecine tropicale",
-                "acronym": "SSS/DDUV/TROP"
+                "name": "SSS/DDUV/TROP - Médecine tropicale"
               },
               {
-                "name": "Virologie",
-                "acronym": "SSS/DDUV/VIRO"
+                "name": "SSS/DDUV/VIRO - Virologie"
               }
             ]
           },
           {
-            "name": "Institute of NeuroScience",
-            "acronym": "SSS/IONS",
+            "name": "SSS/IONS - Institute of NeuroScience",
             "children": [
               {
-                "name": "Pôle Cellulaire et moléculaire",
-                "acronym": "SSS/IONS/CEMO"
+                "name": "SSS/IONS/CEMO - Pôle Cellulaire et moléculaire"
               },
               {
-                "name": "Systems & cognitive Neuroscience",
-                "acronym": "SSS/IONS/COSY"
+                "name": "SSS/IONS/COSY - Systems & cognitive Neuroscience"
               },
               {
-                "name": "Clinical Neuroscience",
-                "acronym": "SSS/IONS/NEUR"
+                "name": "SSS/IONS/NEUR - Clinical Neuroscience"
               }
             ]
           },
           {
-            "name": "Institut de recherche expérimentale et clinique",
-            "acronym": "SSS/IREC",
+            "name": "SSS/IREC - Institut de recherche expérimentale et clinique",
             "children": [
               {
-                "name": "Pôle de recherche cardiovasculaire",
-                "acronym": "SSS/IREC/CARD"
+                "name": "SSS/IREC/CARD - Pôle de recherche cardiovasculaire"
               },
               {
-                "name": "Computer Assisted Robotic Surgery",
-                "acronym": "SSS/IREC/CARS"
+                "name": "SSS/IREC/CARS - Computer Assisted Robotic Surgery"
               },
               {
-                "name": "Pôle de chirgurgie expérimentale et transplantation",
-                "acronym": "SSS/IREC/CHEX"
+                "name": "SSS/IREC/CHEX - Pôle de chirgurgie expérimentale et transplantation"
               },
               {
-                "name": "Centre de technologies moléculaires appliquées (plate-forme technologique)",
-                "acronym": "SSS/IREC/CTMA"
+                "name": "SSS/IREC/CTMA - Centre de technologies moléculaires appliquées (plate-forme technologique)"
               },
               {
-                "name": "Pôle d'Essais cliniques",
-                "acronym": "SSS/IREC/ECLI"
+                "name": "SSS/IREC/ECLI - Pôle d'Essais cliniques"
               },
               {
-                "name": "Pôle d'endocrinologie, diabète et nutrition",
-                "acronym": "SSS/IREC/EDIN"
+                "name": "SSS/IREC/EDIN - Pôle d'endocrinologie, diabète et nutrition"
               },
               {
-                "name": "Pôle d'épidémiologie et biostatistique",
-                "acronym": "SSS/IREC/EPID"
+                "name": "SSS/IREC/EPID - Pôle d'épidémiologie et biostatistique"
               },
               {
-                "name": "Pôle de Pharmacologie et thérapeutique",
-                "acronym": "SSS/IREC/FATH"
+                "name": "SSS/IREC/FATH - Pôle de Pharmacologie et thérapeutique"
               },
               {
-                "name": "Pôle d'Hépato-gastro-entérologie",
-                "acronym": "SSS/IREC/GAEN"
+                "name": "SSS/IREC/GAEN - Pôle d'Hépato-gastro-entérologie"
               },
               {
-                "name": "Pôle de Gynécologie",
-                "acronym": "SSS/IREC/GYNE"
+                "name": "SSS/IREC/GYNE - Pôle de Gynécologie"
               },
               {
-                "name": "Pôle d'imagerie médicale",
-                "acronym": "SSS/IREC/IMAG"
+                "name": "SSS/IREC/IMAG - Pôle d'imagerie médicale"
               },
               {
-                "name": "Louvain Centre for Toxicology and Applied Pharmacology",
-                "acronym": "SSS/IREC/LTAP"
+                "name": "SSS/IREC/LTAP - Louvain Centre for Toxicology and Applied Pharmacology"
               },
               {
-                "name": "Pôle pneumologie, ORL (airways) et dermatologie (skin)",
-                "acronym": "SSS/IREC/LUNS"
+                "name": "SSS/IREC/LUNS - Pôle pneumologie, ORL (airways) et dermatologie (skin)"
               },
               {
-                "name": "Pôle de Microbiologie médicale",
-                "acronym": "SSS/IREC/MBLG"
+                "name": "SSS/IREC/MBLG - Pôle de Microbiologie médicale"
               },
               {
-                "name": "Pôle de médecine aiguë",
-                "acronym": "SSS/IREC/MEDA"
+                "name": "SSS/IREC/MEDA - Pôle de médecine aiguë"
               },
               {
-                "name": "Pôle d'imagerie moléculaire, radiothérapie et oncologie",
-                "acronym": "SSS/IREC/MIRO"
+                "name": "SSS/IREC/MIRO - Pôle d'imagerie moléculaire, radiothérapie et oncologie"
               },
               {
-                "name": "Pôle Mont Godinne",
-                "acronym": "SSS/IREC/MONT"
+                "name": "SSS/IREC/MONT - Pôle Mont Godinne"
               },
               {
-                "name": "Pôle de Morphologie",
-                "acronym": "SSS/IREC/MORF"
+                "name": "SSS/IREC/MORF - Pôle de Morphologie"
               },
               {
-                "name": "Pôle de Néphrologie",
-                "acronym": "SSS/IREC/NEFR"
+                "name": "SSS/IREC/NEFR - Pôle de Néphrologie"
               },
               {
-                "name": "Neuro-musculo-skeletal Lab",
-                "acronym": "SSS/IREC/NMSK"
+                "name": "SSS/IREC/NMSK - Neuro-musculo-skeletal Lab"
               },
               {
-                "name": "Pôle de Pédiatrie",
-                "acronym": "SSS/IREC/PEDI"
+                "name": "SSS/IREC/PEDI - Pôle de Pédiatrie"
               },
               {
-                "name": "Pôle de Recherche en Physiopathologie de la Reproduction",
-                "acronym": "SSS/IREC/REPR"
+                "name": "SSS/IREC/REPR - Pôle de Recherche en Physiopathologie de la Reproduction"
               },
               {
-                "name": "Pôle de Pathologies rhumatismales",
-                "acronym": "SSS/IREC/RUMA"
+                "name": "SSS/IREC/RUMA - Pôle de Pathologies rhumatismales"
               },
               {
-                "name": "Pôle St.-Luc",
-                "acronym": "SSS/IREC/SLUC"
+                "name": "SSS/IREC/SLUC - Pôle St.-Luc"
               }
             ]
           },
           {
-            "name": "Institut de recherche santé et société",
-            "acronym": "SSS/IRSS"
+            "name": "SSS/IRSS - Institut de recherche santé et société"
           },
           {
-            "name": "Louvain Drug Research Institute",
-            "acronym": "SSS/LDRI",
+            "name": "SSS/LDRI - Louvain Drug Research Institute",
             "children": [
               {
-                "name": "Analyse clinique par spectrométrie de masse de métabolites et de composés d'intérêts pharmaceutique et biologique",
-                "acronym": "SSS/LDRI/MCPB"
+                "name": "SSS/LDRI/MCPB - Analyse clinique par spectrométrie de masse de métabolites et de composés d'intérêts pharmaceutique et biologique"
               }
             ]
           }
         ]
       },
       {
-        "name": "Secteur des sciences et technologies",
-        "acronym": "SST",
+        "name": "SST - Secteur des sciences et technologies",
         "selectable": false,
         "weight": 80,
         "children": [
           {
-            "name": "Centre de ressources du cyclotron",
-            "acronym": "SST/CRC"
+            "name": "SST/CRC - Centre de ressources du cyclotron"
           },
           {
-            "name": "Earth and Life Institute",
-            "acronym": "SST/ELI",
+            "name": "SST/ELI - Earth and Life Institute",
             "children": [
               {
-                "name": "Agronomy",
-                "acronym": "SST/ELI/ELIA"
+                "name": "SST/ELI/ELIA - Agronomy"
               },
               {
-                "name": "Biodiversity",
-                "acronym": "SST/ELI/ELIB"
+                "name": "SST/ELI/ELIB - Biodiversity"
               },
               {
-                "name": "Earth & Climate",
-                "acronym": "SST/ELI/ELIC"
+                "name": "SST/ELI/ELIC - Earth & Climate"
               },
               {
-                "name": "Environmental Sciences",
-                "acronym": "SST/ELI/ELIE"
+                "name": "SST/ELI/ELIE - Environmental Sciences"
               },
               {
-                "name": "Applied Microbiology",
-                "acronym": "SST/ELI/ELIM"
+                "name": "SST/ELI/ELIM - Applied Microbiology"
               }
             ]
           },
           {
-            "name": "Institute of Information and Communication Technologies, Electronics and Applied Mathematics",
-            "acronym": "SST/ICTM",
+            "name": "SST/ICTM - Institute of Information and Communication Technologies, Electronics and Applied Mathematics",
             "children": [
               {
-                "name": "Pôle en ingénierie électrique",
-                "acronym": "SST/ICTM/ELEN"
+                "name": "SST/ICTM/ELEN - Pôle en ingénierie électrique"
               },
               {
-                "name": "Pôle en ingénierie informatique",
-                "acronym": "SST/ICTM/INGI"
+                "name": "SST/ICTM/INGI - Pôle en ingénierie informatique"
               },
               {
-                "name": "Pôle en ingénierie mathématique",
-                "acronym": "SST/ICTM/INMA"
+                "name": "SST/ICTM/INMA - Pôle en ingénierie mathématique"
               },
               {
-                "name": "Wallonia Electronics and Communications Measurements (plate-forme technologique)",
-                "acronym": "SST/ICTM/WECM"
+                "name": "SST/ICTM/WECM - Wallonia Electronics and Communications Measurements (plate-forme technologique)"
               }
             ]
           },
           {
-            "name": "Institute of Condensed Matter and Nanosciences",
-            "acronym": "SST/IMCN",
+            "name": "SST/IMCN - Institute of Condensed Matter and Nanosciences",
             "children": [
               {
-                "name": "Analyse structurale moléculaire (plate-forme technologique)",
-                "acronym": "SST/IMCN/ASM"
+                "name": "SST/IMCN/ASM - Analyse structurale moléculaire (plate-forme technologique)"
               },
               {
-                "name": "Bio and soft matter",
-                "acronym": "SST/IMCN/BSMA"
+                "name": "SST/IMCN/BSMA - Bio and soft matter"
               },
               {
-                "name": "Lasers et optique (plate-forme technologique)",
-                "acronym": "SST/IMCN/LASO"
+                "name": "SST/IMCN/LASO - Lasers et optique (plate-forme technologique)"
               },
               {
-                "name": "Modelling",
-                "acronym": "SST/IMCN/MODL"
+                "name": "SST/IMCN/MODL - Modelling"
               },
               {
-                "name": "Molecular Chemistry, Materials and Catalysis",
-                "acronym": "SST/IMCN/MOST"
+                "name": "SST/IMCN/MOST - Molecular Chemistry, Materials and Catalysis"
               },
               {
-                "name": "Nanoscopic Physics",
-                "acronym": "SST/IMCN/NAPS"
+                "name": "SST/IMCN/NAPS - Nanoscopic Physics"
               }
             ]
           },
           {
-            "name": "Institute of Mechanics, Materials and Civil Engineering",
-            "acronym": "SST/IMMC",
+            "name": "SST/IMMC - Institute of Mechanics, Materials and Civil Engineering",
             "children": [
               {
-                "name": "Civil and environmental engineering",
-                "acronym": "SST/IMMC/GCE"
+                "name": "SST/IMMC/GCE - Civil and environmental engineering"
               },
               {
-                "name": "Materials and process engineering",
-                "acronym": "SST/IMMC/IMAP"
+                "name": "SST/IMMC/IMAP - Materials and process engineering"
               },
               {
-                "name": "Mechatronic, Electrical Energy, and Dynamics Systems",
-                "acronym": "SST/IMMC/MEED"
+                "name": "SST/IMMC/MEED - Mechatronic, Electrical Energy, and Dynamics Systems"
               },
               {
-                "name": "Applied mechanics and mathematics",
-                "acronym": "SST/IMMC/MEMA"
+                "name": "SST/IMMC/MEMA - Applied mechanics and mathematics"
               },
               {
-                "name": "Thermodynamics and fluid mechanics",
-                "acronym": "SST/IMMC/TFL"
+                "name": "SST/IMMC/TFL - Thermodynamics and fluid mechanics"
               }
             ]
           },
           {
-            "name": "Institut de recherche en mathématique et physique",
-            "acronym": "SST/IRMP"
+            "name": "SST/IRMP - Institut de recherche en mathématique et physique"
           },
           {
-            "name": "Louvain research institute for Landscape, Architecture, Built environment",
-            "acronym": "SST/LAB"
+            "name": "SST/LAB - Louvain research institute for Landscape, Architecture, Built environment"
           },
           {
-            "name": "Louvain Institute of Biomolecular Science and Technology",
-            "acronym": "SST/LIBST"
+            "name": "SST/LIBST - Louvain Institute of Biomolecular Science and Technology"
           },
           {
-            "name": "Wallonia Infrastructure Nano Fabrication",
-            "acronym": "SST/WINF"
+            "name": "SST/WINF - Wallonia Infrastructure Nano Fabrication"
           }
         ]
       }
@@ -1351,9 +1178,18 @@
     "selectable": false,
     "type": "University",
     "identifiers": [
-      {"type": "ror", "value": "https://ror.org/03d1maw17"},
-      {"type": "isni", "value": "http://isni.org/isni/0000000122428479"},
-      {"type": "crossrefid", "value": "https://api.crossref.org/funders/501100008136"}
+      {
+        "type": "ror",
+        "value": "https://ror.org/03d1maw17"
+      },
+      {
+        "type": "isni",
+        "value": "http://isni.org/isni/0000000122428479"
+      },
+      {
+        "type": "crossrefid",
+        "value": "https://api.crossref.org/funders/501100008136"
+      }
     ],
     "children": [
       {
@@ -1567,9 +1403,18 @@
     "selectable": false,
     "type": "University",
     "identifiers": [
-      {"type": "ror", "value": "https://ror.org/02ygek028"},
-      {"type": "isni", "value": "http://isni.org/isni/0000000109416203"},
-      {"type": "crossrefid", "value": "https://api.crossref.org/funders/501100008137"}
+      {
+        "type": "ror",
+        "value": "https://ror.org/02ygek028"
+      },
+      {
+        "type": "isni",
+        "value": "http://isni.org/isni/0000000109416203"
+      },
+      {
+        "type": "crossrefid",
+        "value": "https://api.crossref.org/funders/501100008137"
+      }
     ],
     "children": [
       {
@@ -1693,8 +1538,7 @@
         "weight": 65,
         "children": [
           {
-            "name": "Pôle de recherche en droit privé",
-            "acronym": "Séminaire interdisciplinaire d'études juridiques"
+            "name": "Séminaire interdisciplinaire d'études juridiques - Pôle de recherche en droit privé"
           }
         ]
       }

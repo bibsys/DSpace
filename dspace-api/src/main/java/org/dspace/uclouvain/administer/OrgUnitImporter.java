@@ -10,12 +10,15 @@ package org.dspace.uclouvain.administer;
 import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.Option;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
@@ -199,7 +202,7 @@ public class OrgUnitImporter extends AbstractCLICommand {
         mdField = metadataFieldService.findByString(context, "dc.title", '.');
         itemService.addMetadata(context, item, mdField, null, entity.name);
         // Adds `entity.acronym` into `oairecerif.acronym` metadata field.
-        if (entity.acronym != null) {
+        if (entity.getAcronym() != null) {
             mdField = metadataFieldService.findByString(context, "oairecerif.acronym", '.');
             itemService.addMetadata(context, item, mdField, null, entity.acronym);
         }
@@ -264,10 +267,22 @@ class Entity {
     public int weight = 50;
 
     public String toString() {
-        return (acronym != null)
-            ? String.format("[Entity::%s - %s]", acronym, name)
-            : String.format("[Entity::%s]", name);
+        return name;
     }
+
+    public String getAcronym() {
+        if (StringUtils.isNotBlank(acronym)) {
+            return acronym;
+        }
+        Pattern pattern = Pattern.compile("^(?<acronym>[A-Z/-]+?) - .+$");
+        Matcher matcher = pattern.matcher(name);
+        if (matcher.matches()) {
+            acronym = matcher.group("acronym");
+            return acronym;
+        }
+        return null;
+    }
+
 }
 
 class Identifier {
