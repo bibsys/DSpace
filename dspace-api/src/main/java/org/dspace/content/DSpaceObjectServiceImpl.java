@@ -178,6 +178,15 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
         return values;
     }
 
+    @Override
+    public MetadataValue getMetadataByMetadataStringAndPlace(T dso, String mdString, int place) {
+        return getMetadataByMetadataString(dso, mdString)
+                .stream()
+                .filter(mv -> mv.getPlace() == place)
+                .findFirst()
+                .orElse(null);
+    }
+
     private List<MetadataValue> getMetadata(T dso, String schema, String element, String qualifier) {
         List<MetadataValue> values;
         if (Item.ANY.equals(qualifier)) {
@@ -198,6 +207,14 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
             return metadataValues.iterator().next().getValue();
         }
         return null;
+    }
+
+    @Override
+    public String getMetadata(T dso, String mdString, int place) {
+        MetadataValue mv = getMetadataByMetadataStringAndPlace(dso, mdString, place);
+        return (mv != null)
+            ? mv.getValue()
+            : null;
     }
 
     @Override
