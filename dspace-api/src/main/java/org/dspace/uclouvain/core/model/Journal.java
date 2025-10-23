@@ -7,7 +7,10 @@
  */
 package org.dspace.uclouvain.core.model;
 
+import java.util.Objects;
+
 import org.dspace.content.Item;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 
 /**
  * This model represents a journal object.
@@ -17,9 +20,9 @@ import org.dspace.content.Item;
 public class Journal extends ItemModel {
 
     // CLASS CONSTANTS =================================================================================================
-    public static final String JOURNAL_ENTITY_TYPE = "Journal";
-    public static final String JOURNAL_ACTIVE_ACCESS_TYPE = "Active";
-    public static final String JOURNAL_CEASED_ACCESS_TYPE = "Ceased";
+    public static final String ENTITY_TYPE = "Journal";
+    public static final String ACTIVE_ACCESS_TYPE = "Active";
+    public static final String CEASED_ACCESS_TYPE = "Ceased";
 
     public static final String ISSN_IDENTIFIER = "issn";
     public static final String EISSN_IDENTIFIER = "eissn";
@@ -41,8 +44,11 @@ public class Journal extends ItemModel {
             configService.getProperty(FIELD_PREFIX + "journal.statuscode.field", "dc.description.status");
 
     // CONSTRUCTOR =====================================================================================================
-    public Journal(Item item) {
+    public Journal(Item item) throws InvalidModelEntityTypeException {
         super(item);
+        if (!Objects.equals(itemService.getEntityType(item), ENTITY_TYPE)) {
+            throw new InvalidModelEntityTypeException(item, ENTITY_TYPE);
+        }
     }
 
     // GETTER ==========================================================================================================
