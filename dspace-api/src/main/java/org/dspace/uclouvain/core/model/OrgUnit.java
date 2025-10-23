@@ -7,12 +7,13 @@
  */
 package org.dspace.uclouvain.core.model;
 
-import java.sql.SQLException;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 
 /**
  * Object representing an OrgUnit object.
@@ -41,8 +42,11 @@ public class OrgUnit extends ItemModel {
     private OrgUnit parentUniversity;
 
     // CONSTRUCTOR =====================================================================================================
-    public OrgUnit(Item item) {
+    public OrgUnit(Item item) throws InvalidModelEntityTypeException {
         super(item);
+        if (!Objects.equals(itemService.getEntityType(item), ENTITY_TYPE)) {
+            throw new InvalidModelEntityTypeException(item, ENTITY_TYPE);
+        }
     }
 
     // GETTER ==========================================================================================================
@@ -72,7 +76,7 @@ public class OrgUnit extends ItemModel {
             try {
                 Item parentItem = itemService.find(context, UUID.fromString(parentOrg.getAuthority()));
                 return parent = new OrgUnit(parentItem);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 return null;
             }
         }

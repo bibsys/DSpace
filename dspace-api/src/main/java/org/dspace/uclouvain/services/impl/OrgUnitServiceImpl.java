@@ -9,8 +9,10 @@ package org.dspace.uclouvain.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.DiscoverResult;
@@ -75,10 +77,18 @@ public class OrgUnitServiceImpl implements OrgUnitService {
             DiscoverResult result = searchService.search(context, discoverQuery);
             return result.getIndexableObjects()
                 .stream()
-                .map(indexableObject -> new OrgUnit(((IndexableItem) indexableObject).getIndexedObject()))
+                .map(indexableObject -> buildOrgUnit(((IndexableItem) indexableObject).getIndexedObject()))
+                .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
         } catch (SearchServiceException sse) {
+            return null;
+        }
+    }
+    private OrgUnit buildOrgUnit(Item item) {
+        try {
+            return new OrgUnit(item);
+        } catch (Exception ignored) {
             return null;
         }
     }
