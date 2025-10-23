@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.rest.webmvc.ControllerUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,7 +40,7 @@ public class ESBController {
      * @return A ResponseEntity object signaling the success or failure of the request.
      */
     @RequestMapping(method = RequestMethod.POST, value = "/person/event")
-    public ResponseEntity<?> postPersonEvent(@RequestBody PersonEventModel event) {
+    public ResponseEntity<?> postPersonEvent(PersonEventModel event) {
         String action = event.getAction();
         // Check that action is valid before processing event.
         if (!PersonEventModel.AVAILABLE_ACTIONS.contains(action)) {
