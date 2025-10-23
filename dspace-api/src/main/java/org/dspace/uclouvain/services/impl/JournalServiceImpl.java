@@ -7,6 +7,9 @@
  */
 package org.dspace.uclouvain.services.impl;
 
+import java.util.Objects;
+
+import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.DiscoverResult;
@@ -44,17 +47,25 @@ public class JournalServiceImpl implements JournalService {
         DiscoverQuery dq = new DiscoverQuery();
         dq.setDSpaceObjectFilter(IndexableItem.TYPE);
         dq.setMaxResults(1);
-        dq.addFilterQueries("search.entitytype:" + Journal.JOURNAL_ENTITY_TYPE);
+        dq.addFilterQueries("search.entitytype:" + Journal.ENTITY_TYPE);
         dq.setQuery(query);
         try {
             DiscoverResult dr = searchService.search(context, dq);
             return dr.getIndexableObjects()
                     .stream()
-                    .map(indexableObject -> new Journal(((IndexableItem) indexableObject).getIndexedObject()))
+                    .map(indexableObject -> buildJournal(((IndexableItem) indexableObject).getIndexedObject()))
+                    .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null);
         } catch (SearchServiceException e) {
             throw new RuntimeException(e);
+        }
+    }
+    private Journal buildJournal(Item item) {
+        try {
+            return new Journal(item);
+        } catch (Exception ignored) {
+            return null;
         }
     }
 

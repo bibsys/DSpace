@@ -7,11 +7,15 @@
  */
 package org.dspace.uclouvain.core.utils;
 
+import static org.dspace.core.CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Predicate;
 
+import org.apache.commons.lang.StringUtils;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
@@ -129,5 +133,12 @@ public class MetadataUtils {
             schema, element, qualifier,
             language, value, authority, confidence, security
         );
+    }
+
+    /**
+     * Predicate function that could be used to {@code .fitler()} a {@code Stream<MetadataValue>}
+     */
+    public static Predicate<MetadataValue> filterValidValues() {
+        return mv -> StringUtils.isNotBlank(mv.getValue()) && !mv.getValue().equals(PLACEHOLDER_PARENT_METADATA_VALUE);
     }
 }

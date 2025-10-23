@@ -210,6 +210,14 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
     }
 
     @Override
+    public String getMetadata(T dso, String mdString, int place) {
+        MetadataValue mv = getMetadataByMetadataStringAndPlace(dso, mdString, place);
+        return (mv != null)
+            ? mv.getValue()
+            : null;
+    }
+
+    @Override
     public List<MetadataValue> getMetadata(T dso, String mdString, String authority) {
         String[] elements = getElements(mdString);
         return getMetadata(dso, elements[0], elements[1], elements[2], elements[3], authority);

@@ -222,6 +222,17 @@ public interface DSpaceObjectService<T extends DSpaceObject> {
 
 
     /**
+     * Get the value of a metadata field for a specific place
+     *
+     * @param dSpaceObject DSpaceObject
+     * @param mdString     The name of the metadata field to get
+     * @param place        The place of the metadata field to get
+     * @return the value of the metadata field (or null if no metadata value found)
+     * @throws IllegalArgumentException if the requested metadata field doesn't exist
+     */
+    public String getMetadata(T dSpaceObject, String mdString, int place);
+
+    /**
      * Get the value(s) of a metadata field.
      *
      * @param dSpaceObject the object whose metadata are sought.
