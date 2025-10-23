@@ -56,7 +56,7 @@ public class PublicationJournalAuthority extends PublicationAuthority {
 
         String authority = item.getID().toString();
 
-        if (isNotEmpty(statusCode) && statusCode.equals(Journal.JOURNAL_CEASED_ACCESS_TYPE)) {
+        if (isNotEmpty(statusCode) && statusCode.equals(Journal.CEASED_ACCESS_TYPE)) {
             extras.put("journal.searchresult.ceased", statusCode);
         }
 
