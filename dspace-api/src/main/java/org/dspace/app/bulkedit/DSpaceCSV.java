@@ -16,7 +16,7 @@ import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -43,6 +43,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.content.service.MetadataFieldService;
 import org.dspace.content.service.MetadataSchemaService;
 import org.dspace.core.Context;
+import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 
 /**
@@ -105,6 +106,18 @@ public class DSpaceCSV implements Serializable {
      */
     protected String escapedAuthoritySeparator;
 
+    /**
+     * The map where will be stored the heading order
+     */
+    protected Map<String, Integer> headingsOrder = new HashMap<>();
+
+    /**
+     * The map where will be stored the heading translation
+     */
+    protected Map<String, String> headingTranslation = new HashMap<>();
+
+    protected transient final ConfigurationService configurationService =
+        DSpaceServicesFactory.getInstance().getConfigurationService();
     protected transient final ItemService itemService = ContentServiceFactory.getInstance().getItemService();
     protected transient final MetadataSchemaService metadataSchemaService =
         ContentServiceFactory.getInstance().getMetadataSchemaService();
@@ -337,6 +350,21 @@ public class DSpaceCSV implements Serializable {
             if (!"".equals(toIgnoreString.trim())) {
                 ignore.put(toIgnoreString.trim(), toIgnoreString.trim());
             }
+        }
+
+        int idx = 1;
+        String configValue;
+        while (((configValue = configurationService.getProperty("csv.export.heading.order." + idx))) != null) {
+            headingsOrder.put(configValue, idx);
+            idx++;
+        }
+        idx = 1;
+        while (((configValue = configurationService.getProperty("csv.export.heading.translation." + idx))) != null) {
+            String[] parts = configValue.split("::");
+            if (parts.length == 2) {
+                headingTranslation.put(parts[0], parts[1]);
+            }
+            idx++;
         }
     }
 
@@ -632,9 +660,13 @@ public class DSpaceCSV implements Serializable {
         String[] csvLines = new String[counter + 1];
         csvLines[0] = "id" + fieldSeparator + "collection";
         List<String> headingsCopy = new ArrayList<>(headings);
-        Collections.sort(headingsCopy);
+        // Sort heading using configured order (if exists)
+        headingsCopy.sort(Comparator.comparingInt(heading -> {
+            String[] parts = heading.split("\\[");
+            return headingsOrder.getOrDefault(parts[0], Integer.MAX_VALUE);
+        }));
         for (String value : headingsCopy) {
-            csvLines[0] = csvLines[0] + fieldSeparator + value;
+            csvLines[0] = csvLines[0] + fieldSeparator + '"' + getTranslatedHeader(value) + '"';
         }
 
         Iterator<DSpaceCSVLine> i = lines.iterator();
@@ -708,5 +740,17 @@ public class DSpaceCSV implements Serializable {
 
     public String getEscapedAuthoritySeparator() {
         return escapedAuthoritySeparator;
+    }
+
+    private String getTranslatedHeader(String input) {
+        Pattern pattern = Pattern.compile("^(.*)\\[([a-zA-Z*]+)]$");
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.matches()) {
+            String genericKey = matcher.group(1);
+            String translationPart = matcher.group(2);
+            return headingTranslation.getOrDefault(genericKey, genericKey) + "[" + translationPart + "]";
+        } else {
+            return headingTranslation.getOrDefault(input, input);
+        }
     }
 }
