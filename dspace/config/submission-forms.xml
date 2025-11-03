@@ -347,7 +347,7 @@
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
           <hint>Enter the name of the institution of the affiliation.</hint>
-          <required>Please enter an affiliation institution for this profile.</required>
+          <!-- <required>Please enter an affiliation institution for this profile.</required> -->
         </field>
         <field>
           <dc-schema>person</dc-schema>
@@ -358,7 +358,7 @@
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
           <hint>Enter the department of the affiliation.</hint>
-          <required>Please enter an affiliation department for this profile.</required>
+          <!-- <required>Please enter an affiliation department for this profile.</required> -->
         </field>
       </row>
       <row>
@@ -931,7 +931,7 @@
           <label>Author's email</label>
           <input-type>onebox</input-type>
           <hint>Enter the email of the author.</hint>
-          <required>Please provide an email for this author.</required>
+          <!-- <required>Please provide an email for this author.</required> -->
           <regex>^(([^\[\]\\.,;:\s@"]+(\.[^\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid email format</setting>
@@ -1055,7 +1055,6 @@
           <label>Author's Institution</label>
           <input-type>onebox</input-type>
           <hint>Enter the institution name of the author</hint>
-          <readonly>all</readonly>
         </field>
       </row>
     </form>
