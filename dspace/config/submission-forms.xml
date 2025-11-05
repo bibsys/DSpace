@@ -1187,6 +1187,18 @@
       </row>
       <row>
         <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>subject</dc-element>
+          <dc-qualifier>mesh</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Mesh keywords</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article,text::book-part,text::book</type-bind>
+          <input-type>tag</input-type>
+          <hint>Enter "Medical Subject Headings" associated to this document.</hint>
+        </field>
+      </row>
+      <row>
+        <field>
           <dc-schema>oairecerif</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunit</dc-qualifier>
