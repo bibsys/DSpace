@@ -1090,7 +1090,8 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
         // remore authority references
         if (configurationService.getBooleanProperty("item-deletion.authority-cleanup.enabled", false)) {
-            removeAuthorityReferences(context, item);
+            // removeAuthorityReferences(context, item);
+            metadataValueService.clearAuthorityReferences(context, item.getID().toString());
         }
 
         // Clear any enhancement scheduled for this item.
