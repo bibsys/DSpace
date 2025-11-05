@@ -64,6 +64,28 @@ public interface MetadataValueService {
         throws IOException, SQLException;
 
     /**
+     * Retrieve the metadata values for a given authority from the database.
+     * 
+     * @param context The current DSpace context.
+     * @param authority The authority to find metadata value for.
+     * @return A list of all the metadata values using the provided authority.
+     * @throws SQLException if database error
+     */
+    public List<MetadataValue> findByAuthority(Context context, String authority) throws SQLException;
+
+    /**
+     * Retrieve the metadata values for a given authority and confidence from the database.
+     * 
+     * @param context The current DSpace context.
+     * @param authority The authority to find metadata value for.
+     * @param confidence The confidence to find metadata value for.
+     * @return A list of all the metadata values using the provided authority and confidence.
+     * @throws SQLException if database error
+     */
+    public List<MetadataValue> findByAuthority(Context context, String authority, Integer confidence)
+            throws SQLException;
+
+    /**
      * Retrieves matching MetadataValues for a given field and value.
      *
      * @param context dspace context
@@ -112,4 +134,13 @@ public interface MetadataValueService {
         throws SQLException;
 
     int countTotal(Context context) throws SQLException;
+
+    /**
+     * Clear all the metadata values authority that references the provided item authority.
+     * @param context The current DSpace context.
+     * @param uuid The uuid of the object to clear references of.
+     * @throws AuthorizeException
+     * @throws SQLException
+     */
+    public void clearAuthorityReferences(Context context, String uuid) throws SQLException, AuthorizeException;
 }
