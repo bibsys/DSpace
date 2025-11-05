@@ -49,6 +49,14 @@ public class MetadataValueDAOImpl extends AbstractHibernateDAO<MetadataValue> im
     }
 
     @Override
+    public List<MetadataValue> findByAuthority(Context context, String authority) throws SQLException {
+        String queryString = "SELECT m from MetadataValue m WHERE m.authority = :metadata_authority";
+        Query query = createQuery(context, queryString);
+        query.setParameter("metadata_authority", authority);
+        return list(query);
+    }
+
+    @Override
     public Iterator<MetadataValue> findItemValuesByFieldAndValue(Context context,
                                                                  MetadataField metadataField, String value)
             throws SQLException {
