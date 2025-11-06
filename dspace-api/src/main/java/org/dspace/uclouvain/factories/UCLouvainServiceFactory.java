@@ -17,6 +17,7 @@ import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.OrgUnitService;
+import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
@@ -42,6 +43,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract UCLouvainCitationsService getCitationsService();
     public abstract JournalService getJournalService();
     public abstract OrgUnitService getOrgUnitService();
+    public abstract PublicationService getPublicationService();
     public abstract IDMPersonValidityService getIDMPersonValidityService();
 
     public static UCLouvainServiceFactory getInstance() {
