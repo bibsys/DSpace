@@ -2439,4 +2439,37 @@ prevent the generation of resource policy entry values with null dspace_object a
     private void clearItemEnhancers(Context context, Item item) {
         uclouvainItemEnhancerService.cleanForItem(context, item.getID());
     }
+
+    /**
+     * Set a metadata value for a specific place.
+     * If a metadata value already exists at the given place, update its data.
+     * If no metadata value exists at the given place, just create a new metadata value at that place.
+     * 
+     * @param context The current DSpace context.
+     * @param item The item to set a metadata of.
+     * @param mdString The metadata field to use to set the metadata.
+     * @param lang The new language of the metadata.
+     * @param value The new value of the metadata.
+     * @param authority The new authority of the metadata.
+     * @param place The new place of the metadata.
+     * @param confidence The new confidence of the metadata.
+     */
+    public void setMetadataInPlace(
+        Context context, Item item, String mdString, String lang, String value,
+        String authority, Integer place, Integer confidence
+    ) throws SQLException {
+        MetadataValue existing = getMetadataByMetadataStringAndPlace(item, mdString, place);
+        if (existing != null) {
+            existing.setValue(value);
+            existing.setAuthority(authority);
+            existing.setLanguage(lang);
+            existing.setConfidence((confidence != null) ? confidence : CF_UNSET);
+        } else {
+            String[] metadataField = getElementsFilled(mdString);
+            addMetadata(
+                context, item, metadataField[0], metadataField[1], metadataField[2],
+                lang, value, authority, place, confidence
+            );
+        }
+    }
 }
