@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,6 +59,7 @@ import org.dspace.orcid.service.OrcidSynchronizationService;
 import org.dspace.profile.service.AfterResearcherProfileCreationAction;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -439,6 +441,20 @@ public class ResearcherProfileServiceImpl implements ResearcherProfileService {
         } catch (SearchServiceException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Map<String, String> getAuthorsIdentifiers(ResearcherProfile profile) {
+        // Create a map of profile identifiers.
+        return Stream.of(
+                Map.entry(Publication.AUTHOR_EMAIL_FIELD, profile.getEmail()),
+                Map.entry(Publication.AUTHOR_ORCID_FIELD, profile.getOrcid()),
+                Map.entry(Publication.AUTHOR_FGS_FIELD, profile.getFGS())
+            )
+            .filter(entry -> entry.getValue().isPresent())
+            .collect(Collectors.toMap(
+                entry -> entry.getKey(),
+                entry -> entry.getValue().get()
+            ));
     }
 
 }

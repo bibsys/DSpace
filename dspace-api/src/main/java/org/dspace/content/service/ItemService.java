@@ -1097,4 +1097,9 @@ public interface ItemService
      * @return         true if the item is the latest version, false otherwise.
      */
     public boolean isLatestVersion(Context context, Item item) throws SQLException;
+
+    public void setMetadataInPlace(
+        Context context, Item item, String mdString, String lang, String value,
+        String authority, Integer place, Integer confidence
+    ) throws SQLException;
 }
