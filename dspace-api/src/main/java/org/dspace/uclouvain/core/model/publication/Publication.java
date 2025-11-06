@@ -31,10 +31,14 @@ public class Publication extends ItemModel {
             configService.getProperty(FIELD_PREFIX + "publication.authorName.field", "dc.contributor.author");
     public static final String AUTHOR_EMAIL_FIELD =
             configService.getProperty(FIELD_PREFIX + "publication.authorEmail.field", "authors.email");
+    public static final String AUTHOR_ORCID_FIELD =
+            configService.getProperty(FIELD_PREFIX + "publication.authorOrcid.field", "authors.identifier.orcid");
     public static final String AUTHOR_INSTITUTION_FIELD =
             configService.getProperty(FIELD_PREFIX + "publication.authorInstitution.field", "authors.institution.code");
     public static final String AUTHOR_ROLE_FIELD =
             configService.getProperty(FIELD_PREFIX + "publication.authorRole.field", "authors.role");
+    public static final String AUTHOR_FGS_FIELD =
+            configService.getProperty(FIELD_PREFIX + "publication.authorFgs.field", "authors.identifier.fgs");
 
     // CONSTRUCTOR =====================================================================================================
     public Publication(Item item) throws InvalidModelEntityTypeException {
@@ -60,6 +64,7 @@ public class Publication extends ItemModel {
                 .setEmail(itemService.getMetadata(item, AUTHOR_EMAIL_FIELD, mv.getPlace()))
                 .setInstitution(itemService.getMetadata(item, AUTHOR_INSTITUTION_FIELD, mv.getPlace()))
                 .setRole(itemService.getMetadata(item, AUTHOR_ROLE_FIELD, mv.getPlace()))
+                .setPlace(mv.getPlace())
             )
             .toList();
     }
@@ -75,5 +80,18 @@ public class Publication extends ItemModel {
             .stream()
             .filter(author -> roles.contains(author.getRole()))
             .toList();
+    }
+
+    /**
+     * Find an author based on its place in the authors of the publication.
+     * 
+     * @param place The place of the author to find.
+     * @return The author of the publication at the given place.
+     */
+    public PublicationAuthor getAuthor(int place) {
+        return getAuthors().stream()
+            .filter(author -> Objects.equals(author.getPlace(), place))
+            .findFirst()
+            .orElse(null);
     }
 }
