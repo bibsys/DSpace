@@ -48,6 +48,7 @@
     <bean id="uclouvainCitationsService" class="org.dspace.uclouvain.citations.UCLouvainCitationsServiceImpl"/>
     <bean id="journalService" class="org.dspace.uclouvain.services.impl.JournalServiceImpl" />
     <bean id="orgUnitService" class="org.dspace.uclouvain.services.impl.OrgUnitServiceImpl" />
+    <bean id="publicationService" class="org.dspace.uclouvain.services.impl.PublicationServiceImpl" />
     <bean id="uclouvainProfileService" class="org.dspace.uclouvain.services.UCLouvainProfileServiceImpl"/>
     <bean id="idmPersonValidityService" class="org.dspace.uclouvain.profileIngester.services.IDMPersonValidityServiceImpl"/>
 
