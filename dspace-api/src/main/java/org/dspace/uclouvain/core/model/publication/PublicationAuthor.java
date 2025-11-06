@@ -47,6 +47,7 @@ public class PublicationAuthor {
     private String email;
     private String institution;
     private String role;
+    private int place;
     private Map<String, String> identifiers = new HashMap<>();
     private Item researcherProfileAuthority;
 
@@ -94,6 +95,13 @@ public class PublicationAuthor {
     }
     public PublicationAuthor setRole(String role) {
         this.role = role;
+        return this;
+    }
+    public int getPlace() {
+        return place;
+    }
+    public PublicationAuthor setPlace(int place) {
+        this.place = place;
         return this;
     }
 
