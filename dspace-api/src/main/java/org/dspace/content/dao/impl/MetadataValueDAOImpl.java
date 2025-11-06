@@ -10,12 +10,17 @@ package org.dspace.content.dao.impl;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Root;
+import org.apache.commons.lang3.tuple.Pair;
+import org.dspace.content.DSpaceObject;
 import org.dspace.content.MetadataField;
 import org.dspace.content.MetadataField_;
 import org.dspace.content.MetadataValue;
@@ -54,6 +59,44 @@ public class MetadataValueDAOImpl extends AbstractHibernateDAO<MetadataValue> im
         Query query = createQuery(context, queryString);
         query.setParameter("metadata_authority", authority);
         return list(query);
+    }
+
+    /**
+     * Get all the items that are supposedly connected to the given metadata values.
+     * A match is processed using a 'OR' logic. If an item has at least one corresponding value from the given fields,
+     * it is considered matching and it will be returned.
+     * 
+     * @param context The current DSpace context.
+     * @param fieldsValues A map of each field to use to retrieve matching items.
+     * @param keepAuthorityLinked Whenever to get authority linked metadata values or not.
+     * False means only metadata values with no authority.
+     */
+    @Override
+    public List<Pair<DSpaceObject, Integer>> findByFieldAndValue(
+        Context context, Map<Integer, String> fieldsValues, boolean keepAuthorityLinked
+    ) throws SQLException, IllegalArgumentException {
+        if (fieldsValues.isEmpty()) {
+            throw new IllegalArgumentException("fieldsValues should have at least one value");
+        }
+        String metadataCondition = fieldsValues.entrySet()
+            .stream()
+            .map(entry -> String.format(
+                    "(mv.metadataField.id = %d and mv.value = '%s')",
+                    entry.getKey(), entry.getValue()
+                )
+            ).collect(Collectors.joining(" or "));
+        String metadataAuthority = keepAuthorityLinked ? "" : " and mv.authority is NULL";
+        String query = "SELECT DISTINCT mv.dSpaceObject, mv.place FROM MetadataValue mv WHERE (%s)%s".formatted(
+            metadataCondition,
+            metadataAuthority
+        );
+        // Use Tuples to return a List of Pairs.
+        return getHibernateSession(context)
+            .createQuery(query, Tuple.class)
+            .getResultList()
+            .stream()
+            .map(t -> Pair.of(t.get(0, DSpaceObject.class), t.get(1, Integer.class)))
+            .collect(Collectors.toList());
     }
 
     @Override
