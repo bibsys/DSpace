@@ -11,18 +11,22 @@ import static org.dspace.content.authority.Choices.CF_UNSET;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.dao.MetadataValueDAO;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.DSpaceObjectService;
+import org.dspace.content.service.MetadataFieldService;
 import org.dspace.content.service.MetadataValueService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
@@ -48,6 +52,8 @@ public class MetadataValueServiceImpl implements MetadataValueService {
     protected MetadataValueDAO metadataValueDAO;
     @Autowired(required = true)
     protected ContentServiceFactory contentServiceFactory;
+    @Autowired(required = true)
+    protected MetadataFieldService metadataFieldService;
 
     protected MetadataValueServiceImpl() {
 
@@ -97,6 +103,30 @@ public class MetadataValueServiceImpl implements MetadataValueService {
     public Iterator<MetadataValue> findByFieldAndValue(Context context, MetadataField metadataField, String value)
             throws SQLException {
         return metadataValueDAO.findItemValuesByFieldAndValue(context, metadataField, value);
+    }
+
+    @Override
+    public List<Pair<DSpaceObject, Integer>> findByFieldAndValue(
+        Context context, Map<String, String> fieldsValues, boolean keepAuthorityLinked
+    ) throws SQLException, IllegalArgumentException {
+        Map<Integer, String> fieldsMap = new HashMap<>();
+        // Convert each metadata field string into the corresponding metadata field id.
+        for (Map.Entry<String, String> entry : fieldsValues.entrySet()) {
+            MetadataField metadataField = metadataFieldService.findByString(context, entry.getKey(), '.');
+            if (metadataField != null) {
+                fieldsMap.put(
+                    metadataField.getID(),
+                    entry.getValue()
+                );
+            } else {
+                log.error(String.format(
+                    "Could not find specified metadata field [%s]",
+                    entry.getKey()
+                ));
+            }
+
+        }
+        return metadataValueDAO.findByFieldAndValue(context, fieldsMap, keepAuthorityLinked);
     }
 
     @Override

@@ -127,4 +127,12 @@ public interface ResearcherProfileService {
     String getProfileType();
 
     boolean isAuthorOf(Context context, EPerson ePerson, Item item);
+
+    /**
+     * Retrieve a map of identifiers for the given profile.
+     * The key of the map is the metadata field string and the value is the value of the identifier.
+     * @param profile The profile to generate a map for.
+     * @return A map containing the identifiers of the given profile.
+     */
+    public Map<String, String> getAuthorsIdentifiers(ResearcherProfile profile);
 }
