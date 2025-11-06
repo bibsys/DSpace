@@ -16,6 +16,7 @@ import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.OrgUnitService;
+import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
@@ -53,6 +54,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private JournalService journalService;
     @Autowired
     private OrgUnitService orgUnitService;
+    @Autowired
+    private PublicationService publicationService;
     @Autowired
     private IDMPersonValidityService idmPersonValidityService;
 
@@ -102,6 +105,10 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public OrgUnitService getOrgUnitService() {
         return orgUnitService;
+    }
+    @Override
+    public PublicationService getPublicationService() {
+        return publicationService;
     }
     @Override
     public IDMPersonValidityService getIDMPersonValidityService() {

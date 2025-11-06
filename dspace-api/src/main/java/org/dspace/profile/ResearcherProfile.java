@@ -31,6 +31,8 @@ public class ResearcherProfile {
 
     private final MetadataValue dspaceObjectOwner;
 
+    public static final String ENTITY_TYPE = "Person";
+
     /**
      * Create a new ResearcherProfile object from the given item.
      *
@@ -39,9 +41,21 @@ public class ResearcherProfile {
      *                                  metadata with a valid authority
      */
     public ResearcherProfile(Item item) {
+        this(item, true);
+    }
+
+    /**
+     * Create a new ResearcherProfile object from the given item.
+     *
+     * @param item The item to use as profile
+     * @param hasOwner Whenever to assign an owner to the profile item.
+     * @throws IllegalArgumentException if the given item has no dspace.object.owner
+     *                                  metadata with a valid authority
+     */
+    public ResearcherProfile(Item item, boolean hasOwner) {
         Assert.notNull(item, "A researcher profile requires an item");
         this.item = item;
-        this.dspaceObjectOwner = getDspaceObjectOwnerMetadata(item);
+        this.dspaceObjectOwner = hasOwner ? getDspaceObjectOwnerMetadata(item) : null;
     }
 
     public UUID getId() {
@@ -63,9 +77,29 @@ public class ResearcherProfile {
         return item;
     }
 
+    public Optional<String> getName() {
+        return getMetadataValue(item, "dc.title")
+            .map(MetadataValue::getValue);
+    }
+
     public Optional<String> getOrcid() {
         return getMetadataValue(item, "person.identifier.orcid")
-            .map(metadataValue -> metadataValue.getValue());
+            .map(MetadataValue::getValue);
+    }
+
+    public Optional<String> getFGS() {
+        return getMetadataValue(item, "person.identifier.fgs")
+            .map(MetadataValue::getValue);
+    }
+
+    public Optional<String> getEmail() {
+        return getMetadataValue(item, "person.email.official")
+            .map(MetadataValue::getValue);
+    }
+
+    public Optional<String> getInstitution() {
+        return getMetadataValue(item, "person.affiliation.institution")
+            .map(MetadataValue::getValue);
     }
 
     private MetadataValue getDspaceObjectOwnerMetadata(Item item) {

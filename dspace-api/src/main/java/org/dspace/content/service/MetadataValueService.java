@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.MetadataField;
@@ -96,6 +98,20 @@ public interface MetadataValueService {
      */
     public Iterator<MetadataValue> findByFieldAndValue(Context context, MetadataField metadataField, String value)
             throws SQLException;
+
+    /**
+     * Find matching dspace object for a given map of metadata field and value.
+     * 
+     * @param context The current DSpace context.
+     * @param fieldsValues The map of field ids and values.
+     * @param keepAuthorityLinked Whenever to keep or not the metadata values that already have an authority.
+     * @return A list of matching pairs of DSpace Object and place.
+     * @throws SQLException
+     * @throws IllegalArgumentException
+     */
+    public List<Pair<DSpaceObject, Integer>> findByFieldAndValue(
+        Context context, Map<String, String> fieldsValues, boolean keepAuthorityLinked
+    ) throws SQLException, IllegalArgumentException;
 
     /**
      * Update the metadata value in the database.
