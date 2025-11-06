@@ -54,7 +54,6 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
         }
         if (institution != null) {
             extras.put("data-authors_institution_code", institution);
-            extras.put("authority-authors_institution_code", item.getID().toString());
         }
 
         return extras;
