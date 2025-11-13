@@ -39,4 +39,13 @@ public interface JournalService {
      * @return the corresponding journal; `null` if the journal is not found
      */
     Journal findByEissn(Context context, String eissn);
+
+    /**
+     * Find a journal using the provided identifiers.
+     * @param context The current DSpace context.
+     * @param issn The issn of the journal to find.
+     * @param eissn The eissn of the journal to find.
+     * @return A journal matching one of the given identifiers.
+     */
+    Journal findByIdentifiers(Context context, String issn, String eissn);
 }
