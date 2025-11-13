@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.administer;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 import java.io.FileReader;
@@ -149,9 +150,14 @@ public class JournalCSVImporter extends AbstractCLICommand {
         context.setCurrentUser(person);
 
         for (JournalData journal : journalsData) {
-            Journal existingJournal = journalService.findByIssn(context, journal.issn);
+            if (isEmpty(journal.issn) && isEmpty(journal.eissn)) {
+                System.out.println("Journal " + journal + " has no identifiers, skipping...");
+                continue;
+            }
+            // Check if a journal already exists using identifiers.
+            Journal existingJournal = journalService.findByIdentifiers(context, journal.issn, journal.eissn);
             if (existingJournal != null) {
-                System.out.println("Journal ISSN '" + journal.issn + "' already existing, skipping creation...");
+                System.out.println("Journal %s already exists, skipping creation...".formatted(journal));
                 continue;
             }
             createEntity(parentCollection, journal);
@@ -185,7 +191,7 @@ public class JournalCSVImporter extends AbstractCLICommand {
         PackageUtils.updateDSpaceObject(context, item);
         // Commit the changes in database.
         context.commit();
-        System.out.println("Created a journal for issn " + journalData.issn);
+        System.out.println("Created journal item for " + journalData);
     }
 
     /**
@@ -286,6 +292,10 @@ public class JournalCSVImporter extends AbstractCLICommand {
 
         public void setStatusCode(String statusCode) {
             this.statusCode = statusCode.toLowerCase();
+        }
+
+        public String toString() {
+            return "'%s', issn: %s, e-issn: %s".formatted(title, issn, eissn);
         }
     }
 }

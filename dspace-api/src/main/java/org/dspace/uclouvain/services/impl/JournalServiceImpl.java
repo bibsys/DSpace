@@ -7,7 +7,11 @@
  */
 package org.dspace.uclouvain.services.impl;
 
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
+
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.dspace.content.Item;
 import org.dspace.core.Context;
@@ -37,6 +41,19 @@ public class JournalServiceImpl implements JournalService {
     @Override
     public Journal findByEissn(Context context, String eissn) {
         return searchByQuery(context, "%s:\"%s\"".formatted(Journal.EISSN_FIELD, eissn));
+    }
+    @Override
+    public Journal findByIdentifiers(Context context, String issn, String eissn) {
+        String query = Stream.of(
+            isNotEmpty(issn) ? "%s: \"%s\"".formatted(Journal.ISSN_FIELD, issn) : null,
+            isNotEmpty(eissn) ? "%s: \"%s\"".formatted(Journal.EISSN_FIELD, eissn) : null
+        ).filter(Objects::nonNull).collect(Collectors.joining(" OR "));
+
+        if (query.isEmpty()) {
+            throw new IllegalArgumentException("At least one identifier should be provided to search for journals");
+        }
+
+        return searchByQuery(context, query);
     }
     @Override
     public Journal findByTitle(Context context, String journalTitle) {
