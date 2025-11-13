@@ -2243,7 +2243,6 @@
           <label>ISSN</label>
           <input-type>onebox</input-type>
           <hint />
-          <required>You have to enter an ISSN for this journal.</required>
           <regex>^\d{4}-\d{3}[\dX]$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISSN format</setting>
@@ -2259,7 +2258,6 @@
           <label>eISSN</label>
           <input-type>onebox</input-type>
           <hint />
-          <required />
           <regex>^\d{4}-\d{3}[\dX]$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid eISSN format</setting>
