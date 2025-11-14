@@ -608,6 +608,10 @@
         <element>idm</element>
         <qualifier>id</qualifier>
     </dc-type>
+    <dc-type>
+        <schema>eperson</schema>
+        <element>affiliation</element>
+    </dc-type>
     <!-- JOURNAL SCHEMA -->
     <dc-schema>
         <name>journal</name>
