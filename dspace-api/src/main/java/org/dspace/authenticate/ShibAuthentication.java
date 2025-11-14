@@ -808,6 +808,7 @@ public class ShibAuthentication implements AuthenticationMethod {
         String lnameHeader = configurationService.getProperty("authentication-shibboleth.lastname-header");
         String fgsHeader = configurationService.getProperty("authentication-shibboleth.fgs-header");
         String idmIdHeader = configurationService.getProperty("authentication-shibboleth.idm-id-header");
+        String ouHeader = configurationService.getProperty("authentication-shibboleth.ou-header");
 
         String netid = findSingleAttribute(request, netidHeader);
         String email = findSingleAttribute(request, emailHeader);
@@ -815,6 +816,7 @@ public class ShibAuthentication implements AuthenticationMethod {
         String lname = findSingleAttribute(request, lnameHeader);
         String fgs = findSingleAttribute(request, fgsHeader);
         List<String> idmIds = findMultipleAttributes(request, idmIdHeader);
+        List<String> affiliations = findMultipleAttributes(request, ouHeader);
 
         // Truncate values of parameters that are too big.
         if (fname != null && fname.length() > NAME_MAX_SIZE) {
@@ -865,9 +867,28 @@ public class ShibAuthentication implements AuthenticationMethod {
                         context, eperson, "eperson", "idm", "id", null, idmId.toString()
                     );
                 } catch (SQLException e) {
-                    log.warn("Could not set idm id of person: " + idmId);
+                    log.warn("Could not set idm id of person %s : '%s'".formatted(netid, idmId));
                 }
             });
+        }
+
+        // Update affiliations values.
+        List<MetadataValue> existingAffiliations =
+            ePersonService.getMetadata(eperson, "eperson", "affiliation", null, null);
+        if (!existingAffiliations.isEmpty()) {
+            ePersonService.removeMetadataValues(context, eperson, existingAffiliations);
+        }
+
+        if (affiliations != null && !affiliations.isEmpty()) {
+            for (String affiliation : affiliations) {
+                try {
+                    ePersonService.addMetadata(
+                        context, eperson, "eperson", "affiliation", null, null, affiliation
+                    );
+                } catch (SQLException e) {
+                    log.warn("Could not set affiliation of person %s : '%s'".formatted(netid, affiliation));
+                }
+            }
         }
 
         if (log.isDebugEnabled()) {

@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.services;
 
+import static org.dspace.content.authority.Choices.CF_ACCEPTED;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -17,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
 import org.dspace.content.WorkspaceItem;
 import org.dspace.content.service.CollectionService;
 import org.dspace.content.service.InstallItemService;
@@ -32,6 +35,7 @@ import org.dspace.discovery.indexobject.IndexableWorkflowItem;
 import org.dspace.discovery.indexobject.IndexableWorkspaceItem;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -58,6 +62,8 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
     private EPersonService ePersonService;
     @Autowired
     private IDMPersonValidityService idmService;
+    @Autowired
+    private OrgUnitService orgUnitService;
 
     private static final String PROFILE_ENTITY_TYPE = "Person";
 
@@ -131,6 +137,28 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
         if (StringUtils.isNotBlank(fullName)) {
             itemService.addSecuredMetadata(context, profile, "crisrp", "name", null, null, fullName, null, 0, 1);
             itemService.addSecuredMetadata(context, profile, "dc", "title", null, null, fullName, null, 0, 0);
+        }
+
+        List<String> affiliations = ePersonService.getMetadata(person, "eperson", "affiliation", null, null)
+            .stream()
+            .map(MetadataValue::getValue)
+            .collect(Collectors.toList());
+        if (affiliations != null) {
+            // Try to find a matching affiliation item for the affiliations stored in the person.
+            OrgUnit mainAffiliation = orgUnitService.findFirstByName(context, affiliations);
+            if (mainAffiliation != null) {
+                itemService.addMetadata(
+                    context, profile,
+                    "person", "affiliation", "department",
+                    null, mainAffiliation.getTitle(), mainAffiliation.getID().toString(), CF_ACCEPTED
+                );
+                OrgUnit institution = mainAffiliation.getParentUniversity();
+                itemService.addMetadata(
+                    context, profile,
+                    "person", "affiliation", "institution",
+                    null, institution.getAcronym(), institution.getID().toString(), CF_ACCEPTED
+                );
+            }
         }
         return profile;
     }
