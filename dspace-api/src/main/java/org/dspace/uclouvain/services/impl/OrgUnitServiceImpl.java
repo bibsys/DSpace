@@ -8,8 +8,10 @@
 package org.dspace.uclouvain.services.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.Item;
@@ -91,5 +93,35 @@ public class OrgUnitServiceImpl implements OrgUnitService {
         } catch (Exception ignored) {
             return null;
         }
+    }
+
+    public List<OrgUnit> findByName(Context context, List<String> affiliations) {
+        // We have a list of strings that represent affiliations:
+        // - ex: ["SSS/SIONS", "SSS/IONS/CEMO", "SSS/MEDE", "StLuc"]
+        // We want to split each string based on the '/' character, so we will have a list of arrays.
+        // Then get the largest list (beginning with size 3) and see if we can find a matching OrgUnit acronym.
+        return affiliations.stream()
+            .map(aff -> List.of(aff.split("/")))
+            .flatMap(parts -> Stream.of(3, 2)
+                .filter(i -> parts.size() >= i)
+                .map(i -> String.join("/", parts.subList(0, i))))
+            .sorted(Comparator.comparingInt(this::getAffiliationLevel).reversed())
+            .map(name -> findByName(context, null, null, name, null))
+            .filter(Objects::nonNull)
+            .toList();
+    }
+
+    public OrgUnit findFirstByName(Context context, List<String> affiliations) {
+        return findByName(context, affiliations).stream().findFirst().orElse(null);
+    }
+
+    /**
+     * Get the level of a specific affiliation, based on the number of '/' in the string.
+     * @param affiliation The affiliation to process the level of.
+     * @return The level of the affiliation.
+     */
+    private int getAffiliationLevel(String affiliation) {
+        // Subtract the length of the string to the length of the string without slashes.
+        return affiliation.length() - affiliation.replace("/", "").length();
     }
 }
