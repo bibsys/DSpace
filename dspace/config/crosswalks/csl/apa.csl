@@ -41,6 +41,8 @@
         <single>issue</single>
         <multiple>issues</multiple>
       </term>
+      <!-- This fixes a crash when generating citation for a publication with page information -->
+      <term name="page-range-delimiter" form="long">-</term>
     </terms>
   </locale>
   <locale xml:lang="af">
