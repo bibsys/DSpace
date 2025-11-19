@@ -123,7 +123,7 @@
     <layout>
       <choose>
         <if type="book">
-          <text macro="book" />
+          <text macro="book"/>
         </if>
         <else-if type="chapter">
           <text macro="book-part"/>
