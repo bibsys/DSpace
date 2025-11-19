@@ -14,7 +14,6 @@
     <property name="ISBN" value="dc.identifier.isbn"/>
     <property name="ISSN" value="dc.identifier.issn"/>
     <property name="keyword" value="dc.subject"/>
-    <property name="publisher" value="dc.publisher"/>
     <property name="volume" value="oaire.citation.volume"/>
     <property name="issue" value="oaire.citation.issue"/>
     <property name="event" value="dc.relation.conference"/>
@@ -23,12 +22,16 @@
     <property name="issued" value="dc.date.issued"/>
     <property name="author" value="dc.contributor.author"/>
     <property name="editor" value="dc.contributor.editor"/>
+    <property name="publisher" value="publication.editor.name"/>
+    <property name="publisherPlace" value="publication.editor.location"/>
 
     <property name="numberOfPages" value="publication.numberOfPages" />
     <property name="status" value="publication.publicationStatus"/>
     <property name="containerTitle" value="publication.host.title"/>
     <property name="page" value="publication.host.pages"/>
     <property name="eventPlace" value="publication.conference.location"/>
+    <property name="collectionTitle" value="publication.collection.name"/>
+    <property name="collectionNumber" value="publication.collection.number"/>
     <!-- TODO: See how to deal with event start and end date -->
     <!-- <property name="eventDate" value=""/> -->
 
