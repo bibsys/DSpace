@@ -29,6 +29,12 @@
                 <ref bean="publicationAuthorEmailEnhancer"/>
                 <ref bean="publicationAuthorORCIDEnhancer"/>
                 <ref bean="publicationAuthorFGSEnhancer"/>
+                <ref bean="publicationAuthorInstitutionNameEnhancer"/>
+                <ref bean="publicationAdvisorNameEnhancer"/>
+                <ref bean="publicationAdvisorEmailEnhancer"/>
+                <ref bean="publicationAdvisorORCIDEnhancer"/>
+                <ref bean="publicationAdvisorFGSEnhancer"/>
+                <ref bean="publicationAdvisorInstitutionNameEnhancer"/>
                 <ref bean="publicationInstitutionEnhancer"/>
                 <ref bean="publicationDepartmentEnhancer"/>
                 <ref bean="publicationJournalTitleEnhancer"/>
@@ -97,6 +103,90 @@
         <property name="targetMetadataFields">
             <util:list>
                 <value>authors.identifier.fgs</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAuthorInstitutionNameEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.affiliation.institution</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>authors.institution.code</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAdvisorNameEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>dc.title</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>dc.contributor.advisor</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAdvisorEmailEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.email.official</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>advisors.email</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAdvisorORCIDEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.identifier.orcid</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>advisors.identifier.orcid</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAdvisorFGSEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.identifier.fgs</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>advisors.identifier.fgs</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean name="publicationAdvisorInstitutionNameEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
+        <property name="sourceEntityType" value="Person"/>
+        <property name="sourceMetadataFields">
+            <util:list>
+                <value>person.affiliation.institution</value>
+            </util:list>
+        </property>
+        <property name="targetEntityType" value="Publication"/>
+        <property name="targetMetadataFields">
+            <util:list>
+                <value>advisors.institution.code</value>
             </util:list>
         </property>
     </bean>
