@@ -217,6 +217,35 @@
                 <xsl:with-param name="value" select="./mods:nameIdentifier[@type='email']"/>
             </xsl:call-template>
         </xsl:element>
+        <!-- supervisor-orcid-id ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">advisors</xsl:attribute>
+            <xsl:attribute name="element">identifier</xsl:attribute>
+            <xsl:attribute name="qualifier">orcid</xsl:attribute>
+            <xsl:apply-templates select="@authority"/>
+            <xsl:call-template name="valueOrDefault">
+                <xsl:with-param name="value" select="substring-after(./mods:nameIdentifier[@type='orcid'], '.org/')"/>
+            </xsl:call-template>
+        </xsl:element>
+        <!-- supervisor-fgs-id ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">advisors</xsl:attribute>
+            <xsl:attribute name="element">identifier</xsl:attribute>
+            <xsl:attribute name="qualifier">fgs</xsl:attribute>
+            <xsl:apply-templates select="@authority"/>
+            <xsl:call-template name="valueOrDefault">
+                <xsl:with-param name="value" select="./mods:nameIdentifier[@type='fgs']"/>
+            </xsl:call-template>
+        </xsl:element>
+        <!-- supervisor-institution ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">advisors</xsl:attribute>
+            <xsl:attribute name="element">institution</xsl:attribute>
+            <xsl:attribute name="qualifier">code</xsl:attribute>
+            <xsl:call-template name="valueOrDefault">
+                <xsl:with-param name="value" select="./mods:affiliation"/>
+            </xsl:call-template>
+        </xsl:element>
     </xsl:template>
     <xsl:template match="/mods:mods/mods:name/mods:etal">
         <xsl:element name="dim:field">
