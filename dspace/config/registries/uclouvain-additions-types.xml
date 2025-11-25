@@ -139,12 +139,6 @@
     <dc-type>
         <schema>authors</schema>
         <element>identifier</element>
-        <qualifier>noma</qualifier>
-        <scope_note>UCLouvain specific student ID</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>authors</schema>
-        <element>identifier</element>
         <qualifier>orcid</qualifier>
         <scope_note>Orcid ID</scope_note>
     </dc-type>
@@ -181,8 +175,20 @@
     <dc-type>
         <schema>advisors</schema>
         <element>institution</element>
-        <qualifier/>
+        <qualifier>code</qualifier>
         <scope_note>Supervisor's institution</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>identifier</element>
+        <qualifier>fgs</qualifier>
+        <scope_note>UCLouvain global ID (aka FGS number)</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>advisors</schema>
+        <element>identifier</element>
+        <qualifier>orcid</qualifier>
+        <scope_note>Orcid ID</scope_note>
     </dc-type>
     <!-- FEDORA SCHEMA -->
     <dc-schema>
