@@ -10,9 +10,14 @@ package org.dspace.uclouvain.authority;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataValue;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.MetadataFieldService;
 
 /**
  * Simple authority to search for Persons.
@@ -20,62 +25,23 @@ import org.dspace.content.Item;
  * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class PublicationAuthorAuthority extends PublicationAuthority {
-    private String authorityName;
 
-    /**
-     * The filter query that will give us only Persons item in the search results.
-     */
+    protected static final String DATA_PREFIX = "data-";
+    protected static final String AUTHORITY_PREFIX = "authority-";
+
+
+    // CLASS ATTRIBUTES ================================================================================================
+    protected String authorityName;
+    protected MetadataFieldService metadataFieldService = ContentServiceFactory.getInstance().getMetadataFieldService();
+
+    // IMPLEMENTED ABSTRACT METHODS ====================================================================================
+    /** The filter query that will give us only Persons item in the search results. */
     @Override
     protected String getEntityTypeFilterString() {
         return "dspace.entity.type:Person";
     }
 
-    /**
-     * Generate extra information to fill some fields in the forms.
-     */
     @Override
-    protected Map<String, String> generateExtras(Item item) throws SQLException {
-        Map<String, String> extras = new HashMap<String, String>();
-        String email = this.itemService.getMetadataFirstValue(item, "person", "email", "official", null);
-        String orcid = this.itemService.getMetadataFirstValue(item, "person", "identifier", "orcid", null);
-        String institution = this.itemService.getMetadataFirstValue(item, "person", "affiliation", "institution", null);
-
-        extras.put("data-authors_email", "");
-        extras.put("data-authors_identifier_orcid", "");
-        extras.put("data-authors_institution_code", "");
-
-        if (email != null) {
-            extras.put("data-authors_email", email);
-            extras.put("authority-authors_email", item.getID().toString());
-        }
-        if (orcid != null) {
-            extras.put("data-authors_identifier_orcid", orcid);
-            extras.put("authority-authors_identifier_orcid", item.getID().toString());
-        }
-        if (institution != null) {
-            extras.put("data-authors_institution_code", institution);
-        }
-
-        return extras;
-    }
-
-    @Override
-    public String getLabel(String key, String locale) {
-        try {
-            Item person = this.itemService.find(getContext(), UUID.fromString(key));
-            if (person != null) {
-                String name =  this.itemService.getMetadataFirstValue(person, "dc", "title", null, null);
-                if (name != null) {
-                    return name;
-                }
-            }
-            return key;
-        } catch (SQLException e) {
-            return key;
-        }
-
-    }
-
     public void setPluginInstanceName(String name) {
         authorityName = name;
     }
@@ -83,5 +49,92 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
     @Override
     public String getPluginInstanceName() {
         return authorityName;
+    }
+
+    /** Generate extra information to fill some fields in the forms. */
+    @Override
+    protected Map<String, String> generateExtras(Item item) {
+        Map<String, String> extras = new HashMap<>();
+        fillMetadata(
+            extras,
+            item,
+            "uclouvain.global.metadata.person.emailOfficial.field",
+            "authors_email",
+            true
+        );
+        fillMetadata(
+            extras,
+            item,
+            "uclouvain.global.metadata.person.OrcidID.field",
+            "authors_identifier_orcid",
+            true
+        );
+        fillMetadata(
+            extras,
+            item,
+            "uclouvain.global.metadata.person.institutionalID.field",
+            "authors_identifier_fgs",
+            true
+        );
+        fillMetadata(
+            extras,
+            item,
+            "uclouvain.global.metadata.person.institutionName.field",
+            "authors_institution_code",
+            true
+        );
+        return extras;
+    }
+
+    /**
+     * Get main label for the authority
+     * @param key the UUID of the authority
+     * @param locale the local language to translate the found value
+     * @return the localized main label to use for this authority.
+     */
+    @Override
+    public String getLabel(String key, String locale) {
+        try {
+            Item person = itemService.find(getContext(), UUID.fromString(key));
+            return Optional.ofNullable(person)
+                .map(item -> itemService.getMetadataFirstValue(item, "dc", "title", null, null))
+                .filter(name -> !name.isBlank())
+                .orElse(key);
+        } catch (IllegalArgumentException | SQLException e) {
+            return key;
+        }
+    }
+
+    // PRIVATE METHODS =================================================================================================
+    /**
+     * Fill the extras map with additional value (and authority)
+     *   If the desired metadata isn't found into the item, the map will fill with an empty string.
+     *   Using this trick, the frontend form could be empty from a potential previous encoded value
+     * @param extras the map to fill if any value is found
+     * @param item the item to search for
+     * @param configKey the configuration key containing the mdString where to search the metadata value
+     * @param mapKey the map key in which to store the metadata value (if any metadata value is found)
+     * @param authorityLinked if this key must be linked to the item by authority
+     */
+    protected void fillMetadata(
+        Map<String, String> extras,
+        Item item,
+        String configKey,
+        String mapKey,
+        boolean authorityLinked
+    ) {
+        String mdString = configurationService.getProperty(configKey);
+        if (mdString == null) {
+            return;
+        }
+        String value = itemService.getMetadataByMetadataString(item, mdString)
+            .stream()
+            .findFirst()
+            .map(MetadataValue::getValue)
+            .orElse("");
+        extras.put(DATA_PREFIX + mapKey, value);
+        if (StringUtils.isNotBlank(value) && authorityLinked) {
+            extras.put(AUTHORITY_PREFIX + mapKey, item.getID().toString());
+        }
     }
 }

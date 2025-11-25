@@ -7,7 +7,6 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
-          <repeatable>false</repeatable>
           <label>Enter the name of the file</label>
           <input-type>onebox</input-type>
           <hint />
@@ -18,7 +17,6 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
-          <repeatable>false</repeatable>
           <label>Description of the file</label>
           <input-type>textarea</input-type>
           <hint>You can enter a description for this file or a specific version comment ('preprint', 'postprint'...).</hint>
@@ -29,7 +27,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>rights</dc-element>
           <dc-qualifier>license</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>If applicable, select a creative commons license to apply to the file</label>
           <input-type value-pairs-name="bitstream_licenses">dropdown</input-type>
           <hint>License type: CC-BY, CC-BY-SA...</hint>
@@ -42,7 +39,6 @@
           <dc-element>type</dc-element>
           <label>File type</label>
           <input-type value-pairs-name="bitstream_types">dropdown</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint>Personal picture, logo, main article, etc.</hint>
         </field>
@@ -53,7 +49,6 @@
           <dc-element>hide</dc-element>
           <label>Hide file</label>
           <input-type value-pairs-name="truefalse">dropdown</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -68,7 +63,6 @@
           <dc-qualifier>role</dc-qualifier>
           <label>Role</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -79,7 +73,6 @@
           <dc-qualifier>affiliation</dc-qualifier>
           <label>Organisation name</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required>You must enter at least the organisation of your affiliation.</required>
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -90,7 +83,6 @@
           <dc-qualifier>startDate</dc-qualifier>
           <label>Start Date</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -101,7 +93,6 @@
           <dc-qualifier>endDate</dc-qualifier>
           <label>End Date</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -115,7 +106,6 @@
           <dc-element>qualification</dc-element>
           <label>Organisation name</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required>You must enter the organisation</required>
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -126,7 +116,6 @@
           <dc-qualifier>role</dc-qualifier>
           <label>Qualification Title</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required>You must enter the qualification title.</required>
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -137,7 +126,6 @@
           <dc-qualifier>start</dc-qualifier>
           <label>Start Date</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -148,7 +136,6 @@
           <dc-qualifier>end</dc-qualifier>
           <label>End Date</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -163,7 +150,6 @@
           <dc-qualifier>role</dc-qualifier>
           <label>Degree/Title</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required>You must enter the degree/title</required>
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -173,7 +159,6 @@
           <dc-element>education</dc-element>
           <label>Organisation name</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required>You must enter the organisation</required>
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -184,7 +169,6 @@
           <dc-qualifier>start</dc-qualifier>
           <label>Start Date</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -195,7 +179,6 @@
           <dc-qualifier>end</dc-qualifier>
           <label>End Date</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <style>col-xs-12 col-md-6 col-lg-3</style>
           <hint />
@@ -208,7 +191,6 @@
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>institution</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
@@ -219,7 +201,6 @@
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>department</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
@@ -235,7 +216,6 @@
           <dc-element>title</dc-element>
           <label>Preferred Name</label>
           <input-type>name</input-type>
-          <repeatable>false</repeatable>
           <required>You must enter least at the Surname.</required>
           <hint />
         </field>
@@ -246,7 +226,6 @@
           <dc-element>name</dc-element>
           <label>Official name</label>
           <input-type>name</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
           <readonly>all</readonly>
@@ -259,7 +238,6 @@
           <dc-qualifier>translated</dc-qualifier>
           <label>Vernacular Name</label>
           <input-type>name</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -282,7 +260,6 @@
           <dc-element>givenName</dc-element>
           <label>First name</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -291,7 +268,6 @@
           <dc-element>familyName</dc-element>
           <label>Family name</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -302,7 +278,6 @@
           <dc-element>birthDate</dc-element>
           <label>Birth Date</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -312,7 +287,6 @@
           <dc-qualifier>gender</dc-qualifier>
           <label>Gender</label>
           <input-type value-pairs-name="gender">dropdown</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -323,7 +297,6 @@
           <dc-element>jobTitle</dc-element>
           <label>Job Title</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -342,7 +315,6 @@
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>institution</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
@@ -353,7 +325,6 @@
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>department</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
@@ -389,7 +360,6 @@
           <dc-schema>person</dc-schema>
           <dc-element>email</dc-element>
           <dc-qualifier>official</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Official email</label>
           <input-type>onebox</input-type>
           <hint>This is your official email, it cannot be changed and it will be used has a reference email in your publications.</hint>
@@ -401,7 +371,6 @@
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>email</dc-element>
-          <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
           <hint>This is your personal email, it can be used to contact you if your official email is not valid anymore.</hint>
@@ -439,7 +408,6 @@
           <dc-qualifier>orcid</dc-qualifier>
           <label>ORCID</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint>Settable by connecting the entity with ORCID</hint>
           <readonly>all</readonly>
@@ -488,7 +456,6 @@
           <dc-qualifier>abstract</dc-qualifier>
           <label>Biography</label>
           <input-type>textarea</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -510,7 +477,6 @@
           <dc-element>country</dc-element>
           <label>Country</label>
           <input-type value-pairs-name="common_iso_countries">dropdown</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -544,7 +510,6 @@
           <dc-qualifier>eperson</dc-qualifier>
           <label>Eperson Policy</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -556,7 +521,6 @@
           <dc-qualifier>group</dc-qualifier>
           <label>Group Policy</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -569,7 +533,6 @@
           <dc-element>title</dc-element>
           <label>Organization name</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required>You must enter the oganization name.</required>
           <hint />
         </field>
@@ -580,7 +543,6 @@
           <dc-element>acronym</dc-element>
           <label>Acronym or short form of title</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -613,7 +575,6 @@
           <dc-element>parentOrganization</dc-element>
           <label>Parent Organisation</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -624,7 +585,6 @@
           <dc-element>director</dc-element>
           <label>Director</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -635,7 +595,6 @@
           <dc-element>foundingDate</dc-element>
           <label>Established</label>
           <input-type>date</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -681,7 +640,6 @@
           <dc-qualifier>abstract</dc-qualifier>
           <label>Description for OrgUnit</label>
           <input-type>textarea</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -693,7 +651,6 @@
           <dc-qualifier>addressLocality</dc-qualifier>
           <label>City</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -703,7 +660,6 @@
           <dc-qualifier>addressCountry</dc-qualifier>
           <label>Country</label>
           <input-type value-pairs-name="common_iso_countries">dropdown</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -714,7 +670,6 @@
           <dc-element>type</dc-element>
           <label>Type</label>
           <input-type value-pairs-name="orgunit_types">dropdown</input-type>
-          <repeatable>false</repeatable>
           <required>You must specify the organisation type</required>
           <hint />
         </field>
@@ -728,7 +683,6 @@
           <dc-qualifier>owner</dc-qualifier>
           <label>Owner</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
           <required />
           <hint />
         </field>
@@ -741,7 +695,6 @@
         <field>
           <dc-schema>funding</dc-schema>
           <dc-element>organization</dc-element>
-          <repeatable>false</repeatable>
           <label>Organization name</label>
           <input-type>onebox</input-type>
           <hint>Enter the funding organization name.</hint>
@@ -783,7 +736,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
           <dc-qualifier>maintype</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Document type</label>
           <input-type value-pairs-name="publication_maintypes">dropdown</input-type>
           <hint>Select the type(s) of content of the document.</hint>
@@ -795,7 +747,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type value-pairs-name="publication_subtypes_book">dropdown</input-type>
@@ -808,7 +759,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_subtypes_bookchapter">dropdown</input-type>
@@ -821,7 +771,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_subtypes_speech">dropdown</input-type>
@@ -834,7 +783,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type value-pairs-name="publication_subtypes_article">dropdown</input-type>
@@ -847,7 +795,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>type</dc-element>
           <dc-qualifier>subtype</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type value-pairs-name="publication_subtypes_report">dropdown</input-type>
@@ -918,16 +865,14 @@
           <dc-qualifier>author</dc-qualifier>
           <label>Author</label>
           <input-type>onebox</input-type>
-          <repeatable>false</repeatable>
-          <required>You must enter at least the author.</required>
           <hint>Enter the names of the authors of this document in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+          <required>You must enter at least the author.</required>
         </field>
       </row>
       <row>
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>email</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's email</label>
           <input-type>onebox</input-type>
           <hint>Enter the email of the author.</hint>
@@ -943,7 +888,6 @@
           <dc-schema>authors</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>orcid</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Author's ORCID</label>
           <style>col-12</style>
           <input-type>onebox</input-type>
@@ -954,7 +898,6 @@
           <dc-schema>authors</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>fgs</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Author's ORCID</label>
           <input-type>hidden</input-type>
           <hint>The institutional ID of the selected author.</hint>
@@ -966,7 +909,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>role</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type value-pairs-name="publication_roles_journal_article">dropdown</input-type>
@@ -978,7 +920,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>role</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_roles_conference_speech">dropdown</input-type>
@@ -990,7 +931,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>role</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type value-pairs-name="publication_roles_book">dropdown</input-type>
@@ -1002,7 +942,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>role</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_roles_book_chapter">dropdown</input-type>
@@ -1014,7 +953,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>role</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::working-paper</type-bind>
           <input-type value-pairs-name="publication_roles_working_paper">dropdown</input-type>
@@ -1026,7 +964,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>role</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type value-pairs-name="publication_roles_report">dropdown</input-type>
@@ -1038,7 +975,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>role</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type value-pairs-name="publication_roles_patent">dropdown</input-type>
@@ -1051,7 +987,6 @@
           <dc-schema>authors</dc-schema>
           <dc-element>institution</dc-element>
           <dc-qualifier>code</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Author's Institution</label>
           <input-type>onebox</input-type>
           <hint>Enter the institution name of the author</hint>
@@ -1064,7 +999,6 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunit</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
@@ -1075,7 +1009,6 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunitDepartment</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
@@ -1105,7 +1038,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>contributor</dc-element>
           <dc-qualifier>etal</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>et.al</label>
           <style>mt-2 border-top w-100 pt-2</style>
           <input-type>checkbox</input-type>
@@ -1121,7 +1053,6 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
-          <repeatable>false</repeatable>
           <label>Title</label>
           <input-type>onebox</input-type>
           <hint>Enter the main title of the document.</hint>
@@ -1133,7 +1064,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>date</dc-element>
           <dc-qualifier>issued</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Publication date</label>
           <input-type>date</input-type>
           <hint>Please give the date of previous publication or public distribution.
@@ -1147,7 +1077,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>language</dc-element>
           <dc-qualifier>iso</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Language</label>
           <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
           <hint>Select the language of the main content of the document. If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
@@ -1749,7 +1678,6 @@
           <dc-schema>publication</dc-schema>
           <dc-element>host</dc-element>
           <dc-qualifier>peerReviewed</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Host document peer-review</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>checkbox</input-type>
@@ -1764,7 +1692,6 @@
           <dc-schema>publication</dc-schema>
           <dc-element>host</dc-element>
           <dc-qualifier>peerReviewed</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Host document peer-review</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
@@ -1951,7 +1878,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>contributor</dc-element>
           <dc-qualifier>author</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Author's name</label>
           <input-type>onebox</input-type>
           <hint>Enter the names of the authors of this dissertation in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
@@ -1962,7 +1888,6 @@
         <field>
           <dc-schema>authors</dc-schema>
           <dc-element>email</dc-element>
-          <repeatable>false</repeatable>
           <label>Author's email</label>
           <input-type>onebox</input-type>
           <hint>Enter the email of the author.</hint>
@@ -1976,25 +1901,32 @@
       <row>
         <field>
           <dc-schema>authors</dc-schema>
-          <dc-element>institution</dc-element>
-          <dc-qualifier>code</dc-qualifier>
-          <repeatable>false</repeatable>
-          <label>Author's Institution</label>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>orcid</dc-qualifier>
+          <label>Author's ORCID</label>
+          <style>col-12</style>
           <input-type>onebox</input-type>
-          <hint>Enter the institution of the author.</hint>
-          <required>You must provide an institution for the author.</required>
+          <hint>The ORCID of the selected author.</hint>
+          <readonly>all</readonly>
+        </field>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>fgs</dc-qualifier>
+          <label>FGS Identifier</label>
+          <input-type>hidden</input-type>
+          <hint>Enter the FGS identifier of the author.</hint>
         </field>
       </row>
       <row>
         <field>
           <dc-schema>authors</dc-schema>
-          <dc-element>identifier</dc-element>
-          <dc-qualifier>fgs</dc-qualifier>
-          <repeatable>false</repeatable>
-          <label>FGS Identifier</label>
-          <input-type>hidden</input-type>
-          <hint>Enter the FGS identifier of the author.</hint>
-          <required>You must provide the FGS number of this author.</required>
+          <dc-element>institution</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <label>Author's Institution</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the institution of the author.</hint>
+          <required>You must provide an institution for the author.</required>
         </field>
       </row>
     </form>
@@ -2004,7 +1936,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>contributor</dc-element>
           <dc-qualifier>advisor</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Supervisor's name</label>
           <input-type>onebox</input-type>
           <hint>Enter the supervisor name of this dissertation in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].</hint>
@@ -2015,7 +1946,6 @@
         <field>
           <dc-schema>advisors</dc-schema>
           <dc-element>email</dc-element>
-          <repeatable>false</repeatable>
           <label>Supervisor's email</label>
           <input-type>onebox</input-type>
           <hint>Enter the email of the supervisor.</hint>
@@ -2029,8 +1959,28 @@
       <row>
         <field>
           <dc-schema>advisors</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>orcid</dc-qualifier>
+          <label>Supervisor's ORCID</label>
+          <style>col-12</style>
+          <input-type>onebox</input-type>
+          <hint>The ORCID of the selected supervisor.</hint>
+          <readonly>all</readonly>
+        </field>
+        <field>
+          <dc-schema>advisors</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>fgs</dc-qualifier>
+          <label>FGS Identifier</label>
+          <input-type>hidden</input-type>
+          <hint>Enter the FGS identifier of the supervisor.</hint>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>advisors</dc-schema>
           <dc-element>institution</dc-element>
-          <repeatable>false</repeatable>
+          <dc-qualifier>code</dc-qualifier>
           <label>Supervisor's institution</label>
           <input-type>onebox</input-type>
           <hint>Enter the institution of the supervisor.</hint>
@@ -2044,7 +1994,6 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunit</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
@@ -2055,7 +2004,6 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunitDepartment</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
@@ -2070,7 +2018,6 @@
             <dc-schema>dc</dc-schema>
             <dc-element>type</dc-element>
             <dc-qualifier>maintype</dc-qualifier>
-            <repeatable>false</repeatable>
             <label>Dissertation type</label>
             <input-type value-pairs-name="dissertation_type">dropdown</input-type>
             <hint>The dissertation type, should be 'thesis'.</hint>
@@ -2118,7 +2065,6 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
-          <repeatable>false</repeatable>
           <label>Title</label>
           <input-type>onebox</input-type>
           <hint>Enter the title of this dissertation.</hint>
@@ -2143,9 +2089,8 @@
           <dc-schema>dc</dc-schema>
           <dc-element>language</dc-element>
           <dc-qualifier>iso</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Language</label>
-          <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+          <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
           <hint>Select the language of the main content of the dissertation.</hint>
           <required>You must choose a language.</required>
         </field>
@@ -2167,7 +2112,6 @@
           <dc-schema>dissertation</dc-schema>
           <dc-element>institution</dc-element>
           <dc-qualifier>name</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Dissertation's main institution</label>
           <input-type>onebox</input-type>
           <hint>The main institution for this dissertation.</hint>
@@ -2180,7 +2124,6 @@
           <dc-schema>dissertation</dc-schema>
           <dc-element>degree</dc-element>
           <dc-qualifier>name</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Dissertation's degree</label>
           <input-type value-pairs-name="dissertation_degrees">dropdown</input-type>
           <hint>The main degree of the dissertation.</hint>
@@ -2214,7 +2157,6 @@
         <field>
           <dc-schema>dissertation</dc-schema>
           <dc-element>defenseDate</dc-element>
-          <repeatable>false</repeatable>
           <label>Dissertation's defense date</label>
           <input-type>date</input-type>
           <hint>Please provide the defned date of the dissertation.</hint>
@@ -2227,7 +2169,6 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>title</dc-element>
-          <repeatable>false</repeatable>
           <label>Title</label>
           <input-type>onebox</input-type>
           <hint />
@@ -2239,7 +2180,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>issn</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>ISSN</label>
           <input-type>onebox</input-type>
           <hint />
@@ -2254,7 +2194,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>eissn</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>eISSN</label>
           <input-type>onebox</input-type>
           <hint />
@@ -2268,7 +2207,6 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>publisher</dc-element>
-          <repeatable>false</repeatable>
           <label>Publisher</label>
           <input-type>onebox</input-type>
           <hint>Provide the publisher name.</hint>
@@ -2280,7 +2218,6 @@
           <dc-schema>dc</dc-schema>
           <dc-element>publisher</dc-element>
           <dc-qualifier>location</dc-qualifier>
-          <repeatable>false</repeatable>
           <label>Publisher location</label>
           <input-type>onebox</input-type>
           <hint>Provide the publisher location (could be a city, country, etc).</hint>
@@ -2290,7 +2227,6 @@
         <field>
           <dc-schema>journal</dc-schema>
           <dc-element>peerReviewed</dc-element>
-          <repeatable>flase</repeatable>
           <label>Journal peer-reviewed</label>
           <input-type>checkbox</input-type>
           <hint>Has the journal been reviewed by the pairs ?</hint>
@@ -2304,7 +2240,6 @@
         <field>
           <dc-schema>journal</dc-schema>
           <dc-element>statusCode</dc-element>
-          <repeatable>false</repeatable>
           <label>Journal status code</label>
           <input-type value-pairs-name="journal_status_codes">dropdown</input-type>
           <hint />
