@@ -11,6 +11,7 @@ import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import org.dspace.uclouvain.core.GenericHttpClient;
 import org.dspace.uclouvain.core.GenericResponse;
 import org.dspace.uclouvain.core.utils.DateUtils;
 import org.dspace.uclouvain.external.esb.model.ESBPersonProfile;
+import org.dspace.uclouvain.external.esb.model.responses.ESBPersonAffiliationResponse;
 import org.dspace.uclouvain.external.esb.model.responses.ESBPersonEmailResponse;
 import org.dspace.uclouvain.external.esb.model.responses.ESBPersonIDMMembershipResponse;
 import org.dspace.uclouvain.external.esb.model.responses.ESBPersonMainResponse;
@@ -35,6 +37,7 @@ public class ESBClientImpl implements ESBClient {
 
     private GenericHttpClient httpClient;
     private final String DIGIT_PATH = "/digit/v1.0";
+    private final String EMPLOYEE_PATH = "/employees/v1.0";
 
     // ---------- DIGIT ENDPOINTS ----------
     /**
@@ -81,6 +84,27 @@ public class ESBClientImpl implements ESBClient {
     }
 
     /**
+     * Get an array of all affiliations for a given person.
+     * 
+     * @param fgs the fgs identifier of the person to get affiliations of.
+     * @return An array of affiliations.
+     */
+    public ESBPersonAffiliationResponse[] getAffiliationsForFGS(String fgs) {
+        String url = EMPLOYEE_PATH + "/" + fgs + "/departments";
+        ESBPersonAffiliationResponse[] affiliations = {};
+        try {
+            HttpResponse<String> response = httpClient.get(url);
+            affiliations = Optional.ofNullable(
+                new GenericResponse(response.body())
+                    .extractJsonResponseDataToClass("department", ESBPersonAffiliationResponse[].class)
+            ).orElse(new ESBPersonAffiliationResponse[0]);
+        } catch (Exception e) {
+            logger.error("Could not fetch affiliations of person with fgs: " + fgs, e);
+        }
+        return affiliations;
+    }
+
+    /**
      * Get main data about a person. Returns many useful data like first and last name, gender...
      * 
      * @param fgs The identifier of the person.
@@ -108,6 +132,7 @@ public class ESBClientImpl implements ESBClient {
         // Do the requests to gather information about the person.
         ESBPersonEmailResponse email = getMainEmailForFGS(fgs);
         ESBPersonMainResponse main = getDataForFGS(fgs);
+        ESBPersonAffiliationResponse[] affiliations = getAffiliationsForFGS(fgs);
 
         ESBPersonProfile profileData = new ESBPersonProfile();
         if (email != null) {
@@ -127,6 +152,12 @@ public class ESBClientImpl implements ESBClient {
                 profileData.setGender(main.getGender().toLowerCase());
             }
             profileData.setTitle(main.getTitle());
+        }
+
+        if (affiliations.length > 0) {
+            profileData.setAffiliations(
+                Stream.of(affiliations).map(aff -> aff.getEntity().getAcronyms()).collect(Collectors.toList())
+            );
         }
         return profileData;
     }
