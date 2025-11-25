@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.profileIngester.actions;
 
+import static org.dspace.content.authority.Choices.CF_ACCEPTED;
+
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -17,12 +19,14 @@ import java.util.Objects;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.core.model.PersonEventModel;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.external.esb.model.ESBPersonProfile;
 import org.dspace.uclouvain.profileIngester.actions.configuration.ActionField;
 import org.dspace.uclouvain.profileIngester.actions.configuration.ActionFieldMappingConfiguration;
 import org.dspace.uclouvain.profileIngester.exceptions.ProfileActionException;
+import org.dspace.uclouvain.services.OrgUnitService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CreateOrUpdateProfileAction extends ProfileAction {
     @Autowired
     ActionFieldMappingConfiguration actionFieldMappingConfiguration;
+    @Autowired
+    OrgUnitService orgUnitService;
 
     /**
      * Extract the fgs from the provided event:
@@ -59,10 +65,13 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
         try {
             boolean changed;
             if (profile == null) {
+                // CREATE MODE
                 profile = uclouvainProfileService.createEmptyProfile(context, fgs);
                 changed = processFields(context, profileData, profile, true);
+                addMainAffiliation(context, profileData, profile);
                 logger.info("[CREATE PROFILE] Created fresh new profile for fgs " + fgs);
             } else {
+                // UPDATE MODE
                 changed = processFields(context, profileData, profile, false);
                 logger.info("[UPDATE PROFILE] Updated profile for fgs " + fgs);
             }
@@ -71,7 +80,8 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
                 context.commit();
             }
         } catch (Exception e) {
-            throw new ProfileActionException("Could not create the desired profile: " + e.getLocalizedMessage(), e);
+            throw new ProfileActionException(
+                "Could not create or update the desired profile: " + e.getLocalizedMessage(), e);
         }
     }
 
@@ -206,6 +216,34 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
                         null, value, null, 0, field.getSecurity()
                     );
                 }
+            }
+        }
+    }
+
+    /**
+     * Add a main affiliation to the profile using the provided affiliation list from the profileData.
+     * 
+     * @param context The current DSpace context.
+     * @param profileData The data of the profile.
+     * @param profile The profile item to add main affiliation to.
+     * @throws SQLException
+     */
+    private void addMainAffiliation(Context context, ESBPersonProfile profileData, Item profile) throws SQLException {
+        List<String> affiliations = profileData.getAffiliations();
+        if (!affiliations.isEmpty()) {
+            OrgUnit mainAffiliation = orgUnitService.findFirstByName(context, affiliations);
+            if (mainAffiliation != null) {
+                itemService.addMetadata(
+                    context, profile,
+                    "person", "affiliation", "department",
+                    null, mainAffiliation.getTitle(), mainAffiliation.getID().toString(), CF_ACCEPTED
+                );
+                OrgUnit institution = mainAffiliation.getParentUniversity();
+                itemService.addMetadata(
+                    context, profile,
+                    "person", "affiliation", "institution",
+                    null, institution.getAcronym(), institution.getID().toString(), CF_ACCEPTED
+                );
             }
         }
     }
