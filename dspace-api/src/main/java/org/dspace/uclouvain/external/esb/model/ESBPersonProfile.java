@@ -7,6 +7,9 @@
  */
 package org.dspace.uclouvain.external.esb.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This model class will contain all information extracted from ESB about a given person.
  * 
@@ -18,6 +21,7 @@ public class ESBPersonProfile {
     private String birthDate;
     private String gender;
     private String title;
+    private List<String> affiliations = new ArrayList<>();
 
     // SETTERS && GETTERS
     public String getEmail() {
@@ -58,5 +62,13 @@ public class ESBPersonProfile {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public List<String> getAffiliations() {
+        return affiliations;
+    }
+
+    public void setAffiliations(List<String> affiliations) {
+        this.affiliations = affiliations;
     }
 }
