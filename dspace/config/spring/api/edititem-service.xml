@@ -21,6 +21,36 @@
                             </property>
                             <property name="submissionDefinition" value="publication-edit" />
                         </bean>
+                        <!-- This edit item mode allows members of 'manager' group to edit an archived publication. -->
+                        <bean class="org.dspace.content.edit.EditItemMode">
+                            <property name="name" value="PUBLICATION_MANAGER" />
+                            <property name="security">
+                                <value type="org.dspace.content.security.CrisSecurity">
+                                    GROUP
+                                </value>
+                            </property>
+                            <property name="groups">
+                                <list>
+                                    <value>Manager</value>
+                                </list>
+                            </property>
+                            <property name="submissionDefinition" value="publication-edit" />
+                        </bean>
+                        <!-- This edit item mode allows authors to edit an archived publication. -->
+                        <bean class="org.dspace.content.edit.EditItemMode">
+                            <property name="name" value="PUBLICATION_AUTHOR" />
+                            <property name="security">
+                                <value type="org.dspace.content.security.CrisSecurity">
+                                    CUSTOM
+                                </value>
+                            </property>
+                            <property name="items">
+                                <list>
+                                    <value>dc.contributor.author</value>
+                                </list>
+                            </property>
+                            <property name="submissionDefinition" value="publication-edit" />
+                        </bean>
                     </list>
                 </entry>
                 <entry key="person">
