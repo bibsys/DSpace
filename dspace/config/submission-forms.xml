@@ -1848,6 +1848,18 @@
       <!-- Patent -->
       <row>
         <field>
+          <dc-schema>crispatent</dc-schema>
+          <dc-element>deposit</dc-element>
+          <dc-qualifier>date</dc-qualifier>
+          <label>Deposit date</label>
+          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <input-type>date</input-type>
+          <hint>Enter the deposit date for this patent</hint>
+          <required>Please enter at least a deposit year</required>
+        </field>
+      </row>
+      <row>
+        <field>
           <dc-schema>dc</dc-schema>
           <dc-element>contributor</dc-element>
           <dc-qualifier>submitter</dc-qualifier>
@@ -1857,6 +1869,17 @@
           <input-type>onebox</input-type>
           <hint>Enter name(s) of the inventor; one submitter by fields.</hint>
           <required>Please enter at least one submitter for this patent.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crispatent</dc-schema>
+          <dc-element>patentOffice</dc-element>
+          <label>Patent office</label>
+          <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the patent publication organism</hint>
+          <required>Please enter the patent publication organism.</required>
         </field>
       </row>
     </form>
