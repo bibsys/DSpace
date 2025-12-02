@@ -133,4 +133,8 @@ public class PublicationJournalAuthority extends PublicationAuthority {
     public String getPluginInstanceName() {
         return authorityName;
     }
+
+    public String getLinkedEntityType() {
+        return Journal.ENTITY_TYPE;
+    }
 }

@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.authority;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,6 +26,7 @@ import org.dspace.content.authority.Choice;
 import org.dspace.content.authority.ChoiceAuthority;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.authority.ItemAuthority;
+import org.dspace.content.authority.LinkableEntityAuthority;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
@@ -39,7 +41,7 @@ import org.dspace.web.ContextUtil;
  * 
  * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
-public abstract class PublicationAuthority implements ChoiceAuthority {
+public abstract class PublicationAuthority implements ChoiceAuthority, LinkableEntityAuthority {
     private static Logger logger = LogManager.getLogger(ItemAuthority.class);
     protected DSpace dspace = new DSpace();
     protected ItemService itemService = ContentServiceFactory.getInstance().getItemService();
@@ -123,9 +125,14 @@ public abstract class PublicationAuthority implements ChoiceAuthority {
         return context != null ? context : new Context();
     }
 
+    public Map<String, String> getExternalSource() {
+        return new HashMap<>();
+    }
+
     public abstract String getPluginInstanceName();
     public abstract void setPluginInstanceName(String pluginInstanceName);
     public abstract String getLabel(String key, String locale);
+    public abstract String getLinkedEntityType();
 
     protected abstract Map<String, String> generateExtras(Item item) throws Exception;
     protected abstract String getEntityTypeFilterString();
