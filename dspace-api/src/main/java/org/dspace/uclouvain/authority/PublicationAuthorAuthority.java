@@ -18,6 +18,7 @@ import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.MetadataFieldService;
+import org.dspace.profile.ResearcherProfile;
 
 /**
  * Simple authority to search for Persons.
@@ -136,5 +137,9 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
         if (StringUtils.isNotBlank(value) && authorityLinked) {
             extras.put(AUTHORITY_PREFIX + mapKey, item.getID().toString());
         }
+    }
+
+    public String getLinkedEntityType() {
+        return ResearcherProfile.ENTITY_TYPE;
     }
 }
