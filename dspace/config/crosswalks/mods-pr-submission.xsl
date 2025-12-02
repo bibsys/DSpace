@@ -508,7 +508,7 @@
     </xsl:template>
     <!-- ORIGIN_INFO ================================================== -->
     <!--   * dateIssued                      -> dc.date.issued -->
-    <!--   * publisher                       -> publication.editor.name -->
+    <!--   * publisher                       -> publication.editor.name OR crispatent.patentOffice -->
     <!--   * place                           -> publication.editor.location -->
     <!--   * dateOther[@type='defense date'] -> dissertation.defenseDate -->
     <xsl:template match="/mods:mods/mods:originInfo/mods:dateIssued">
@@ -520,12 +520,26 @@
         </xsl:element>
     </xsl:template>
     <xsl:template match="/mods:mods/mods:originInfo/mods:publisher">
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">publication</xsl:attribute>
-            <xsl:attribute name="element">editor</xsl:attribute>
-            <xsl:attribute name="qualifier">name</xsl:attribute>
-            <xsl:value-of select="normalize-space(.)"/>
-        </xsl:element>
+        <xsl:choose>
+            <!-- special mapping if documentType is `Patent` -->
+            <xsl:when test="//mods:mods/mods:genre/@valueURI='http://purl.org/coar/resource_type/c_15cd'">
+                <xsl:element name="dim:field">
+                    <xsl:attribute name="mdschema">crispatent</xsl:attribute>
+                    <xsl:attribute name="element">patentOffice</xsl:attribute>
+                    <xsl:value-of select="normalize-space(.)"/>
+                </xsl:element>
+            </xsl:when>
+            <!-- default behavior -->
+            <xsl:otherwise>
+                <xsl:element name="dim:field">
+                    <xsl:attribute name="mdschema">publication</xsl:attribute>
+                    <xsl:attribute name="element">editor</xsl:attribute>
+                    <xsl:attribute name="qualifier">name</xsl:attribute>
+                    <xsl:value-of select="normalize-space(.)"/>
+                </xsl:element>
+            </xsl:otherwise>
+        </xsl:choose>
+
     </xsl:template>
     <xsl:template match="/mods:mods/mods:originInfo/mods:place">
         <xsl:element name="dim:field">
