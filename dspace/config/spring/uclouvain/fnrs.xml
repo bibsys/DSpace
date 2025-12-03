@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                  http://www.springframework.org/schema/context
+                  http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                  http://www.springframework.org/schema/util
+                  http://www.springframework.org/schema/util/spring-util.xsd"
+>
+    <bean id="fnrsValidator" class="org.dspace.uclouvain.validation.fnrs.FNRSValidator">
+        <property name="categories">
+            <util:list>
+                <ref bean="fnrsCategory1"/>
+                <ref bean="fnrsCategory2"/>
+                <ref bean="fnrsCategory3"/>
+                <ref bean="fnrsCategory4"/>
+                <ref bean="fnrsCategory5"/>
+                <ref bean="fnrsCategory6"/>
+            </util:list>
+        </property>
+    </bean>
+
+
+    <!-- FNRS RULES ================================================================================================ -->
+    <!-- document type rules ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="bookDocumentTypeRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.bookDocumentType"/>
+        <property name="description" value="Check the item is a 'book' as main type"/>
+        <property name="metadataField" value="dc.type.maintype"/>
+        <property name="validValues" value="text::book"/>
+    </bean>
+    <bean id="bookPartDocumentTypeRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.bookPartDocumentType"/>
+        <property name="description" value="Check the item is a 'book-part' as main type"/>
+        <property name="metadataField" value="dc.type.maintype"/>
+        <property name="validValues" value="text::book-part"/>
+    </bean>
+    <bean id="journalArticleDocumentTypeRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.journalArticleDocumentType"/>
+        <property name="description" value="Check the item is a 'journal-article' as main type"/>
+        <property name="metadataField" value="dc.type.maintype"/>
+        <property name="validValues" value="text::journal-article"/>
+    </bean>
+    <bean id="conferenceSpeechDocumentTypeRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.conferenceSpeechDocumentType"/>
+        <property name="description" value="Check the item is a 'conference-speech' as main type"/>
+        <property name="metadataField" value="dc.type.maintype"/>
+        <property name="validValues" value="text::conference-speech"/>
+    </bean>
+    <bean id="patentDocumentTypeRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.patentDocumentType"/>
+        <property name="description" value="Check the item is a 'patent' as main type"/>
+        <property name="metadataField" value="dc.type.maintype"/>
+        <property name="validValues" value="text::patent"/>
+    </bean>
+    <!-- specific metadata rules ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="publishedValidationRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.publishedStatus"/>
+        <property name="description" value="Check document status is 'published' or (at least) 'accepted'"/>
+        <property name="metadataField" value="publication.publicationStatus"/>
+        <property name="validValues">
+            <util:list>
+                <value>published</value>
+                <value>accepted/in-press</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="peerReviewedArticleValidationRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.peerReviewedArticle"/>
+        <property name="description" value="Check article host document is peer-reviewed"/>
+        <property name="metadataField" value="publication.serial.peerReviewed"/>
+        <property name="validValues" value="true"/>
+    </bean>
+    <bean id="peerReviewedConferenceSubtypeValidationRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.peerReviewedConferenceSubtype"/>
+        <property name="description" value="Check conference speech subtype is peer-reviewed"/>
+        <property name="metadataField" value="dc.type.subtype"/>
+        <property name="validValues">
+            <util:list>
+                <value>keynote</value>
+                <value>with-selection-speech</value>
+                <value>conference-poster</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="isAbstractPresentationValidationRule" class="org.dspace.uclouvain.validation.fnrs.rules.MetadataValidationRule">
+        <property name="name" value="fnrs.rule.peerReviewedArticle"/>
+        <property name="description" value="Check conference speech is an abstract"/>
+        <property name="metadataField" value="publication.isAbstract"/>
+        <property name="validValues" value="true"/>
+    </bean>
+    <!-- Specific rules ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="proceedingHostExistsValidationRule" class="org.dspace.uclouvain.validation.fnrs.rules.ExistsMetadataValidationRule">
+        <property name="name" value="fnrs.rule.hostExists"/>
+        <property name="description" value="Document is published into a serial or a book"/>
+        <property name="metadataFields">
+            <util:list>
+                <value>dc.relation.journal</value>
+                <value>publication.host.title</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="peerReviewedConferenceValidationRule" class="org.dspace.uclouvain.validation.fnrs.rules.logical.OrValidationRule">
+        <property name="name" value="fnrs.rule.peerReviewedConference"/>
+        <property name="description" value="Check conference speech is peer-reviewed"/>
+        <property name="rules">
+            <util:list>
+                <ref bean="isAbstractPresentationValidationRule"/>
+                <ref bean="peerReviewedConferenceSubtypeValidationRule"/>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="notPublishedValidationRule" class="org.dspace.uclouvain.validation.fnrs.rules.logical.NotValidationRule">
+        <property name="name" value="fnrs.rule.notPublished"/>
+        <property name="description" value="Check document status isn't 'published' or 'accepted'"/>
+        <property name="rules">
+            <util:list>
+                <ref bean="publishedValidationRule"/>
+            </util:list>
+        </property>
+    </bean>
+
+    <!-- FNRS CATEGORIES =========================================================================================== -->
+    <bean id="fnrsCategory1" class="org.dspace.uclouvain.validation.fnrs.Category">
+        <property name="name" value="fnrs.category.1"/>
+        <property name="description" value="Published books, as an author/co-author/editor"/>
+        <property name="applicableFor" ref="bookDocumentTypeRule"/>
+        <property name="rules">
+            <util:list>
+                <ref bean="publishedValidationRule"/>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="fnrsCategory2" class="org.dspace.uclouvain.validation.fnrs.Category">
+        <property name="name" value="fnrs.category.2"/>
+        <property name="description" value="Published book's part, as an author/co-author"/>
+        <property name="applicableFor" ref="bookPartDocumentTypeRule"/>
+        <property name="rules">
+            <util:list>
+                <ref bean="publishedValidationRule"/>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="fnrsCategory3" class="org.dspace.uclouvain.validation.fnrs.Category">
+        <property name="name" value="fnrs.category.3"/>
+        <property name="description" value="Article published in a peer-reviewed journal"/>
+        <property name="applicableFor" ref="journalArticleDocumentTypeRule"/>
+        <property name="rules">
+            <util:list>
+                <ref bean="peerReviewedArticleValidationRule"/>
+                <ref bean="publishedValidationRule"/>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="fnrsCategory4" class="org.dspace.uclouvain.validation.fnrs.Category">
+        <property name="name" value="fnrs.category.4"/>
+        <property name="description" value="Article published into conference proceedings"/>
+        <property name="applicableFor" ref="conferenceSpeechDocumentTypeRule"/>
+        <property name="rules">
+            <util:list>
+                <ref bean="proceedingHostExistsValidationRule"/>
+                <ref bean="publishedValidationRule"/>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="fnrsCategory5" class="org.dspace.uclouvain.validation.fnrs.Category">
+        <property name="name" value="fnrs.category.5"/>
+        <property name="description" value="Oral presentation with peer-review"/>
+        <property name="applicableFor" ref="conferenceSpeechDocumentTypeRule"/>
+        <property name="rules">
+            <util:list>
+                <ref bean="peerReviewedConferenceValidationRule"/>
+                <ref bean="notPublishedValidationRule"/>
+            </util:list>
+        </property>
+    </bean>
+    <bean id="fnrsCategory6" class="org.dspace.uclouvain.validation.fnrs.Category">
+        <property name="name" value="fnrs.category.6"/>
+        <property name="description" value="Patent"/>
+        <property name="applicableFor" ref="patentDocumentTypeRule"/>
+    </bean>
+
+</beans>
