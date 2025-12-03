@@ -23,6 +23,7 @@ import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeExceptio
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
+import org.dspace.uclouvain.validation.fnrs.FNRSValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -39,6 +40,8 @@ public class SolrServicePublicationIndexingPlugin
 
     @Autowired
     private UCLouvainFWBValidationService uclouvainFWBValidationService;
+    @Autowired
+    private FNRSValidator fnrsValidator;
 
 
     @Override
@@ -47,6 +50,7 @@ public class SolrServicePublicationIndexingPlugin
         try {
             Publication publication = new Publication(getItem(dso));
             addFWBValidationKeys(context, publication.getItem(), document);
+            addFNRSValidationKeys(publication.getItem(), document);
             addAuthorsIndexingKeys(publication, document);
         } catch (InvalidModelEntityTypeException e) {
             log.debug(e.getMessage());
@@ -70,6 +74,21 @@ public class SolrServicePublicationIndexingPlugin
             document.addField("fwbCompliant_b", isCompliant);
         } catch (Exception e) {
             log.error("Error while indexing FWB data in SOLR.", e);
+        }
+    }
+
+    /**
+     * Index 2 keys in the item document:
+     * - 'fnrsRelevant_b': Is the item is relevant based on FNRS categories
+     * - 'fnrsValid_b': Is the item is valid regarding FNRS rules (only present if item is relevant)
+     * @param item The DSpace Item to process.
+     * @param document The Solr document to add the keys to.
+     */
+    private void addFNRSValidationKeys(Item item, SolrInputDocument document) {
+        boolean isRelevant = fnrsValidator.isRelevant(item);
+        document.addField("fnrsRelevant_b", isRelevant);
+        if (isRelevant) {
+            document.addField("fnrsValid_b", fnrsValidator.isValid(item));
         }
     }
 
