@@ -50,6 +50,7 @@ import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.content.service.MetadataFieldService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.profile.ResearcherProfile;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
@@ -548,11 +549,12 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
                     .map(entry -> entry.getKey() + ":" + entry.getValue())
                     .collect(Collectors.joining(", ", "[", "]"));
                 log.debug("  * Identifiers are " + pretty);
-                Item profile = researcherProfileService.findByIdentifier(context, identifiers);
+                ResearcherProfile profile = researcherProfileService.findFirstByIdentifiers(context, identifiers);
                 if (profile != null) {
-                    log.debug("  * Matching authority found: " + profile.getID());
-                    updateAuthorElementValues(authorElement, profile);
-                    authorElement.setAttribute("authority", profile.getID().toString());
+                    Item profileItem = profile.getItem();
+                    log.debug("  * Matching authority found: " + profileItem.getID());
+                    updateAuthorElementValues(authorElement, profileItem);
+                    authorElement.setAttribute("authority", profileItem.getID().toString());
                 } else {
                     log.debug("  * No matching authority for this author");
                 }
