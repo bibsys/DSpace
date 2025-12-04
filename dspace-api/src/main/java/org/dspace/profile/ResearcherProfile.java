@@ -33,6 +33,15 @@ public class ResearcherProfile {
 
     public static final String ENTITY_TYPE = "Person";
 
+    public static final String EMAIL_FIELD = "person.email";
+    public static final String OFFICIAL_EMAIL_FIELD = "person.email.official";
+    public static final String NAME_FIELD = "dc.title";
+    public static final String OFFICIAL_NAME_FIELD = "crisrp.name";
+    public static final String FGS_FIELD = "person.identifier.fgs";
+    public static final String ORCID_FIELD = "person.identifier.orcid";
+    public static final String INSTITUTION_FIELD = "person.affiliation.institution";
+    public static final String DEPARTMENT_FIELD = "person.affiliation.department";
+
     /**
      * Create a new ResearcherProfile object from the given item.
      *
@@ -78,27 +87,32 @@ public class ResearcherProfile {
     }
 
     public Optional<String> getName() {
-        return getMetadataValue(item, "dc.title")
+        return getMetadataValue(item, NAME_FIELD)
             .map(MetadataValue::getValue);
     }
 
     public Optional<String> getOrcid() {
-        return getMetadataValue(item, "person.identifier.orcid")
+        return getMetadataValue(item, ORCID_FIELD)
             .map(MetadataValue::getValue);
     }
 
     public Optional<String> getFGS() {
-        return getMetadataValue(item, "person.identifier.fgs")
+        return getMetadataValue(item, FGS_FIELD)
             .map(MetadataValue::getValue);
     }
 
     public Optional<String> getEmail() {
-        return getMetadataValue(item, "person.email.official")
+        return getMetadataValue(item, OFFICIAL_EMAIL_FIELD)
+            .map(MetadataValue::getValue);
+    }
+
+    public Optional<String> getPrivateEmail() {
+        return getMetadataValue(item, EMAIL_FIELD)
             .map(MetadataValue::getValue);
     }
 
     public Optional<String> getInstitution() {
-        return getMetadataValue(item, "person.affiliation.institution")
+        return getMetadataValue(item, INSTITUTION_FIELD)
             .map(MetadataValue::getValue);
     }
 

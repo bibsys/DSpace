@@ -9,6 +9,7 @@ package org.dspace.profile.service;
 
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -42,9 +43,6 @@ public interface ResearcherProfileService {
 
     /**
      * Find a unique `ResearcherProfile` using search criteria.
-     * DEV_NOTE:
-     *   We returned an `Item` (instead of `ResearcherProfile`) because a `ResearcherProfile` must have an owner to
-     *   be valid, but for batch ingested profile, the owner could not be set.
      *
      * @param context the relevant DSpace Context.
      * @param identifiers the list of identifier to search for. Each entry must be a combination of Solr key and value
@@ -52,8 +50,16 @@ public interface ResearcherProfileService {
      * @throws SQLException if any database occurred
      * @throws AuthorizeException if any authorization occurred
      */
-    public Item findByIdentifier(Context context, Map<String, String> identifiers)
+    public ResearcherProfile findFirstByIdentifiers(Context context, Map<String, String> identifiers)
         throws SQLException, AuthorizeException;
+
+    /**
+     * Find all matching ResearcherProfile using the provided identifiers.
+     * @param context The current DSpace context.
+     * @param identifiers The identifiers to search on (fgs, email...).
+     * @return A list of matching researcher profiles.
+     */
+    public List<ResearcherProfile> findByIdentifiers(Context context, Map<String, String> identifiers);
 
     /**
      * Create a new researcher profile for the given ePerson.
@@ -131,8 +137,17 @@ public interface ResearcherProfileService {
     /**
      * Retrieve a map of identifiers for the given profile.
      * The key of the map is the metadata field string and the value is the value of the identifier.
+     * This can be used to find authors using referencing this profile.
      * @param profile The profile to generate a map for.
      * @return A map containing the identifiers of the given profile.
      */
     public Map<String, String> getAuthorsIdentifiers(ResearcherProfile profile);
+
+    /**
+     * Retrieve a map of identifiers for the given profile.
+     * The key of the map is the metadata field string and the value is the value of the identifier.
+     * @param profile The profile to generate a map for.
+     * @return A map containing the identifiers of the given profile.
+     */
+    public Map<String, String> getProfileIdentifiers(ResearcherProfile profile);
 }
