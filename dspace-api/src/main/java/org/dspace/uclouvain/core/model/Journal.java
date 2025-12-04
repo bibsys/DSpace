@@ -21,8 +21,8 @@ public class Journal extends ItemModel {
 
     // CLASS CONSTANTS =================================================================================================
     public static final String ENTITY_TYPE = "Journal";
-    public static final String ACTIVE_ACCESS_TYPE = "Active";
-    public static final String CEASED_ACCESS_TYPE = "Ceased";
+    public static final String ACTIVE_ACCESS_TYPE = "active";
+    public static final String CEASED_ACCESS_TYPE = "ceased";
 
     public static final String ISSN_IDENTIFIER = "issn";
     public static final String EISSN_IDENTIFIER = "eissn";
