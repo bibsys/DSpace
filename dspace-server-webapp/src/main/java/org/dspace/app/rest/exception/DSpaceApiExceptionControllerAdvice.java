@@ -33,6 +33,7 @@ import org.dspace.core.Context;
 import org.dspace.eperson.InvalidReCaptchaException;
 import org.dspace.orcid.exception.OrcidValidationException;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.itemValidators.exceptions.ItemValidationException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -268,6 +269,19 @@ public class DSpaceApiExceptionControllerAdvice extends ResponseEntityExceptionH
         // something. We can't do anything. To avoid excessive stack traces
         // in log, just print a simple message
         log.warn("ClientAbortException");
+    }
+
+    /**
+     * Custom exception handler for ItemValidationException that returns the translatable message in the HTTP response.
+     * @param request The incoming request object.
+     * @param response The response object to send back to the client.
+     * @param ex The Exception to handle.
+     * @throws IOException
+     */
+    @ExceptionHandler(ItemValidationException.class)
+    protected void handleItemValidationException(
+        HttpServletRequest request, HttpServletResponse response, ItemValidationException ex) throws IOException {
+        sendErrorResponse(request, response, ex, ex.getTranslatableMessage(), HttpStatus.CONFLICT.value());
     }
 
     @ExceptionHandler(Exception.class)

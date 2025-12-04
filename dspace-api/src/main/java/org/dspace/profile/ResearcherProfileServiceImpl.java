@@ -131,8 +131,12 @@ public class ResearcherProfileServiceImpl implements ResearcherProfileService {
     }
 
     @Override
-    public Item findByIdentifier(Context context, Map<String, String> identifiers)
+    public ResearcherProfile findFirstByIdentifiers(Context context, Map<String, String> identifiers)
             throws AuthorizeException, SQLException {
+        return this.findByIdentifiers(context, identifiers).stream().findFirst().orElse(null);
+    }
+
+    public List<ResearcherProfile> findByIdentifiers(Context context, Map<String, String> identifiers) {
         DiscoverQuery discoverQuery = new DiscoverQuery();
         discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
         discoverQuery.addFilterQueries("dspace.entity.type:" + getProfileType());
@@ -143,13 +147,11 @@ public class ResearcherProfileServiceImpl implements ResearcherProfileService {
                 .collect(Collectors.joining(" OR ")
             )
         );
-
         DiscoverResult discoverResult = search(context, discoverQuery);
         List<IndexableObject> indexableObjects = discoverResult.getIndexableObjects();
-        if (CollectionUtils.isEmpty(indexableObjects)) {
-            return null;
-        }
-        return (Item) indexableObjects.get(0).getIndexedObject();
+        return indexableObjects.stream()
+            .map(object -> new ResearcherProfile((Item) object.getIndexedObject(), false))
+            .toList();
     }
 
     @Override
@@ -445,16 +447,29 @@ public class ResearcherProfileServiceImpl implements ResearcherProfileService {
 
     public Map<String, String> getAuthorsIdentifiers(ResearcherProfile profile) {
         // Create a map of profile identifiers.
-        return Stream.of(
+        return createIdentifiersMap(
                 Map.entry(Publication.AUTHOR_EMAIL_FIELD, profile.getEmail()),
                 Map.entry(Publication.AUTHOR_ORCID_FIELD, profile.getOrcid()),
                 Map.entry(Publication.AUTHOR_FGS_FIELD, profile.getFGS())
-            )
+            );
+    }
+
+    public Map<String, String> getProfileIdentifiers(ResearcherProfile profile) {
+        return createIdentifiersMap(
+                Map.entry(ResearcherProfile.EMAIL_FIELD, profile.getPrivateEmail()),
+                Map.entry(ResearcherProfile.OFFICIAL_EMAIL_FIELD, profile.getEmail()),
+                Map.entry(ResearcherProfile.FGS_FIELD, profile.getFGS()),
+                Map.entry(ResearcherProfile.ORCID_FIELD, profile.getOrcid())
+            );
+    }
+
+    @SafeVarargs
+    private static Map<String, String> createIdentifiersMap(Map.Entry<String, Optional<String>>... entries) {
+        return Stream.of(entries)
             .filter(entry -> entry.getValue().isPresent())
             .collect(Collectors.toMap(
                 entry -> entry.getKey(),
                 entry -> entry.getValue().get()
             ));
     }
-
 }

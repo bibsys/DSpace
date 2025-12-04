@@ -106,6 +106,8 @@ import org.dspace.qaevent.dao.QAEventsDAO;
 import org.dspace.services.ConfigurationService;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
+import org.dspace.uclouvain.itemValidators.ItemValidator;
+import org.dspace.uclouvain.itemValidators.factories.ItemValidatorFactory;
 import org.dspace.versioning.Version;
 import org.dspace.versioning.VersionHistory;
 import org.dspace.versioning.service.VersionHistoryService;
@@ -221,6 +223,9 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
     @Autowired(required = true)
     private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
+
+    @Autowired(required = true)
+    private ItemValidatorFactory itemValidatorFactory;
 
     @Autowired
     private CommentService commentService;
@@ -836,6 +841,12 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
         log.info(LogHelper.getHeader(context, "update_item", "item_id="
             + item.getID()));
+
+        // Get a validator and validate the current item.
+        ItemValidator validator = itemValidatorFactory.getValidator(item);
+        if (validator != null) {
+            validator.validate(context, item);
+        }
 
         super.update(context, item);
 
