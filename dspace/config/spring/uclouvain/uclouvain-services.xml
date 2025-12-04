@@ -35,6 +35,16 @@
 
     <bean id="profileActionFactory" class="org.dspace.uclouvain.profileIngester.actions.factory.ProfileActionFactoryImpl"/>
 
+    <bean id="itemValidatorFactory" class="org.dspace.uclouvain.itemValidators.factories.ItemValidatorFactoryImpl">
+        <property name="validatorsMap">
+            <util:map>
+                <entry key="Person" value-ref="itemProfileValidator"/>
+            </util:map>
+        </property>
+    </bean>
+    <!-- VALIDATORS -->
+    <bean id="itemProfileValidator" class="org.dspace.uclouvain.itemValidators.validators.ItemProfileValidator"/>
+
     <!-- SERVICES ========================================================= -->
     <bean id="uclouvainDirectLinkService" class="org.dspace.uclouvain.services.DirectLinkServiceImpl"/>
     <bean id="publicationAuthorAuthority" class="org.dspace.uclouvain.authority.PublicationAuthorAuthority"/>
