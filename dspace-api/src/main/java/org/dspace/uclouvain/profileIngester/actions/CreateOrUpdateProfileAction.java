@@ -233,16 +233,17 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
         if (!affiliations.isEmpty()) {
             OrgUnit mainAffiliation = orgUnitService.findFirstByName(context, affiliations);
             if (mainAffiliation != null) {
-                itemService.addMetadata(
+                // DEV_NOTE: Use setMetadata here to clear the default institution
+                itemService.setMetadataInPlace(
                     context, profile,
-                    "person", "affiliation", "department",
-                    null, mainAffiliation.getTitle(), mainAffiliation.getID().toString(), CF_ACCEPTED
+                    "person.affiliation.department",
+                    null, mainAffiliation.getTitle(), mainAffiliation.getID().toString(), 0, CF_ACCEPTED
                 );
                 OrgUnit institution = mainAffiliation.getParentUniversity();
-                itemService.addMetadata(
+                itemService.setMetadataInPlace(
                     context, profile,
-                    "person", "affiliation", "institution",
-                    null, institution.getAcronym(), institution.getID().toString(), CF_ACCEPTED
+                    "person.affiliation.institution",
+                    null, institution.getTitle(), institution.getID().toString(), 0, CF_ACCEPTED
                 );
             }
         }
