@@ -47,6 +47,14 @@ public interface UCLouvainProfileService {
     Item createEmptyProfile(Context context, String fgs) throws Exception;
 
     /**
+     * Create an empty profile item with only a FGS identifier.
+     * @param context The current DSpace context.
+     * @param fgs     The unique FGS identifier to give to the profile item.
+     * @param addDefaultInstitution Wether or not to add a default institution to the created profile.
+     */
+    Item createEmptyProfile(Context context, String fgs, boolean addDefaultInstitution) throws Exception;
+
+    /**
      * Create a fresh new profile for a specific user.
      * Use the metadata present in the given 'currentUser' object to fill the metadata with the profile.
      * @param context The current DSpace context.
