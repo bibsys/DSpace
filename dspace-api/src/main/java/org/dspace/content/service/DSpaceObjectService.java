@@ -129,6 +129,19 @@ public interface DSpaceObjectService<T extends DSpaceObject> {
      */
     public String getTypeText(T dso);
 
+    /**
+     * Check if a specific metadata exists for the DSpace Object
+     *   No need to check if the metadata is empty or not; DSpace app doesn't store blank/null metadata.
+     *   So if `hasMetadata` return true, we can assume than, at least, a not blank value exists for this DSpace Object
+     * @param dso the DSpace Object to check
+     * @param field the metadata field to check
+     * @return true if a metadata exists for this field; false otherwise
+     */
+    public boolean hasMetadata(T dso, MetadataField field);
+
+    public boolean hasMetadata(T dso, String schema, String element, String qualifier);
+
+    public boolean hasMetadata(T dso, String mdString);
 
     /**
      * Get metadata for the DSpace Object in a chosen schema.

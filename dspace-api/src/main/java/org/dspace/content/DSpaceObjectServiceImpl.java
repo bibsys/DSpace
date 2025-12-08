@@ -123,6 +123,22 @@ public abstract class DSpaceObjectServiceImpl<T extends DSpaceObject> implements
     }
 
     @Override
+    public boolean hasMetadata(T dso, MetadataField field) {
+        return this.hasMetadata(dso, field.getMetadataSchema().getName(), field.getElement(), field.getQualifier());
+    }
+
+    @Override
+    public boolean hasMetadata(T dso, String schema, String element, String qualifier) {
+        return dso.getMetadata().stream().anyMatch(md -> match(schema, element, qualifier, md));
+    }
+
+    @Override
+    public boolean hasMetadata(T dso, String mdString) {
+        String[] tokens = MetadataFieldName.parse(mdString);
+        return this.hasMetadata(dso, tokens[0], tokens[1], tokens[2]);
+    }
+
+    @Override
     public List<MetadataValue> getMetadata(T dso, String schema, String element, String qualifier, String lang) {
         // Build up list of matching values
         List<MetadataValue> values = new ArrayList<>();
