@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.services;
 
 import static org.dspace.content.authority.Choices.CF_ACCEPTED;
+import static org.dspace.content.authority.Choices.CF_UNSET;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +36,7 @@ import org.dspace.discovery.indexobject.IndexableWorkflowItem;
 import org.dspace.discovery.indexobject.IndexableWorkspaceItem;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +66,11 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
     private IDMPersonValidityService idmService;
     @Autowired
     private OrgUnitService orgUnitService;
+
+    private String defaultInstitutionAcronym = DSpaceServicesFactory
+            .getInstance()
+            .getConfigurationService()
+            .getProperty("uclouvain.profile.default-institution.acronym");
 
     private static final String PROFILE_ENTITY_TYPE = "Person";
 
@@ -100,10 +107,24 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
     }
 
     public Item createEmptyProfile(Context context, String fgs) throws Exception {
+        return createEmptyProfile(context, fgs, true);
+    }
+
+    public Item createEmptyProfile(Context context, String fgs, boolean addDefaultInstitution) throws Exception {
         Collection profileCollection = getProfileCollection(context);
         WorkspaceItem workspaceItem = workspaceItemService.create(context, profileCollection, true);
         Item profile = workspaceItem.getItem();
-        itemService.addSecuredMetadata(context, profile, "person", "identifier", "fgs", null, fgs, null, 0, 1);
+        itemService.addSecuredMetadata(context, profile, "person", "identifier", "fgs", null, fgs, null, CF_UNSET, 1);
+        if (addDefaultInstitution) {
+            OrgUnit defaultInstitution = getDefaultProfileInstitution(context);
+            if (defaultInstitution != null) {
+                itemService.addMetadata(
+                    context, profile,
+                    "person", "affiliation", "institution",
+                    null, defaultInstitution.getTitle(), defaultInstitution.getID().toString(), CF_ACCEPTED
+                );
+            }
+        }
         return installItemService.installItem(context, workspaceItem);
     }
 
@@ -147,16 +168,17 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
             // Try to find a matching affiliation item for the affiliations stored in the person.
             OrgUnit mainAffiliation = orgUnitService.findFirstByName(context, affiliations);
             if (mainAffiliation != null) {
-                itemService.addMetadata(
+                // DEV_NOTE: Use setMetadata here to clear the default institution.
+                itemService.setMetadataInPlace(
                     context, profile,
-                    "person", "affiliation", "department",
-                    null, mainAffiliation.getTitle(), mainAffiliation.getID().toString(), CF_ACCEPTED
+                    "person.affiliation.department",
+                    null, mainAffiliation.getTitle(), mainAffiliation.getID().toString(), 0, CF_ACCEPTED
                 );
                 OrgUnit institution = mainAffiliation.getParentUniversity();
-                itemService.addMetadata(
+                itemService.setMetadataInPlace(
                     context, profile,
-                    "person", "affiliation", "institution",
-                    null, institution.getAcronym(), institution.getID().toString(), CF_ACCEPTED
+                    "person.affiliation.institution",
+                    null, institution.getTitle(), institution.getID().toString(), 0, CF_ACCEPTED
                 );
             }
         }
@@ -201,6 +223,18 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
             .stream()
             .findFirst()
             .orElseThrow(() -> new NoSuchElementException("No collection for " + PROFILE_ENTITY_TYPE + " entity type"));
+    }
+
+    private OrgUnit getDefaultProfileInstitution(Context context) {
+        // The default institution could be null if the OrgUnits have not been init yet.
+        try {
+            return orgUnitService.findByName(
+                new Context(), defaultInstitutionAcronym, null, null, null
+            );
+        } catch (Exception e) {
+            log.error("Could search for default profile institution '" + defaultInstitutionAcronym + "'", e);
+            return null;
+        }
     }
 
 
