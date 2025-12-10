@@ -324,8 +324,9 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
         addMetadataValue(externalDataObject, fieldMapping.getLanguageField(), () -> getLanguage(work));
 
         for (String contributorField : fieldMapping.getContributorFields().keySet()) {
-            ContributorRole role = fieldMapping.getContributorFields().get(contributorField);
-            addMetadataValues(externalDataObject, contributorField, () -> getContributors(work, role));
+            // Get all contributors without role filter since we want to put everything in 'dc.contributor.author'.
+            // ContributorRole role = fieldMapping.getContributorFields().get(contributorField);
+            addMetadataValues(externalDataObject, contributorField, () -> getAllContributors(work));
         }
 
         for (String externalIdField : fieldMapping.getExternalIdentifierFields().keySet()) {
@@ -431,6 +432,12 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
         return work.getLanguageCode() != null ? fieldMapping.convertLanguage(work.getLanguageCode()) : null;
     }
 
+    /**
+     * Get contributors from the given work object that matches the given role.
+     * @param work The work object to extract contributor from.
+     * @param role The role to match for a contributor.
+     * @return All contributors that matches the given role.
+     */
     private List<String> getContributors(Work work, ContributorRole role) {
         WorkContributors workContributors = work.getWorkContributors();
         if (workContributors == null) {
@@ -439,6 +446,23 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
 
         return workContributors.getContributor().stream()
             .filter(contributor -> hasRole(contributor, role))
+            .map(contributor -> getContributorName(contributor))
+            .flatMap(Optional::stream)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Get all contributors for a given work object.
+     * @param work The work to extract contributor from.
+     * @return A list of all the contributors present in the work.
+     */
+    private List<String> getAllContributors(Work work) {
+        WorkContributors workContributors = work.getWorkContributors();
+        if (workContributors == null) {
+            return emptyList();
+        }
+
+        return workContributors.getContributor().stream()
             .map(contributor -> getContributorName(contributor))
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
