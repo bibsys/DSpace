@@ -10,6 +10,13 @@
     </author>
   </info>
 
+  <locale xml:lang="en">
+    <terms>
+      <!-- This fixes a crash when generating citation for a publication with page information -->
+      <term name="page-range-delimiter" form="long">-</term>
+    </terms>
+  </locale>
+
   <macro name="issued">
     <date variable="issued">
       <date-part name="year"/>
