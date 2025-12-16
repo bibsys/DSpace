@@ -20,6 +20,7 @@
 				<entry key="publication-xls" value-ref="xlsCrosswalkPublication"></entry> -->
 				<entry key="publication-apa" value-ref="cslItemDataCrosswalkApa"></entry>
 				<entry key="publication-chicago" value-ref="cslItemDataCrosswalkChicago"></entry>
+                <entry key="publication-fnrs" value-ref="pdfPublicationCrosswalkFnrs"></entry>
 				<!-- <entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry> -->
 
 				<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
@@ -73,6 +74,24 @@
 			</map>
 		</constructor-arg>
 	</bean>
+
+    <bean class="org.dspace.uclouvain.content.integration.crosswalks.DocumentsCrosswalk" id="pdfPublicationCrosswalkFnrs">
+        <property name="templateFileName" value="crosswalks/template/uclouvain/publication-fnrs-template.xsl"/>
+        <property name="fileName" value="publication-fnrs.pdf"/>
+        <property name="mimeType" value="application/pdf"/>
+        <property name="entityType" value="Publication"/>
+        <property name="referCrosswalk" ref="referCrosswalkPublicationUclouvainXml"/>
+    </bean>
+    <bean class="org.dspace.uclouvain.content.integration.crosswalks.UCLouvainReferCrosswalk" id="referCrosswalkPublicationUclouvainXml">
+        <property name="templateFileName" value="crosswalks/template/uclouvain/publication-uclouvain-xml.template"/>
+        <property name="mimeType" value="application/xml; charset=UTF-8"/>
+        <property name="fileName" value="publication-uclouvain.xml"/>
+        <property name="entityType" value="Publication"/>
+        <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-xml.template"/>
+        <property name="converter" ref="xmlValueConverter" />
+        <property name="citationStyle" value="crosswalks/csl/apa.csl" />
+    </bean>
 
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkUCLouvainCustom">
 		<property name="style" value="crosswalks/csl/uclouvain.csl"/>
