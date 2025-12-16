@@ -80,10 +80,10 @@ public class ReferCrosswalk implements ItemExportCrosswalk {
     private static final Pattern FIELD_PATTERN = Pattern.compile("@(.*)@");
 
     @Autowired
-    private ConfigurationService configurationService;
+    protected ConfigurationService configurationService;
 
     @Autowired
-    private ItemService itemService;
+    protected ItemService itemService;
 
     @Autowired
     private DiscoveryConfigurationUtilsService searchConfigurationUtilsService;
@@ -349,7 +349,7 @@ public class ReferCrosswalk implements ItemExportCrosswalk {
         return itemService.getMetadataByMetadataString(item, metadataGroupFieldName).size();
     }
 
-    private List<String> getMetadataValuesForLine(Context context, TemplateLine line, Item item) {
+    protected List<String> getMetadataValuesForLine(Context context, TemplateLine line, Item item) {
 
         if (line.isVirtualField()) {
             VirtualField virtualField = virtualFieldMapper.getVirtualField(line.getVirtualFieldName());

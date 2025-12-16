@@ -142,7 +142,12 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
     }
 
     public void processItem(Item item) {
-        overrideFieldsForPubType(item);
+        // DEV NOTE ::
+        //   In UCLouvain model, the same logical metadata could be dispatched in multiple field depending on
+        //   publication document type. For this reason, we use a specific override method. But as this provider can
+        //   manage multiple items, we need to reset any changes after any item processing.
+        //   So `overrideFieldForPubType` method will return changes fields ...
+        Map<String, Object> originalFields = overrideFieldsForPubType(item);
         CSLItemDataBuilder itemBuilder = new CSLItemDataBuilder();
         itemBuilder.id(String.valueOf(item.getID()));
 
@@ -152,16 +157,21 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
         CSLItemData cslItemData = itemBuilder.build();
         this.items.put(cslItemData.getId(), cslItemData);
+
+        // ... then reset model with original fields
+        resetOriginalFields(originalFields);
     }
 
     /**
      * Overrides some properties of the current class depending on the configuration and type of the publication.
      * 
      * @param item The item to override fields for. Used to extract the publication type.
+     * @return a map of changed fields (key is the field name, value is the original metadata field to restore)
      */
-    private void overrideFieldsForPubType(Item item) {
+    private Map<String, Object> overrideFieldsForPubType(Item item) {
+        Map<String, Object> originalFields = new HashMap<>();
         if ((item.getType() != Constants.ITEM) || !(itemService.getEntityType(item).equals("Publication"))) {
-            return;
+            return originalFields;
         }
         // Get the publication type of the item.
         String publicationType = getMetadataFirstValue(item, type);
@@ -171,6 +181,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
                 try {
                     // retrieve the corresponding field from the current class and try to set its value.
                     Field classField = this.getClass().getDeclaredField(key);
+                    originalFields.put(key, classField.get(this));
                     classField.setAccessible(true);
                     classField.set(this, value);
                 } catch (NoSuchFieldException e) {
@@ -181,6 +192,19 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
                     LOGGER.error("Cannot access field [{}] on class {}", key, this.getClass());
                 }
             });
+        }
+        return originalFields;
+    }
+
+    private void resetOriginalFields(Map<String, Object> fields) {
+        for (Map.Entry<String, Object> entry : fields.entrySet()) {
+            try {
+                Field classField = this.getClass().getDeclaredField(entry.getKey());
+                classField.setAccessible(true);
+                classField.set(this, entry.getValue());
+            } catch (Exception e) {
+                LOGGER.error("Cannot access field [{}] on class {}", entry.getKey(), this.getClass());
+            }
         }
     }
 
@@ -197,7 +221,6 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
     }
 
     protected CSLItemDataBuilder handleStringFields(Item item, CSLItemDataBuilder itemBuilder) {
-
         consumeMetadataIfNotBlank(type, item, value -> itemBuilder.type(getPublicationType(value)));
         consumeIfNotBlank(categories, value -> itemBuilder.categories(getMetadataValues(item, value)));
         consumeMetadataIfNotBlank(language, item, value -> itemBuilder.language(value));

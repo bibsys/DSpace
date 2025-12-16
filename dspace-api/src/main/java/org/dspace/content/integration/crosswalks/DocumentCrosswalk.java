@@ -60,7 +60,7 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
 
     private String entityType;
 
-    private ReferCrosswalk referCrosswalk;
+    protected ReferCrosswalk referCrosswalk;
 
     @Override
     public void disseminate(Context context, DSpaceObject dso, OutputStream out)
@@ -104,7 +104,7 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
         return new ByteArrayInputStream(baos.toByteArray());
     }
 
-    private void transformToDocument(OutputStream out, ByteArrayInputStream xmlInputStream) throws Exception {
+    protected void transformToDocument(OutputStream out, ByteArrayInputStream xmlInputStream) throws Exception {
 
         // the XML file which provides the input
         StreamSource xmlSource = new StreamSource(xmlInputStream);
