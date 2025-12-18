@@ -30,6 +30,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Implementation of {@link ItemExportCrosswalk} to serialize the given items
@@ -42,7 +43,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
 
     @Autowired
-    private ObjectFactory<DSpaceListItemDataProvider> dSpaceListItemDataProviderObjectFactory;
+    @Qualifier("DSpaceListItemDataProvider")
+    protected ObjectFactory<DSpaceListItemDataProvider> dSpaceListItemDataProviderObjectFactory;
 
     @Autowired
     private ItemService itemService;
@@ -134,7 +136,7 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
         return fileName;
     }
 
-    private DSpaceListItemDataProvider getDSpaceListItemDataProviderInstance() {
+    protected DSpaceListItemDataProvider getDSpaceListItemDataProviderInstance() {
         return dSpaceListItemDataProviderObjectFactory.getObject();
     }
 
