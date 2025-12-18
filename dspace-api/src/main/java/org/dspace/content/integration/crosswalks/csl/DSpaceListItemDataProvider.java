@@ -154,6 +154,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
         handleStringFields(item, itemBuilder);
         handleCslNameFields(item, itemBuilder);
         handleCslDateFields(item, itemBuilder);
+        handleAdditionalFields(item, itemBuilder);
 
         CSLItemData cslItemData = itemBuilder.build();
         this.items.put(cslItemData.getId(), cslItemData);
@@ -185,7 +186,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
                     classField.setAccessible(true);
                     classField.set(this, value);
                 } catch (NoSuchFieldException e) {
-                    LOGGER.error(
+                    LOGGER.debug(
                         "Tried to override a non existing property of {}: [{}]", this.getClass(), key
                     );
                 } catch (IllegalAccessException ille) {
@@ -312,6 +313,11 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
         consumeDateIfNotBlank(originalDate, item, itemBuilder::originalDate);
         consumeDateIfNotBlank(submitted, item, itemBuilder::submitted);
 
+        return itemBuilder;
+    }
+
+    protected CSLItemDataBuilder handleAdditionalFields(Item item, CSLItemDataBuilder itemBuilder) {
+        // do nothing here, children classes could override this method.
         return itemBuilder;
     }
 

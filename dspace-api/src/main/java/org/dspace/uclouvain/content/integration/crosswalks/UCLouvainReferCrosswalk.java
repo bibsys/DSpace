@@ -30,6 +30,7 @@ import org.dspace.handle.service.HandleService;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Implementation of {@link ItemExportCrosswalk} to produce an output from an Item starting from a template with some
@@ -43,11 +44,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class UCLouvainReferCrosswalk extends ReferCrosswalk {
 
-    private static final Logger log = LogManager.getLogger(UCLouvainReferCrosswalk.class);
+    protected static final Logger log = LogManager.getLogger(UCLouvainReferCrosswalk.class);
 
     // CLASS ATTRIBUTES ================================================================================================
     @Autowired
-    private ObjectFactory<DSpaceListItemDataProvider> dSpaceListItemDataProviderObjectFactory;
+    @Qualifier("DSpaceListItemDataProvider")
+    protected ObjectFactory<DSpaceListItemDataProvider> dSpaceListItemDataProviderObjectFactory;
     @Autowired
     private HandleService handleService;
 
@@ -58,11 +60,9 @@ public class UCLouvainReferCrosswalk extends ReferCrosswalk {
     // OVERRIDE METHODS ================================================================================================
     @Override
     protected List<String> getMetadataValuesForLine(Context context, TemplateLine line, Item item) {
-
         if (line.getField().equals("item.citation")) {
             return List.of(getCitationForItem(item));
         }
-
         if (line.getField().equals("item.handle")) {
             try {
                 return List.of(handleService.resolveToURL(context, item.getHandle()));
@@ -71,15 +71,15 @@ public class UCLouvainReferCrosswalk extends ReferCrosswalk {
                 return Collections.emptyList();
             }
         }
-
-        if (line.getField().equals("item.issued")) {
-            String itemIssued = itemService.getMetadataFirstValue(item, "dc", "date", "issued", null);
-            return List.of(itemIssued);
-        }
         return super.getMetadataValuesForLine(context, line, item);
     }
 
-    // PRIVATE METHODS =================================================================================================
+    // CLASS METHODS ===================================================================================================
+
+    protected DSpaceListItemDataProvider getDataProviderInstance() {
+        return dSpaceListItemDataProviderObjectFactory.getObject();
+    }
+
     /**
      * Generate a citation for an item.
      * Citation style & format are defined by class attributes (during bean instantiation)
@@ -89,7 +89,7 @@ public class UCLouvainReferCrosswalk extends ReferCrosswalk {
      */
     private String getCitationForItem(Item item) {
         try {
-            DSpaceListItemDataProvider provider = dSpaceListItemDataProviderObjectFactory.getObject();
+            DSpaceListItemDataProvider provider = getDataProviderInstance();
             provider.processItem(item);
             String id = provider.getIds()
                 .stream()
@@ -109,10 +109,9 @@ public class UCLouvainReferCrosswalk extends ReferCrosswalk {
      */
     private void loadStyle(String style) throws IOException {
         try {
-            System.out.println("Loading style: " + style);
             this.style = readXmlStyleContent(style);
         } catch (IOException ioe) {
-            System.out.println("Error loading style !!! Try to load from CSL library");
+            log.warn("Error loading style !!! Try to load from CSL library");
             if (CSL.supportsStyle(style)) {
                 this.style = style;
             } else {
