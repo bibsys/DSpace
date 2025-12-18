@@ -24,7 +24,6 @@
     <property name="editor" value="dc.contributor.editor"/>
     <property name="publisher" value="publication.editor.name"/>
     <property name="publisherPlace" value="publication.editor.location"/>
-
     <property name="numberOfPages" value="publication.numberOfPages" />
     <property name="status" value="publication.publicationStatus"/>
     <property name="containerTitle" value="publication.host.title"/>
@@ -35,10 +34,19 @@
     <!-- TODO: See how to deal with event start and end date -->
     <!-- <property name="eventDate" value=""/> -->
 
-    <property name="typeSpecificFieldMap" ref="typeSpecificFieldMapDef">
-
-    </property>
+    <property name="typeSpecificFieldMap" ref="typeSpecificFieldMapDef"/>
   </bean>
+
+  <!-- FNRS data provider:
+         Configuration in inherited from DSpaceListItemDataProvider
+         This bean could add or modify some metadata into the CSL item data that will be used to generate citation
+  -->
+  <bean id="FnrsListItemDataProvider"
+        class="org.dspace.uclouvain.content.integration.crosswalks.csl.FnrsListItemDataProvider"
+        parent="DSpaceListItemDataProvider"
+        scope="prototype">
+  </bean>
+
 
   <!-- Converts our main type to an exploitable type for the csl engine -->
   <bean name="mapConverterPublicationTypes" class="org.dspace.util.SimpleMapConverter" init-method="init">

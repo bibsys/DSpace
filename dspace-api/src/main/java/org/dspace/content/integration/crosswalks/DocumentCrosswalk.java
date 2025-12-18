@@ -106,6 +106,10 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
 
     protected void transformToDocument(OutputStream out, ByteArrayInputStream xmlInputStream) throws Exception {
 
+        // DEV NOTES :: Debug -- Display XML used to build the PDF (using FO) on console
+        // System.out.println(new String(xmlInputStream.readAllBytes(), StandardCharsets.UTF_8));
+        // xmlInputStream.reset();
+
         // the XML file which provides the input
         StreamSource xmlSource = new StreamSource(xmlInputStream);
 
@@ -133,6 +137,7 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
         transformer.setParameter("dspaceDir", getDSpaceDir());
         transformer.setParameter("currentDate", getCurrentDate());
         transformer.setParameter("fontFamily", getFontFamily());
+        transformer.setParameter("assetsDir", getAssetsDir());
         return transformer;
     }
 
@@ -158,6 +163,10 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
 
     private String getConfigDir() {
         return getDSpaceDir() + File.separator + "config";
+    }
+
+    private String getAssetsDir() {
+        return getDSpaceDir() + File.separator + "assets";
     }
 
     private String getImageDir() {
