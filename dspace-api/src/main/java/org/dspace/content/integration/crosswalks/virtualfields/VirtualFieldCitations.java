@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
  * Implementation of {@link VirtualField} that generates the citation for the
@@ -59,6 +60,7 @@ public class VirtualFieldCitations implements VirtualField {
     private DiscoveryConfigurationUtilsService searchConfigurationUtilsService;
 
     @Autowired
+    @Qualifier("DSpaceListItemDataProvider")
     private ObjectFactory<DSpaceListItemDataProvider> dSpaceListItemDataProviderObjectFactory;
 
     @Autowired
