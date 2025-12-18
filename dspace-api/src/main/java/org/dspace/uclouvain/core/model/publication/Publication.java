@@ -26,6 +26,10 @@ public class Publication extends ItemModel {
     // CLASS CONSTANTS =================================================================================================
     public static final String ENTITY_TYPE = "Publication";
 
+    public static final String STATUS_SUBMITTED = "submitted";
+    public static final String STATUS_INPRESS = "accepted/in-press";
+    public static final String STATUS_PUBLISHED = "published";
+
     // METADATA FIELDS DEFINITIONS =====================================================================================
     public static final String AUTHOR_NAME_FIELD =
             configService.getProperty(FIELD_PREFIX + "publication.authorName.field", "dc.contributor.author");
