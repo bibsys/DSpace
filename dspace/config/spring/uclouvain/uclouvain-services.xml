@@ -62,6 +62,7 @@
     <bean id="publicationService" class="org.dspace.uclouvain.services.impl.PublicationServiceImpl" />
     <bean id="uclouvainProfileService" class="org.dspace.uclouvain.services.UCLouvainProfileServiceImpl"/>
     <bean id="idmPersonValidityService" class="org.dspace.uclouvain.profileIngester.services.IDMPersonValidityServiceImpl"/>
+    <bean id="uclouvainExportService" class="org.dspace.uclouvain.export.services.UCLouvainExportServiceImpl"/>
 
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />

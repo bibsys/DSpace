@@ -91,4 +91,11 @@ public interface StreamDisseminationCrosswalk {
     public default boolean isPubliclyReadable() {
         return false;
     }
+
+    /**
+     * Add specific context parameter to the export generation.
+     */
+    public default void addTransformerParameter(String key, String value) {
+        return;
+    }
 }
