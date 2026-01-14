@@ -10,12 +10,12 @@ package org.dspace.uclouvain.citations;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
@@ -114,14 +114,18 @@ public class UCLouvainCitationsServiceImpl implements UCLouvainCitationsService 
         throws UnknownCitationFormatException {
         String regex = buildCitationPattern(item, style, format);
         Predicate<String> isMatching = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).asPredicate();
-        return getAvailableCitationsCrosswalks(context, item)
-            .stream()
-            .filter(isMatching)
-            .collect(Collectors.toMap(
-                crosswalk -> crosswalk,
-                crosswalk -> getCitationForItemByCrosswalk(context, item, crosswalk),
-                (existing, replacement) -> existing) //(security) if double exists, keep first
-            );
+        Map<String, String> result = new HashMap<>();
+        for (String crosswalk : getAvailableCitationsCrosswalks(context, item)) {
+            if (isMatching.test(crosswalk)) {
+                String citation = getCitationForItemByCrosswalk(context, item, crosswalk);
+                if (citation == null) {
+                    logger.warn("Generation citation failed :: ({}) for item#{}", crosswalk, item.getID());
+                } else {
+                    result.put(crosswalk, citation);
+                }
+            }
+        }
+        return result;
     }
 
     /**
