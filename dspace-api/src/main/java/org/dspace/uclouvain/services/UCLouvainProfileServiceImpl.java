@@ -13,6 +13,7 @@ import static org.dspace.content.authority.Choices.CF_UNSET;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,6 +29,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Context;
 import org.dspace.discovery.DiscoverQuery;
+import org.dspace.discovery.DiscoverResult;
 import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.indexobject.IndexableInProgressSubmission;
@@ -83,9 +85,40 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
         return findOneByAttribute(context, "person.email:" + email);
     }
 
+    public Item findByIdentifiers(Context context, String uuid, String fgs) {
+        String query = null;
+        if (!StringUtils.isBlank(uuid)) {
+            query = "%s:\"%s\"".formatted("search.resourceid", uuid);
+        }
+        if (!StringUtils.isBlank(fgs)) {
+            query = "%s:\"%s\"".formatted("dc.identifier.fgs", fgs);
+        }
+        if (query == null) {
+            throw new IllegalArgumentException("At least one search criteria is required");
+        }
+
+        // EXECUTE SOLR QUERY
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
+        discoverQuery.addFilterQueries("dspace.entity.type:" + PROFILE_ENTITY_TYPE);
+        discoverQuery.setMaxResults(1);
+        discoverQuery.setQuery(query);
+        try {
+            DiscoverResult result = searchService.search(context, discoverQuery);
+            return result.getIndexableObjects()
+                .stream()
+                .map(indexableObject -> ((IndexableItem) indexableObject).getIndexedObject())
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+        } catch (SearchServiceException sse) {
+            return null;
+        }
+    }
+
     public List<Item> findLinkedPublications(Context context, Item profile) {
         if (itemService.getEntityType(profile).equals(PROFILE_ENTITY_TYPE)) {
-            throw new IllegalArgumentException("`profile` paramter isn't a valid Person entity type");
+            throw new IllegalArgumentException("`profile` parameter isn't a valid Person entity type");
         }
         DiscoverQuery dq = new DiscoverQuery();
         dq.addDSpaceObjectFilter(IndexableWorkspaceItem.TYPE);

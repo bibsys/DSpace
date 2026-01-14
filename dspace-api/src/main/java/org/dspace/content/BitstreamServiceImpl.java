@@ -283,12 +283,22 @@ public class BitstreamServiceImpl extends DSpaceObjectServiceImpl<Bitstream> imp
         // Then it's impossible to get the related parent object using `getParentObject` method.
         // To prevent this issue, we send the parent object UUID as `Object` of this event.
         DSpaceObject parentObject = getParentObject(context, bitstream);
-        context.addEvent(new Event(
-                Event.DELETE,
-                Constants.BITSTREAM, bitstream.getID(),
-                parentObject.getType(), parentObject.getID(),
-                String.valueOf(bitstream.getSequenceID()),
-                getIdentifiers(context, bitstream)));
+        if (parentObject != null) {
+            context.addEvent(new Event(
+                    Event.DELETE,
+                    Constants.BITSTREAM, bitstream.getID(),
+                    parentObject.getType(), parentObject.getID(),
+                    String.valueOf(bitstream.getSequenceID()),
+                    getIdentifiers(context, bitstream)));
+        } else {
+            // NOTE: If no parent object is found, do not send it as object in the event.
+            context.addEvent(new Event(
+                    Event.DELETE,
+                    Constants.BITSTREAM, bitstream.getID(),
+                    String.valueOf(bitstream.getSequenceID()),
+                    getIdentifiers(context, bitstream)));
+        }
+
 
         // Remove bitstream itself
         bitstream.setDeleted(true);

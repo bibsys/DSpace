@@ -29,10 +29,13 @@ import org.dspace.app.rest.model.RestModel;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.app.rest.utils.Utils;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.crosswalk.CrosswalkException;
 import org.dspace.core.Context;
 import org.dspace.eperson.InvalidReCaptchaException;
 import org.dspace.orcid.exception.OrcidValidationException;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.exceptions.AuthorNotFoundException;
+import org.dspace.uclouvain.exceptions.CrosswalkNotFoundException;
 import org.dspace.uclouvain.itemValidators.exceptions.ItemValidationException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -282,6 +285,30 @@ public class DSpaceApiExceptionControllerAdvice extends ResponseEntityExceptionH
     protected void handleItemValidationException(
         HttpServletRequest request, HttpServletResponse response, ItemValidationException ex) throws IOException {
         sendErrorResponse(request, response, ex, ex.getTranslatableMessage(), HttpStatus.CONFLICT.value());
+    }
+
+    @ExceptionHandler(AuthorNotFoundException.class)
+    protected void handleAuthorNotFoundException(
+        HttpServletRequest request, HttpServletResponse response, AuthorNotFoundException ex
+    ) throws IOException {
+        log.warn(ex);
+        sendErrorResponse(request, response, ex, ex.getLocalizedMessage(), HttpStatus.BAD_REQUEST.value());
+    }
+
+    @ExceptionHandler(CrosswalkException.class)
+    protected void handleCrosswalkException(
+        HttpServletRequest request, HttpServletResponse response, CrosswalkException ex
+    ) throws IOException {
+        log.error(ex);
+        sendErrorResponse(request, response, ex, ex.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @ExceptionHandler(CrosswalkNotFoundException.class)
+    protected void handleCrosswalkNotFoundException(
+        HttpServletRequest request, HttpServletResponse response, CrosswalkException ex
+    ) throws IOException {
+        log.info(ex);
+        sendErrorResponse(request, response, ex, ex.getLocalizedMessage(), HttpStatus.BAD_REQUEST.value());
     }
 
     @ExceptionHandler(Exception.class)

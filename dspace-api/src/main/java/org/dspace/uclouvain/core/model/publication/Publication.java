@@ -43,6 +43,10 @@ public class Publication extends ItemModel {
             configService.getProperty(FIELD_PREFIX + "publication.authorRole.field", "authors.role");
     public static final String AUTHOR_FGS_FIELD =
             configService.getProperty(FIELD_PREFIX + "publication.authorFgs.field", "authors.identifier.fgs");
+    public static final String MAIN_TYPE_FIELD =
+            configService.getProperty(FIELD_PREFIX + "maintype.field", "dc.type.maintype");
+    public static final String SUB_TYPE_FIELD =
+            configService.getProperty(FIELD_PREFIX + "subtype.field", "dc.type.subtype");
 
     // CONSTRUCTOR =====================================================================================================
     public Publication(Item item) throws InvalidModelEntityTypeException {
@@ -97,5 +101,13 @@ public class Publication extends ItemModel {
             .filter(author -> Objects.equals(author.getPlace(), place))
             .findFirst()
             .orElse(null);
+    }
+
+    public String getMainType() {
+        return this.getFirstMetadataValue(MAIN_TYPE_FIELD);
+    }
+
+    public String getSubType() {
+        return this.getFirstMetadataValue(SUB_TYPE_FIELD);
     }
 }

@@ -78,7 +78,7 @@
 				<fo:simple-page-master master-name="simpleA4"
 					                   page-height="29.7cm" page-width="21cm"
                                        margin="0cm">
-                    <fo:region-body margin-top="4cm" margin-bottom="2cm" margin-left="1cm" margin-right="1cm"/>
+                    <fo:region-body margin-top="5cm" margin-bottom="2.5cm" margin-left="1cm" margin-right="1cm"/>
                     <fo:region-before extent="4cm"/>
                     <fo:region-after extent="2cm"/>
 				</fo:simple-page-master>
