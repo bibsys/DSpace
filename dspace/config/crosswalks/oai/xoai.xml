@@ -9,30 +9,29 @@
 
 	Developed by DSpace @ Lyncode <dspace@lyncode.com>
  -->
-<Configuration indented="false" maxListIdentifiersSize="100" maxListRecordsSize="100"
-    maxListSetsSize="100" stylesheet="static/style.xsl" xmlns="http://www.lyncode.com/XOAIConfiguration">
+<Configuration indented="true"
+               maxListIdentifiersSize="100"
+               maxListRecordsSize="100"
+               maxListSetsSize="100"
+               stylesheet="static/style.xsl" xmlns="http://www.lyncode.com/XOAIConfiguration">
 
     <Contexts>
         <Context baseurl="request" name="Default Context">
-            <!-- Restrict access to hidden items by default -->
             <Filter ref="defaultFilter"/>
-
             <Format ref="oaidc"/>
             <Format ref="mets"/>
-            <!--  <Format ref="xoai"/>-->
             <Format ref="didl"/>
-            <Format ref="dim"/>
-            <Format ref="ore"/>
-            <Format ref="rdf"/>
-            <Format ref="etdms"/>
             <Format ref="mods"/>
-            <Format ref="qdc"/>
-            <Format ref="marc"/>
-            <Format ref="uketd_dc"/>
-            <Format ref="rioxx"/>
-            <!--<Format ref="junii2" />-->
             <Description>
-                This is the default context of the DSpace OAI-PMH data provider.
+                Default context to retrieve all publicly accessible publications
+            </Description>
+        </Context>
+
+        <Context baseurl="periscops" name="FNRS Periscops project">
+            <Filter ref="periscopsFilter"/>
+            <Format ref="mets-fnrs"/>
+            <Description>
+                Default context to disseminate all publication eligible for FNRS Periscops project
             </Description>
         </Context>
 
@@ -170,6 +169,12 @@
         <Format id="mets">
             <Prefix>mets</Prefix>
             <XSLT>metadataFormats/mets.xsl</XSLT>
+            <Namespace>http://www.loc.gov/METS/</Namespace>
+            <SchemaLocation>http://www.loc.gov/standards/mets/mets.xsd</SchemaLocation>
+        </Format>
+        <Format id="mets-fnrs">
+            <Prefix>mets</Prefix>
+            <XSLT>metadataFormats/mets_fnrs.xsl</XSLT>
             <Namespace>http://www.loc.gov/METS/</Namespace>
             <SchemaLocation>http://www.loc.gov/standards/mets/mets.xsd</SchemaLocation>
         </Format>
@@ -597,11 +602,8 @@
 
         <!-- Default filter for records returned by OAI-PMH.
              By default, return an Item record:
-                * If it is publicly accessible
-                * * OR it has been withdrawn (in order to display a tombstone record).
-                * AND doesn't have a dspace.entity.type field
-                * * OR the dspace.entity.type is a Publication
-                * limiting the results only to Publications as expected
+                * If it is publicly accessible OR it has been withdrawn (in order to display a tombstone record).
+                * AND the dspace.entity.type is a 'Publication' limiting the results only to publications as expected
              This filter is used by the default context ([oai]/request).
         -->
         <Filter id="defaultFilter">
@@ -609,34 +611,61 @@
                 <And>
                     <LeftCondition>
                         <Or>
-                            <LeftCondition>
-                                <Custom ref="itemAccessCondition"/>
-                            </LeftCondition>
-                            <RightCondition>
-                                <Custom ref="itemWithdrawnCondition"/>
-                            </RightCondition>
+                            <LeftCondition><Custom ref="itemAccessCondition"/></LeftCondition>
+                            <RightCondition><Custom ref="itemWithdrawnCondition"/></RightCondition>
                         </Or>
                     </LeftCondition>
                     <RightCondition>
-                        <Or>
-                            <LeftCondition>
-                                <Not>
-                                    <Condition>
-                                        <Custom ref="relationshipTypeExistsCondition"/>
-                                    </Condition>
-                                </Not>
-                            </LeftCondition>
-                            <RightCondition>
-                                <Custom ref="isPublicationEntityCondition"/>
-                            </RightCondition>
-                        </Or>
+                        <Custom ref="isPublicationEntityCondition"/>
                     </RightCondition>
                 </And>
             </Definition>
         </Filter>
 
-        <!-- This condition determines if an Item has a "dc.type" field
-             which contains "Thesis". -->
+        <!-- Filter use to retrieve Item eligible for "FNRS Periscops" project returned by OAI-PMH
+             To be eligible, Item must:
+               * Have 'dspace.entity.type' equals to "Publication"
+               * Not have "submitted" as publication status
+               * publicly accessible OR it has been withdrawn (in order to display a tombstone record).
+        -->
+        <Filter id="periscopsFilter">
+            <Definition>
+                <And>
+                    <LeftCondition>
+                        <Or>
+                            <LeftCondition><Custom ref="itemAccessCondition"/></LeftCondition>
+                            <RightCondition><Custom ref="itemWithdrawnCondition"/></RightCondition>
+                        </Or>
+                    </LeftCondition>
+                    <RightCondition>
+                        <And>
+                            <LeftCondition>
+                                <Not>
+                                    <Condition><Custom ref="notSubmittedPublicationStatus"/></Condition>
+                                </Not>
+                            </LeftCondition>
+                            <RightCondition><Custom ref="isPublicationEntityCondition"/></RightCondition>
+                        </And>
+                    </RightCondition>
+                </And>
+            </Definition>
+        </Filter>
+
+        <!-- ======================================================================================================= -->
+        <!-- CUSTOM CONDITIONS                                                                                       -->
+        <!-- ======================================================================================================= -->
+
+        <!-- This condition determines if an Item has a "publication.publicationStatus" field which equals "submitted". -->
+        <CustomCondition id="notSubmittedPublicationStatus">
+            <Class>org.dspace.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
+            <Configuration>
+                <string name="field">publication.publicationStatus</string>
+                <string name="operator">equal</string>
+                <string name="value">submitted</string>
+            </Configuration>
+        </CustomCondition>
+
+        <!-- This condition determines if an Item has a "dc.type" field which contains "Thesis". -->
         <CustomCondition id="thesisDocumentTypeCondition">
             <Class>org.dspace.xoai.filter.DSpaceAtLeastOneMetadataFilter</Class>
             <Configuration>
