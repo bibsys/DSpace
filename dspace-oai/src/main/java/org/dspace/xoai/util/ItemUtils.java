@@ -12,12 +12,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.lyncode.xoai.dataprovider.xml.xoai.Element;
 import com.lyncode.xoai.dataprovider.xml.xoai.Metadata;
 import com.lyncode.xoai.util.Base64Utils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.util.factory.UtilServiceFactory;
@@ -46,7 +49,11 @@ import org.dspace.handle.factory.HandleServiceFactory;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.citations.UCLouvainCitationsService;
+import org.dspace.uclouvain.citations.UnknownCitationFormatException;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.xoai.data.DSpaceItem;
+import org.springframework.lang.NonNull;
 
 /**
  * @author Lyncode Development Team (dspace at lyncode dot com)
@@ -81,6 +88,9 @@ public class ItemUtils {
 
     private static final HandleService handleService = HandleServiceFactory
             .getInstance().getHandleService();
+
+    private static final UCLouvainCitationsService citationsService = UCLouvainServiceFactory
+            .getInstance().getCitationsService();
 
     public static Integer MAX_DEEP = 2;
     public static String AUTHORITY = "authority";
@@ -392,6 +402,31 @@ public class ItemUtils {
     }
 
     /**
+     * This method allow to safely create a citation for a specific item.
+     * The citation can only be created if the Item is a "Publication" (no citation for OrgUnit, ...)
+     * @param context the DSpace application context
+     * @param item the item for which create the citation
+     * @param style the crosswalk name to use for the citation
+     * @return the citation content if it could be generated
+     */
+    private static String getCitation(Context context, Item item, @NonNull String style) {
+        try {
+            String citation = citationsService
+                .getCitationForItem(context, item, style)
+                .values().stream()
+                .findFirst().orElse(null);
+            if (citation == null) {
+                log.debug("Unable to generate citation for item#{}({}) using {}",
+                    item.getID(), itemService.getEntityType(item), style);
+            }
+            return citation;
+        } catch (UnknownCitationFormatException ucfe) {
+            log.warn(ucfe.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * Utility method to retrieve a structured XML in XOAI format
      * @param context
      * @param item
@@ -432,6 +467,21 @@ public class ItemUtils {
             metadata.getElement().add(bundles);
         } catch (SQLException e) {
             log.warn(e.getMessage(), e);
+        }
+
+        // Adding some citation about this item into metadata. This is useful to generate some OAI export result (FNRS)
+        String[] citationsFormats = {"apa"}; // List of citation to build
+        List<Element.Field> citationsValues = Arrays.stream(citationsFormats)
+            .map(format -> {
+                String citation = getCitation(context, item, format);
+                return StringUtils.isNotBlank(citation) ? createValue(format, citation.trim()) : null;
+            })
+            .filter(Objects::nonNull)
+            .toList();
+        if (!citationsValues.isEmpty()) {
+            Element citations = create("citations");
+            citations.getField().addAll(citationsValues);
+            metadata.getElement().add(citations);
         }
 
         // Other info
