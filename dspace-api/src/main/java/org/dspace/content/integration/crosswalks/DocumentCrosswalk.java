@@ -15,6 +15,8 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import javax.xml.transform.Result;
@@ -61,6 +63,8 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
     private String entityType;
 
     protected ReferCrosswalk referCrosswalk;
+
+    protected Map<String, String> additionalTransformerParams = new HashMap<>();
 
     @Override
     public void disseminate(Context context, DSpaceObject dso, OutputStream out)
@@ -138,7 +142,14 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
         transformer.setParameter("currentDate", getCurrentDate());
         transformer.setParameter("fontFamily", getFontFamily());
         transformer.setParameter("assetsDir", getAssetsDir());
+        processAdditionalParameters(transformer, additionalTransformerParams);
         return transformer;
+    }
+
+    private void processAdditionalParameters(Transformer transformer, Map<String, String> params) {
+        params.entrySet().stream().forEach((param) -> {
+            transformer.setParameter(param.getKey(), param.getValue());
+        });
     }
 
     private String getCurrentDate() {
@@ -202,5 +213,7 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
         return Optional.ofNullable(entityType);
     }
 
-
+    public void addTransformerParameter(String key, String value) {
+        this.additionalTransformerParams.put(key, value);
+    }
 }
