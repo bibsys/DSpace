@@ -38,13 +38,15 @@
     <xsl:template name="translate-category-name">
         <xsl:param name="name"/>
         <xsl:choose>
-            <xsl:when test="$name='fnrs.category.1'">Ouvrages publiés comme auteur, co-auteur ou éditeur</xsl:when>
-            <xsl:when test="$name='fnrs.category.2'">Parties d'ouvrages publiés comme auteur ou co-auteur</xsl:when>
-            <xsl:when test="$name='fnrs.category.3'">Articles publiés dans des journaux à comité de lecture</xsl:when>
-            <xsl:when test="$name='fnrs.category.4'">Articles publiés dans des actes de conférences</xsl:when>
-            <xsl:when test="$name='fnrs.category.5'">Présentations orales dans des conférences avec comité scientifique de sélection</xsl:when>
-            <xsl:when test="$name='fnrs.category.6'">Brevet</xsl:when>
-            <xsl:otherwise>Aucune catégorie</xsl:otherwise>
+            <xsl:when test="$name='text::patent'">Brevet</xsl:when>
+            <xsl:when test="$name='text::book'">Monographie</xsl:when>
+            <xsl:when test="$name='text::book-part'">Contribution à ouvrage collectif</xsl:when>
+            <xsl:when test="$name='text::conference-speech'">Communication à colloque</xsl:when>
+            <xsl:when test="$name='text::journal-article'">Article de périodique</xsl:when>
+            <xsl:when test="$name='text::report'">Rapport</xsl:when>
+            <xsl:when test="$name='text::working-paper'">Working paper</xsl:when>
+            <xsl:when test="$name='text::thesis'">Thèse</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$name"/></xsl:otherwise>
         </xsl:choose>
     </xsl:template>
     <!-- Allow to highlight all occurrences of a specific token into a text. -->
@@ -123,11 +125,11 @@
                 </fo:static-content>
                 <!-- BODY REGION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 				<fo:flow flow-name="xsl-region-body" font-size="{$fontSize}">
-                    <fo:block text-align="center">
+		         	<fo:block text-align="center">
                         <fo:block font-size="{$xlFontSize}" font-weight="bold">
                             <xsl:value-of select="$documentTitle"/>
                         </fo:block>
-                        <fo:block font-size="{$fontSize}" color="$secondaryColor">Liste établie conformément à la structure F.R.S.-FNRS.</fo:block>
+                        <fo:block font-size="{$fontSize}" color="$secondaryColor">Bibliographie certifiée FWB</fo:block>
                     </fo:block>
 					<xsl:for-each select="Publication[generate-id()=generate-id(key('categorySection', normalize-space(Category))[1])]">
                         <xsl:sort select="normalize-space(Category)" order="ascending"/>
