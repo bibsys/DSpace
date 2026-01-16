@@ -123,10 +123,11 @@
                 </fo:static-content>
                 <!-- BODY REGION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 				<fo:flow flow-name="xsl-region-body" font-size="{$fontSize}">
-		         	<fo:block text-align="center">
-                        <fo:inline font-size="{$xlFontSize}" font-weight="bold">
+                    <fo:block text-align="center">
+                        <fo:block font-size="{$xlFontSize}" font-weight="bold">
                             <xsl:value-of select="$documentTitle"/>
-                        </fo:inline>
+                        </fo:block>
+                        <fo:block font-size="{$fontSize}" color="$secondaryColor">Liste établie conformément à la structure F.R.S.-FNRS.</fo:block>
                     </fo:block>
 					<xsl:for-each select="Publication[generate-id()=generate-id(key('categorySection', normalize-space(Category))[1])]">
                         <xsl:sort select="normalize-space(Category)" order="ascending"/>
