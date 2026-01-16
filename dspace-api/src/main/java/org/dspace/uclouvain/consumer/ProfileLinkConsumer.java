@@ -28,6 +28,7 @@ import org.dspace.event.Event;
 import org.dspace.profile.ResearcherProfile;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.utils.DSpace;
@@ -104,7 +105,7 @@ public class ProfileLinkConsumer implements Consumer {
                     logger.debug("Update needed at place " + place);
                     // Once we have the publication and the place,
                     // we need to update the metadata values of the corresponding author.
-                    Publication publication = new Publication(item);
+                    Publication publication = PublicationFactory.build(item);
                     String previousRole = publication.getAuthor(place).getRole();
                     // Set values of the author for the found place.
                     publicationService.setAuthor(

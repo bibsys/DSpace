@@ -22,6 +22,7 @@ import org.dspace.discovery.SolrServiceIndexPlugin;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
 import org.dspace.uclouvain.validation.fnrs.FNRSValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class SolrServicePublicationIndexingPlugin
     @SuppressWarnings("rawtypes")
     public void additionalIndex(Context context, IndexableObject dso, SolrInputDocument document) {
         try {
-            Publication publication = new Publication(getItem(dso));
+            Publication publication = PublicationFactory.build(getItem(dso));
             addFWBValidationKeys(context, publication.getItem(), document);
             addFNRSValidationKeys(publication.getItem(), document);
             addAuthorsIndexingKeys(publication, document);
