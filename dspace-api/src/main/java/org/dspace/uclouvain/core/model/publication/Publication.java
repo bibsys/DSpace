@@ -49,7 +49,7 @@ public class Publication extends ItemModel {
             configService.getProperty(FIELD_PREFIX + "subtype.field", "dc.type.subtype");
 
     // CONSTRUCTOR =====================================================================================================
-    public Publication(Item item) throws InvalidModelEntityTypeException {
+    protected Publication(Item item) throws InvalidModelEntityTypeException {
         super(item);
         if (!Objects.equals(itemService.getEntityType(item), ENTITY_TYPE)) {
             throw new InvalidModelEntityTypeException(item, ENTITY_TYPE);

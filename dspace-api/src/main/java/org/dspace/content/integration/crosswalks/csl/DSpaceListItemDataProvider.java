@@ -51,86 +51,86 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DSpaceListItemDataProvider.class);
 
-    private final ItemService itemService;
+    protected final ItemService itemService;
 
-    private String id;
-    private String type;
-    private String categories;
-    private String language;
-    private String journalAbbreviation;
-    private String shortTitle;
-    private String author;
-    private String collectionEditor;
-    private String composer;
-    private String containerAuthor;
-    private String director;
-    private String editor;
-    private String editorialDirector;
-    private String interviewer;
-    private String illustrator;
-    private String originalAuthor;
-    private String recipient;
-    private String reviewedAuthor;
-    private String translator;
-    private String accessed;
-    private String container;
-    private String eventDate;
-    private String issued;
-    private String originalDate;
-    private String submitted;
-    private String abstrct;
-    private String annote;
-    private String archive;
-    private String archiveLocation;
-    private String archivePlace;
-    private String authority;
-    private String callNumber;
-    private String chapterNumber;
-    private String citationNumber;
-    private String citationLabel;
-    private String collectionNumber;
-    private String collectionTitle;
-    private String containerTitle;
-    private String containerTitleShort;
-    private String dimensions;
-    private String DOI;
-    private String edition;
-    private String event;
-    private String eventPlace;
-    private String firstReferenceNoteNumber;
-    private String genre;
-    private String ISBN;
-    private String ISSN;
-    private String issue;
-    private String jurisdiction;
-    private String keyword;
-    private String locator;
-    private String medium;
-    private String note;
-    private String number;
-    private String numberOfPages;
-    private String numberOfVolumes;
-    private String originalPublisher;
-    private String originalPublisherPlace;
-    private String originalTitle;
-    private String page;
-    private String pageFirst;
-    private String PMCID;
-    private String PMID;
-    private String publisher;
-    private String publisherPlace;
-    private String references;
-    private String reviewedTitle;
-    private String scale;
-    private String section;
-    private String source;
-    private String status;
-    private String title;
-    private String titleShort;
-    private String URL;
-    private String version;
-    private String volume;
-    private String yearSuffix;
+    protected String id;
+    protected String type;
+    protected String categories;
+    protected String language;
+    protected String journalAbbreviation;
+    protected String shortTitle;
+    protected String author;
+    protected String collectionEditor;
+    protected String composer;
+    protected String containerAuthor;
+    protected String director;
+    protected String editor;
+    protected String editorialDirector;
+    protected String interviewer;
+    protected String illustrator;
+    protected String originalAuthor;
+    protected String recipient;
+    protected String reviewedAuthor;
+    protected String translator;
+    protected String accessed;
+    protected String container;
+    protected String eventDate;
+    protected String issued;
+    protected String originalDate;
+    protected String submitted;
+    protected String abstrct;
+    protected String annote;
+    protected String archive;
+    protected String archiveLocation;
+    protected String archivePlace;
+    protected String authority;
+    protected String callNumber;
+    protected String chapterNumber;
+    protected String citationNumber;
+    protected String citationLabel;
+    protected String collectionNumber;
+    protected String collectionTitle;
+    protected String containerTitle;
+    protected String containerTitleShort;
+    protected String dimensions;
+    protected String DOI;
+    protected String edition;
+    protected String event;
+    protected String eventPlace;
+    protected String firstReferenceNoteNumber;
+    protected String genre;
+    protected String ISBN;
+    protected String ISSN;
+    protected String issue;
+    protected String jurisdiction;
+    protected String keyword;
+    protected String locator;
+    protected String medium;
+    protected String note;
+    protected String number;
+    protected String numberOfPages;
+    protected String numberOfVolumes;
+    protected String originalPublisher;
+    protected String originalPublisherPlace;
+    protected String originalTitle;
+    protected String page;
+    protected String pageFirst;
+    protected String PMCID;
+    protected String PMID;
+    protected String publisher;
+    protected String publisherPlace;
+    protected String references;
+    protected String reviewedTitle;
+    protected String scale;
+    protected String section;
+    protected String source;
+    protected String status;
+    protected String title;
+    protected String titleShort;
+    protected String URL;
+    protected String version;
+    protected String volume;
+    protected String yearSuffix;
 
     private SimpleMapConverter typeConverter;
 
@@ -181,7 +181,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
             typeSpecificFieldMap.get(publicationType).forEach((key, value) -> {
                 try {
                     // retrieve the corresponding field from the current class and try to set its value.
-                    Field classField = this.getClass().getDeclaredField(key);
+                    Field classField = getFieldIncludingParents(this.getClass(), key);
                     originalFields.put(key, classField.get(this));
                     classField.setAccessible(true);
                     classField.set(this, value);
@@ -190,11 +190,24 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
                         "Tried to override a non existing property of {}: [{}]", this.getClass(), key
                     );
                 } catch (IllegalAccessException ille) {
-                    LOGGER.error("Cannot access field [{}] on class {}", key, this.getClass());
+                    LOGGER.debug("Cannot access field [{}] on class {}", key, this.getClass());
                 }
             });
         }
         return originalFields;
+    }
+
+    /** Search for a declared field into class hierarchy */
+    private static Field getFieldIncludingParents(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        Class<?> current = clazz;
+        while (current != null) {
+            try {
+                return current.getDeclaredField(fieldName);
+            } catch (NoSuchFieldException e) {
+                current = current.getSuperclass();
+            }
+        }
+        throw new NoSuchFieldException(fieldName);
     }
 
     private void resetOriginalFields(Map<String, Object> fields) {
@@ -204,7 +217,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
                 classField.setAccessible(true);
                 classField.set(this, entry.getValue());
             } catch (Exception e) {
-                LOGGER.error("Cannot access field [{}] on class {}", entry.getKey(), this.getClass());
+                LOGGER.debug("Cannot access field [{}] on class {}", entry.getKey(), this.getClass());
             }
         }
     }
@@ -339,7 +352,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
             .toArray(CSLName[]::new);
     }
 
-    private CSLName toCSLName(DCPersonName name) {
+    protected CSLName toCSLName(DCPersonName name) {
         String lastName = StringUtils.isNotBlank(name.getLastName()) ? name.getLastName() : null;
         String firstName = StringUtils.isNotBlank(name.getFirstNames()) ? name.getFirstNames() : null;
         return new CSLName(lastName, firstName, null, null, null, null, null, null, null, null, null, null);
@@ -379,7 +392,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
         }
     }
 
-    private void consumeCSLNamesIfNotBlank(String value, Item item, Consumer<CSLName[]> consumer) {
+    protected void consumeCSLNamesIfNotBlank(String value, Item item, Consumer<CSLName[]> consumer) {
         if (StringUtils.isNotBlank(value)) {
             consumer.accept(getCslNameFromMetadataValue(item, value));
         }
