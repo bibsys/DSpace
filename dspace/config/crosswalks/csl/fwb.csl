@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0"  demote-non-dropping-particle="never" page-range-format="expanded" default-locale="fr-FR">
+  <info>
+    <title>Fédération Wallonie-Bruxelles citation style</title>
+    <title-short>FWB</title-short>
+    <id>http://www.uclouvain.be/styles/fwb-style</id>
+    <updated>2026-01-16T11:03:00+00:00</updated>
+    <author>
+      <name>Michotte Renaud</name>
+      <mail>renaud.michotte@uclouvain.be</mail>
+    </author>
+  </info>
+
+  <!-- LOCALE ====================================================================================================== -->
+  <!-- Default ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <locale>
+    <terms>
+      <term name="contributor" form="short">
+        <single>col.</single>
+        <multiple>colls.</multiple>
+      </term>
+      <term name="contributor" form="long">
+        <single>collaborator</single>
+        <multiple>collaborators</multiple>
+      </term>
+      <term name="director" form="short">
+        <single>sup.</single>
+        <multiple>sups.</multiple>
+      </term>
+      <term name="director" form="long">
+        <single>supervisor</single>
+        <multiple>supervisors</multiple>
+      </term>
+      <term name="editorial-director" form="short">
+        <single>ed.</single>
+        <multiple>eds.</multiple>
+      </term>
+      <term name="editorial-director" form="long">
+        <single>editor</single>
+        <multiple>editors</multiple>
+      </term>
+      <term name="into" form="long">into</term>
+      <term name="page-range-delimiter" form="long">-</term>
+      <term name="translator" form="short">trans.</term>
+      <term name="translator" form="long">
+        <single>translator</single>
+        <multiple>translators</multiple>
+      </term>
+    </terms>
+  </locale>
+  <!-- English (override) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <locale xml:lang="en">
+    <terms>
+      <term name="no date" form="long">no date</term>
+      <term name="no date" form="short">n.d.</term>
+    </terms>
+  </locale>
+  <!-- French (override) ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <locale xml:lang="fr">
+    <terms>
+      <term name="no date" form="long">sans date</term>
+      <term name="no date" form="short">s.d.</term>
+    </terms>
+    <term name="editorial-director" form="long">
+      <single>éditeur</single>
+      <multiple>éditeurs</multiple>
+    </term>
+    <term name="contributor" form="long">
+      <single>collaborateur</single>
+      <multiple>collaborateurs</multiple>
+    </term>
+    <term name="translator" form="short">
+      <single>trad.</single>
+      <multiple>trads.</multiple>
+    </term>
+    <term name="translator" form="short">
+      <single>traducteur</single>
+      <multiple>traducteurs</multiple>
+    </term>
+    <term name="director" form="short">
+      <single>prom.</single>
+      <multiple>proms.</multiple>
+    </term>
+    <term name="director" form="long">
+      <single>promoteur</single>
+      <multiple>promoteurs</multiple>
+    </term>
+  </locale>
+
+  <!-- MACRO ======================================================================================================= -->
+  <!-- DATE ISSUED ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="issued">
+    <group delimiter=" " prefix="(" suffix=")">
+      <choose>
+        <if is-uncertain-date="issued">
+          <text term="circa" form="short"/>
+        </if>
+      </choose>
+      <group>
+        <choose>
+          <if variable="issued">
+            <date variable="issued">
+              <date-part name="year"/>
+            </date>
+          </if>
+          <else>
+            <text term="no date" form="short"/>
+          </else>
+        </choose>
+      </group>
+    </group>
+  </macro>
+
+  <!-- AUTHORS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="authors">
+    <group delimiter=" ; " suffix=" ">
+      <names variable="author" delimiter="; " et-al-min="6" et-al-use-first="5">
+        <name name-as-sort-order="all" and="symbol" delimiter="; " delimiter-precedes-last="never"/>
+        <label form="short" prefix=" " text-case="capitalize-first"/>
+        <et-al term="et-al"/>
+      </names>
+      <names variable="editorial-director" delimiter="; ">
+        <name name-as-sort-order="all" and="symbol" delimiter="; " delimiter-precedes-last="never"/>
+        <label form="short" prefix=" (" suffix=")" text-case="capitalize-first"/>
+      </names>
+      <names variable="contributor" delimiter="; ">
+        <name name-as-sort-order="all" and="symbol" delimiter="; " delimiter-precedes-last="never"/>
+        <label form="short" prefix=" (" suffix=")" text-case="capitalize-first"/>
+      </names>
+    </group>
+  </macro>
+  <macro name="translators">
+    <group prefix=" " suffix=" ">
+      <names variable="translator" delimiter="; " >
+        <name and="symbol" delimiter="; " delimiter-precedes-last="never"/>
+        <label form="short" prefix=" (" suffix=")" text-case="capitalize-first"/>
+      </names>
+    </group>
+  </macro>
+  <macro name="supervisors">
+    <group prefix=" " suffix=" ">
+      <names variable="director" delimiter="; " >
+        <name and="symbol" delimiter="; " delimiter-precedes-last="never"/>
+        <label form="short" prefix=" (" suffix=")" text-case="capitalize-first"/>
+      </names>
+    </group>
+  </macro>
+
+  <!-- TITLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="title-strict">
+      <group delimiter=" " prefix=" " suffix=". ">
+        <text variable="title" font-style="italic"/>
+      </group>
+    </macro>
+  <macro name="title-edition">
+    <group delimiter=" " prefix=" " suffix=". ">
+      <text variable="title" font-style="italic"/>
+      <group prefix="(" suffix=")">
+        <choose>
+          <if is-numeric="edition">
+            <group delimiter=" ">
+              <number variable="edition" form="numeric"/>
+              <text term="edition" form="short"/>
+            </group>
+          </if>
+          <else>
+            <text variable="edition"/>
+          </else>
+        </choose>
+      </group>
+    </group>
+  </macro>
+
+  <!-- EVENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="event">
+      <choose>
+        <if variable="event">
+          <choose>
+            <if variable="container-title" match="none">
+              <group delimiter=" ">
+                <text term="into" text-case="capitalize-first"/>
+                <group delimiter=", ">
+                  <text variable="event"/>
+                  <text variable="event-place"/>
+                </group>
+                <date variable="event-date" prefix="(" suffix=")">
+                  <date-part name="year" range-delimiter="-"/>
+                  <date-part name="month" form="numeric-leading-zeros" prefix="/" range-delimiter=" - "/>
+                  <date-part name="day" form="numeric-leading-zeros" prefix="/" range-delimiter=" - "/>
+                </date>
+              </group>
+            </if>
+          </choose>
+        </if>
+      </choose>
+    </macro>
+
+  <!-- BOOK HOST DOCUMENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="book-container">
+    <choose>
+      <if variable="container-title" match="any">
+        <group delimiter=" ">
+          <text term="in" text-case="capitalize-first"/>
+          <names variable="container-author">
+            <name and="symbol" delimiter=", " delimiter-precedes-last="never"/>
+          </names>
+          <text variable="container-title" font-style="italic" prefix=" "/>
+          <group prefix=" (" suffix=")">
+            <choose>
+              <if is-numeric="edition">
+                <group delimiter=" ">
+                  <number variable="edition" form="numeric"/>
+                  <text term="edition" form="short"/>
+                </group>
+              </if>
+              <else>
+                <text variable="edition"/>
+              </else>
+            </choose>
+          </group>
+          <choose>
+            <if is-numeric="page">
+              <text variable="page" prefix=" (p. " suffix=")"/>
+            </if>
+            <else>
+              <text variable="page" prefix=" (" suffix=")"/>
+            </else>
+          </choose>
+        </group>
+      </if>
+    </choose>
+  </macro>
+
+  <!-- SERIAL HOST DOCUMENT ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="serial-container">
+    <choose>
+      <if variable="container-title" match="any">
+        <group delimiter=" " suffix=".">
+          <text term="in" text-case="capitalize-first"/>
+          <text variable="container-title" font-style="italic"/>
+          <group delimiter=", ">
+            <group delimiter=" ">
+              <label variable="volume" form="short"/>
+              <text variable="volume"/>
+            </group>
+            <group delimiter=" ">
+              <label variable="issue" form="short"/>
+              <text variable="issue"/>
+            </group>
+            <group delimiter=" ">
+              <choose>
+                <if is-numeric="page">
+                  <label variable="page" form="short"/>
+                  <text variable="page"/>
+                </if>
+                <else>
+                  <text variable="page" prefix="p. "/>
+                </else>
+              </choose>
+            </group>
+          </group>
+          <group delimiter=" " prefix="(" suffix=")">
+            <date variable="original-date">
+              <date-part name="year"/>
+            </date>
+          </group>
+        </group>
+      </if>
+    </choose>
+  </macro>
+
+  <!-- COLLECTION SET ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="collection-set">
+    <choose>
+      <if variable="collection-title">
+        <group prefix=" (" suffix=")" delimiter="; ">
+          <text variable="collection-title"/>
+          <group delimiter=" ">
+            <label variable="collection-number" form="short"/>
+            <text variable="collection-number"/>
+          </group>
+        </group>
+      </if>
+    </choose>
+  </macro>
+
+  <!-- EDITOR ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="publisher-place">
+    <group delimiter=": " prefix=" " suffix=" ">
+      <text variable="publisher-place"/>
+      <text variable="publisher"/>
+    </group>
+  </macro>
+  <macro name="patent-office">
+    <group delimiter=" " prefix=" ">
+      <names variable="director" delimiter=", ">
+        <name and="symbol" delimiter=", " delimiter-precedes-last="never"/>
+      </names>
+    </group>
+  </macro>
+
+  <!-- IDENTIFIER ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <macro name="isbn-block">
+    <group delimiter=" " prefix=" ">
+      <text variable="ISBN" prefix="ISBN: " text-case="uppercase"/>
+    </group>
+  </macro>
+  <macro name="doi-block">
+    <group delimiter=" " prefix=" ">
+      <text variable="DOI" prefix="https://doi.org/"/>
+    </group>
+  </macro>
+  <macro name="patent-identifier-block">
+    <group delimiter=" " prefix=" ">
+      <text variable="number"/>
+    </group>
+  </macro>
+
+  <!-- ROOT ======================================================================================================== -->
+  <macro name="dispatch">
+    <text macro="authors"/>
+    <text macro="issued"/>
+    <choose>
+      <if type="book"> <!-- book ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <text macro="title-edition"/>
+        <text macro="translators"/>
+        <text macro="publisher-place"/>
+        <text macro="isbn-block"/>
+      </if>
+      <else-if type="chapter"> <!-- book chapter ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <text macro="title-strict"/>
+        <text macro="translators"/>
+        <text macro="book-container"/>
+        <text macro="publisher-place"/>
+        <text macro="isbn-block"/>
+      </else-if>
+      <else-if type="article-journal"> <!-- journal article ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <text macro="title-strict"/>
+        <text macro="serial-container"/>
+        <text macro="doi-block"/>
+      </else-if>
+      <else-if type="paper-conference"> <!-- conference speech ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <text macro="title-strict"/>
+        <choose>
+          <if variable="volume issue" match="any">
+            <text macro="serial-container"/>
+            <text macro="doi-block"/>
+          </if>
+          <else-if variable="container-title">
+            <text macro="book-container"/>
+            <text macro="publisher-place"/>
+            <text macro="isbn-block"/>
+          </else-if>
+          <else>
+            <text macro="event"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if type="report"> <!-- working paper & report ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <!-- DEV NOTE :: According to `de.undercouch.citeproc.csl.CSLType`, it doesn't exist a specific 'working-paper'
+             type, so we use 'report' instead into our mapping because Working-Paper and Report share mostly metadata
+             and should be cite using same style.
+        -->
+        <text macro="title-strict"/>
+        <text macro="collection-set"/>
+      </else-if>
+      <else-if type="patent"> <!-- patent ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <text macro="title-strict"/>
+        <text macro="patent-identifier-block"/>
+        <text macro="patent-office"/>
+      </else-if>
+      <else-if type="thesis"> <!-- dissertation ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <text macro="title-strict"/>
+        <text macro="supervisors"/>
+      </else-if>
+      <else> <!-- default/unknown ... ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+        <text macro="title-edition"/>
+      </else>
+    </choose>
+  </macro>
+  <citation>
+    <layout>
+      <text macro="dispatch"/>
+    </layout>
+  </citation>
+  <bibliography>
+    <layout>
+      <text macro="dispatch"/>
+    </layout>
+  </bibliography>
+
+
+</style>
