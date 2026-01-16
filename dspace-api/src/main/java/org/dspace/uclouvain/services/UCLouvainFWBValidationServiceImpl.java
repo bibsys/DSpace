@@ -51,6 +51,7 @@ public class UCLouvainFWBValidationServiceImpl implements UCLouvainFWBValidation
     public static final String ERROR_VALIDATION_FWB_WRONG_EMBARGO_DATE = "error.validation.fwb.wrongembargodate";
     public static final String ERROR_VALIDATION_FWB_NO_FILE = "error.validation.fwb.nofile";
     public static final String ERROR_VALIDATION_FWB_ACCESS_TYPE = "error.validation.fwb.accesstype";
+    public static final String ERROR_VALIDATION_FWB_NO_DATE = "error.validation.fwb.no-date";
 
     // The year from which the decree is applicable.
     public static final Integer DECREE_YEAR = 2018;
@@ -139,7 +140,6 @@ public class UCLouvainFWBValidationServiceImpl implements UCLouvainFWBValidation
      */
     @Override
     public boolean isFWBEligible(Context context, Item item) {
-        LocalDate pubDate;
 
         String entityType = itemService.getEntityType(item);
         if (!ACCEPTED_ENTITY_TYPES.contains(entityType)) {
@@ -147,20 +147,12 @@ public class UCLouvainFWBValidationServiceImpl implements UCLouvainFWBValidation
             return false;
         }
 
-        String dateString = getFirstMetadataValue(context, item, dateIssuedField);
-        try {
-            pubDate = DateUtils.convertDSpaceDate(
-                dateString
-            );
-        } catch (DateConversionException dce) {
-            logger.warn("Could not convert date for given item: " + item.getID() + ". Date string was: " + dateString);
+        LocalDate pubDate = getPublicationDateIssued(context, item);
+        if (pubDate == null) {
+            logger.debug("Not eligible: Unable to find publication date.");
             return false;
-        }
-
-        Integer year = pubDate.getYear();
-        if (year == null || year < DECREE_YEAR) {
-            logger.debug("Not eligible: Date was null or before decree year.");
-            return false;
+        } else if ( pubDate.getYear() < DECREE_YEAR) {
+            return true;
         }
 
         String type = getFirstMetadataValue(context, item, mainTypeField);
@@ -222,6 +214,16 @@ public class UCLouvainFWBValidationServiceImpl implements UCLouvainFWBValidation
      */
     @Override
     public FWBValidation isFWBCompliant(Context context, Item item) {
+        // First check on publication date :: if date issued older than decree date : stop validation,
+        // the publication is compliant
+        LocalDate pubDate = getPublicationDateIssued(context, item);
+        if (pubDate == null) {
+            logger.debug("Not compliant: Unable to find publication date.");
+            return validationError(ERROR_VALIDATION_FWB_NO_DATE);
+        } else if ( pubDate.getYear() < DECREE_YEAR) {
+            return validationSuccess();
+        }
+
         try {
             if (!itemService.hasUploadedFiles(item)) {
                 return validationError(ERROR_VALIDATION_FWB_NO_FILE);
@@ -230,20 +232,6 @@ public class UCLouvainFWBValidationServiceImpl implements UCLouvainFWBValidation
             if (accessType.equals(UCLouvainAccessStatusHelper.OPEN_ACCESS)) {
                 return validationSuccess();
             } else if (accessType.equals(UCLouvainAccessStatusHelper.EMBARGO)) {
-                LocalDate pubDate;
-                String dateString = getFirstMetadataValue(context, item, dateIssuedField);
-                try {
-                    pubDate = DateUtils.convertDSpaceDate(
-                        dateString
-                    );
-                } catch (DateConversionException dce) {
-                    logger.warn(
-                        "Could not validate FWB compliance: Could not convert the date of the item: " + item.getID()
-                        + ". Given date string was: " + dateString
-                    );
-                    return validationSuccess();
-                }
-
                 // Loop over all valid embargo policies.
                 for (ResourcePolicy rp: retrieveEmbargoPolicies(context, item)) {
                     // We need to use SQL Date since it is returned by the database.
@@ -259,7 +247,7 @@ public class UCLouvainFWBValidationServiceImpl implements UCLouvainFWBValidation
             }
             return validationError(ERROR_VALIDATION_FWB_ACCESS_TYPE);
         } catch (Exception e) {
-            // If an error occurres while checking for compliance we cannot block the user.
+            // If an error occurred while checking for compliance we cannot block the user.
             // We have to log the error for investigation and return a success state.
             logger.warn("Could not check for FWB compliance of item: " + item.getID(), e);
             return validationSuccess();
@@ -363,6 +351,16 @@ public class UCLouvainFWBValidationServiceImpl implements UCLouvainFWBValidation
                 + item.getID() + " for metadata field: " + metadataField,
                 e
             );
+            return null;
+        }
+    }
+
+    private LocalDate getPublicationDateIssued(Context context, Item item) {
+        String dateString = getFirstMetadataValue(context, item, dateIssuedField);
+        try {
+            return DateUtils.convertDSpaceDate(dateString);
+        } catch (DateConversionException dce) {
+            logger.warn("Could not convert date for given item: " + item.getID() + ". Date string was: " + dateString);
             return null;
         }
     }

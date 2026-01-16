@@ -14,7 +14,6 @@ import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import org.dspace.content.Item;
-import org.dspace.content.integration.crosswalks.csl.DSpaceListItemDataProvider;
 import org.dspace.content.service.ItemService;
 import org.dspace.uclouvain.core.model.publication.Publication;
 
@@ -24,7 +23,7 @@ import org.dspace.uclouvain.core.model.publication.Publication;
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-public class FnrsListItemDataProvider extends DSpaceListItemDataProvider {
+public class FnrsListItemDataProvider extends UCLouvainListItemDataProvider {
 
     private final static String IN_PRESS_LABEL = "in press";
 

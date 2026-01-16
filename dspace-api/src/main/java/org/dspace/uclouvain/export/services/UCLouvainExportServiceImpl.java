@@ -28,6 +28,7 @@ import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.exceptions.AuthorNotFoundException;
 import org.dspace.uclouvain.exceptions.CrosswalkNotFoundException;
 import org.dspace.uclouvain.export.result.ExportResult;
@@ -50,10 +51,10 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
     private final Logger logger = LogManager.getLogger(UCLouvainExportServiceImpl.class);
     private static final String CROSSWALK_SEPARATOR = "-";
     // TODO: Change to correct crosswalk name once created.
-    private static final String FWB_CROSSWALK_KEY = "publication-fnrs-pdf";
+    private static final String FWB_CROSSWALK_KEY = "publication-fwb-pdf";
     private static final String FNRS_CROSSWALK_KEY = "publication-fnrs-pdf";
-    private static final String FNRS_TITLE_PREFIX = "Publications au format FNRS pour ";
-    private static final String FWB_TITLE_PREFIX = "Publications au format FWB pou ";
+    private static final String FNRS_DOCUMENT_TITLE = "Publications de\"%s\"";
+    private static final String FWB_DOCUMENT_TITLE = "Publications de \"%s\"";
 
     public ExportResult getExportResult(Context context, String style, String format, String query)
         throws CrosswalkNotFoundException, SearchServiceException, CrosswalkException {
@@ -69,7 +70,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         Iterator<Item> publications = findFWBPublications(context, author.getID().toString());
         ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(FWB_CROSSWALK_KEY);
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
-        itemCrosswalk.addTransformerParameter("documentTitle", FWB_TITLE_PREFIX + author.getName());
+        itemCrosswalk.addTransformerParameter("documentTitle", FWB_DOCUMENT_TITLE.formatted(author.getName()));
         return new TempFileExportResult(context, itemCrosswalk, publications);
     }
 
@@ -79,7 +80,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         Iterator<Item> publications = findFNRSPublications(context, author.getID().toString());
         ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(FNRS_CROSSWALK_KEY);
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
-        itemCrosswalk.addTransformerParameter("documentTitle", FNRS_TITLE_PREFIX + author.getName());
+        itemCrosswalk.addTransformerParameter("documentTitle", FNRS_DOCUMENT_TITLE.formatted(author.getName()));
         return new TempFileExportResult(context, itemCrosswalk, publications);
     }
 
@@ -105,7 +106,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
      * The publications have to be valid (FNRSValid) and also the author has to be a valid FNRS author (role validation)
      * 
      * @param context The current DSpace context.
-     * @param author The author to get publications of.
+     * @param authorId The UUID of the author to get publications of.
      * @return An iterator of all FNRS valid publications for the given author.
      * @throws SearchServiceException
      */
@@ -119,7 +120,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         // Filter to only keep FNRS valid publications.
         return unfilteredPublications.filter(publicationItem -> {
             try {
-                return FNRSExportUtils.isFNRSValid(authorId, new Publication(publicationItem));
+                return FNRSExportUtils.isFNRSValid(authorId, PublicationFactory.build(publicationItem));
             } catch (Exception e) {
                 logger.warn(
                     "Skipping publication {} due to FNRS validation error",

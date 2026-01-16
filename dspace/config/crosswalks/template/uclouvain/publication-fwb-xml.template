@@ -1,0 +1,7 @@
+<Publication id="@virtual.id@">
+    <Citation>@item.citation@</Citation>
+    <Handle>@item.handle@</Handle>
+    <Category>@dc.type.maintype@</Category>
+    <Access>@dcterms.accessRights@</Access>
+    <Issued>@dc.date.issued@</Issued>
+</Publication>
