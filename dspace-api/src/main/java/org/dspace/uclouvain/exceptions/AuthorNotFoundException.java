@@ -7,10 +7,12 @@
  */
 package org.dspace.uclouvain.exceptions;
 
+import java.util.NoSuchElementException;
+
 /**
  * Throw this error when an author cannot be found using some identifiers.
  */
-public class AuthorNotFoundException extends Exception {
+public class AuthorNotFoundException extends NoSuchElementException {
     public AuthorNotFoundException(String message) {
         super(message);
     }

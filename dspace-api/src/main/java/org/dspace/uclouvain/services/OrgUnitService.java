@@ -16,6 +16,14 @@ import org.dspace.uclouvain.core.model.OrgUnit;
 public interface OrgUnitService {
 
     /**
+     * Find an `OrgUnit` by its UUID.
+     * @param context The current DSpace application context
+     * @param uuid UUID of the OrgUnit to find
+     * @return the corresponding OrgUnit, null if not found
+     */
+    OrgUnit findByIdentifier(Context context, String uuid);
+
+    /**
      * Find an `OrgUnit` based on institution and/or entity name/acronym
      * @param context The DSpace application context
      * @param institutionAcronym the institution acronym
@@ -33,6 +41,14 @@ public interface OrgUnitService {
         String entityAcronym,
         String entityName
     ) throws SQLException;
+
+    /**
+     * Find all matching OrgUnits for a given name (dc.title).
+     * @param context The current Dspace application context.
+     * @param name The name to search for.
+     * @return A list of matching OrgUnits. Empty list if no matching OrgUnit found.
+     */
+    List<OrgUnit> findByName(Context context, String name);
 
     /**
      * Find matching OrgUnits for a given list of affiliation names.
