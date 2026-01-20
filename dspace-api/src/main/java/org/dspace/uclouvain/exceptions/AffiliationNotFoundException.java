@@ -10,14 +10,14 @@ package org.dspace.uclouvain.exceptions;
 import java.util.NoSuchElementException;
 
 /**
- * Throw this error when an author cannot be found using some identifiers.
+ * Throw this error when an affiliation cannot be found using some identifiers.
  */
-public class AuthorNotFoundException extends NoSuchElementException {
-    public AuthorNotFoundException(String message) {
+public class AffiliationNotFoundException extends NoSuchElementException {
+    public AffiliationNotFoundException(String message) {
         super(message);
     }
 
-    public AuthorNotFoundException(String message, Exception e) {
+    public AffiliationNotFoundException(String message, Exception e) {
         super(message, e);
     }
 }
