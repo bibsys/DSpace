@@ -38,6 +38,7 @@ import org.dspace.discovery.indexobject.IndexableWorkflowItem;
 import org.dspace.discovery.indexobject.IndexableWorkspaceItem;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.profile.ResearcherProfile;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
@@ -85,13 +86,16 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
         return findOneByAttribute(context, "person.email:" + email);
     }
 
-    public Item findByIdentifiers(Context context, String uuid, String fgs) {
+    public Item findByIdentifiers(Context context, String uuid, String fgs, String email) {
         String query = null;
         if (!StringUtils.isBlank(uuid)) {
             query = "%s:\"%s\"".formatted("search.resourceid", uuid);
         }
         if (!StringUtils.isBlank(fgs)) {
-            query = "%s:\"%s\"".formatted("dc.identifier.fgs", fgs);
+            query = "%s:\"%s\"".formatted(ResearcherProfile.FGS_FIELD, fgs);
+        }
+        if (!StringUtils.isBlank(email)) {
+            query = "%s:\"%s\"".formatted(ResearcherProfile.OFFICIAL_EMAIL_FIELD, email);
         }
         if (query == null) {
             throw new IllegalArgumentException("At least one search criteria is required");
@@ -116,6 +120,24 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
         }
     }
 
+    public List<Item> findByName(Context context, String authorName) {
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
+        discoverQuery.setQuery("%s:\"%s\"".formatted("dc.title", authorName));
+        discoverQuery.addFilterQueries("dspace.entity.type:" + PROFILE_ENTITY_TYPE);
+        discoverQuery.setMaxResults(SearchService.MAX_RESULT);
+        try {
+            DiscoverResult result = searchService.search(context, discoverQuery);
+            return result.getIndexableObjects()
+                .stream()
+                .map(indexableObject -> ((IndexableItem) indexableObject).getIndexedObject())
+                .filter(Objects::nonNull)
+                .toList();
+        } catch (SearchServiceException sse) {
+            return Collections.emptyList();
+        }
+    }
+
     public List<Item> findLinkedPublications(Context context, Item profile) {
         if (itemService.getEntityType(profile).equals(PROFILE_ENTITY_TYPE)) {
             throw new IllegalArgumentException("`profile` parameter isn't a valid Person entity type");
@@ -126,6 +148,7 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
         dq.addDSpaceObjectFilter(IndexableItem.TYPE);
         dq.addFilterQueries("search.entitytype:Publication");
         dq.addFilterQueries("author_authority:\"" + profile.getID() + "\"");
+        dq.setMaxResults(SearchService.MAX_RESULT);
         try {
             return searchService.search(context, dq)
                 .getIndexableObjects()
