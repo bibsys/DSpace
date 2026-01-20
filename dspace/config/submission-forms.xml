@@ -1952,6 +1952,16 @@
           <required>You must provide an institution for the author.</required>
         </field>
       </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>role</dc-element>
+          <label>Author's role</label>
+          <input-type value-pairs-name="publication_roles_thesis">dropdown</input-type>
+          <hint>Enter the role of the author regarding the publication.</hint>
+          <required>Please provide a role for this author.</required>
+        </field>
+      </row>
     </form>
     <form name="dissertation-advisors-dc-contributor-advisor">
       <row>
@@ -3944,6 +3954,12 @@
       <pair>
         <displayed-value>Inventor</displayed-value>
         <stored-value>inventor</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="publication_roles_thesis" dc-term="publication_roles_thesis">
+      <pair>
+          <displayed-value>Author</displayed-value>
+          <stored-value>author</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="publication_patent_types" dc-term="publication_patent_types">
