@@ -26,6 +26,8 @@ import org.dspace.discovery.configuration.DiscoverySearchFilterFacet;
  */
 public interface SearchService {
 
+    public static final int MAX_RESULT = 50000;
+
     /**
      * Convenient method to call {@link #search(Context, DSpaceObject,
      * DiscoverQuery)} with a null DSpace Object as scope (i.e. all the
