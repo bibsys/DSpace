@@ -43,11 +43,10 @@ public class ExportRestController {
     @GetMapping(value = "/custom")
     public ResponseEntity<StreamingResponseBody> customExport(
         Context context, HttpServletResponse response, HttpServletRequest request,
-        @RequestParam(value = "style", required = true) String style,
-        @RequestParam(value = "format", required = true) String format,
+        @RequestParam(value = "crosswalk", required = true) String crosswalkName,
         @RequestParam(value = "query", required = true) String query
     ) throws Exception {
-        ExportResult result = uclouvainExportService.getExportResult(context, style, format, query);
+        ExportResult result = uclouvainExportService.getExportResult(context, crosswalkName, query);
         return parseResponse(result, request, response);
     }
 
@@ -74,6 +73,48 @@ public class ExportRestController {
             throw new DSpaceBadRequestException("No author identifiers were provided.");
         }
         ExportResult result = uclouvainExportService.getAuthorFNRSBibliography(context, authorUUID, authorFGS);
+        return parseResponse(result, request, response);
+    }
+
+    @GetMapping(value = "/byAuthor")
+    public ResponseEntity<StreamingResponseBody> byAuthorExport(
+        Context context, HttpServletResponse response, HttpServletRequest request,
+        @RequestParam(value = "authorFGS", required = false) String authorFGS,
+        @RequestParam(value = "authorUUID", required = false) String authorUUID,
+        @RequestParam(value = "authorName", required = false) String authorName,
+        @RequestParam(value = "crosswalk", required = true) String crosswalkName
+    ) throws Exception {
+        if (authorUUID == null && authorFGS == null && authorName == null) {
+            throw new DSpaceBadRequestException("No author was provided.");
+        }
+        ExportResult result =
+            uclouvainExportService.findByAuthor(context, authorFGS, authorUUID, authorName, crosswalkName);
+        return parseResponse(result, request, response);
+    }
+
+    @GetMapping(value = "/byAffiliation")
+    public ResponseEntity<StreamingResponseBody> byDepartment(
+        Context context, HttpServletResponse response, HttpServletRequest request,
+        @RequestParam(value = "affiliationUUID", required = false) String affiliationUUID,
+        @RequestParam(value = "affiliationName", required = false) String affiliationName,
+        @RequestParam(value = "crosswalk", required = true) String crosswalkName
+    ) throws Exception {
+        if (affiliationUUID == null && affiliationName == null) {
+            throw new DSpaceBadRequestException("No entity was provided.");
+        }
+        ExportResult result = uclouvainExportService.findByAffiliation(
+            context, affiliationUUID, affiliationName, crosswalkName);
+        return parseResponse(result, request, response);
+    }
+
+    @GetMapping(value = "/byFunding")
+    public ResponseEntity<StreamingResponseBody> byFunding(
+        Context context, HttpServletResponse response, HttpServletRequest request,
+        @RequestParam(value = "organization", required = true) String organization,
+        @RequestParam(value = "program", required = false) String program,
+        @RequestParam(value = "crosswalk", required = true) String crosswalkName
+    ) throws Exception {
+        ExportResult result = uclouvainExportService.findByFunding(context, organization, program, crosswalkName);
         return parseResponse(result, request, response);
     }
 
@@ -140,11 +181,7 @@ public class ExportRestController {
                 .withDisposition(buildContentDispositionString(result.getFileName()))
                 .with(request)
                 .with(response);
-        if (headersInitializer.isValid()) {
-            return headersInitializer.initialiseHeaders();
-        } else {
-            throw new IOException("Non-valid export headers.");
-        }
+        return headersInitializer.initialiseHeaders();
     }
 
     /**
