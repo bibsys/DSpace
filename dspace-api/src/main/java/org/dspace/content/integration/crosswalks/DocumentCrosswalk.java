@@ -143,6 +143,7 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
         transformer.setParameter("fontFamily", getFontFamily());
         transformer.setParameter("assetsDir", getAssetsDir());
         processAdditionalParameters(transformer, additionalTransformerParams);
+        resetParamsMap(additionalTransformerParams);
         return transformer;
     }
 
@@ -150,6 +151,10 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
         params.entrySet().stream().forEach((param) -> {
             transformer.setParameter(param.getKey(), param.getValue());
         });
+    }
+
+    private void resetParamsMap(Map<String, String> params) {
+        params.clear();
     }
 
     private String getCurrentDate() {
@@ -214,6 +219,6 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
     }
 
     public void addTransformerParameter(String key, String value) {
-        this.additionalTransformerParams.put(key, value);
+        additionalTransformerParams.put(key, value);
     }
 }
