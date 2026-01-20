@@ -794,6 +794,8 @@
                 <ref bean="searchFilterJournalPublisher"/>
                 <ref bean="searchFilterJournalPeerReviewed"/>
                 <ref bean="searchFilterJournalStatusCode"/>
+                <ref bean="searchFilterPublicationFundingOrganization"/>
+                <ref bean="searchFilterPublicationFundingProgram"/>
             </list>
         </property>
         <!--The sort filters for the discovery search (same as defaultConfiguration above)-->
@@ -4039,6 +4041,34 @@
         <property name="sortOrderSidebar" value="COUNT"/>
         <property name="sortOrderFilterPage" value="COUNT"/>
         <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+        <property name="exposeMinAndMaxValue" value="true"/>
+    </bean>
+
+    <bean id="searchFilterPublicationFundingOrganization" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="fundingOrganization"/>
+        <!-- <property name="type" value="standard"/> -->        
+        <property name="metadataFields">
+            <list>
+                <value>funding.organization</value>
+            </list>
+        </property>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
+        <property name="pageSize" value="10"/>
+        <property name="exposeMinAndMaxValue" value="true"/>
+    </bean>
+
+    <bean id="searchFilterPublicationFundingProgram" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="fundingProgram"/>
+        <!-- <property name="type" value="standard"/> -->
+        <property name="metadataFields">
+            <list>
+                <value>funding.program</value>
+            </list>
+        </property>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
         <property name="pageSize" value="10"/>
         <property name="exposeMinAndMaxValue" value="true"/>
     </bean>

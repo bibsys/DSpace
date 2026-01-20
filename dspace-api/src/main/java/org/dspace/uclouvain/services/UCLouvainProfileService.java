@@ -36,10 +36,21 @@ public interface UCLouvainProfileService {
      * @param context The current DSpace application context.
      * @param uuid uuid of the profile item.
      * @param fgs FGS identifier of a profile item.
+     * @param email Official email of a profile item.
      * @return The corresponding profile item.
      * @throws IllegalArgumentException If no identifier is provided.
      */
-    Item findByIdentifiers(Context context, String uuid, String fgs);
+    Item findByIdentifiers(Context context, String uuid, String fgs, String email);
+
+    /**
+     * Find all profiles matching the given author name.
+     * Beware that there could be some potential duplicates in the result.
+     * 
+     * @param context The current DSpace application context.
+     * @param authorName The name of the author to find.
+     * @return A list of all author matching the given name.
+     */
+    List<Item> findByName(Context context, String authorName);
 
     /**
      * For a given profile, retrieve all the linked publications that use this profile has an author.
