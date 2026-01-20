@@ -7,10 +7,11 @@
  */
 package org.dspace.uclouvain.export.services;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,53 +21,60 @@ import org.dspace.content.crosswalk.CrosswalkException;
 import org.dspace.content.crosswalk.StreamDisseminationCrosswalk;
 import org.dspace.content.integration.crosswalks.ItemExportCrosswalk;
 import org.dspace.content.integration.crosswalks.StreamDisseminationCrosswalkMapper;
-import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.discovery.DiscoverQuery;
-import org.dspace.discovery.DiscoverResult;
-import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
-import org.dspace.discovery.indexobject.IndexableItem;
+import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.core.model.publication.Publication;
-import org.dspace.uclouvain.core.model.publication.PublicationFactory;
+import org.dspace.uclouvain.exceptions.AffiliationNotFoundException;
 import org.dspace.uclouvain.exceptions.AuthorNotFoundException;
 import org.dspace.uclouvain.exceptions.CrosswalkNotFoundException;
 import org.dspace.uclouvain.export.result.ExportResult;
 import org.dspace.uclouvain.export.result.TempFileExportResult;
 import org.dspace.uclouvain.export.utils.FNRSExportUtils;
+import org.dspace.uclouvain.services.OrgUnitService;
+import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.uclouvain.services.UCLouvainProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * Service in charge of export operations for UCLouvain custom export API.
+ * 
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Renaud Michotte <renaud.michotee@uclouvain.be>
+ */
 public class UCLouvainExportServiceImpl implements UCLouvainExportService {
 
     @Autowired
     protected StreamDisseminationCrosswalkMapper crosswalkMapper;
     @Autowired
-    protected SearchService searchService;
-    @Autowired
-    protected ItemService itemService;
-    @Autowired
     protected UCLouvainProfileService uclouvainProfileService;
+    @Autowired
+    protected OrgUnitService orgUnitService;
+    @Autowired
+    protected PublicationService publicationService;
 
     private final Logger logger = LogManager.getLogger(UCLouvainExportServiceImpl.class);
-    private static final String CROSSWALK_SEPARATOR = "-";
     // TODO: Change to correct crosswalk name once created.
     private static final String FWB_CROSSWALK_KEY = "publication-fwb-pdf";
     private static final String FNRS_CROSSWALK_KEY = "publication-fnrs-pdf";
-    private static final String FNRS_DOCUMENT_TITLE = "Publications de\"%s\"";
+    private static final String FNRS_DOCUMENT_TITLE = "Publications de \"%s\"";
     private static final String FWB_DOCUMENT_TITLE = "Publications de \"%s\"";
 
-    public ExportResult getExportResult(Context context, String style, String format, String query)
+    // Custom export
+
+    public ExportResult getExportResult(Context context, String crosswalkName, String query)
         throws CrosswalkNotFoundException, SearchServiceException, CrosswalkException {
 
-        ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(style, format);
+        ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(crosswalkName);
         Iterator<Item> publications = findPublicationsFromQuery(context, query);
         return new TempFileExportResult(context, itemCrosswalk, publications);
     }
 
+    // Bibliographies exports
+
     public ExportResult getAuthorFWBBibliography(Context context, String authorUUID, String authorFGS)
         throws AuthorNotFoundException, SearchServiceException, CrosswalkNotFoundException, CrosswalkException {
-        Item author = findAuthor(context, authorFGS, authorUUID);
+        Item author = findAuthor(context, authorUUID, authorFGS);
         Iterator<Item> publications = findFWBPublications(context, author.getID().toString());
         ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(FWB_CROSSWALK_KEY);
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
@@ -76,13 +84,47 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
 
     public ExportResult getAuthorFNRSBibliography(Context context, String authorUUID, String authorFGS)
         throws AuthorNotFoundException, SearchServiceException, CrosswalkNotFoundException, CrosswalkException {
-        Item author = findAuthor(context, authorFGS, authorUUID);
+        Item author = findAuthor(context, authorUUID, authorFGS);
         Iterator<Item> publications = findFNRSPublications(context, author.getID().toString());
         ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(FNRS_CROSSWALK_KEY);
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
         itemCrosswalk.addTransformerParameter("documentTitle", FNRS_DOCUMENT_TITLE.formatted(author.getName()));
         return new TempFileExportResult(context, itemCrosswalk, publications);
     }
+
+    // 'Find by' exports
+
+    public ExportResult findByAuthor(
+        Context context, String authorUUID, String authorFGS, String authorName, String crosswalk
+    ) throws CrosswalkException, CrosswalkNotFoundException, AuthorNotFoundException, SearchServiceException {
+        ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(crosswalk);
+        List<Item> authors = findAuthors(context, authorUUID, authorFGS, authorName);
+        Iterator<Item> publications = publicationService.findByAuthors(context, authors)
+            .map(Publication::getItem)
+            .iterator();
+        return new TempFileExportResult(context, itemCrosswalk, publications);
+    }
+
+    public ExportResult findByAffiliation(
+        Context context, String affiliationUUID, String affiliationName, String crosswalk
+    ) throws CrosswalkException, CrosswalkNotFoundException, AffiliationNotFoundException, SearchServiceException {
+        ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(crosswalk);
+        List<OrgUnit> affiliations = findAffiliations(context, affiliationUUID, affiliationName);
+        Iterator<Item> publications = publicationService.findByAffiliations(context, affiliations)
+            .map(Publication::getItem)
+            .iterator();
+        return new TempFileExportResult(context, itemCrosswalk, publications);
+    };
+
+    public ExportResult findByFunding(
+        Context context, String organization, String program, String crosswalk
+    ) throws CrosswalkException, CrosswalkNotFoundException, SearchServiceException {
+        ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(crosswalk);
+        Iterator<Item> publications = publicationService.findByFunding(context, organization, program)
+            .map(Publication::getItem)
+            .iterator();
+        return new TempFileExportResult(context, itemCrosswalk, publications);
+    };
 
     // PRIVATE METHODS -------------------------------------------------------------------------------------------------
 
@@ -98,7 +140,9 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         Map<String, String> fqs = new HashMap<>();
         fqs.put("search.entitytype", Publication.ENTITY_TYPE);
         fqs.put("fwbCompliant_b", "true");
-        return findPublications(context, query, fqs).iterator();
+        return publicationService.findPublications(context, query, fqs)
+            .map(Publication::getItem)
+            .iterator();
     }
 
     /**
@@ -116,42 +160,34 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         Map<String, String> fqs = new HashMap<>();
         fqs.put("search.entitytype", Publication.ENTITY_TYPE);
         fqs.put("fnrsValid_b", "true");
-        Stream<Item> unfilteredPublications = findPublications(context, query, fqs);
+        Stream<Publication> unfilteredPublications = publicationService.findPublications(context, query, fqs);
         // Filter to only keep FNRS valid publications.
-        return unfilteredPublications.filter(publicationItem -> {
+        return unfilteredPublications.filter(publication -> {
             try {
-                return FNRSExportUtils.isFNRSValid(authorId, PublicationFactory.build(publicationItem));
+                return FNRSExportUtils.isFNRSValid(authorId, publication);
             } catch (Exception e) {
                 logger.warn(
                     "Skipping publication {} due to FNRS validation error",
-                    publicationItem.getID(),
+                    publication.getID(),
                     e
                 );
                 return false;
             }
-        }).iterator();
+        }).map(Publication::getItem).iterator();
     }
 
+    /**
+     * Retrieve an ItemCrosswalk for the given crosswalk id.
+     * @throws CrosswalkNotFoundException If no crosswalk could be found for the given id.
+     */
     private ItemExportCrosswalk findItemExportCrosswalk(String crosswalkId) throws CrosswalkNotFoundException {
-        StreamDisseminationCrosswalk crosswalk = findCrosswalk(crosswalkId);
+        StreamDisseminationCrosswalk crosswalk = crosswalkMapper.getByType(crosswalkId);
         // DEV_NOTE: We have to cast to a ItemExportCrosswalk object to use getFilename() and getMimeType().
         if (crosswalk == null || !(crosswalk instanceof ItemExportCrosswalk)) {
             logger.warn("Could not find a crosswalk for given id '{}'", crosswalkId);
-            throw new CrosswalkNotFoundException("Unsupported style or format");
+            throw new CrosswalkNotFoundException("'%s' crosswalk not found".formatted(crosswalkId));
         }
         return (ItemExportCrosswalk) crosswalk;
-    }
-
-    private ItemExportCrosswalk findItemExportCrosswalk(String style, String format) throws CrosswalkNotFoundException {
-        return findItemExportCrosswalk(parseCrosswalkID(style, format));
-    }
-
-    private String parseCrosswalkID(String style, String format) {
-        return style + CROSSWALK_SEPARATOR + format;
-    }
-
-    private StreamDisseminationCrosswalk findCrosswalk(String id) {
-        return crosswalkMapper.getByType(id);
     }
 
     /**
@@ -162,12 +198,46 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
      * @return An item corresponding to the author profile.
      * @throws Exception Throws and exception if no author item could be found using the provided identifiers.
      */
-    private Item findAuthor(Context context, String authorFGS, String authorUUID) throws AuthorNotFoundException {
-        Item author = uclouvainProfileService.findByIdentifiers(context, authorUUID, authorFGS);
+    private Item findAuthor(Context context, String authorUUID, String authorFGS) throws AuthorNotFoundException {
+        Item author = uclouvainProfileService.findByIdentifiers(context, authorUUID, authorFGS, null);
         if (author == null) {
             throw new AuthorNotFoundException("Could not find any matching author for given identifiers.");
         }
         return author;
+    }
+
+    private List<Item> findAuthors(
+        Context context, String authorUUID, String authorFGS, String authorName
+    ) throws AuthorNotFoundException {
+        if (authorFGS != null || authorUUID != null) {
+            return Arrays.asList(this.findAuthor(context, authorUUID, authorFGS));
+        }
+        if (authorName != null) {
+            List<Item> authors = uclouvainProfileService.findByName(context, authorName);
+            if (!authors.isEmpty()) {
+                return authors;
+            }
+        }
+        throw new AuthorNotFoundException("Could not find any matching author for given identifiers or name.");
+    }
+
+    private List<OrgUnit> findAffiliations(
+        Context context, String affiliationUUID, String affiliationName
+    ) throws AffiliationNotFoundException {
+        if (affiliationUUID != null) {
+            OrgUnit affiliationByID =  orgUnitService.findByIdentifier(context, affiliationUUID);
+            if (affiliationByID != null) {
+                return Arrays.asList(affiliationByID);
+            }
+        }
+        if (affiliationName != null) {
+            List<OrgUnit> affiliations = orgUnitService.findByName(context, affiliationName);
+            if (!affiliations.isEmpty()) {
+                return affiliations;
+            }
+        }
+        throw new AffiliationNotFoundException(
+            "Could not find any matching affiliation for given identifiers or name.");
     }
 
     /**
@@ -184,32 +254,9 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         }
         String field = tokens[0];
         String value = tokens[1];
-        query = "%s:'%s'".formatted(field, value);
-        return findPublications(context, query, new HashMap<>()).iterator();
-    }
-
-    /**
-     * Find all publication items matching the given query and filter queries.
-     * TODO: Improve this logic to handle more params (sort, filters...). It will be better to externalize this code.
-     * @param context The current DSpace context.
-     * @param query The main query to match.
-     * @param filterQueries Additional filter queries to match.
-     * @return A stream of all found publications based on the given query.
-     * @throws SearchServiceException
-     */
-    private Stream<Item> findPublications(
-        Context context, String query, Map<String, String> filterQueries
-    ) throws SearchServiceException {
-        DiscoverQuery dq = new DiscoverQuery();
-        dq.addDSpaceObjectFilter(IndexableItem.TYPE);
-        dq.setQuery(query);
-        dq.setMaxResults(50000);
-        filterQueries.entrySet().forEach((Entry<String, String> entry) -> {
-            dq.addFilterQueries("%s:\"%s\"".formatted(entry.getKey(), entry.getValue()));
-        });
-        DiscoverResult searchResult = searchService.search(context, dq);
-        return searchResult.getIndexableObjects()
-            .stream()
-            .map(indexableObject -> ((IndexableItem) indexableObject).getIndexedObject());
+        query = "%s:\"%s\"".formatted(field, value);
+        return publicationService.findPublications(context, query, new HashMap<>())
+            .map(Publication::getItem)
+            .iterator();
     }
 }

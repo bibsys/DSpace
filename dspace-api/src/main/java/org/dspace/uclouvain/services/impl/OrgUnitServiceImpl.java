@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.services.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,29 @@ public class OrgUnitServiceImpl implements OrgUnitService {
 
     @Autowired
     SearchService searchService;
+
+    // PUBLIC METHODS =================================================================================================
+
+    public OrgUnit findByIdentifier(Context context, String uuid) {
+        String query = "search.resourceid:\"%s\"".formatted(uuid);
+
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
+        discoverQuery.addFilterQueries("dspace.entity.type:" + OrgUnit.ENTITY_TYPE);
+        discoverQuery.setMaxResults(1);
+        discoverQuery.setQuery(query);
+        try {
+            DiscoverResult result = searchService.search(context, discoverQuery);
+            return result.getIndexableObjects()
+                .stream()
+                .map(indexableObject -> buildOrgUnit(((IndexableItem) indexableObject).getIndexedObject()))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+        } catch (SearchServiceException sse) {
+            return null;
+        }
+    }
 
     @Override
     public OrgUnit findByName(
@@ -87,11 +111,24 @@ public class OrgUnitServiceImpl implements OrgUnitService {
             return null;
         }
     }
-    private OrgUnit buildOrgUnit(Item item) {
+
+    @Override
+    public List<OrgUnit> findByName(Context context, String name) {
+        String query = "%s:\"%s\"".formatted(OrgUnit.TITLE_FIELD, name);
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
+        discoverQuery.addFilterQueries("dspace.entity.type:" + OrgUnit.ENTITY_TYPE);
+        discoverQuery.setMaxResults(SearchService.MAX_RESULT);
+        discoverQuery.setQuery(query);
         try {
-            return new OrgUnit(item);
-        } catch (Exception ignored) {
-            return null;
+            DiscoverResult result = searchService.search(context, discoverQuery);
+            return result.getIndexableObjects()
+                .stream()
+                .map(indexableObject -> buildOrgUnit(((IndexableItem) indexableObject).getIndexedObject()))
+                .filter(Objects::nonNull)
+                .toList();
+        } catch (SearchServiceException sse) {
+            return Collections.emptyList();
         }
     }
 
@@ -113,6 +150,16 @@ public class OrgUnitServiceImpl implements OrgUnitService {
 
     public OrgUnit findFirstByName(Context context, List<String> affiliations) {
         return findByName(context, affiliations).stream().findFirst().orElse(null);
+    }
+
+    // PRIVATE METHODS =================================================================================================
+
+    private OrgUnit buildOrgUnit(Item item) {
+        try {
+            return new OrgUnit(item);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 
     /**
