@@ -1,3 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <import_structure>
+    <community>
+        <name>UCLouvain</name>
+        <collection identifier="20.500.12279/Publication">
+            <name>Publication</name>
+            <entity-type>Publication</entity-type>
+            <submission-type>publication</submission-type>
+        </collection>
+    </community>
 </import_structure>

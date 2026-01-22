@@ -28,7 +28,7 @@ create_group(){
   docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.GroupManagement \
       --action create \
-      --name ${1}" >> "${LOG_PATH}"
+      --name '${1}'" >> "${LOG_PATH}"
   if [ $? -ne 0 ]
   then
       error_msg+exit "\t❌ Error creating '${1}' group !"
@@ -58,7 +58,7 @@ create_group(){
 #   5. Register project specific metadata schemas & fields.
 
 # Define constants used during script execution
-readonly BACKEND="dspace"
+readonly BACKEND="dspace-oer"
 readonly FILE_PATH="$(pwd)/${BASH_SOURCE[0]}"
 readonly WORKING_PATH=$(dirname -- "${FILE_PATH}")
 readonly LOG_FILE=$(date +"%Y-%m-%d_%T")
@@ -151,13 +151,12 @@ restart_dspace_container ${BACKEND}
 #   * Create additional groups
 #   * Add an admin user
 #   * Adds users and assign it to the correct group
+IFS=','
+
 echo -e "👥 Creating user groups..."
-groups=$(jq '.users[].groups | @sh' ${USERS_CONFIG_PATH} | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
-IFS=',' groups=($groups)
-for group in "${groups[@]}"
-do
+while IFS= read -r group; do
   create_group "${group}"
-done
+done < <(jq -r '.users[].groups[]' ${USERS_CONFIG_PATH} | sort -u)
 create_group "UCLouvain network"
 
 
@@ -215,8 +214,8 @@ do
     do
       docker exec ${BACKEND} sh -c "\
       /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.UserGroupManagement\
-      --user ${email}\
-      --group ${group}\
+      --user '${email}'\
+      --group '${group}'\
       --action add" >> "${LOG_PATH}"
       if [ $? -ne 0 ]
       then
@@ -266,25 +265,24 @@ do
   do
     permission=$(jq .collections[${i}].permissions[$j].type "${PERMISSIONS_FILE}")
     mode=$(jq .collections[${i}].permissions[$j].mode "${PERMISSIONS_FILE}")
-    groups=$(jq ".collections[${i}].permissions[$j].groups[] | @sh" "${PERMISSIONS_FILE}" \
-             | tr -d \' | tr -d \" | awk '{OFS="\n"; $1=$1}1' | sort -u | tr '\n' ",")
-    IFS=',' groups=($groups)
-    for group_name in "${groups[@]}"
-    do
+    groups=$(jq -r ".collections[${i}].permissions[$j].groups[]" "${PERMISSIONS_FILE}" | sort -u | tr '\n' ',')
+    IFS=',' read -ra groups_array <<< "$groups"
+    for group_name in "${groups_array[@]}"; do
       echo -en "\tAssigning ${CYAN}${group_name}${NC} to ${CYAN}${collection_name}${NC}.${CYAN}${permission}${NC}..."
       docker exec ${BACKEND} sh -c "\
             /dspace/bin/dspace dsrun org.dspace.uclouvain.administer.CollectionPermissionManagement \
             --enable \
-            --collection ${collection_name} \
-            --permission ${permission} \
-            --group ${group_name} \
-            --mode ${mode}" >> "${LOG_PATH}"
+            --collection '${collection_name}' \
+            --permission '${permission}' \
+            --group '${group_name}' \
+            --mode '${mode}'" >> "${LOG_PATH}"
       if [ $? -ne 0 ]
       then
           error_msg+exit "❌ Error during permission management"
       fi
       echo -e "\t${GREEN}Success${NC}"
-    done
+    done < <(jq -r ".collections[${i}].permissions[$j].groups[]" ${PERMISSIONS_FILE} | sort -u)
+
   done
 done
 
