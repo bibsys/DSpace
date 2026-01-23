@@ -89,6 +89,7 @@ public class ItemExportFormatServiceImpl implements ItemExportFormatService {
         sdc.getEntityType().ifPresent(itemExportFormatRest::setEntityType);
         itemExportFormatRest.setMimeType(sdc.getMIMEType());
         itemExportFormatRest.setExposed(sdc.isExposed());
+        itemExportFormatRest.setWeight(sdc.getWeight());
         return itemExportFormatRest;
     }
 
