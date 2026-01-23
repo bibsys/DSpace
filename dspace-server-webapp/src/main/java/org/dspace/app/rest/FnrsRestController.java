@@ -56,7 +56,7 @@ public class FnrsRestController {
      * @return the JSON response including the FNRS validation status for this item
      * @throws SQLException if any database exception
      */
-    @PreAuthorize("hasPermission(#uuid, 'ITEM','WRITE')")
+    @PreAuthorize("hasPermission(#uuid, 'ITEM', 'EDIT')")
     @GetMapping(produces = "application/json", path = "/valid")
     public ResponseEntity validate(
             @PathVariable UUID uuid,
@@ -84,7 +84,7 @@ public class FnrsRestController {
      * @return the JSON response including the FNRS validation status and all explanations about this status
      * @throws SQLException if any database exception
      */
-    @PreAuthorize("hasPermission(#uuid, 'ITEM','WRITE')")
+    @PreAuthorize("hasPermission(#uuid, 'ITEM', 'EDIT')")
     @GetMapping(produces = "application/json", path = "/explain")
     public ResponseEntity explain(
             @PathVariable UUID uuid,
