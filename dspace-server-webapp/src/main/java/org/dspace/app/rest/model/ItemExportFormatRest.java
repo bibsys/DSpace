@@ -26,6 +26,8 @@ public class ItemExportFormatRest extends BaseObjectRest<String> {
     private String mimeType;
     private String entityType;
     private String molteplicity;
+    private boolean exposed; // used to know if the format must be visible into frontend pages
+    private int weight; // used to sort formats
 
     @Override
     public String getType() {
@@ -50,7 +52,6 @@ public class ItemExportFormatRest extends BaseObjectRest<String> {
     public String getMimeType() {
         return mimeType;
     }
-
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
@@ -58,7 +59,6 @@ public class ItemExportFormatRest extends BaseObjectRest<String> {
     public String getEntityType() {
         return entityType;
     }
-
     public void setEntityType(String entityTypeId) {
         this.entityType = entityTypeId;
     }
@@ -66,9 +66,21 @@ public class ItemExportFormatRest extends BaseObjectRest<String> {
     public String getMolteplicity() {
         return molteplicity;
     }
-
     public void setMolteplicity(String molteplicity) {
         this.molteplicity = molteplicity;
     }
 
+    public boolean isExposed() {
+        return exposed;
+    }
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
 }
