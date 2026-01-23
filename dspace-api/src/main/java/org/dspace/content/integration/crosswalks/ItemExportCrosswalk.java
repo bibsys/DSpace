@@ -49,4 +49,8 @@ public interface ItemExportCrosswalk extends StreamDisseminationCrosswalk, FileN
     public default boolean isExposed() {
         return true;
     }
+
+    public default int getWeight() {
+        return 50;
+    }
 }

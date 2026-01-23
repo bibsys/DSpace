@@ -62,11 +62,18 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
 
     private boolean exposed = true;
 
+    private int weight = 50;
+
     private CrosswalkMode crosswalkMode;
 
     @Override
     public boolean isExposed() {
         return exposed;
+    }
+
+    @Override
+    public int getWeight() {
+        return this.weight;
     }
 
     @Override
@@ -170,6 +177,10 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
 
     public void setExposed(boolean exposed) {
         this.exposed = exposed;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 
     @Override

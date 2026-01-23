@@ -19,12 +19,15 @@
 				<entry key="publication-csv" value-ref="csvCrosswalkUclouvainPublication"></entry>
 				<entry key="publication-xls" value-ref="xlsCrosswalkUclouvainPublication"></entry>
 				<entry key="publication-apa" value-ref="cslItemDataCrosswalkApa"></entry>
+                <entry key="publication-apa-html" value-ref="cslItemDataCrosswalkApaHtml"></entry>
 				<entry key="publication-chicago" value-ref="cslItemDataCrosswalkChicago"></entry>
+                <entry key="publication-chicago-html" value-ref="cslItemDataCrosswalkChicagoHtml"></entry>
                 <entry key="publication-fwb" value-ref="cslItemDataCrosswalkFwb"></entry>
+                <entry key="publication-fwb-html" value-ref="cslItemDataCrosswalkFwbHtml"></entry>
+                <entry key="publication-fwb-pdf" value-ref="pdfPublicationCrosswalkFwb"></entry>
                 <entry key="publication-fnrs" value-ref="cslItemDataCrosswalkFnrs"></entry>
                 <entry key="publication-fnrs-pdf" value-ref="pdfPublicationCrosswalkFnrs"></entry>
-                <entry key="publication-fwb-pdf" value-ref="pdfPublicationCrosswalkFwb"></entry>
-				<!-- <entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry> -->
+                <!-- <entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry> -->
 
 				<!--<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
 				<entry key="person-cerif-xml" value-ref="referCrosswalkPersonCerifXml"></entry>
@@ -70,10 +73,10 @@
 				<entry key="product-cerif-xml" value-ref="referCrosswalkDatasetCerifXml"></entry>
                 <entry key="product-datacite-xml" value-ref="referCrosswalkDatasetDataciteXml"></entry>
 				
-				<entry key="event-cerif-xml" value-ref="referCrosswalkEventCerifXml"></entry>-->
+				<entry key="event-cerif-xml" value-ref="referCrosswalkEventCerifXml"></entry>
 				
 				<entry key="collection-xls" value-ref="xlsCrosswalkCollection"></entry>
-                <entry key="item-zip" value-ref="zipCrosswalk"></entry>
+                <entry key="item-zip" value-ref="zipCrosswalk"></entry>-->
 			</map>
 		</constructor-arg>
 	</bean>
@@ -116,6 +119,7 @@
         <property name="format" value="html"/>
     </bean>
 
+    <!-- UCLouvain ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkUCLouvainCustom">
 		<property name="style" value="crosswalks/csl/uclouvain.csl"/>
 		<property name="mimeType" value="text/plain"/>
@@ -125,13 +129,13 @@
 		<property name="exposed" value="false"/>
 	</bean>
 
+    <!-- CSV & Excell ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<bean class="org.dspace.content.integration.crosswalks.CsvCrosswalk" id="csvCrosswalkUclouvainPublication">
 		<property name="templateFileName" value="crosswalks/template/uclouvain/publication-table.template"/>
 		<property name="fileName" value="publications.csv"/>
 		<property name="entityType" value="Publication"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).MULTIPLE}"/>
 	</bean>
-
 	<bean class="org.dspace.content.integration.crosswalks.XlsCrosswalk" id="xlsCrosswalkUclouvainPublication">
 		<property name="templateFileName" value="crosswalks/template/uclouvain/publication-table.template"/>
 		<property name="fileName" value="publications.xls"/>
@@ -139,7 +143,8 @@
 		<property name="entityType" value="Publication"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).MULTIPLE}"/>
 	</bean>
-	
+
+    <!-- BitText ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkBibtex">
 		<property name="style" value="bibtex.csl"/>
 		<property name="mimeType" value="application/x-bibtex; charset=UTF-8"/>
@@ -147,31 +152,62 @@
 		<property name="fileName" value="references.bib"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE}"/>
 	</bean>
-	
+
+    <!-- APA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkApa">
 		<property name="style" value="crosswalks/csl/apa.csl"/>
 		<property name="mimeType" value="text/plain"/>
 		<property name="format" value="text"/>
 		<property name="fileName" value="publications.txt"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="exposed" value="false"/>
 	</bean>
-	
+    <bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkApaHtml">
+        <property name="style" value="crosswalks/csl/apa.csl"/>
+        <property name="mimeType" value="text/html"/>
+        <property name="format" value="html"/>
+        <property name="fileName" value="publications.html"/>
+        <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="weight" value="10"/>
+    </bean>
+
+    <!-- Chicago ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkChicago">
 		<property name="style" value="crosswalks/csl/chicago.csl"/>
 		<property name="mimeType" value="text/plain"/>
 		<property name="format" value="text"/>
 		<property name="fileName" value="publications.txt"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="exposed" value="false"/>
 	</bean>
+    <bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkChicagoHtml">
+        <property name="style" value="crosswalks/csl/chicago.csl"/>
+        <property name="mimeType" value="text/html"/>
+        <property name="format" value="html"/>
+        <property name="fileName" value="publications.html"/>
+        <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="weight" value="20"/>
+    </bean>
 
+    <!-- FWB ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <bean class="org.dspace.uclouvain.content.integration.crosswalks.csl.FnrsCSLItemDataCrosswalk" id="cslItemDataCrosswalkFwb">
         <property name="style" value="crosswalks/csl/fwb.csl"/>
         <property name="mimeType" value="text/plain"/>
         <property name="format" value="text"/>
         <property name="fileName" value="publications.txt"/>
         <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="exposed" value="false"/>
+    </bean>
+    <bean class="org.dspace.uclouvain.content.integration.crosswalks.csl.FnrsCSLItemDataCrosswalk" id="cslItemDataCrosswalkFwbHtml">
+        <property name="style" value="crosswalks/csl/fwb.csl"/>
+        <property name="mimeType" value="text/html"/>
+        <property name="format" value="html"/>
+        <property name="fileName" value="publications.html"/>
+        <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="weight" value="30"/>
     </bean>
 
+    <!-- FNRS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
     <bean class="org.dspace.uclouvain.content.integration.crosswalks.csl.FnrsCSLItemDataCrosswalk" id="cslItemDataCrosswalkFnrs">
         <property name="style" value="crosswalks/csl/fwb.csl"/>
         <property name="mimeType" value="text/plain"/>
