@@ -28,6 +28,10 @@ public final class TabularTemplateLine {
 
     private static final String GROUP_FIELD = "group";
 
+    private static final String ITEM_ID_FIELD = "itemid";
+
+    private static final String ITEM_COLLECTION_FIELD = "itemcollection";
+
     private final String label;
 
     private final String field;
@@ -74,6 +78,14 @@ public final class TabularTemplateLine {
 
     public boolean isMetadataGroupField() {
         return isNotEmpty(fieldBits) && fieldBits.length == 2 && GROUP_FIELD.equals(fieldBits[0]);
+    }
+
+    public boolean isItemIdField() {
+        return ITEM_ID_FIELD.equals(field);
+    }
+
+    public boolean isItemCollectionField() {
+        return ITEM_COLLECTION_FIELD.equals(field);
     }
 
     public String getVirtualFieldName() {
