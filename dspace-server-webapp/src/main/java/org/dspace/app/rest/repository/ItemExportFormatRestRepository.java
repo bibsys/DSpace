@@ -10,7 +10,6 @@ package org.dspace.app.rest.repository;
 import static org.apache.commons.lang3.EnumUtils.isValidEnum;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -78,9 +77,7 @@ public class ItemExportFormatRestRepository extends DSpaceRestRepository<ItemExp
             Pageable pageable) {
 
         List<ItemExportFormat> formats = this.itemExportFormatService
-            .byEntityTypeAndMolteplicity(obtainContext(), entityTypeId, getCrosswalkMode(molteplicity))
-            // Filter to keep formats tagged with the 'exposed' flag.
-            .stream().filter(format -> format.isExposed()).collect(Collectors.toList());
+            .byEntityTypeAndMolteplicity(obtainContext(), entityTypeId, getCrosswalkMode(molteplicity));
         return converter.toRestPage(formats, pageable, utils.obtainProjection());
     }
 
