@@ -227,6 +227,10 @@ public abstract class TabularCrosswalk implements ItemExportCrosswalk {
             return getVirtualFieldValues(context, line, item);
         } else if (line.isMetadataGroupField()) {
             return getMetadataGroupValues(context, line, item);
+        } else if (line.isItemIdField()) {
+            return Arrays.asList(item.getID().toString());
+        } else if (line.isItemCollectionField()) {
+            return Arrays.asList(item.getOwningCollection().getHandle());
         } else {
             return getMetadataValues(context, item, line.getField());
         }
@@ -317,7 +321,7 @@ public abstract class TabularCrosswalk implements ItemExportCrosswalk {
     }
 
     private List<String> getMetadataValues(Context context, Item item, String metadata) {
-        return metadataSecurityService.getPermissionFilteredMetadataValues(context, item, metadata).stream()
+        return itemService.getMetadataByMetadataString(item, metadata).stream()
             .map(MetadataValue::getValue)
             .collect(Collectors.toList());
     }
