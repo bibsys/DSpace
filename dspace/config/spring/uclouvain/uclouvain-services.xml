@@ -63,6 +63,18 @@
     <bean id="uclouvainProfileService" class="org.dspace.uclouvain.services.UCLouvainProfileServiceImpl"/>
     <bean id="idmPersonValidityService" class="org.dspace.uclouvain.profileIngester.services.IDMPersonValidityServiceImpl"/>
     <bean id="uclouvainExportService" class="org.dspace.uclouvain.export.services.UCLouvainExportServiceImpl"/>
+    <bean id="uclouvainSearchService" class="org.dspace.uclouvain.search.services.UCLouvainSearchServiceImpl">
+        <property name="fieldValidationRegexps">
+            <!-- One of the following has to match in order to keep the field in the search result: -->
+            <util:list>
+                <!-- Keep all metadata fields of form "<schema>.<element>(.qualifier)" that are not containing the word "email" -->
+                <!-- This does not include fields containing an underscore like "dc.title_dt" for example -->
+                <value>^(?!.*email)[a-z][a-zA-Z]*\.[a-z][a-zA-Z]*(\.[a-z][a-zA-Z]*)?$</value>
+                <!-- Keep "handle" field -->
+                <value>^handle$</value>
+            </util:list>
+        </property>
+    </bean>
 
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
