@@ -162,6 +162,8 @@ while IFS= read -r group; do
   create_group "${group}"
 done < <(jq -r '.users[].groups[]' ${USERS_CONFIG_PATH} | sort -u)
 create_group "UCLouvain network"
+# Group for Search API access
+create_group "Publication API Search"
 
 echo -e "👤 Creating admin user..."
 users_number=$(jq '.admins | length' "${USERS_CONFIG_PATH}")
