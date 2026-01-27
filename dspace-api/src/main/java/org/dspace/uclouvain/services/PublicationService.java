@@ -9,6 +9,7 @@ package org.dspace.uclouvain.services;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.dspace.content.Item;
@@ -36,7 +37,7 @@ public interface PublicationService {
      * @throws PublicationSetAuthorException
      */
     public PublicationAuthor setAuthor(Context context, Publication publication, String name, String email,
-            String orcid, String fgs, String institution, String role, String authority, Integer place)
+            String orcid, String fgs, String institution, String role, UUID authority, Integer place)
             throws PublicationSetAuthorException;
 
     /**

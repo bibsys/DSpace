@@ -47,7 +47,7 @@ public class PublicationServiceImpl implements PublicationService {
 
     public PublicationAuthor setAuthor(Context context, Publication publication,
             String name, String email, String orcid, String fgs,
-            String institution, String role, String authority, Integer place)
+            String institution, String role, UUID authority, Integer place)
             throws PublicationSetAuthorException {
         PublicationAuthor author = new PublicationAuthor()
                 .setName(name)
@@ -55,7 +55,7 @@ public class PublicationServiceImpl implements PublicationService {
                 .setOrcidID(orcid)
                 .setRole(role)
                 .setInstitution(institution)
-                .setAuthority(UUID.fromString(authority))
+                .setAuthority(authority)
                 .setPlace(place);
         this.setAuthor(context, publication, author);
         return author;
