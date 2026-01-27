@@ -118,7 +118,7 @@ public class ProfileLinkConsumer implements Consumer {
                             profile.getInstitution().orElse(null),
                             // Use previously set role.
                             previousRole,
-                            profileUUID.toString(),
+                            profileUUID,
                             place);
                     itemsToUpdate.add(item);
                 } catch (Exception e) {
