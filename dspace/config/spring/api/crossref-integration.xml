@@ -297,13 +297,18 @@
     </bean>
     
     <bean id="crossrefType" class="org.dspace.importer.external.metadatamapping.contributor.MappedMetadataContributor">
-        <constructor-arg name="innerContributor" ref="innerCrossrefType"/>
-        <constructor-arg name="mapConverter" ref="mapConverterCrossrefToCoarPublicationTypes"/>
+        <constructor-arg ref="innerCrossrefType"/>
+        <constructor-arg ref="mapConverterCrossrefToCoarPublicationTypes"/>
     </bean>
 
     <!-- Main Language of the Document -->
-    <bean id="crossrefLanguage" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
+    <bean id="innerCrossrefLanguage" class="org.dspace.importer.external.metadatamapping.contributor.SimpleJsonPathMetadataContributor">
         <property name="field" ref="dcLanguage"/>
         <property name="query" value="/language"/>
+    </bean>
+
+    <bean id="crossrefLanguage" class="org.dspace.importer.external.metadatamapping.contributor.MappedMetadataContributor">
+        <constructor-arg ref="innerCrossrefLanguage" />
+        <constructor-arg ref="mapConverterCrossrefLanguageToPublicationISOLanguage" />
     </bean>
 </beans>
