@@ -9,12 +9,16 @@ package org.dspace.uclouvain.citations;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
@@ -27,6 +31,8 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.utils.DSpace;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Main service to generate text citations for an item.
@@ -36,9 +42,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class UCLouvainCitationsServiceImpl implements UCLouvainCitationsService {
 
-    private final Logger logger = LogManager.getLogger(UCLouvainCitationsServiceImpl.class);
-    private StreamDisseminationCrosswalkMapper crosswalkMapper;
+    private static final Logger logger = LogManager.getLogger(UCLouvainCitationsServiceImpl.class);
     private static final String CSL_ERROR_REGEX = "\\[CSL STYLE ERROR: .*\\]";
+    private StreamDisseminationCrosswalkMapper crosswalkMapper;
 
     @Autowired
     ItemExportFormatService itemExportFormatService;
@@ -56,80 +62,89 @@ public class UCLouvainCitationsServiceImpl implements UCLouvainCitationsService 
 
     /**
      * Generate a citation for a given format and item.
-     * 
      * @param context The current DSpace context.
-     * @param item The item to generated a citation for.
-     * @param citationFormat The desired format of the citation.
-     * 
+     * @param item The item to generate a citation for.
+     * @param crosswalk The crosswalk key to use to generate the citation.
+     * @return the generated citations (null if the citation cannot be generated)
+     * @throws UnknownCitationFormatException if the citation format doesn't exist
      */
-    public ItemCitation getCitationForItem(Context context, Item item, String citationFormat)
+    public String getCitationForItemByCrosswalk(Context context, Item item, String crosswalk)
         throws UnknownCitationFormatException {
         // Retrieve the crosswalk for the given format.
-        StreamDisseminationCrosswalk citationCrosswalk = this.crosswalkMapper.getByType(citationFormat);
+        StreamDisseminationCrosswalk citationCrosswalk = this.crosswalkMapper.getByType(crosswalk);
         if (citationCrosswalk == null) {
-            throw new UnknownCitationFormatException(citationFormat);
+            throw new UnknownCitationFormatException(crosswalk);
         }
-
         if (!citationCrosswalk.canDisseminate(context, item)) {
             return null;
         }
         try {
             // Write the result in an output stream and then extract the content from it.
             ByteArrayOutputStream output = new ByteArrayOutputStream();
-            long start = System.currentTimeMillis();
             citationCrosswalk.disseminate(context, item, output);
-            long end = System.currentTimeMillis();
-            logger.debug("Generated citation in " + (end - start) + "ms");
             String citationResult = output.toString(StandardCharsets.UTF_8);
-            logger.debug("Processed citation, got: " + citationResult);
             // The processor may return an error in certain cases.
             if (containsError(citationResult)) {
                 // If we detect an error: log it and replace the citation result with null.
                 logger.warn(
-                    "Could not generate citation of format: [{}] for item: [{}]. Error is: '{}'.",
-                    citationFormat, item.getID(), citationResult.trim()
+                    "Could not generate citation of crosswalk: [{}] for item: [{}]. Error is: '{}'.",
+                        crosswalk, item.getID(), citationResult.trim()
                 );
                 citationResult = null;
             }
-            return new ItemCitation(citationFormat, citationResult);
+            return (StringUtils.isNotEmpty(citationResult)) ? citationResult.trim() : citationResult;
         } catch (Exception e) {
-            logger.warn("Citation({" + citationFormat + "}) generation error for {" + item.getID() + "}", e);
+            logger.warn("Citation({" + crosswalk + "}) generation error for {" + item.getID() + "}", e);
             return null;
         }
     }
 
     /**
-     * Retrieve all the citation for all the available formats for the given item.
-     * WARNING: It can be very resource consuming if generating a lot of citations.
-     *          Use wisely!
-     * 
-     * @param context The current DSpace context.
-     * @param item The item to generate citations for.
-     * @return All the possible citations for a given item.
+     * Return a specific citation for the given format and item.
+     * This will only return something if the format exist and is supported for the given item.
+     * @param context The current Dspace context.
+     * @param item The item to create a citation for.
+     * @param style the citation style to use (apa, chicago, fnrs, ... or ALL_STYLE)
+     * @param format The citation format to use (html, text, ... or ALL_FORMAT)
+     * @return A map of generated citations. Each key is the crosswalk used to generate the citation, each value is the
+     *         citation itself.
+     * @throws UnknownCitationFormatException Thrown if the given format does not exist in the system.
      */
-    public List<ItemCitation> getAllCitationsForItem(Context context, Item item) {
-        List<ItemCitation> result = new ArrayList<>();
-        for (String format: retrieveCitationsFormats(context, itemService.getEntityType(item))) {
-            try {
-                ItemCitation citation = getCitationForItem(context, item, format);
-                if (citation != null) {
-                    logger.debug(
-                        "Adding citation to final result for format {}, with value '{}'",
-                        format,
-                        citation.getCitation()
-                    );
-                    result.add(citation);
-                }
-            } catch (UnknownCitationFormatException e) {
-                logger.warn("Unsupported citation format [" + format + "] in find all format", e);
-            }
+    public Map<String, String> getCitationForItem(Context context, Item item, @NonNull String style, String format)
+        throws UnknownCitationFormatException {
+        String regex = buildCitationPattern(item, style, format);
+        Predicate<String> isMatching = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).asPredicate();
+        return getAvailableCitationsCrosswalks(context, item)
+            .stream()
+            .filter(isMatching)
+            .collect(Collectors.toMap(
+                crosswalk -> crosswalk,
+                crosswalk -> getCitationForItemByCrosswalk(context, item, crosswalk),
+                (existing, replacement) -> existing) //(security) if double exists, keep first
+            );
+    }
+
+    /**
+     * Get all valid citations format for a given item.
+     * @param context The current DSpace context.
+     * @param item The item to evaluate.
+     * @return All the valid formats for a given entity type.
+     */
+    public List<String> getAvailableCitationsCrosswalks(Context context, Item item) {
+        String entityType = itemService.getEntityType(item);
+        if (StringUtils.isNotBlank(entityType)) {
+            return this.itemExportFormatService
+                .byEntityTypeAndMolteplicity(context, entityType, CrosswalkMode.SINGLE)
+                .stream()
+                .map(ItemExportFormat::getId)
+                .toList();
+        } else {
+            return Collections.emptyList();
         }
-        return result;
     }
 
     /**
      * Whether the citation result contains an error.
-     *
      * @param citation The citation result to evaluate.
      * @return True if the result contains a string of the form provided by the regex. False otherwise.
      */
@@ -139,17 +154,23 @@ public class UCLouvainCitationsServiceImpl implements UCLouvainCitationsService 
     }
 
     /**
-     * Get all valid citations format for a given entityType.
-     * 
-     * @param context The current DSpace context.
-     * @param entityType The entity type to evaluate.
-     * @return All the valid formats for a given entity type.
+     * Build a crosswalk regexp pattern for an item based on style and format
+     * @param item the item to analyze
+     * @param style the style to use
+     * @param format the format to use
+     * @return the regexp pattern to use to find matching crosswalk
      */
-    private List<String> retrieveCitationsFormats(Context context, String entityType) {
-        return this.itemExportFormatService
-            .byEntityTypeAndMolteplicity(context, entityType, CrosswalkMode.SINGLE)
-            .stream()
-            .map(ItemExportFormat::getId)
-            .collect(Collectors.toList());
+    private String buildCitationPattern(Item item, @NonNull String style, @Nullable String format) {
+        String entityType = itemService.getEntityType(item);
+        String stylePart = Objects.equals(style, ALL_STYLE) ? "[^-]+" : Pattern.quote(style);
+        StringBuilder sb = new StringBuilder("^").append(entityType).append("-").append(stylePart);
+        if (format != null) {  // if no specified format, only plain text format will be returned
+            if (Objects.equals(format, ALL_FORMAT)) {
+                sb.append("(-[^-]+)?");
+            } else if (!Objects.equals(format, "text")) { // we can use 'text' to force a plain text format return
+                sb.append("-").append(Pattern.quote(format));
+            }
+        }
+        return sb.append("$").toString();
     }
 }

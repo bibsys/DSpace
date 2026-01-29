@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @LinksRest(links = {
     @LinkRest(name = ItemRest.ACCESS_STATUS, method = "getAccessStatus"),
     @LinkRest(name = ItemRest.BUNDLES, method = "getBundles"),
+    @LinkRest(name = ItemRest.CITATIONS, method = "getAllCitations"),
     @LinkRest(name = ItemRest.COMMENTS, method = "getComments"),
     @LinkRest(name = ItemRest.IDENTIFIERS, method = "getIdentifiers"),
     @LinkRest(name = ItemRest.MAPPED_COLLECTIONS, method = "getMappedCollections"),

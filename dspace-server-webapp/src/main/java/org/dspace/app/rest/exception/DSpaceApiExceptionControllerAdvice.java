@@ -35,6 +35,7 @@ import org.dspace.core.Context;
 import org.dspace.eperson.InvalidReCaptchaException;
 import org.dspace.orcid.exception.OrcidValidationException;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.citations.UnknownCitationFormatException;
 import org.dspace.uclouvain.exceptions.AffiliationNotFoundException;
 import org.dspace.uclouvain.exceptions.AuthorNotFoundException;
 import org.dspace.uclouvain.exceptions.CrosswalkNotFoundException;
@@ -287,6 +288,15 @@ public class DSpaceApiExceptionControllerAdvice extends ResponseEntityExceptionH
     protected void handleItemValidationException(
         HttpServletRequest request, HttpServletResponse response, ItemValidationException ex) throws IOException {
         sendErrorResponse(request, response, ex, ex.getTranslatableMessage(), HttpStatus.CONFLICT.value());
+    }
+
+    @ExceptionHandler(UnknownCitationFormatException.class)
+    protected void handleUnknownCitationFormatException(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        UnknownCitationFormatException ex
+    ) throws IOException {
+        sendErrorResponse(request, response, ex, ex.getLocalizedMessage(), HttpStatus.BAD_REQUEST.value());
     }
 
     @ExceptionHandler({
