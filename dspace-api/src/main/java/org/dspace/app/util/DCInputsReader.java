@@ -606,6 +606,7 @@ public class DCInputsReader {
     private void handleInputTypeTagName(String formName, Map<String, String> field, Node nd, String value)
         throws SAXException {
         if (value.equals("dropdown")
+            || value.equals("editable-dropdown")
             || value.equals("qualdrop_value")
             || value.equals("list")) {
             String pairTypeName = getAttribute(nd, PAIR_TYPE_NAME);
