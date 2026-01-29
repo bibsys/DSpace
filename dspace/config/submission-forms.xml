@@ -696,7 +696,7 @@
           <dc-schema>funding</dc-schema>
           <dc-element>organization</dc-element>
           <label>Organization name</label>
-          <input-type>onebox</input-type>
+          <input-type value-pairs-name="funding_organizations">editable-dropdown</input-type>
           <hint>Enter the funding organization name.</hint>
           <required>Organization name is required</required>
         </field>
@@ -4146,6 +4146,16 @@
       <pair>
         <displayed-value>Unknown</displayed-value>
         <stored-value>unknown</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="funding_organizations" dc-term="funding_organizations">
+      <pair>
+        <displayed-value>F.R.S.-FNRS</displayed-value>
+        <stored-value>F.R.S.-FNRS</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>EU</displayed-value>
+        <stored-value>EU</stored-value>
       </pair>
     </value-pairs>
   </form-value-pairs>
