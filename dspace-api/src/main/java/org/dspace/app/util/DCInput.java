@@ -220,7 +220,7 @@ public class DCInput {
         label = fieldMap.get("label");
         inputType = fieldMap.get("input-type");
         // these types are list-controlled
-        if ("dropdown".equals(inputType) || "qualdrop_value".equals(inputType)
+        if ("dropdown".equals(inputType) || "editable-dropdown".equals(inputType) || "qualdrop_value".equals(inputType)
             || "list".equals(inputType)) {
             valueListName = fieldMap.get(inputType + ".value-pairs-name");
             valueList = listMap.get(valueListName);
