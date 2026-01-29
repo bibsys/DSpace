@@ -14,13 +14,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ItemCitationsConverter implements DSpaceConverter<ItemCitations, ItemCitationsRest> {
+
     @Override
     public ItemCitationsRest convert(ItemCitations citations, Projection projection) {
-        ItemCitationsRest restResponse = new ItemCitationsRest();
-        citations.getCitations().forEach(citation -> {
-            restResponse.addCitation(citation.getFormat(), citation.getCitation());
-        });
-        return restResponse;
+
+        ItemCitationsRest restModel = new ItemCitationsRest();
+        restModel.setId(citations.id());
+        restModel.setCitations(citations.citations());
+        restModel.setProjection(projection);
+        return restModel;
     }
 
     @Override

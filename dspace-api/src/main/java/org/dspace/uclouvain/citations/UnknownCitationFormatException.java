@@ -12,12 +12,21 @@ package org.dspace.uclouvain.citations;
  * 
  * @author Michaël Pourbaix (michael.pourbaiax@uclouvain.be)
  */
-public class UnknownCitationFormatException extends Exception {
-    UnknownCitationFormatException(String message) {
-        super(message);
+public class UnknownCitationFormatException extends RuntimeException {
+
+    private final String format;
+
+    UnknownCitationFormatException(String format) {
+        super();
+        this.format = format;
     }
 
-    UnknownCitationFormatException(String message, Exception e) {
-        super(message, e);
+    @Override
+    public String getMessage() {
+        return "Unknown citation format [%s]".formatted(this.format);
+    }
+
+    public String getTranslatableMessage() {
+        return this.getMessage();
     }
 }
