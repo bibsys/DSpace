@@ -8,6 +8,9 @@
 package org.dspace.app.rest.repository;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +21,8 @@ import org.dspace.app.rest.model.ItemCitationsRest;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.uclouvain.citations.ItemCitation;
+import org.dspace.uclouvain.citations.CitationEntry;
+import org.dspace.uclouvain.citations.ItemCitations;
 import org.dspace.uclouvain.citations.UCLouvainCitationsService;
 import org.dspace.uclouvain.citations.UnknownCitationFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,41 +43,31 @@ public class ItemCitationsRestRepository extends DSpaceRestRepository<ItemCitati
     @Autowired
     ItemService itemService;
     @Autowired
-    UCLouvainCitationsService uclouvainCitationsService;
+    UCLouvainCitationsService citationsService;
 
     @Override
     @PreAuthorize("hasPermission(#id, 'ITEM', 'READ')")
     public ItemCitationsRest findOne(Context context, UUID id) {
+        // To render citation(s), some argument must be provided into URL query parameter:
+        //   * Either a "crosswalk" argument: In this case, this is this crosswalk that will be used to generate the
+        //     citation. Using this argument could only return 1 citation max.
+        //   * Either a "style" argument: In this case, the entityType of the item should be used to determine which
+        //     crosswalk to used.
+        //   * (optional) "format" argument: In combination with "style" argument, to return a specific output format.
+        //     by default, if no format is specific, the return should be a text/plain string.
+
         HttpServletRequest request = getRequestService().getCurrentRequest().getHttpServletRequest();
-        String format = request.getParameter("format");
-        if (StringUtils.isEmpty(format)) {
-            throw new DSpaceBadRequestException("Missing format parameter");
+        String crosswalkParam = request.getParameter("crosswalk");
+        String styleParam = request.getParameter("style");
+        String formatParam = request.getParameter("format");
+        if (StringUtils.isEmpty(crosswalkParam) && StringUtils.isEmpty(styleParam)) {
+            throw new DSpaceBadRequestException("Mising required 'crosswalk' or 'style' parameter");
         }
-        try {
-            Item item = itemService.find(context, id);
-            if (item == null) {
-                throw new ResourceNotFoundException("No such item: " + id);
-            }
-            ItemCitationsRest citationsRest = new ItemCitationsRest();
-            if (format.equals("all")) {
-                // If 'all' is specified, generate a citation for each configured format.
-                uclouvainCitationsService.getAllCitationsForItem(context, item).forEach(citation -> {
-                    citationsRest.addCitation(citation.getFormat(), citation.getCitation());
-                });
-            } else {
-                // If we have a valid specific format, generate the citation and add it to the rest object.
-                ItemCitation citation = uclouvainCitationsService.getCitationForItem(context, item, format);
-                if (citation != null) {
-                    citationsRest.addCitation(citation.getFormat(), citation.getCitation());
-                }
-            }
-            citationsRest.setId(id);
-            return citationsRest;
-        } catch (SQLException e) {
-            throw new ResourceNotFoundException("Could not find the related item to generate the citation.", e);
-        } catch (UnknownCitationFormatException ucfe) {
-            throw new DSpaceBadRequestException("Unknown citation format.", ucfe);
-        }
+        Item item = loadItem(context, id);
+        List<CitationEntry> citations = (StringUtils.isNotBlank(crosswalkParam))
+            ? getCitationsByCrosswalk(context, item, crosswalkParam)
+            : getCitationBySimpleFormat(context, item, styleParam, formatParam);
+        return converter.toRest(new ItemCitations(id, citations), utils.obtainProjection());
     }
 
     @Override
@@ -85,5 +79,36 @@ public class ItemCitationsRestRepository extends DSpaceRestRepository<ItemCitati
     @Override
     public Class<ItemCitationsRest> getDomainClass() {
         return ItemCitationsRest.class;
+    }
+
+    // PRIVATE METHODS =================================================================================================
+    private Item loadItem(Context context, UUID id) throws RuntimeException {
+        try {
+            Item item = itemService.find(context, id);
+            if (item == null) {
+                throw new ResourceNotFoundException("No such item: " + id);
+            }
+            return item;
+        } catch (SQLException e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private List<CitationEntry> getCitationsByCrosswalk(Context context, Item item, String crosswalk)
+        throws UnknownCitationFormatException {
+        String citation = citationsService.getCitationForItemByCrosswalk(context, item, crosswalk);
+        return StringUtils.isNotBlank(citation)
+            ? List.of(new CitationEntry(crosswalk, citation))
+            : Collections.emptyList();
+    }
+
+    private List<CitationEntry> getCitationBySimpleFormat(Context context, Item item, String style, String format)
+        throws UnknownCitationFormatException {
+        style = (Objects.equals(style, "*")) ? UCLouvainCitationsService.ALL_STYLE : style;
+        format = (Objects.equals(format, "*")) ? UCLouvainCitationsService.ALL_FORMAT : format;
+        return citationsService.getCitationForItem(context, item, style, format)
+            .entrySet().stream()
+            .map((entry) -> new CitationEntry(entry.getKey(), entry.getValue()))
+            .toList();
     }
 }

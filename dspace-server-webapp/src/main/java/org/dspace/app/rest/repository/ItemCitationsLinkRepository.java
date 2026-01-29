@@ -7,6 +7,8 @@
  */
 package org.dspace.app.rest.repository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
 
@@ -17,7 +19,10 @@ import org.dspace.app.rest.projection.Projection;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
+import org.dspace.uclouvain.citations.CitationEntry;
+import org.dspace.uclouvain.citations.ItemCitations;
 import org.dspace.uclouvain.citations.UCLouvainCitationsService;
+import org.dspace.uclouvain.citations.UnknownCitationFormatException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -35,10 +40,10 @@ public class ItemCitationsLinkRepository extends AbstractDSpaceRestRepository im
     @Autowired
     ItemService itemService;
     @Autowired
-    UCLouvainCitationsService uclouvainCitationsService;
+    UCLouvainCitationsService citationsService;
 
     @PreAuthorize("permitAll()")
-    public ItemCitationsRest getCitations(
+    public ItemCitationsRest getAllCitations(
         @Nullable HttpServletRequest request,
         UUID itemId,
         @Nullable Pageable optionalPageable,
@@ -53,13 +58,31 @@ public class ItemCitationsLinkRepository extends AbstractDSpaceRestRepository im
             if (item == null) {
                 throw new ResourceNotFoundException("No such item: " + itemId);
             }
-            ItemCitationsRest citationsRest = new ItemCitationsRest();
-            uclouvainCitationsService.getAllCitationsForItem(context, item).forEach(citation -> {
-                citationsRest.addCitation(citation.getFormat(), citation.getCitation());
-            });
-            return citationsRest;
+            List<String> crosswalks = citationsService.getAvailableCitationsCrosswalks(context, item);
+            List<CitationEntry> citations = generateCitations(context, item, crosswalks);
+            return converter.toRest(new ItemCitations(itemId, citations), utils.obtainProjection());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Generate a citations for a list of crosswalk
+     * @param context the DSpace application context
+     * @param item the item to generate citation
+     * @param crosswalks the list of crosswalk to use
+     * @return the list of citation corresponding to desired crosswalks
+     * @throws UnknownCitationFormatException If a crosswalk is unknown
+     */
+    private List<CitationEntry> generateCitations(Context context, Item item, List<String> crosswalks)
+            throws UnknownCitationFormatException {
+        List<CitationEntry> citations = new ArrayList<>();
+        for (String crosswalk : crosswalks) {
+            String citation = citationsService.getCitationForItemByCrosswalk(context, item, crosswalk);
+            if (citation != null && !citation.isBlank()) {
+                citations.add(new CitationEntry(crosswalk, citation));
+            }
+        }
+        return citations;
     }
 }
