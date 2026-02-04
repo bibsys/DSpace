@@ -131,9 +131,16 @@ public class FormFieldCleanerConsumer implements Consumer {
 
                 // Delete all metadata that should not be present
                 if (metadataToRemove.size() != 0) {
-                    this.logger.debug("Found metadata to remove because type-bind was not valid: " + metadataToRemove);
-                    itemService.removeMetadataValues(context, item, metadataToRemove);
-                    itemService.update(context, item);
+                    context.turnOffAuthorisationSystem();
+                    try {
+                        this.logger.debug(
+                            "Found metadata to remove because type-bind was not valid: " + metadataToRemove
+                        );
+                        itemService.removeMetadataValues(context, item, metadataToRemove);
+                        itemService.update(context, item);
+                    } finally {
+                        context.restoreAuthSystemState();
+                    }
                 }
             } catch (Exception e) {
                 logger.error(

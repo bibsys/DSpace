@@ -119,8 +119,11 @@ public class ResearcherProfileAutomaticClaim implements PostLoggedInAction {
             }
         }
         if (item != null) {
+            context.turnOffAuthorisationSystem();
             itemService.addMetadata(context, item, "dspace", "object", "owner",
                 null, fullName, id.toString(), CF_ACCEPTED);
+            itemService.update(context, item);
+            context.restoreAuthSystemState();
         }
 
     }

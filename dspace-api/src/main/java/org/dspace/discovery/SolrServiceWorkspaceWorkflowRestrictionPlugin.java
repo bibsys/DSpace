@@ -9,6 +9,7 @@ package org.dspace.discovery;
 
 import java.sql.SQLException;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -73,13 +74,19 @@ public class SolrServiceWorkspaceWorkflowRestrictionPlugin implements SolrServic
 
         // extra security check to avoid the possibility that an anonymous user
         // get access to workspace or workflow
-        if (currentUser == null && (isWorkflow || isWorkspace || isSupervision)) {
-            throw new IllegalStateException(
-                    "An anonymous user cannot perform a workspace or workflow search");
+        if (currentUser == null) {
+            if (isWorkflow || isWorkspace || isSupervision) {
+                throw new IllegalStateException(
+                        "An anonymous user cannot perform a workspace or workflow search");
+            }
+            return;
         }
+        UUID userID = currentUser.getID();
         if (isWorkspace) {
-            // insert filter by submitter
-            solrQuery.addFilterQuery("submitter_authority:(" + currentUser.getID() + ")");
+            // insert filter by submitter or read right.
+            // This allows to see a publication where the user is mentioned as a contributor.
+            solrQuery.addFilterQuery("submitter_authority:(%s) OR read: (e%s)"
+                .formatted(userID, userID));
         } else if ((isWorkflow && !isWorkflowAdmin) || (isSupervision && !isAdmin(context))) {
             // Retrieve all the groups the current user is a member of !
             Set<Group> groups;
@@ -96,6 +103,8 @@ public class SolrServiceWorkspaceWorkflowRestrictionPlugin implements SolrServic
                 controllerQuery.append(" OR g").append(group.getID());
             }
             controllerQuery.append(")");
+            // This allows to see a publication where the user is mentioned as a contributor.
+            controllerQuery.append(" OR read:(e%s)".formatted(userID));
             solrQuery.addFilterQuery(controllerQuery.toString());
         }
     }

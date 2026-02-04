@@ -42,14 +42,14 @@ import org.dspace.utils.DSpace;
  */
 public class ProfileLinkConsumer implements Consumer {
 
-    private Logger logger = LogManager.getLogger(ProfileLinkConsumer.class);
-
     private ItemService itemService;
     private MetadataValueService metadataValueService;
     private PublicationService publicationService;
     private ResearcherProfileService researcherProfileService;
 
-    private Set<UUID> profilesToProcess = new HashSet<>();
+    private static final Logger logger = LogManager.getLogger(ProfileLinkConsumer.class);
+
+    private Set<Item> itemsToUpdate = new HashSet<>();
 
     @Override
     public void initialize() throws Exception {
@@ -62,78 +62,87 @@ public class ProfileLinkConsumer implements Consumer {
 
     @Override
     public void consume(Context context, Event event) throws Exception {
-        Item item = (Item) event.getSubject(context);
-        if (item != null && ResearcherProfile.ENTITY_TYPE.equals(itemService.getEntityType(item))) {
-            profilesToProcess.add(item.getID());
-        }
-    }
-
-    @Override
-    public void end(Context context) throws Exception {
-        if (profilesToProcess.isEmpty()) {
-            return;
-        }
-
-        for (UUID profileUUID : profilesToProcess) {
-            logger.debug("In consumer for profile with uuid " + profileUUID);
-            Item profileItem = itemService.find(context, profileUUID);
+        Item profileItem = (Item) event.getSubject(context);
+        if (profileItem != null && ResearcherProfile.ENTITY_TYPE.equals(itemService.getEntityType(profileItem))) {
+            logger.debug("In consumer for profile with uuid " + profileItem.getID());
+            UUID profileUUID = profileItem.getID();
             ResearcherProfile profile = new ResearcherProfile(profileItem, false);
             Map<String, String> authorsIdentifier = researcherProfileService.getAuthorsIdentifiers(profile);
             logger.debug("Profile authors identifiers: " + authorsIdentifier);
             if (authorsIdentifier.isEmpty()) {
-                continue;
+                return;
             }
 
             // Once we have the full identifiers map, check for matching publications.
             List<Pair<DSpaceObject, Integer>> matchingPublicationsPlaces = metadataValueService
                     .findByFieldAndValue(context, authorsIdentifier, false);
-            Set<Item> itemsToUpdate = new HashSet<>();
-
-            for (Pair<DSpaceObject, Integer> publicationPlace : matchingPublicationsPlaces) {
-                DSpaceObject dso = publicationPlace.getLeft();
-                int place = publicationPlace.getRight();
-                // We only manage items
-                if (!(dso instanceof Item item)) {
-                    continue;
-                }
-                try {
-                    if (!Objects.equals(itemService.getEntityType(item), Publication.ENTITY_TYPE)) {
+            context.turnOffAuthorisationSystem();
+            try {
+                for (Pair<DSpaceObject, Integer> publicationPlace : matchingPublicationsPlaces) {
+                    DSpaceObject dso = publicationPlace.getLeft();
+                    int place = publicationPlace.getRight();
+                    // We only manage items
+                    if (!(dso instanceof Item item)) {
                         continue;
                     }
-                    logger.debug("Found publication to update!! " + item.getID()
-                            + " with title " + item.getName());
-                    logger.debug("Update needed at place " + place);
-                    // Once we have the publication and the place,
-                    // we need to update the metadata values of the corresponding author.
-                    Publication publication = PublicationFactory.build(item);
-                    String previousRole = publication.getAuthor(place).getRole();
-                    // Set values of the author for the found place.
-                    publicationService.setAuthor(
-                            context,
-                            publication,
-                            profile.getName().orElse(null),
-                            profile.getEmail().orElse(null),
-                            profile.getOrcid().orElse(null),
-                            profile.getFGS().orElse(null),
-                            profile.getInstitution().orElse(null),
-                            // Use previously set role.
-                            previousRole,
-                            profileUUID,
-                            place);
-                    itemsToUpdate.add(item);
-                } catch (Exception e) {
-                    logger.warn(
-                        "Could not link author profile %s to publication %s".formatted(profileUUID, item.getID()),
-                        e
-                    );
+                    try {
+                        if (!Objects.equals(itemService.getEntityType(item), Publication.ENTITY_TYPE)) {
+                            continue;
+                        }
+                        logger.debug("Found publication to update!! " + item.getID()
+                                + " with title " + item.getName());
+                        logger.debug("Update needed at place " + place);
+                        // Once we have the publication and the place,
+                        // we need to update the metadata values of the corresponding author.
+                        Publication publication = PublicationFactory.build(item);
+                        String previousRole = publication.getAuthor(place).getRole();
+                        // Set values of the author for the found place.
+                        publicationService.setAuthor(
+                                context,
+                                publication,
+                                profile.getName().orElse(null),
+                                profile.getEmail().orElse(null),
+                                profile.getOrcid().orElse(null),
+                                profile.getFGS().orElse(null),
+                                profile.getInstitution().orElse(null),
+                                // Use previously set role.
+                                previousRole,
+                                profileUUID,
+                                place);
+                        itemsToUpdate.add(item);
+                        // We need to fire an event here to trigger the indexing consumer and update the Solr index.
+                        context.addEvent(new Event(
+                            Event.MODIFY_METADATA,
+                            item.getType(),
+                            item.getID(),
+                            null,
+                            itemService.getIdentifiers(context, item)
+                        ));
+                    } catch (Exception e) {
+                        logger.warn(
+                            "Could not link author profile %s to publication %s".formatted(profileUUID, item.getID()),
+                            e
+                        );
+                    }
                 }
+            } finally {
+                context.restoreAuthSystemState();
             }
+        }
+    }
+
+    @Override
+    public void end(Context context) throws Exception {
+        context.turnOffAuthorisationSystem();
+        try {
             for (Item itemToUpdate : itemsToUpdate) {
                 // Do external update of item since an item can be updated multiple times in the previous process.
                 itemService.update(context, itemToUpdate);
             }
+            itemsToUpdate.clear();
+        } finally {
+            context.restoreAuthSystemState();
         }
-        profilesToProcess.clear();
     }
 
     @Override
