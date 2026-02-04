@@ -2475,6 +2475,7 @@ prevent the generation of resource policy entry values with null dspace_object a
             existing.setAuthority(authority);
             existing.setLanguage(lang);
             existing.setConfidence((confidence != null) ? confidence : CF_UNSET);
+            item.setMetadataModified();
         } else {
             String[] metadataField = getMDValueByField(mdString);
             addMetadata(
