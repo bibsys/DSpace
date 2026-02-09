@@ -87,6 +87,10 @@ public class CrisSecurityServiceImpl implements CrisSecurityService {
                 return user != null && user.equals(item.getSubmitter());
             case SUBMITTER_GROUP:
                 return isUserInSubmitterGroup(context, item, user);
+            case PUBLICATION_EDIT:
+                return authorizeService.isAdmin(context, user)
+                    || hasAccessByGroup(context, user, accessMode.getGroups())
+                    || hasAccessByCustomPolicy(context, item, user, accessMode);
             case ALL:
                 return true;
             case NONE:
