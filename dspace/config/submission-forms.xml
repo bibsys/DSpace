@@ -216,8 +216,8 @@
           <dc-element>title</dc-element>
           <label>Preferred Name</label>
           <input-type>name</input-type>
-          <required>You must enter least at the Surname.</required>
           <hint />
+          <required>You must enter least at the Surname.</required>
         </field>
       </row>
       <row>
@@ -226,9 +226,8 @@
           <dc-element>name</dc-element>
           <label>Official name</label>
           <input-type>name</input-type>
-          <required />
           <hint />
-          <readonly>all</readonly>
+          <required />
         </field>
       </row>
       <row>
@@ -238,8 +237,8 @@
           <dc-qualifier>translated</dc-qualifier>
           <label>Vernacular Name</label>
           <input-type>name</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -247,11 +246,11 @@
           <dc-schema>crisrp</dc-schema>
           <dc-element>name</dc-element>
           <dc-qualifier>variant</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Variants</label>
           <input-type>name</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -260,16 +259,16 @@
           <dc-element>givenName</dc-element>
           <label>First name</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
         </field>
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>familyName</dc-element>
           <label>Family name</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -278,8 +277,8 @@
           <dc-element>birthDate</dc-element>
           <label>Birth Date</label>
           <input-type>date</input-type>
-          <required />
           <hint />
+          <required />
         </field>
         <field>
           <dc-schema>oairecerif</dc-schema>
@@ -287,8 +286,8 @@
           <dc-qualifier>gender</dc-qualifier>
           <label>Gender</label>
           <input-type value-pairs-name="gender">dropdown</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -297,8 +296,8 @@
           <dc-element>jobTitle</dc-element>
           <label>Job Title</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
         </field>
         <!-- <field>
           <dc-schema>person</dc-schema>
@@ -336,11 +335,11 @@
         <field>
           <dc-schema>crisrp</dc-schema>
           <dc-element>workgroup</dc-element>
+          <repeatable>true</repeatable>
           <label>Working group(s)</label>
           <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -348,11 +347,255 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>url</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Personal Site(s)</label>
           <input-type>link</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>email</dc-element>
+          <dc-qualifier>official</dc-qualifier>
+          <label>Official email</label>
+          <input-type>onebox</input-type>
+          <hint>This is your official email, it cannot be changed and it will be used has a reference email in your publications.</hint>
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>email</dc-element>
+          <label>Email</label>
+          <input-type>onebox</input-type>
+          <hint>This is your personal email, it can be used to contact you if your official email is not valid anymore.</hint>
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>subject</dc-element>
+          <repeatable>true</repeatable>
+          <label>Interest(s)</label>
+          <input-type>tag</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>datacite</dc-schema>
+          <dc-element>subject</dc-element>
+          <dc-qualifier>fos</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Fields of Science and Technology (OECD)</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+          <vocabulary closed="true">oecd</vocabulary>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>orcid</dc-qualifier>
+          <label>ORCID</label>
+          <input-type>onebox</input-type>
+          <hint>Settable by connecting the entity with ORCID</hint>
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>scopus-author-id</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Scopus Author ID</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>rid</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Researcher ID</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>person</dc-element>
+          <dc-qualifier>affiliation</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Affiliation(s)</label>
+          <input-type>inline-group</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>description</dc-element>
+          <dc-qualifier>abstract</dc-qualifier>
+          <label>Biography</label>
+          <input-type>textarea</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>education</dc-element>
+          <repeatable>true</repeatable>
+          <label>Education(s)</label>
+          <input-type>inline-group</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>country</dc-element>
+          <label>Country</label>
+          <input-type value-pairs-name="common_iso_countries">dropdown</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>qualification</dc-element>
+          <repeatable>true</repeatable>
+          <label>Qualification(s)</label>
+          <input-type>inline-group</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>knowsLanguage</dc-element>
+          <repeatable>true</repeatable>
+          <label>Written Language(s)</label>
+          <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>cris</dc-schema>
+          <dc-element>policy</dc-element>
+          <dc-qualifier>eperson</dc-qualifier>
+          <label>Eperson Policy</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>cris</dc-schema>
+          <dc-element>policy</dc-element>
+          <dc-qualifier>group</dc-qualifier>
+          <label>Group Policy</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+    </form>
+    <form name="person-edit">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>title</dc-element>
+          <label>Preferred Name</label>
+          <input-type>name</input-type>
+          <hint />
+          <required>You must enter least at the Surname.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>name</dc-element>
+          <label>Official name</label>
+          <input-type>name</input-type>
+          <hint />
+          <required />
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>name</dc-element>
+          <dc-qualifier>variant</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Variants</label>
+          <input-type>name</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>birthDate</dc-element>
+          <label>Birth Date</label>
+          <input-type>date</input-type>
+          <hint />
+          <required />
+        </field>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>person</dc-element>
+          <dc-qualifier>gender</dc-qualifier>
+          <label>Gender</label>
+          <input-type value-pairs-name="gender">dropdown</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>institution</dc-qualifier>
+          <label>Affiliation Institution</label>
+          <style>col-3</style>
+          <input-type>institution-affiliation-select</input-type>
+          <hint>Enter the name of the institution of the affiliation.</hint>
+          <!-- <required>Please enter an affiliation institution for this profile.</required> -->
+        </field>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>department</dc-qualifier>
+          <label>Affiliation Department</label>
+          <style>col-9</style>
+          <input-type>department-affiliation-select</input-type>
+          <hint>Enter the department of the affiliation.</hint>
+          <!-- <required>Please enter an affiliation department for this profile.</required> -->
         </field>
       </row>
       <row>
@@ -379,37 +622,13 @@
       </row>
       <row>
         <field>
-          <dc-schema>dc</dc-schema>
-          <dc-element>subject</dc-element>
-          <label>Interest(s)</label>
-          <input-type>tag</input-type>
-          <repeatable>true</repeatable>
-          <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>datacite</dc-schema>
-          <dc-element>subject</dc-element>
-          <dc-qualifier>fos</dc-qualifier>
-          <label>Fields of Science and Technology (OECD)</label>
-          <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
-          <hint />
-          <vocabulary closed="true">oecd</vocabulary>
-        </field>
-      </row>
-      <row>
-        <field>
           <dc-schema>person</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>orcid</dc-qualifier>
           <label>ORCID</label>
           <input-type>onebox</input-type>
-          <required />
           <hint>Settable by connecting the entity with ORCID</hint>
+          <required />
           <readonly>all</readonly>
         </field>
       </row>
@@ -418,11 +637,11 @@
           <dc-schema>person</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>scopus-author-id</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Scopus Author ID</label>
           <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -430,23 +649,11 @@
           <dc-schema>person</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>rid</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Researcher ID</label>
           <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>oairecerif</dc-schema>
-          <dc-element>person</dc-element>
-          <dc-qualifier>affiliation</dc-qualifier>
-          <label>Affiliation(s)</label>
-          <input-type>inline-group</input-type>
-          <repeatable>true</repeatable>
           <required />
-          <hint />
         </field>
       </row>
       <row>
@@ -456,73 +663,8 @@
           <dc-qualifier>abstract</dc-qualifier>
           <label>Biography</label>
           <input-type>textarea</input-type>
-          <required />
           <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>crisrp</dc-schema>
-          <dc-element>education</dc-element>
-          <label>Education(s)</label>
-          <input-type>inline-group</input-type>
-          <repeatable>true</repeatable>
           <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>crisrp</dc-schema>
-          <dc-element>country</dc-element>
-          <label>Country</label>
-          <input-type value-pairs-name="common_iso_countries">dropdown</input-type>
-          <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>crisrp</dc-schema>
-          <dc-element>qualification</dc-element>
-          <label>Qualification(s)</label>
-          <input-type>inline-group</input-type>
-          <repeatable>true</repeatable>
-          <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>person</dc-schema>
-          <dc-element>knowsLanguage</dc-element>
-          <label>Written Language(s)</label>
-          <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
-          <repeatable>true</repeatable>
-          <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>cris</dc-schema>
-          <dc-element>policy</dc-element>
-          <dc-qualifier>eperson</dc-qualifier>
-          <label>Eperson Policy</label>
-          <input-type>onebox</input-type>
-          <required />
-          <hint />
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>cris</dc-schema>
-          <dc-element>policy</dc-element>
-          <dc-qualifier>group</dc-qualifier>
-          <label>Group Policy</label>
-          <input-type>onebox</input-type>
-          <required />
-          <hint />
         </field>
       </row>
     </form>
@@ -697,7 +839,7 @@
           <dc-element>organization</dc-element>
           <label>Organization name</label>
           <input-type value-pairs-name="funding_organizations">editable-dropdown</input-type>
-          <hint>Enter the funding organization name.</hint>
+          <hint>Enter the funding organization name</hint>
           <required>Organization name is required</required>
         </field>
       </row>
@@ -706,9 +848,8 @@
           <dc-schema>funding</dc-schema>
           <dc-element>program</dc-element>
           <label>Program name</label>
-          <input-type>onebox</input-type>
-          <hint>Enter the funding program name.</hint>
-          <required>Program name is required.</required>
+          <input-type value-pairs-name="funding_programs">editable-dropdown</input-type>
+          <hint>Enter the funding program name</hint>
         </field>
       </row>
       <row>
@@ -1135,6 +1276,7 @@
           <label>Publication affiliations</label>
           <input-type>inline-labeled-group</input-type>
           <hint>Enter affiliations linked to the authors of this document.</hint>
+          <required>You must enter at least one affiliation</required>
         </field>
       </row>
       <row>
@@ -1410,7 +1552,6 @@
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the issue number of the serial the document belongs.</hint>
-          <required>You need to specify issue number (or 'n/a')</required>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1459,7 +1600,6 @@
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the issue number of the serial the document belongs.</hint>
-          <required>You need to specify issue number (or 'n/a')</required>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1709,7 +1849,28 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>name</dc-qualifier>
           <label>Editor name</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+          <required>You must enter an editor name</required>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>location</dc-qualifier>
+          <label>Editor location</label>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <label>Editor name</label>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1718,7 +1879,7 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>location</dc-qualifier>
           <label>Editor location</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -4150,13 +4311,19 @@
     </value-pairs>
     <value-pairs value-pairs-name="funding_organizations" dc-term="funding_organizations">
       <pair>
-        <displayed-value>F.R.S.-FNRS</displayed-value>
-        <stored-value>F.R.S.-FNRS</stored-value>
+        <displayed-value>F.R.S.-FNRS - Fund for Scientific Research [BE]</displayed-value>
+        <stored-value>F.R.S.-FNRS - Fund for Scientific Research [BE]</stored-value>
       </pair>
       <pair>
         <displayed-value>EU</displayed-value>
         <stored-value>EU</stored-value>
       </pair>
     </value-pairs>
+      <value-pairs value-pairs-name="funding_programs" dc-term="funding_programs">
+          <pair>
+              <displayed-value>Horizon Europe</displayed-value>
+              <stored-value>Horizon Europe</stored-value>
+          </pair>
+      </value-pairs>
   </form-value-pairs>
 </input-forms>
