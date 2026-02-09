@@ -10,24 +10,20 @@
     <bean class="org.dspace.content.edit.service.impl.EditItemModeServiceImpl">
         <property name="editModesMap">
             <map>
-                <entry key="publication">
+                <entry key="publication.publication">
                     <list>
+                        <!-- Custom mode to allow edit on publication for either admin, manager, author or submitter -->
                         <bean class="org.dspace.content.edit.EditItemMode">
-                            <property name="name" value="FULL" />
+                            <property name="name" value="PUBLICATION_EDIT"/>
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
-                                    ITEM_ADMIN
+                                    PUBLICATION_EDIT
                                 </value>
                             </property>
-                            <property name="submissionDefinition" value="publication-edit" />
-                        </bean>
-                        <!-- This edit item mode allows members of 'manager' group to edit an archived publication. -->
-                        <bean class="org.dspace.content.edit.EditItemMode">
-                            <property name="name" value="PUBLICATION_MANAGER" />
-                            <property name="security">
-                                <value type="org.dspace.content.security.CrisSecurity">
-                                    GROUP
-                                </value>
+                            <property name="items">
+                                <list>
+                                    <value>dc.contributor.author</value>
+                                </list>
                             </property>
                             <property name="groups">
                                 <list>
@@ -36,36 +32,40 @@
                             </property>
                             <property name="submissionDefinition" value="publication-edit" />
                         </bean>
-                        <!-- This edit item mode allows authors to edit an archived publication. -->
+                    </list>
+                </entry>
+                <entry key="publication.dissertation">
+                    <list>
+                        <!-- Custom mode to allow edit on dissertation for either admin, manager -->
                         <bean class="org.dspace.content.edit.EditItemMode">
-                            <property name="name" value="PUBLICATION_AUTHOR" />
+                            <property name="name" value="PUBLICATION_EDIT"/>
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
-                                    CUSTOM
+                                    PUBLICATION_EDIT
                                 </value>
                             </property>
-                            <property name="items">
+                            <property name="groups">
                                 <list>
-                                    <value>dc.contributor.author</value>
+                                    <value>Doctoral thesis manager</value>
                                 </list>
                             </property>
-                            <property name="submissionDefinition" value="publication-edit" />
+                            <property name="submissionDefinition" value="dissertation-edit" />
                         </bean>
                     </list>
                 </entry>
                 <entry key="person">
                     <list>
                         <bean class="org.dspace.content.edit.EditItemMode">
-                            <property name="name" value="FULL" />
+                            <property name="name" value="PROFILE_ADMIN" />
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
                                     ITEM_ADMIN
                                 </value>
                             </property>
-                            <property name="submissionDefinition" value="admin-person-edit" />
+                            <property name="submissionDefinition" value="person-edit-admin" />
                         </bean>
                         <bean class="org.dspace.content.edit.EditItemMode">
-                            <property name="name" value="OWNER" />
+                            <property name="name" value="PROFILE_OWNER" />
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
                                     OWNER
