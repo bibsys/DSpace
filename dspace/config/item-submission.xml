@@ -129,7 +129,7 @@
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
     </step-definition>
-    <step-definition id="publication-funding" mandatory="false">
+    <step-definition id="publication-funding" mandatory="true">
       <heading>submit.progressbar.describe.publication_funding</heading>
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
@@ -161,6 +161,11 @@
     </step-definition>
     <step-definition id="person" mandatory="true">
       <heading>submit.progressbar.describe.person</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
+    <step-definition id="person-edit" mandatory="true">
+      <heading>submit.progressbar.describe.person-edit</heading>
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
     </step-definition>
@@ -245,15 +250,15 @@
     </submission-process>
     <submission-process name="publication">
       <step id="extractionstep" />
+      <step id="correction" />
       <step id="upload" />
       <step id="publication-type" />
       <step id="publication-identifiers" />
+      <step id="detect-duplicate" />
       <step id="publication-authors" />
       <step id="publication-base" />
       <step id="publication-specific" />
       <step id="publication-funding" />
-      <step id="correction" />
-      <step id="detect-duplicate" />
       <step id="license" />
     </submission-process>
     <submission-process name="publication-edit">
@@ -268,35 +273,36 @@
     </submission-process>
     <submission-process name="dissertation">
       <step id="extractionstep" />
+      <step id="correction" />
       <step id="upload-mandatory" />
       <step id="dissertation-type"/>
       <step id="dissertation-authors"/>
       <step id="dissertation-advisors"/>
       <step id="dissertation-base"/>
       <step id="dissertation-specific"/>
-      <step id="correction" />
       <step id="detect-duplicate" />
       <step id="license" />
+    </submission-process>
+    <submission-process name="dissertation-edit">
+      <step id="extractionstep" />
+      <step id="upload-mandatory" />
+      <step id="dissertation-type" />
+      <step id="dissertation-authors" />
+      <step id="dissertation-advisors" />
+      <step id="dissertation-base" />
+      <step id="dissertation-specific" />
     </submission-process>
     <submission-process name="person">
       <step id="collection" />
       <step id="person" />
-      <step id="custom-url" />
-      <step id="correction" />
       <step id="detect-duplicate" />
-      <step id="upload" />
-      <step id="license" />
     </submission-process>
     <submission-process name="person-edit">
-      <step id="person" />
-      <step id="custom-url" />
-      <step id="upload" />
+      <step id="person-edit" />
     </submission-process>
-    <submission-process name="admin-person-edit">
+    <submission-process name="person-edit-admin">
       <step id="person" />
-      <step id="custom-url" />
       <step id="owner" />
-      <step id="upload" />
     </submission-process>
   </submission-definitions>
 </item-submission>

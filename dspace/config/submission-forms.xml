@@ -19,7 +19,7 @@
           <dc-element>description</dc-element>
           <label>Description of the file</label>
           <input-type>textarea</input-type>
-          <hint>You can enter a description for this file or a specific version comment ('preprint', 'postprint'...).</hint>
+          <hint>You can enter a description for this file or a specific version comment ('preprint', 'postprint'...)</hint>
         </field>
       </row>
       <row>
@@ -40,7 +40,7 @@
           <label>File type</label>
           <input-type value-pairs-name="bitstream_types">dropdown</input-type>
           <required />
-          <hint>Personal picture, logo, main article, etc.</hint>
+          <hint>Personal picture, logo, main article, etc</hint>
         </field>
       </row> -->
       <!-- <row>
@@ -194,7 +194,7 @@
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
-          <hint>Enter the name of the institution of the affiliation.</hint>
+          <hint>Enter the name of the institution of the affiliation</hint>
           <required>Please enter an affiliation institution for this profile.</required>
         </field>
         <field>
@@ -204,7 +204,7 @@
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
-          <hint>Enter the department of the affiliation.</hint>
+          <hint>Enter the department of the affiliation</hint>
           <required>Please enter an affiliation department for this profile.</required>
         </field>
       </row>
@@ -216,8 +216,8 @@
           <dc-element>title</dc-element>
           <label>Preferred Name</label>
           <input-type>name</input-type>
-          <required>You must enter least at the Surname.</required>
           <hint />
+          <required>You must enter least at the Surname.</required>
         </field>
       </row>
       <row>
@@ -226,9 +226,8 @@
           <dc-element>name</dc-element>
           <label>Official name</label>
           <input-type>name</input-type>
-          <required />
           <hint />
-          <readonly>all</readonly>
+          <required />
         </field>
       </row>
       <row>
@@ -238,8 +237,8 @@
           <dc-qualifier>translated</dc-qualifier>
           <label>Vernacular Name</label>
           <input-type>name</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -247,11 +246,11 @@
           <dc-schema>crisrp</dc-schema>
           <dc-element>name</dc-element>
           <dc-qualifier>variant</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Variants</label>
           <input-type>name</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -260,16 +259,16 @@
           <dc-element>givenName</dc-element>
           <label>First name</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
         </field>
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>familyName</dc-element>
           <label>Family name</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -278,8 +277,8 @@
           <dc-element>birthDate</dc-element>
           <label>Birth Date</label>
           <input-type>date</input-type>
-          <required />
           <hint />
+          <required />
         </field>
         <field>
           <dc-schema>oairecerif</dc-schema>
@@ -287,8 +286,8 @@
           <dc-qualifier>gender</dc-qualifier>
           <label>Gender</label>
           <input-type value-pairs-name="gender">dropdown</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -297,8 +296,8 @@
           <dc-element>jobTitle</dc-element>
           <label>Job Title</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
         </field>
         <!-- <field>
           <dc-schema>person</dc-schema>
@@ -307,7 +306,7 @@
           <label>Main Affiliation</label>
           <input-type>group</input-type>
           <repeatable>true</repeatable>
-          <hint>Give information about your affiliations (institution and department).</hint>
+          <hint>Give information about your affiliations (institution and department)</hint>
         </field> -->
       </row>
       <row>
@@ -318,7 +317,7 @@
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
-          <hint>Enter the name of the institution of the affiliation.</hint>
+          <hint>Enter the name of the institution of the affiliation</hint>
           <!-- <required>Please enter an affiliation institution for this profile.</required> -->
         </field>
         <field>
@@ -328,7 +327,7 @@
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
-          <hint>Enter the department of the affiliation.</hint>
+          <hint>Enter the department of the affiliation</hint>
           <!-- <required>Please enter an affiliation department for this profile.</required> -->
         </field>
       </row>
@@ -336,11 +335,11 @@
         <field>
           <dc-schema>crisrp</dc-schema>
           <dc-element>workgroup</dc-element>
+          <repeatable>true</repeatable>
           <label>Working group(s)</label>
           <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -348,11 +347,11 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>url</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Personal Site(s)</label>
           <input-type>link</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -362,9 +361,8 @@
           <dc-qualifier>official</dc-qualifier>
           <label>Official email</label>
           <input-type>onebox</input-type>
-          <hint>This is your official email, it cannot be changed and it will be used has a reference email in your publications.</hint>
+          <hint>This is your official email, it cannot be changed and it will be used has a reference email in your publications</hint>
           <required />
-          <readonly>all</readonly>
         </field>
       </row>
       <row>
@@ -373,7 +371,7 @@
           <dc-element>email</dc-element>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <hint>This is your personal email, it can be used to contact you if your official email is not valid anymore.</hint>
+          <hint>This is your personal email, it can be used to contact you if your official email is not valid anymore</hint>
           <required />
         </field>
       </row>
@@ -381,11 +379,11 @@
         <field>
           <dc-schema>dc</dc-schema>
           <dc-element>subject</dc-element>
+          <repeatable>true</repeatable>
           <label>Interest(s)</label>
           <input-type>tag</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -393,11 +391,11 @@
           <dc-schema>datacite</dc-schema>
           <dc-element>subject</dc-element>
           <dc-qualifier>fos</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Fields of Science and Technology (OECD)</label>
           <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
           <vocabulary closed="true">oecd</vocabulary>
         </field>
       </row>
@@ -408,9 +406,8 @@
           <dc-qualifier>orcid</dc-qualifier>
           <label>ORCID</label>
           <input-type>onebox</input-type>
-          <required />
           <hint>Settable by connecting the entity with ORCID</hint>
-          <readonly>all</readonly>
+          <required />
         </field>
       </row>
       <row>
@@ -418,11 +415,11 @@
           <dc-schema>person</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>scopus-author-id</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Scopus Author ID</label>
           <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -430,11 +427,11 @@
           <dc-schema>person</dc-schema>
           <dc-element>identifier</dc-element>
           <dc-qualifier>rid</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Researcher ID</label>
           <input-type>onebox</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -442,11 +439,11 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>person</dc-element>
           <dc-qualifier>affiliation</dc-qualifier>
+          <repeatable>true</repeatable>
           <label>Affiliation(s)</label>
           <input-type>inline-group</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -456,19 +453,19 @@
           <dc-qualifier>abstract</dc-qualifier>
           <label>Biography</label>
           <input-type>textarea</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
         <field>
           <dc-schema>crisrp</dc-schema>
           <dc-element>education</dc-element>
+          <repeatable>true</repeatable>
           <label>Education(s)</label>
           <input-type>inline-group</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -477,30 +474,30 @@
           <dc-element>country</dc-element>
           <label>Country</label>
           <input-type value-pairs-name="common_iso_countries">dropdown</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
         <field>
           <dc-schema>crisrp</dc-schema>
           <dc-element>qualification</dc-element>
+          <repeatable>true</repeatable>
           <label>Qualification(s)</label>
           <input-type>inline-group</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
         <field>
           <dc-schema>person</dc-schema>
           <dc-element>knowsLanguage</dc-element>
+          <repeatable>true</repeatable>
           <label>Written Language(s)</label>
           <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
-          <repeatable>true</repeatable>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -510,8 +507,8 @@
           <dc-qualifier>eperson</dc-qualifier>
           <label>Eperson Policy</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
         </field>
       </row>
       <row>
@@ -521,8 +518,153 @@
           <dc-qualifier>group</dc-qualifier>
           <label>Group Policy</label>
           <input-type>onebox</input-type>
-          <required />
           <hint />
+          <required />
+        </field>
+      </row>
+    </form>
+    <form name="person-edit">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>title</dc-element>
+          <label>Preferred Name</label>
+          <input-type>name</input-type>
+          <hint />
+          <required>You must enter least at the Surname.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>name</dc-element>
+          <label>Official name</label>
+          <input-type>name</input-type>
+          <hint />
+          <required />
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>name</dc-element>
+          <dc-qualifier>variant</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Variants</label>
+          <input-type>name</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>birthDate</dc-element>
+          <label>Birth Date</label>
+          <input-type>date</input-type>
+          <hint />
+          <required />
+        </field>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>person</dc-element>
+          <dc-qualifier>gender</dc-qualifier>
+          <label>Gender</label>
+          <input-type value-pairs-name="gender">dropdown</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>institution</dc-qualifier>
+          <label>Affiliation Institution</label>
+          <style>col-3</style>
+          <input-type>institution-affiliation-select</input-type>
+          <hint>Enter the name of the institution of the affiliation</hint>
+          <!-- <required>Please enter an affiliation institution for this profile.</required> -->
+        </field>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>affiliation</dc-element>
+          <dc-qualifier>department</dc-qualifier>
+          <label>Affiliation Department</label>
+          <style>col-9</style>
+          <input-type>department-affiliation-select</input-type>
+          <hint>Enter the department of the affiliation</hint>
+          <!-- <required>Please enter an affiliation department for this profile.</required> -->
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>email</dc-element>
+          <dc-qualifier>official</dc-qualifier>
+          <label>Official email</label>
+          <input-type>onebox</input-type>
+          <hint>This is your official email, it cannot be changed and it will be used has a reference email in your publications</hint>
+          <required />
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>email</dc-element>
+          <label>Email</label>
+          <input-type>onebox</input-type>
+          <hint>This is your personal email, it can be used to contact you if your official email is not valid anymore</hint>
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>orcid</dc-qualifier>
+          <label>ORCID</label>
+          <input-type>onebox</input-type>
+          <hint>Settable by connecting the entity with ORCID</hint>
+          <required />
+          <readonly>all</readonly>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>scopus-author-id</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Scopus Author ID</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>person</dc-schema>
+          <dc-element>identifier</dc-element>
+          <dc-qualifier>rid</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Researcher ID</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>description</dc-element>
+          <dc-qualifier>abstract</dc-qualifier>
+          <label>Biography</label>
+          <input-type>textarea</input-type>
+          <hint />
+          <required />
         </field>
       </row>
     </form>
@@ -552,11 +694,8 @@
           <dc-schema>organization</dc-schema>
           <dc-element>isSelectable</dc-element>
           <label>Selectable</label>
-          <input-type>checkbox</input-type>
-          <hint>The affiliation should be selectable</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
+          <input-type>toggle-switch</input-type>
+          <hint>Is the affiliation should be selectable ?</hint>
         </field>
       </row>
       <row>
@@ -565,7 +704,7 @@
           <dc-element>weight</dc-element>
           <label>Organization weight</label>
           <input-type>number</input-type>
-          <hint>The weight of the affiliation specifying its priority level (default is 50).</hint>
+          <hint>The weight of the affiliation specifying its priority level (default is 50)</hint>
           <required>You must provide a weight for this affiliation.</required>
         </field>
       </row>
@@ -709,9 +848,11 @@
           <dc-schema>funding</dc-schema>
           <dc-element>program</dc-element>
           <label>Program name</label>
-          <input-type>onebox</input-type>
-          <hint>Enter the funding program name.</hint>
-          <required>Program name is required.</required>
+          <input-type value-pairs-name="funding_programs">dropdown</input-type>
+          <hint>Enter the funding program name</hint>
+          <settings>
+            <setting name="editable">true</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -720,7 +861,7 @@
           <dc-element>project</dc-element>
           <label>Project name</label>
           <input-type>onebox</input-type>
-          <hint>Enter the funding project name for this document.</hint>
+          <hint>Enter the funding project name for this document</hint>
         </field>
       </row>
       <row>
@@ -729,7 +870,7 @@
           <dc-element>number</dc-element>
           <label>Grant ID</label>
           <input-type>onebox</input-type>
-          <hint>Enter the grant ID/number used for this document.</hint>
+          <hint>Enter the grant ID/number used for this document</hint>
         </field>
       </row>
     </form>
@@ -741,7 +882,7 @@
           <dc-qualifier>maintype</dc-qualifier>
           <label>Document type</label>
           <input-type value-pairs-name="publication_maintypes">dropdown</input-type>
-          <hint>Select the type(s) of content of the document.</hint>
+          <hint>Select the type(s) of content of the document</hint>
           <required>You must select a publication type.</required>
         </field>
       </row>
@@ -753,7 +894,7 @@
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type value-pairs-name="publication_subtypes_book">dropdown</input-type>
-          <hint>Select the subtype of the document.</hint>
+          <hint>Select the subtype of the document</hint>
           <required>You must select a publication subtype.</required>
         </field>
       </row>
@@ -765,7 +906,7 @@
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_subtypes_bookchapter">dropdown</input-type>
-          <hint>Select the subtype of the document.</hint>
+          <hint>Select the subtype of the document</hint>
           <required>You must select a publication subtype.</required>
         </field>
       </row>
@@ -777,7 +918,7 @@
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_subtypes_speech">dropdown</input-type>
-          <hint>Select the subtype of the document.</hint>
+          <hint>Select the subtype of the document</hint>
           <required>You must select a publication subtype.</required>
         </field>
       </row>
@@ -789,7 +930,7 @@
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type value-pairs-name="publication_subtypes_article">dropdown</input-type>
-          <hint>Select the subtype of the document.</hint>
+          <hint>Select the subtype of the document</hint>
           <required>You must select a publication subtype.</required>
         </field>
       </row>
@@ -801,7 +942,7 @@
           <label>Document subtype</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type value-pairs-name="publication_subtypes_report">dropdown</input-type>
-          <hint>Select the subtype of the document.</hint>
+          <hint>Select the subtype of the document</hint>
           <required>You must select a publication subtype.</required>
         </field>
       </row>
@@ -815,7 +956,7 @@
           <label>DOI</label>
           <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article,text::conference-speech</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the DOI (Digital object identifier) of the document starting with '10.'.</hint>
+          <hint>Enter the DOI (Digital object identifier) of the document starting with '10.'</hint>
           <regex>^10\.\d*\/.*</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid DOI format: DOI must start with '10.'</setting>
@@ -830,7 +971,7 @@
           <label>ISBN</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the ISBN of the document.</hint>
+          <hint>Enter the ISBN of the document</hint>
           <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISBN format</setting>
@@ -845,7 +986,7 @@
           <label>Patent identifiers</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type value-pairs-name="patent_identifiers">qualdrop_value</input-type>
-          <hint>If the patent has any specific identifiers, please enter the types and the actual numbers or codes.</hint>
+          <hint>If the patent has any specific identifiers, please enter the types and the actual numbers or codes</hint>
         </field>
       </row>
       <row>
@@ -856,7 +997,7 @@
           <label>Identifiers</label>
           <type-bind type-bind-field="dc.type.maintype">text::report,text::book,text::book-part,text::journal-article,text::conference-speech,text::working-paper</type-bind>
           <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
-          <hint>If the document has any identification numbers or codes associated with it, please enter the types and the actual numbers or codes.</hint>
+          <hint>If the document has any identification numbers or codes associated with it, please enter the types and the actual numbers or codes</hint>
         </field>
       </row>
     </form>
@@ -868,7 +1009,7 @@
           <dc-qualifier>author</dc-qualifier>
           <label>Author</label>
           <input-type>onebox</input-type>
-          <hint>Enter the names of the authors of this document in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+          <hint>Enter the names of the authors of this document in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J]</hint>
           <required>You must enter at least the author.</required>
         </field>
       </row>
@@ -878,7 +1019,7 @@
           <dc-element>email</dc-element>
           <label>Author's email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email of the author.</hint>
+          <hint>Enter the email of the author</hint>
           <!-- <required>Please provide an email for this author.</required> -->
           <regex>^(([^\[\]\\.,;:\s@"]+(\.[^\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$</regex>
           <settings>
@@ -894,7 +1035,7 @@
           <label>Author's ORCID</label>
           <style>col-12</style>
           <input-type>onebox</input-type>
-          <hint>The ORCID of the selected author.</hint>
+          <hint>The ORCID of the selected author</hint>
           <readonly>all</readonly>
         </field>
         <field>
@@ -903,7 +1044,7 @@
           <dc-qualifier>fgs</dc-qualifier>
           <label>Author's ORCID</label>
           <input-type>hidden</input-type>
-          <hint>The institutional ID of the selected author.</hint>
+          <hint>The institutional ID of the selected author</hint>
           <readonly>all</readonly>
         </field>
       </row>
@@ -915,7 +1056,7 @@
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type value-pairs-name="publication_roles_journal_article">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -926,7 +1067,7 @@
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_roles_conference_speech">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -937,7 +1078,7 @@
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
           <input-type value-pairs-name="publication_roles_book">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -948,7 +1089,7 @@
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_roles_book_chapter">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -959,7 +1100,7 @@
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::working-paper</type-bind>
           <input-type value-pairs-name="publication_roles_working_paper">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -970,7 +1111,7 @@
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type value-pairs-name="publication_roles_report">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -981,7 +1122,7 @@
           <label>Author's role</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type value-pairs-name="publication_roles_patent">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -1005,7 +1146,7 @@
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
-          <hint>Enter the name of the institution of the affiliation.</hint>
+          <hint>Enter the name of the institution of the affiliation</hint>
           <required>Please enter an institution for this affiliation.</required>
         </field>
         <field>
@@ -1015,7 +1156,7 @@
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
-          <hint>Enter the department of the affiliation.</hint>
+          <hint>Enter the department of the affiliation</hint>
           <required>Please enter a department for this affiliation.</required>
         </field>
       </row>
@@ -1029,7 +1170,7 @@
           <repeatable>true</repeatable>
           <label>Authors</label>
           <input-type>inline-labeled-group</input-type>
-          <hint>Enter the names of the authors of this document.</hint>
+          <hint>Enter the names of the authors of this document</hint>
           <required>You must enter at least one author</required>
           <settings>
             <setting name="displayIndex">true</setting>
@@ -1044,7 +1185,7 @@
           <label>et.al</label>
           <style>mt-2 border-top w-100 pt-2</style>
           <input-type>checkbox</input-type>
-          <hint>Check this box if the document has additional authors than those mentioned above.</hint>
+          <hint>Check this box if the document has additional authors than those mentioned above</hint>
           <settings>
             <setting name="showFieldLabel">false</setting>
           </settings>
@@ -1058,7 +1199,7 @@
           <dc-element>title</dc-element>
           <label>Title</label>
           <input-type>onebox</input-type>
-          <hint>Enter the main title of the document.</hint>
+          <hint>Enter the main title of the document</hint>
           <required>You must enter a main title for this document.</required>
         </field>
       </row>
@@ -1071,7 +1212,7 @@
           <input-type>date</input-type>
           <hint>Please give the date of previous publication or public distribution.
                         You can leave out the day and/or month if they aren't
-                        applicable.</hint>
+                        applicable</hint>
           <required>Please enter at least the year of the publication date.</required>
         </field>
       </row>
@@ -1082,7 +1223,7 @@
           <dc-qualifier>iso</dc-qualifier>
           <label>Language</label>
           <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
-          <hint>Select the language of the main content of the document. If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'.</hint>
+          <hint>Select the language of the main content of the document. If the language does not appear in the list, please select 'Other'.  If the content does not really have a language (for example, if it is a dataset or an image) please select 'N/A'</hint>
           <required>You need to choose a language for the document.</required>
         </field>
       </row>
@@ -1095,7 +1236,7 @@
           <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the document.</hint>
+          <hint>Enter the abstract of the document</hint>
         </field>
       </row>
       <row>
@@ -1105,7 +1246,7 @@
           <repeatable>true</repeatable>
           <label>Keywords</label>
           <input-type>tag</input-type>
-          <hint>Add any keyword to describe this document. Add a coma or press Enter to add a keyword.</hint>
+          <hint>Add any keyword to describe this document. Add a coma or press Enter to add a keyword</hint>
         </field>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1114,7 +1255,7 @@
           <repeatable>true</repeatable>
           <label>Internal keywords</label>
           <input-type>tag</input-type>
-          <hint>Add any internal keyword to describe this document. Add a coma or press Enter to add a keyword.</hint>
+          <hint>Add any internal keyword to describe this document. Add a coma or press Enter to add a keyword</hint>
         </field>
       </row>
       <row>
@@ -1126,7 +1267,7 @@
           <label>Mesh keywords</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech,text::journal-article,text::book-part,text::book</type-bind>
           <input-type>tag</input-type>
-          <hint>Enter "Medical Subject Headings" associated to this document.</hint>
+          <hint>Enter "Medical Subject Headings" associated to this document</hint>
         </field>
       </row>
       <row>
@@ -1137,7 +1278,8 @@
           <repeatable>true</repeatable>
           <label>Publication affiliations</label>
           <input-type>inline-labeled-group</input-type>
-          <hint>Enter affiliations linked to the authors of this document.</hint>
+          <hint>Enter affiliations linked to the authors of this document</hint>
+          <required>You must enter at least one affiliation</required>
         </field>
       </row>
       <row>
@@ -1147,7 +1289,7 @@
           <repeatable>true</repeatable>
           <label>References</label>
           <input-type value-pairs-name="references_identifiers">qualdrop_value</input-type>
-          <hint>Enter reference to other resources that can complement the submission.</hint>
+          <hint>Enter reference to other resources that can complement the submission</hint>
         </field>
       </row>
     </form>
@@ -1160,7 +1302,7 @@
           <label>Speech status</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_speech_status">dropdown</input-type>
-          <hint>Select in which type of document the speech was published.</hint>
+          <hint>Select in which type of document the speech was published</hint>
         </field>
       </row>
       <row>
@@ -1170,7 +1312,8 @@
           <label>Publication status</label>
           <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
-          <hint>Select the appropriate publication status for the document.</hint>
+          <hint>Select the appropriate publication status for the document</hint>
+          <required>You must choose a publication status for the document</required>
         </field>
       </row>
       <row>
@@ -1181,7 +1324,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
-          <hint>Select the appropriate publication status for the document.</hint>
+          <hint>Select the appropriate publication status for the document</hint>
         </field>
       </row>
       <row>
@@ -1191,7 +1334,7 @@
           <label>Number of pages</label>
           <type-bind type-bind-field="dc.type.maintype">text::book,text::report,text::working-paper</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the number of pages of the document.</hint>
+          <hint>Enter the number of pages of the document</hint>
           <regex>^\d+$</regex>
           <settings>
             <setting name="regexErrorMessage">Only digits are accepted</setting>
@@ -1215,11 +1358,8 @@
           <dc-qualifier>peerReviewed</dc-qualifier>
           <label>Peer-reviewed</label>
           <type-bind type-bind-field="dc.type.maintype">text::book</type-bind>
-          <input-type>checkbox</input-type>
-          <hint>The book has been reviewed by the pairs</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
+          <input-type>toggle-switch</input-type>
+          <hint>Is the book is peer-reviewed ?</hint>
         </field>
       </row>
       <!-- Conference fields -->
@@ -1231,7 +1371,7 @@
           <label>Conference name</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the conference name where the document was presented.</hint>
+          <hint>Enter the conference name where the document was presented</hint>
         </field>
       </row>
       <row>
@@ -1242,7 +1382,7 @@
           <label>Conference location</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the conference location where the document was presented.</hint>
+          <hint>Enter the conference location where the document was presented</hint>
         </field>
       </row>
       <row>
@@ -1273,7 +1413,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type>checkbox</input-type>
-          <hint>This document is only an abstract of another publication.</hint>
+          <hint>This document is only an abstract of another publication</hint>
           <settings>
             <setting name="showFieldLabel">false</setting>
           </settings>
@@ -1288,7 +1428,7 @@
           <label>Journal title</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host journal title.</hint>
+          <hint>Enter the host journal title</hint>
         </field>
       </row>
       <row>
@@ -1300,7 +1440,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host journal title.</hint>
+          <hint>Enter the host journal title</hint>
         </field>
       </row>
       <row>
@@ -1311,7 +1451,7 @@
           <label>ISSN</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the ISSN of the host serial.</hint>
+          <hint>Enter the ISSN of the host serial</hint>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1320,7 +1460,7 @@
           <label>e-ISSN</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the e-ISSN of the host serial.</hint>
+          <hint>Enter the e-ISSN of the host serial</hint>
         </field>
       </row>
       <row>
@@ -1332,7 +1472,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the ISSN of the host serial.</hint>
+          <hint>Enter the ISSN of the host serial</hint>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1342,7 +1482,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the e-ISSN of the host serial.</hint>
+          <hint>Enter the e-ISSN of the host serial</hint>
         </field>
       </row>
       <row>
@@ -1352,11 +1492,8 @@
           <dc-qualifier>peerReviewed</dc-qualifier>
           <label>Journal peer-reviewed</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
-          <input-type>checkbox</input-type>
-          <hint>The linked journal is peer-reviewed</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
+          <input-type>toggle-switch</input-type>
+          <hint>Is the host journal is peer-reviewed ?</hint>
         </field>
       </row>
       <row>
@@ -1367,11 +1504,8 @@
           <label>Journal peer-reviewed</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
-          <input-type>checkbox</input-type>
-          <hint>The linked journal is peer-reviewed</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
+          <input-type>toggle-switch</input-type>
+          <hint>Is the host journal is peer-reviewed ?</hint>
         </field>
       </row>
       <row>
@@ -1382,7 +1516,7 @@
           <label>Editor name</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the editor of this journal.</hint>
+          <hint>Enter the editor of this journal</hint>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1391,7 +1525,7 @@
           <label>Editor location</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the editor location of this journal.</hint>
+          <hint>Enter the editor location of this journal</hint>
         </field>
       </row>
       <row>
@@ -1401,8 +1535,56 @@
           <dc-qualifier>volume</dc-qualifier>
           <label>Volume</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">submitted</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the volume number of the serial the document belongs.</hint>
+          <hint>Enter the volume number of the serial the document belongs</hint>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>issue</dc-qualifier>
+          <label>Issue</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">submitted</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the issue number of the serial the document belongs</hint>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>pages</dc-qualifier>
+          <label>Pagination</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">submitted</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'</hint>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>dateIssued</dc-qualifier>
+          <label>Date</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">submitted</type-bind>
+          <input-type>year</input-type>
+          <hint>Enter date issued of the serial</hint>
+          <settings>
+            <setting name="useCurrentYearAsDefault">false</setting>
+            <setting name="maxYearDelta">2</setting>
+            <setting name="minYear">1925</setting>
+          </settings>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>serial</dc-element>
+          <dc-qualifier>volume</dc-qualifier>
+          <label>Volume</label>
+          <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">accepted/in-press,published</type-bind>
+          <input-type>onebox</input-type>
+          <hint>Enter the volume number of the serial the document belongs</hint>
           <required>You need to specify volume number (or 'n/a')</required>
         </field>
         <field>
@@ -1411,8 +1593,9 @@
           <dc-qualifier>issue</dc-qualifier>
           <label>Issue</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">accepted/in-press,published</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the issue number of the serial the document belongs.</hint>
+          <hint>Enter the issue number of the serial the document belongs</hint>
           <required>You need to specify issue number (or 'n/a')</required>
         </field>
         <field>
@@ -1421,8 +1604,9 @@
           <dc-qualifier>pages</dc-qualifier>
           <label>Pagination</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">accepted/in-press,published</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'</hint>
           <required>You need to specify pagination (or 'n/a')</required>
         </field>
         <field>
@@ -1431,9 +1615,10 @@
           <dc-qualifier>dateIssued</dc-qualifier>
           <label>Date</label>
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
+          <type-bind type-bind-field="publication.publicationStatus">accepted/in-press,published</type-bind>
           <input-type>year</input-type>
-          <hint>Enter date issued of the serial.</hint>
-          <required>You need to select a date.</required>
+          <hint>Enter date issued of the serial</hint>
+          <required>You need to select a date</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
             <setting name="maxYearDelta">2</setting>
@@ -1450,7 +1635,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the volume number of the serial the document belongs.</hint>
+          <hint>Enter the volume number of the serial the document belongs</hint>
           <required>You need to specify volume number (or 'n/a')</required>
         </field>
         <field>
@@ -1461,7 +1646,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the issue number of the serial the document belongs.</hint>
+          <hint>Enter the issue number of the serial the document belongs</hint>
           <required>You need to specify issue number (or 'n/a')</required>
         </field>
         <field>
@@ -1472,7 +1657,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'</hint>
           <required>You need to specify pagination (or 'n/a')</required>
         </field>
         <field>
@@ -1483,8 +1668,8 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>year</input-type>
-          <hint>Enter date issued of the serial.</hint>
-          <required>You need to select a date.</required>
+          <hint>Enter date issued of the serial</hint>
+          <required>You need to select a date</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
             <setting name="maxYearDelta">2</setting>
@@ -1501,7 +1686,7 @@
           <label>Host document type</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type value-pairs-name="publication_host_documentType">dropdown</input-type>
-          <hint>Select the host document type of the document.</hint>
+          <hint>Select the host document type of the document</hint>
         </field>
       </row>
       <row>
@@ -1513,7 +1698,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type value-pairs-name="publication_host_documentType">dropdown</input-type>
-          <hint>Select the host document type of the document.</hint>
+          <hint>Select the host document type of the document</hint>
         </field>
       </row>
       <row>
@@ -1524,7 +1709,7 @@
           <label>Host document title</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document title.</hint>
+          <hint>Enter the host document title</hint>
         </field>
       </row>
       <row>
@@ -1536,7 +1721,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document title.</hint>
+          <hint>Enter the host document title</hint>
         </field>
       </row>
       <row>
@@ -1547,7 +1732,7 @@
           <label>Host edition statement</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document edition statement.</hint>
+          <hint>Enter the host document edition statement</hint>
         </field>
       </row>
       <row>
@@ -1559,7 +1744,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document edition statement.</hint>
+          <hint>Enter the host document edition statement</hint>
         </field>
       </row>
       <row>
@@ -1570,7 +1755,7 @@
           <label>Host document authors</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document authors. Each author should be separated by ','.</hint>
+          <hint>Enter the host document authors. Each author should be separated by ','</hint>
         </field>
       </row>
       <row>
@@ -1582,7 +1767,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document authors. Each author should be separated by ','.</hint>
+          <hint>Enter the host document authors. Each author should be separated by ','</hint>
         </field>
       </row>
       <row>
@@ -1593,7 +1778,7 @@
           <label>Host document pagination</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'</hint>
         </field>
       </row>
       <row>
@@ -1605,7 +1790,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'.</hint>
+          <hint>Enter pagination of the document into the host document. Page interval separator must be '-'</hint>
         </field>
       </row>
       <row>
@@ -1616,7 +1801,7 @@
           <label>Date</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>year</input-type>
-          <hint>Enter date issued of the host document.</hint>
+          <hint>Enter date issued of the host document</hint>
           <required>You need to select a date.</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
@@ -1634,7 +1819,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>year</input-type>
-          <hint>Enter date issued of the host document.</hint>
+          <hint>Enter date issued of the host document</hint>
           <required>You need to select a date.</required>
           <settings>
             <setting name="useCurrentYearAsDefault">false</setting>
@@ -1651,7 +1836,7 @@
           <label>Host document ISBN</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document ISBN.</hint>
+          <hint>Enter the host document ISBN</hint>
           <required>Host document ISBN is required.</required>
           <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
           <settings>
@@ -1668,7 +1853,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the host document ISBN.</hint>
+          <hint>Enter the host document ISBN</hint>
           <required>Host document ISBN is required.</required>
           <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
           <settings>
@@ -1683,11 +1868,8 @@
           <dc-qualifier>peerReviewed</dc-qualifier>
           <label>Host document peer-review</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
-          <input-type>checkbox</input-type>
-          <hint>The host document is peer-reviewed</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
+          <input-type>toggle-switch</input-type>
+          <hint>Is the host document is peer-reviewed ?</hint>
         </field>
       </row>
       <row>
@@ -1698,11 +1880,8 @@
           <label>Host document peer-review</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
-          <input-type>checkbox</input-type>
-          <hint>The host document is peer-reviewed</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
+          <input-type>toggle-switch</input-type>
+          <hint>Is the host document is peer-reviewed ?</hint>
         </field>
       </row>
       <!-- editor fields -->
@@ -1712,7 +1891,28 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>name</dc-qualifier>
           <label>Editor name</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+          <required>You must enter an editor name</required>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>location</dc-qualifier>
+          <label>Editor location</label>
+          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <label>Editor name</label>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1721,7 +1921,7 @@
           <dc-element>editor</dc-element>
           <dc-qualifier>location</dc-qualifier>
           <label>Editor location</label>
-          <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::report</type-bind>
+          <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
@@ -1827,7 +2027,7 @@
           <label>Organization name</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter the organization name of the document.</hint>
+          <hint>Enter the organization name of the document</hint>
         </field>
         <field>
           <dc-schema>dc</dc-schema>
@@ -1870,7 +2070,7 @@
           <label>Submitter</label>
           <type-bind type-bind-field="dc.type.maintype">text::patent</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter name(s) of the inventor; one submitter by fields.</hint>
+          <hint>Enter name(s) of the inventor; one submitter by fields</hint>
           <required>Please enter at least one submitter for this patent.</required>
         </field>
       </row>
@@ -1893,8 +2093,11 @@
           <dc-element>organization</dc-element>
           <repeatable>true</repeatable>
           <label>Funding</label>
-          <input-type>group</input-type>
-          <hint>Add any funding data used for the document.</hint>
+          <input-type>inline-labeled-group</input-type>
+          <hint>Add any funding data used for the document</hint>
+          <settings>
+            <setting name="displayIndex">true</setting>
+          </settings>
         </field>
       </row>
     </form>
@@ -1906,7 +2109,7 @@
           <dc-qualifier>author</dc-qualifier>
           <label>Author's name</label>
           <input-type>onebox</input-type>
-          <hint>Enter the names of the authors of this dissertation in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J].</hint>
+          <hint>Enter the names of the authors of this dissertation in the form Lastname, Firstname [i.e. Smith, Josh or Smith, J]</hint>
           <required>You must enter at least the author.</required>
         </field>
       </row>
@@ -1916,7 +2119,7 @@
           <dc-element>email</dc-element>
           <label>Author's email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email of the author.</hint>
+          <hint>Enter the email of the author</hint>
           <required>Please provide an email for this author.</required>
           <regex>^(([^\[\]\\.,;:\s@"]+(\.[^\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$</regex>
           <settings>
@@ -1932,7 +2135,7 @@
           <label>Author's ORCID</label>
           <style>col-12</style>
           <input-type>onebox</input-type>
-          <hint>The ORCID of the selected author.</hint>
+          <hint>The ORCID of the selected author</hint>
           <readonly>all</readonly>
         </field>
         <field>
@@ -1941,7 +2144,7 @@
           <dc-qualifier>fgs</dc-qualifier>
           <label>FGS Identifier</label>
           <input-type>hidden</input-type>
-          <hint>Enter the FGS identifier of the author.</hint>
+          <hint>Enter the FGS identifier of the author</hint>
         </field>
       </row>
       <row>
@@ -1951,7 +2154,7 @@
           <dc-qualifier>code</dc-qualifier>
           <label>Author's Institution</label>
           <input-type>onebox</input-type>
-          <hint>Enter the institution of the author.</hint>
+          <hint>Enter the institution of the author</hint>
           <required>You must provide an institution for the author.</required>
         </field>
       </row>
@@ -1961,7 +2164,7 @@
           <dc-element>role</dc-element>
           <label>Author's role</label>
           <input-type value-pairs-name="publication_roles_thesis">dropdown</input-type>
-          <hint>Enter the role of the author regarding the publication.</hint>
+          <hint>Enter the role of the author regarding the publication</hint>
           <required>Please provide a role for this author.</required>
         </field>
       </row>
@@ -1974,7 +2177,7 @@
           <dc-qualifier>advisor</dc-qualifier>
           <label>Supervisor's name</label>
           <input-type>onebox</input-type>
-          <hint>Enter the supervisor name of this dissertation in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].</hint>
+          <hint>Enter the supervisor name of this dissertation in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J]</hint>
           <required>You must enter at least the supervisor.</required>
         </field>
       </row>
@@ -1984,7 +2187,7 @@
           <dc-element>email</dc-element>
           <label>Supervisor's email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email of the supervisor.</hint>
+          <hint>Enter the email of the supervisor</hint>
           <required>Please provide an email for this supervisor.</required>
           <regex>^(([^\[\]\\.,;:\s@"]+(\.[^\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$</regex>
           <settings>
@@ -2000,7 +2203,7 @@
           <label>Supervisor's ORCID</label>
           <style>col-12</style>
           <input-type>onebox</input-type>
-          <hint>The ORCID of the selected supervisor.</hint>
+          <hint>The ORCID of the selected supervisor</hint>
           <readonly>all</readonly>
         </field>
         <field>
@@ -2009,7 +2212,7 @@
           <dc-qualifier>fgs</dc-qualifier>
           <label>FGS Identifier</label>
           <input-type>hidden</input-type>
-          <hint>Enter the FGS identifier of the supervisor.</hint>
+          <hint>Enter the FGS identifier of the supervisor</hint>
         </field>
       </row>
       <row>
@@ -2019,7 +2222,7 @@
           <dc-qualifier>code</dc-qualifier>
           <label>Supervisor's institution</label>
           <input-type>onebox</input-type>
-          <hint>Enter the institution of the supervisor.</hint>
+          <hint>Enter the institution of the supervisor</hint>
           <required>Please provide an institution for this supervisor.</required>
         </field>
       </row>
@@ -2033,7 +2236,7 @@
           <label>Affiliation Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
-          <hint>Enter the name of the institution of the affiliation.</hint>
+          <hint>Enter the name of the institution of the affiliation</hint>
           <required>Please enter an institution for this affiliation.</required>
         </field>
         <field>
@@ -2043,7 +2246,7 @@
           <label>Affiliation Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
-          <hint>Enter the department of the affiliation.</hint>
+          <hint>Enter the department of the affiliation</hint>
           <required>Please enter a department for this affiliation.</required>
         </field>
       </row>
@@ -2056,7 +2259,7 @@
             <dc-qualifier>maintype</dc-qualifier>
             <label>Dissertation type</label>
             <input-type value-pairs-name="dissertation_type">dropdown</input-type>
-            <hint>The dissertation type, should be 'thesis'.</hint>
+            <hint>The dissertation type, should be 'thesis'</hint>
             <required></required>
             <readonly>all</readonly>
           </field>
@@ -2071,7 +2274,7 @@
           <repeatable>true</repeatable>
           <label>Authors</label>
           <input-type>inline-labeled-group</input-type>
-          <hint>Enter the names of the authors of this dissertation.</hint>
+          <hint>Enter the names of the authors of this dissertation</hint>
           <required>You must enter at least one author.</required>
           <settings>
             <setting name="displayIndex">true</setting>
@@ -2088,7 +2291,7 @@
           <repeatable>true</repeatable>
           <label>Supervisors</label>
           <input-type>inline-labeled-group</input-type>
-          <hint>Enter the names of the supervisors of this dissertation.</hint>
+          <hint>Enter the names of the supervisors of this dissertation</hint>
           <required>You must enter at least one supervisor.</required>
           <settings>
             <setting name="displayIndex">true</setting>
@@ -2103,7 +2306,7 @@
           <dc-element>title</dc-element>
           <label>Title</label>
           <input-type>onebox</input-type>
-          <hint>Enter the title of this dissertation.</hint>
+          <hint>Enter the title of this dissertation</hint>
           <required>You must enter a title for this dissertation.</required>
         </field>
       </row>
@@ -2116,7 +2319,7 @@
           <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the dissertation. For additional abstract, use the below "add" link.</hint>
+          <hint>Enter the abstract of the dissertation. For additional abstract, use the below "add" link</hint>
           <required>You must enter at least one abstract.</required>
         </field>
       </row>
@@ -2127,7 +2330,7 @@
           <dc-qualifier>iso</dc-qualifier>
           <label>Language</label>
           <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
-          <hint>Select the language of the main content of the dissertation.</hint>
+          <hint>Select the language of the main content of the dissertation</hint>
           <required>You must choose a language.</required>
         </field>
       </row>
@@ -2138,7 +2341,7 @@
           <repeatable>true</repeatable>
           <label>Subject Keywords</label>
           <input-type>tag</input-type>
-          <hint>Use a comma between keywords.</hint>
+          <hint>Use a comma between keywords</hint>
         </field>
       </row>
     </form>
@@ -2150,7 +2353,7 @@
           <dc-qualifier>name</dc-qualifier>
           <label>Dissertation's main institution</label>
           <input-type>onebox</input-type>
-          <hint>The main institution for this dissertation.</hint>
+          <hint>The main institution for this dissertation</hint>
           <required>A institution should be provided for this dissertion.</required>
           <readonly>all</readonly>
         </field>
@@ -2162,7 +2365,7 @@
           <dc-qualifier>name</dc-qualifier>
           <label>Dissertation's degree</label>
           <input-type value-pairs-name="dissertation_degrees">dropdown</input-type>
-          <hint>The main degree of the dissertation.</hint>
+          <hint>The main degree of the dissertation</hint>
           <required>Please provide a degree for this dissertation.</required>
         </field>
       </row>
@@ -2174,7 +2377,7 @@
           <repeatable>true</repeatable>
           <label>Dissertation's affiliations</label>
           <input-type>inline-labeled-group</input-type>
-          <hint>Enter affiliations for the dissertation.</hint>
+          <hint>Enter affiliations for the dissertation</hint>
           <required>You must add at least one affiliation for the dissertation.</required>
         </field>
       </row>
@@ -2185,7 +2388,7 @@
           <repeatable>true</repeatable>
           <label>Dissertation's linked faculties</label>
           <input-type value-pairs-name="dissertation_faculties">dropdown</input-type>
-          <hint>Enter all the linked faculties of this dissertation.</hint>
+          <hint>Enter all the linked faculties of this dissertation</hint>
           <required>You must add at least one linked faculty for the dissertation.</required>
         </field>
       </row>
@@ -2195,7 +2398,7 @@
           <dc-element>defenseDate</dc-element>
           <label>Dissertation's defense date</label>
           <input-type>date</input-type>
-          <hint>Please provide the defned date of the dissertation.</hint>
+          <hint>Please provide the defned date of the dissertation</hint>
           <required>You must enter at least the year.</required>
         </field>
       </row>
@@ -2245,7 +2448,7 @@
           <dc-element>publisher</dc-element>
           <label>Publisher</label>
           <input-type>onebox</input-type>
-          <hint>Provide the publisher name.</hint>
+          <hint>Provide the publisher name</hint>
           <required>Please provide a publisher name.</required>
         </field>
       </row>
@@ -2256,7 +2459,7 @@
           <dc-qualifier>location</dc-qualifier>
           <label>Publisher location</label>
           <input-type>onebox</input-type>
-          <hint>Provide the publisher location (could be a city, country, etc).</hint>
+          <hint>Provide the publisher location (could be a city, country, etc)</hint>
         </field>
       </row>
       <row>
@@ -2264,12 +2467,9 @@
           <dc-schema>journal</dc-schema>
           <dc-element>peerReviewed</dc-element>
           <label>Journal peer-reviewed</label>
-          <input-type>checkbox</input-type>
-          <hint>Has the journal been reviewed by the pairs ?</hint>
+          <input-type>toggle-switch</input-type>
+          <hint>Is the journal is peer-reviewed ?</hint>
           <required />
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
         </field>
       </row>
       <row>
@@ -4153,13 +4353,19 @@
     </value-pairs>
     <value-pairs value-pairs-name="funding_organizations" dc-term="funding_organizations">
       <pair>
-        <displayed-value>F.R.S.-FNRS</displayed-value>
-        <stored-value>F.R.S.-FNRS</stored-value>
+        <displayed-value>F.R.S.-FNRS - Fund for Scientific Research [BE]</displayed-value>
+        <stored-value>F.R.S.-FNRS - Fund for Scientific Research [BE]</stored-value>
       </pair>
       <pair>
         <displayed-value>EU</displayed-value>
         <stored-value>EU</stored-value>
       </pair>
     </value-pairs>
+      <value-pairs value-pairs-name="funding_programs" dc-term="funding_programs">
+          <pair>
+              <displayed-value>Horizon Europe</displayed-value>
+              <stored-value>Horizon Europe</stored-value>
+          </pair>
+      </value-pairs>
   </form-value-pairs>
 </input-forms>
