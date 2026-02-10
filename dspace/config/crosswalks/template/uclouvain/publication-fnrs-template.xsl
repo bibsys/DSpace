@@ -38,9 +38,9 @@
     <xsl:template name="translate-category-name">
         <xsl:param name="name"/>
         <xsl:choose>
-            <xsl:when test="$name='fnrs.category.1'">Ouvrages publiés comme auteur, co-auteur ou éditeur</xsl:when>
-            <xsl:when test="$name='fnrs.category.2'">Parties d'ouvrages publiés comme auteur ou co-auteur</xsl:when>
-            <xsl:when test="$name='fnrs.category.3'">Articles publiés dans des journaux à comité de lecture</xsl:when>
+            <xsl:when test="$name='fnrs.category.1'">Ouvrages publiés, en tant qu'auteur, co-auteur ou éditeur</xsl:when>
+            <xsl:when test="$name='fnrs.category.2'">Chapitres d'ouvrages, en tant qu'auteur ou co-auteur</xsl:when>
+            <xsl:when test="$name='fnrs.category.3'">Articles publiés dans des journaux à comité de lecture </xsl:when>
             <xsl:when test="$name='fnrs.category.4'">Articles publiés dans des actes de conférences</xsl:when>
             <xsl:when test="$name='fnrs.category.5'">Présentations orales dans des conférences avec comité scientifique de sélection</xsl:when>
             <xsl:when test="$name='fnrs.category.6'">Brevet</xsl:when>
