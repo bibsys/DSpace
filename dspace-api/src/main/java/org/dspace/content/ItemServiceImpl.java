@@ -21,18 +21,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -104,7 +107,12 @@ import org.dspace.orcid.service.OrcidTokenService;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.qaevent.dao.QAEventsDAO;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.content.cleanMetadata.CleanMetadataService;
 import org.dspace.uclouvain.content.service.CommentService;
+import org.dspace.uclouvain.content.tracking.Changes;
+import org.dspace.uclouvain.content.tracking.CommentMetadataChangesLogger;
+import org.dspace.uclouvain.content.tracking.MetadataTransactionCache;
+import org.dspace.uclouvain.content.tracking.MetadataValueSnapshot;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemValidators.ItemValidator;
 import org.dspace.uclouvain.itemValidators.factories.ItemValidatorFactory;
@@ -229,8 +237,24 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private MetadataTransactionCache metadataTransactionCache;
+    @Autowired
+    private CleanMetadataService cleanMetadataService;
+    @Autowired
+    private CommentMetadataChangesLogger metadataChangesLogger;
+
+    private List<String> trackedEntities;
 
     protected ItemServiceImpl() {
+    }
+
+    @PostConstruct
+    public void init() {
+        trackedEntities = Arrays
+            .stream(configurationService.getArrayProperty("changes.metadata.tracking-entity"))
+            .map(String::toLowerCase)
+            .toList();
     }
 
     @Override
@@ -373,7 +397,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
             }
             return null;
         }
-
+        createSnapshot(context, item);
         // not null, return item
         if (log.isDebugEnabled()) {
             log.debug(LogHelper.getHeader(context, "find_item", "item_id=" + id));
@@ -847,7 +871,8 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         if (validator != null) {
             validator.validate(context, item);
         }
-
+        cleanMetadataService.cleanMetadata(context, item, false);
+        trackMetadataChanges(context, item);
         super.update(context, item);
 
         // Set sequence IDs for bitstreams in Item. To guarantee uniqueness,
@@ -2501,4 +2526,107 @@ prevent the generation of resource policy entry values with null dspace_object a
                 .orElse(null);
     }
 
+    // TRACKING METHODS ================================================================================================
+    private void createSnapshot(Context context, Item item) {
+        if (itemCanBeTracked(context, item)) {
+            metadataTransactionCache.put(context, item.getID(), buildMetadataSnapshotList(item));
+        } else {
+            log.debug("createSnapshot:: Item#{} not tracked",  item.getID());
+        }
+    }
+
+    /**
+     * Try to track any metadata changes on an item.
+     * Original item metadata values could be found into the `MetadataTransactionCache` (if previously populated...
+     * mainly in `find` methods of this class.
+     *
+     * @param context The DSpace application context
+     * @param item the Item to analyze
+     * @throws SQLException if any database exception occurred
+     */
+    private void trackMetadataChanges(Context context, Item item) throws SQLException {
+        if (!itemCanBeTracked(context, item)) {
+            log.debug("trackMetadataChanges:: Item#{} not tracked",  item.getID());
+            return;
+        }
+        List<MetadataValueSnapshot> oldSnapshot = metadataTransactionCache.get(context, item.getID());
+        if (oldSnapshot == null) {  // when an item is created, an empty list is returned.
+            log.debug("trackMetadataChanges:: Don't found any snapshot for Item#{}", item.getID());
+            return;
+        }
+        List<MetadataValueSnapshot> newSnapshot = buildMetadataSnapshotList(item);
+        Changes<MetadataValueSnapshot> changes = detectChanges(oldSnapshot, newSnapshot);
+        if (changes.isEmpty()) {
+            log.debug("trackMetadataChanges:: No changes detected for Item#{}", item.getID());
+            return;
+        }
+        log.debug("trackMetadataChanges:: {} changes detected for Item#{}", changes.size(), item.getID());
+        metadataChangesLogger.logChanges(context, item, changes);
+    }
+
+    /**
+     * Check into application configuration if this item could be tracked.
+     *
+     * @param context The DSpace application context
+     * @param item the Item to analyze
+     * @return true if the item could be tracked, false otherwise
+     */
+    private boolean itemCanBeTracked(Context context, Item item) {
+        // IMPORTANT DEV NOTE: Do not use getEntityType here as it leads to performances issues !
+        // String entityType = getEntityType(item);
+        // Instead we use getEntityTypeOptimized() which is less time consuming.
+
+        return (item != null)
+            && context.isMetadataTrackingEnabled()
+            && trackedEntities.contains(getEntityTypeOptimized(item));
+    }
+
+    private List<MetadataValueSnapshot> buildMetadataSnapshotList(Item item) {
+        return item.getMetadata()
+            .stream()
+            .map(MetadataValueSnapshot::new)
+            .collect(Collectors.toList());
+    }
+
+    private Map<String, MetadataValueSnapshot> toMap(List<MetadataValueSnapshot> list) {
+        return list
+            .stream()
+            .collect(Collectors.toMap(
+                MetadataValueSnapshot::getKey,
+                snapshot -> snapshot,
+                (existing, replacement) -> existing
+            ));
+    }
+
+    /**
+     * This method check between two metadata snapshots list to detect any changes between same metadata field.
+     * @param oldSnapshot the old metadata snapshot to analyze (aka original data)
+     * @param newSnapshot the possible modified metadata snapshot to analyze
+     * @return all metadata changes detected between both versions.
+     */
+    private Changes<MetadataValueSnapshot> detectChanges(
+        List<MetadataValueSnapshot> oldSnapshot,
+        List<MetadataValueSnapshot> newSnapshot
+    ) {
+        Map<String, MetadataValueSnapshot> oldMap = toMap(oldSnapshot);
+        Map<String, MetadataValueSnapshot> newMap = toMap(newSnapshot);
+
+        Set<String> allKeys = new HashSet<>();
+        allKeys.addAll(oldMap.keySet());
+        allKeys.addAll(newMap.keySet());
+
+        Changes<MetadataValueSnapshot> changes = new Changes<>();
+        for (String key : allKeys) {
+            MetadataValueSnapshot oldS = oldMap.get(key);
+            MetadataValueSnapshot newS = newMap.get(key);
+            if (oldS != null && newS == null) {
+                changes.detectRemove(oldS);
+            } else if (oldS == null && newS != null) {
+                changes.detectAdd(newS);
+            } else if (oldS != null && !oldS.equals(newS)) {
+                changes.detectUpdate(oldS, newS);
+            }
+        }
+        return changes;
+    }
 }
