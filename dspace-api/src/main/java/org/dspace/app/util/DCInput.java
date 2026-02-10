@@ -604,7 +604,7 @@ public class DCInput {
      * @param typeFields The field name && values for the current document.
      * @return true when there is no type restriction or when typeFields is allowed.
      */
-    public boolean isAllowedFor(HashMap<String, String> typeFields) {
+    public boolean isAllowedFor(Map<String, String> typeFields) {
         // For each field/value pair, check that it is allowed for the current configuration.
         return typeBind.keySet().stream()
             .allMatch(key -> typeFields.containsKey(key) && typeBind.get(key).contains(typeFields.get(key)));
