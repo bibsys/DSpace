@@ -12,7 +12,7 @@
 >
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
-    <!-- FACTORIES ======================================================== -->
+    <!-- FACTORIES ================================================================================================= -->
     <bean id="uclouvainServiceFactory" class="org.dspace.uclouvain.factories.UCLouvainServiceFactoryImpl"/>
 
     <bean id="directLinkGeneratorFactory" class="org.dspace.uclouvain.core.directLink.DirectLinkGeneratorFactory">
@@ -42,10 +42,12 @@
             </util:map>
         </property>
     </bean>
-    <!-- VALIDATORS -->
+    <!-- VALIDATORS ================================================================================================ -->
     <bean id="itemProfileValidator" class="org.dspace.uclouvain.itemValidators.validators.ItemProfileValidator"/>
 
-    <!-- SERVICES ========================================================= -->
+    <!-- SERVICES ================================================================================================== -->
+    <bean id="cleanMetadataServiceImpl" class="org.dspace.uclouvain.content.cleanMetadata.CleanMetadataServiceImpl"/>
+    <bean id="commentMetadataChangesLogger" class="org.dspace.uclouvain.content.tracking.CommentMetadataChangesLogger"/>
     <bean id="uclouvainDirectLinkService" class="org.dspace.uclouvain.services.DirectLinkServiceImpl"/>
     <bean id="publicationAuthorAuthority" class="org.dspace.uclouvain.authority.PublicationAuthorAuthority"/>
     <bean id="publicationAdvisorAuthority" class="org.dspace.uclouvain.authority.PublicationAdvisorAuthority"/>
@@ -67,7 +69,7 @@
         <property name="fieldValidationRegexps">
             <!-- One of the following has to match in order to keep the field in the search result: -->
             <util:list>
-                <!-- Keep all metadata fields of form "<schema>.<element>(.qualifier)" that are not containing the word "email" -->
+                <!-- Keep all metadata fields of form "<schema>.<element>[.<qualifier>]" that don't contain the word "email" -->
                 <!-- This does not include fields containing an underscore like "dc.title_dt" for example -->
                 <value>^(?!.*email)[a-z][a-zA-Z]*\.[a-z][a-zA-Z]*(\.[a-z][a-zA-Z]*)?$</value>
                 <!-- Keep "handle" field -->
@@ -79,6 +81,7 @@
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
     <bean id="authorizationUtils" class="org.dspace.uclouvain.core.utils.AuthorizationUtils" />
+    <bean id="metadataTransactionCache" class="org.dspace.uclouvain.content.tracking.MetadataTransactionCache"/>
 
     <!-- CLIENTS ========================================================== -->
     <bean id="esbClient" class="org.dspace.uclouvain.external.esb.client.ESBClientImpl">

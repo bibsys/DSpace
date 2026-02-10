@@ -9,6 +9,7 @@ package org.dspace.uclouvain.factories;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.citations.UCLouvainCitationsService;
+import org.dspace.uclouvain.content.cleanMetadata.CleanMetadataService;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
@@ -27,6 +28,7 @@ import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
  * Abstract factory to get services for the UCLouvain package.
  * use UCLouvainServiceFactory.getInstance() to retrieve an implementation
  *
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public abstract  class UCLouvainServiceFactory {
@@ -45,6 +47,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract OrgUnitService getOrgUnitService();
     public abstract PublicationService getPublicationService();
     public abstract IDMPersonValidityService getIDMPersonValidityService();
+    public abstract CleanMetadataService getCleanMetadataService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
