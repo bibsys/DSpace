@@ -86,6 +86,11 @@ public class Context implements AutoCloseable {
     private boolean ignoreCommentCreation;
 
     /**
+     * Is the metadata tracking system is enabled ?
+     */
+    private boolean isMetadataTrackingEnabled;
+
+    /**
      * A stack with the history of authorisation system check modify
      */
     private Deque<Boolean> authStateChangeHistory;
@@ -195,6 +200,7 @@ public class Context implements AutoCloseable {
         currentLocale = I18nUtil.getDefaultLocale();
         extraLogInfo = "";
         ignoreAuth = false;
+        isMetadataTrackingEnabled = true;
 
         specialGroups = new HashSet<>();
 
@@ -1028,7 +1034,7 @@ public class Context implements AutoCloseable {
      * Find out if the automatic comment creation system should be ignored for this context.
      *   Consumers mainly create automatic comments.
      *
-     * @return <code>true</code> if automatic comment creation should be ignored for this session.
+     * @return `true` if automatic comment creation should be ignored for this session.
      */
     public boolean ignoreAutomaticCommentCreation() {
         return ignoreCommentCreation;
@@ -1044,5 +1050,20 @@ public class Context implements AutoCloseable {
     public void restoreAutomaticCommentCreation() {
         this.ignoreCommentCreation = true;
         log.debug("Automatic comment creation is turn on");
+    }
+
+    /** Enable the metadata tracking system flag */
+    public void enableMetadataTracking() {
+        this.isMetadataTrackingEnabled = true;
+        log.debug("Metadata tracking system enabled");
+    }
+    /** Disabled the metadata tracking system flag */
+    public void disableMetadataTracking() {
+        this.isMetadataTrackingEnabled = false;
+        log.debug("Metadata tracking system disabled");
+    }
+    /** Get the metadata tracking system status */
+    public boolean isMetadataTrackingEnabled() {
+        return isMetadataTrackingEnabled;
     }
 }
