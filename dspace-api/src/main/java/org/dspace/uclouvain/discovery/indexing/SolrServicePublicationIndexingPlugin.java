@@ -30,7 +30,6 @@ import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeExceptio
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
-import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
 import org.dspace.uclouvain.validation.fnrs.FNRSValidator;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +46,6 @@ public class SolrServicePublicationIndexingPlugin
 
     private static final Logger log = LogManager.getLogger(SolrServicePublicationIndexingPlugin.class);
 
-    @Autowired
-    private UCLouvainFWBValidationService uclouvainFWBValidationService;
     @Autowired
     private FNRSValidator fnrsValidator;
     @Autowired
@@ -73,18 +70,18 @@ public class SolrServicePublicationIndexingPlugin
 
     /**
      * Index 2 keys in the item document:
-     * - 'fwbEligible_b': Is the item eligible based on FWB requirements.
-     * - 'fwbCompliant_b': Is the item eligible based on FWB requirements.
+     * - 'fwbCompliant_b': Is the item compliant for Fulltext including based on FWB requirements.
+     * - 'fwbExportable_b': Is the item exportable into a FWB bibliography.
+     *
      * @param context The current DSpace context.
      * @param item    The DSpace Item to process.
      * @param document The Solr document to add the keys to.
      */
     private void addFWBValidationKeys(Context context, Item item, SolrInputDocument document) {
         try {
-            boolean isEligible = uclouvainFWBValidationService.isFWBEligible(context, item);
-            boolean isCompliant = isEligible && uclouvainFWBValidationService.isFWBCompliantAsBoolean(context, item);
-            document.addField("fwbEligible_b", isEligible);
-            document.addField("fwbCompliant_b", isCompliant);
+            Publication publication = PublicationFactory.build(item);
+            document.addField("fwbCompliant_b", publication.isFWBCompliant(context).getLeft());
+            document.addField("fwbExportable_b", publication.isFWBExportable(context));
         } catch (Exception e) {
             log.error("Error while indexing FWB data in SOLR.", e);
         }
@@ -94,6 +91,7 @@ public class SolrServicePublicationIndexingPlugin
      * Index 2 keys in the item document:
      * - 'fnrsRelevant_b': Is the item is relevant based on FNRS categories
      * - 'fnrsValid_b': Is the item is valid regarding FNRS rules (only present if item is relevant)
+     *
      * @param item The DSpace Item to process.
      * @param document The Solr document to add the keys to.
      */
