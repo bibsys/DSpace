@@ -21,7 +21,6 @@ import org.dspace.uclouvain.services.OrgUnitService;
 import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
-import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
 /**
@@ -41,7 +40,6 @@ public abstract  class UCLouvainServiceFactory {
     public abstract DirectLinkService getDirectLinkService();
     public abstract MailMetadataParserService getMailMetadataParserService();
     public abstract UCLouvainAffiliationEntityRestService getAffiliationEntityRestService();
-    public abstract UCLouvainFWBValidationService getFWBValidationService();
     public abstract UCLouvainCitationsService getCitationsService();
     public abstract JournalService getJournalService();
     public abstract OrgUnitService getOrgUnitService();

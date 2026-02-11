@@ -7,7 +7,12 @@
  */
 package org.dspace.uclouvain.core.model.publication;
 
+import java.sql.SQLException;
+import java.time.LocalDate;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.content.Item;
+import org.dspace.core.Context;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 
 /**
@@ -63,5 +68,43 @@ public class SpeechPublication extends Publication {
     public boolean isPublished() {
         return itemService.hasMetadata(item, JOURNAL_TITLE_FIELD)
             || itemService.hasMetadata(item, HOST_BOOK_TITLE_FIELD);
+    }
+
+    // FWB METHODS IMPLEMENTATION ======================================================================================
+    // There is a some specific rules for FWB check about a conference speech. If the conference speech is published
+    // (into a book or a serial) after the start decree date, the publication <strong>must</strong> contains an
+    // openAccess or an embargo file (1year max)
+    @Override
+    public Pair<Boolean, String> isFWBCompliant(Context context) {
+        LocalDate pubDate = getPublicationDateIssued();
+        if (pubDate == null) {
+            return VALIDATION_FAILURE_NO_DATE;
+        }
+        if (isPublished() && pubDate.getYear() >= DECREE_YEAR) {
+            try {
+                return (itemService.hasUploadedFiles(item))
+                    ? validateFWBFileAccess(context)
+                    : VALIDATION_FAILURE_NO_FILE;
+            } catch (SQLException ignored) {
+                return VALIDATION_SUCCESS;
+            }
+        }
+        return VALIDATION_SUCCESS;
+    }
+
+    @Override
+    public boolean isFWBExportable(Context context) {
+        // 1) we export conference speech if publication date > decree date
+        // 2) we export conference speech if it's not published
+        // 3) we export conference speech compliant with decree
+        LocalDate pubDate = getPublicationDateIssued();
+        if (pubDate == null) {
+            return false;
+        }
+        boolean isPreDecree = pubDate.getYear() < DECREE_YEAR;
+        if (isPreDecree || !isPublished()) {
+            return true;
+        }
+        return isFWBCompliant(context).getLeft();
     }
 }

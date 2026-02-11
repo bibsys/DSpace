@@ -20,7 +20,6 @@ import org.dspace.uclouvain.services.OrgUnitService;
 import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.uclouvain.services.UCLouvainAffiliationEntityRestService;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
-import org.dspace.uclouvain.services.UCLouvainFWBValidationService;
 import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,8 +47,6 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private MailMetadataParserService mailMetadataParserService;
     @Autowired
     private UCLouvainAffiliationEntityRestService uclouvainAffiliationEntityRestService;
-    @Autowired
-    private UCLouvainFWBValidationService uclouvainFWBValidationService;
     @Autowired
     private UCLouvainCitationsService uclouvainCitationsService;
     @Autowired
@@ -94,10 +91,6 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public UCLouvainAffiliationEntityRestService getAffiliationEntityRestService() {
         return uclouvainAffiliationEntityRestService;
-    }
-    @Override
-    public UCLouvainFWBValidationService getFWBValidationService() {
-        return uclouvainFWBValidationService;
     }
     @Override
     public UCLouvainCitationsService getCitationsService() {

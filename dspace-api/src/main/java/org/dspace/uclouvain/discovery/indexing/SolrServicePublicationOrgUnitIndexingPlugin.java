@@ -34,9 +34,7 @@ public class SolrServicePublicationOrgUnitIndexingPlugin
     public static final String PARENT_UNIVERSITY_NAME_KEY = "parentUniversity.name";
 
     /**
-     * Index 2 keys in the item document:
-     * - 'fwbEligible_b': Is the item eligible based on FWB requirements.
-     * - 'fwbCompliant_b': Is the item eligible based on FWB requirements.
+     * Add parent master entity value to allow a search on these values retrieve these documents
      * 
      * @param context The current DSpace context.
      * @param dso The DSpace Item to process.
