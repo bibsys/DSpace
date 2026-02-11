@@ -7,24 +7,41 @@
  */
 package org.dspace.uclouvain.core.model.publication;
 
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.dspace.access.status.AccessStatusHelper;
+import org.dspace.authorize.ResourcePolicy;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
 import org.dspace.content.Item;
+import org.dspace.core.Constants;
+import org.dspace.core.Context;
 import org.dspace.core.CrisConstants;
+import org.dspace.core.factory.CoreServiceFactory;
 import org.dspace.eperson.dto.RegistrationDataChanges;
 import org.dspace.uclouvain.core.model.ItemModel;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
+import org.dspace.uclouvain.core.utils.DateUtils;
+import org.dspace.uclouvain.exceptions.DateConversionException;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
+import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
+import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 
 /**
  * Object representing a Publication object.
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-public class Publication extends ItemModel {
+public class Publication extends ItemModel implements FWBValidation {
 
     // CLASS CONSTANTS =================================================================================================
     public static final String ENTITY_TYPE = "Publication";
@@ -46,10 +63,22 @@ public class Publication extends ItemModel {
             configService.getProperty(FIELD_PREFIX + "publication.authorRole.field", "authors.role");
     public static final String AUTHOR_FGS_FIELD =
             configService.getProperty(FIELD_PREFIX + "publication.authorFgs.field", "authors.identifier.fgs");
+
     public static final String MAIN_TYPE_FIELD =
             configService.getProperty(FIELD_PREFIX + "maintype.field", "dc.type.maintype");
     public static final String SUB_TYPE_FIELD =
             configService.getProperty(FIELD_PREFIX + "subtype.field", "dc.type.subtype");
+    public static final String DATE_ISSUED_FIELD =
+            configService.getProperty(FIELD_PREFIX + "dateissued.field", "dc.date.issued");
+
+    // CLASS ATTRIBUTES ================================================================================================
+    AccessStatusHelper helper = (AccessStatusHelper) CoreServiceFactory
+        .getInstance()
+        .getPluginService()
+        .getSinglePlugin(AccessStatusHelper.class);
+    UCLouvainResourcePolicyService uclouvainResourcePolicyService = UCLouvainServiceFactory
+        .getInstance().
+        getResourcePolicyService();
 
     // CONSTRUCTOR =====================================================================================================
     protected Publication(Item item) throws InvalidModelEntityTypeException {
@@ -59,11 +88,11 @@ public class Publication extends ItemModel {
         }
     }
 
-    // FUNCTIONS =======================================================================================================
-
+    // PUBLIC METHODS ==================================================================================================
     /**
      * Allows retrieving all authors of the publication.
-     * @return The list of {@class PublicationAuthor} of the publication.
+     *
+     * @return The list of {@link PublicationAuthor} of the publication.
      */
     public List<PublicationAuthor> getAuthors() {
         return itemService
@@ -82,8 +111,9 @@ public class Publication extends ItemModel {
 
     /**
      * Allows retrieving authors of the publication for specific roles
-     * @param authorRoles author roles to filter (See {@class PublicationAuthor} constants)
-     * @return The list of {@class PublicationAuthor} of the publication matching roles
+     *
+     * @param authorRoles author roles to filter (See {@link PublicationAuthor} constants)
+     * @return The list of {@link PublicationAuthor} of the publication matching roles
      */
     public List<PublicationAuthor> getAuthors(String... authorRoles) {
         List<String> roles = Arrays.asList(authorRoles);
@@ -125,11 +155,115 @@ public class Publication extends ItemModel {
             .toList();
     }
 
+    /** Get the document type of the publication */
     public String getMainType() {
         return this.getFirstMetadataValue(MAIN_TYPE_FIELD);
     }
 
+    /** Get the document subtype of the publication */
     public String getSubType() {
         return this.getFirstMetadataValue(SUB_TYPE_FIELD);
+    }
+
+    /**
+     * Get the issued year of the publication
+     *
+     * @return the issued year, or -1 if no valid issued year could be found
+     */
+    public int getIssuedYear() {
+        try {
+            String dateIssued = this.getFirstMetadataValue(DATE_ISSUED_FIELD);
+            String yearPart = dateIssued.substring(0, Math.min(dateIssued.length(), 4));
+            return Integer.parseInt(yearPart);
+        } catch (Exception e) {  // NullPointerException, ParsingException ...
+            return -1;
+        }
+    }
+
+    /**
+     * Retrieve the access type associated to the publication.
+     * If possible, prefer the `accessType(context)` method to be more consistent.
+     *
+     * @return the access type of the publication. If the publication doesn't have any attached file or the access type
+     *         cannot be determined, return `UCLouvainAccessStatusHelper.UNKNOWN`
+     */
+    public String accessType() {
+        return accessType(this.context);
+    }
+    public String accessType(Context context) {
+        try {
+            return helper.getAccessStatusFromItem(context, item, null);
+        } catch (SQLException e) {
+            return UCLouvainAccessStatusHelper.UNKNOWN;
+        }
+    }
+
+    // PROTECTED METHODS ===============================================================================================
+    /** Get the issued date of the publication; `null` if it cannot be determined */
+    protected LocalDate getPublicationDateIssued() {
+        String dateString = this.getFirstMetadataValue(DATE_ISSUED_FIELD);
+        try {
+            return DateUtils.convertDSpaceDate(dateString);
+        } catch (DateConversionException dce) {
+            return null;
+        }
+    }
+
+    /**
+     * Try to validate the publication checking the attached files regarding rules of FWB decree.
+     * Only OpenAccess and small embargo date are possible for FWB decree
+     *
+     * @param context The DSpace application context
+     * @return either a SUCCESS validation, either a specific FAILURE validation (with reason) if validation failed.
+     * @throws SQLException if any database exception occurred
+     */
+    protected Pair<Boolean, String> validateFWBFileAccess(Context context) throws SQLException {
+        LocalDate publicationDate = getPublicationDateIssued();
+        String accessType = accessType(context);
+        if (Objects.equals(accessType, UCLouvainAccessStatusHelper.OPEN_ACCESS)) {
+            return VALIDATION_SUCCESS;
+        } else if (Objects.equals(accessType, UCLouvainAccessStatusHelper.EMBARGO)) {
+            // If publDate + 1 is before embargoDate, return error (the embargo end date is too high)
+            boolean hasTooLongEmbargo = retrieveEmbargoPolicies(context)
+                .stream()
+                .map(rp -> new java.sql.Date(rp.getStartDate().getTime()).toLocalDate())
+                .anyMatch(embargoDate -> publicationDate.plusYears(1).isBefore(embargoDate));
+            return (hasTooLongEmbargo)
+                ? VALIDATION_FAILURE_EMBARGO_DATE
+                : VALIDATION_SUCCESS;
+        }
+        return VALIDATION_FAILURE_ACCESS_TYPE;
+    }
+
+    // PRIVATE METHODS =================================================================================================
+    /**
+     * Retrieve all the embargo policies form a given item's bitstreams.
+     *
+     * @param context The current DSpace context.
+     * @return The list of all policies that have an 'embargo' type and a startDate for a given item's bitstreams.
+     */
+    private List<ResourcePolicy> retrieveEmbargoPolicies(Context context) {
+        List<Bundle> bundles = item.getBundles(Constants.DEFAULT_BUNDLE_NAME);
+        return bundles.stream()
+            .map(Bundle::getBitstreams)
+            .flatMap(List::stream)
+            .map(bs -> getBsResourcePolicies(context, bs))
+            .flatMap(List::stream)
+            .filter(policy -> policy.getRpName().equals(UCLouvainAccessStatusHelper.EMBARGO))
+            .filter(policy -> policy.getStartDate() != null)
+            .collect(Collectors.toList());
+    }
+    /**
+     * Get all UCLouvain resource policies from a bitstream.
+     *
+     * @param context The current DSpace context.
+     * @param bs The bitstream to extract ResourcePolicy from.
+     */
+    private List<ResourcePolicy> getBsResourcePolicies(Context context, Bitstream bs) {
+        try {
+            return uclouvainResourcePolicyService.find(context, bs);
+        } catch (SQLException e) {
+            return Collections.emptyList();
+        }
     }
 }
