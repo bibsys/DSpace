@@ -57,7 +57,6 @@
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl">
         <property name="resourcePolicyPriorities" ref="resourcePolicyPriorities"/>
     </bean>
-    <bean id="uclouvainFWBValidationService" class="org.dspace.uclouvain.services.UCLouvainFWBValidationServiceImpl"/>
     <bean id="uclouvainCitationsService" class="org.dspace.uclouvain.citations.UCLouvainCitationsServiceImpl"/>
     <bean id="journalService" class="org.dspace.uclouvain.services.impl.JournalServiceImpl" />
     <bean id="orgUnitService" class="org.dspace.uclouvain.services.impl.OrgUnitServiceImpl" />
