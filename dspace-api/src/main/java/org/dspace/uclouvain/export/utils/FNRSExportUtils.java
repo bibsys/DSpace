@@ -99,7 +99,7 @@ public class FNRSExportUtils {
         return publication.getAuthors().stream()
             .filter(author -> author.getAuthority() != null)
             .anyMatch((PublicationAuthor author) -> {
-                return Objects.equals(author.getAuthority().getID().toString(), authorId)
+                return Objects.equals(author.getAuthority().getItemId().toString(), authorId)
                     && Objects.equals(author.getRole(), role);
             });
     }

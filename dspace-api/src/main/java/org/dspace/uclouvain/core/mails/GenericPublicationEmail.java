@@ -12,6 +12,9 @@ import java.util.List;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
+import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 
@@ -29,6 +32,8 @@ public abstract class GenericPublicationEmail extends AbstractUCLouvainEmail {
     protected String advisorEmailField = configService.getProperty(
         "uclouvain.global.metadata.advisoremail.field", "advisors.email");
 
+    protected Publication publication;
+
     // ABSTRACT METHODS ================================================================================================
     protected abstract String getTemplatePath();
     protected abstract String buildMailSubject();
@@ -39,6 +44,11 @@ public abstract class GenericPublicationEmail extends AbstractUCLouvainEmail {
     // METHODS =========================================================================================================
     public GenericPublicationEmail(Context context, Item item) throws EmailFailedInitException {
         super(context, item);
+        try {
+            this.publication = PublicationFactory.build(item);
+        } catch (InvalidModelEntityTypeException e) {
+            throw new EmailFailedInitException("Could not build publication from item: " + item.getID(), e);
+        }
     }
 
     /**
