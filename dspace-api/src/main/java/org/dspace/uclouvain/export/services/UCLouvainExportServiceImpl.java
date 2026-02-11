@@ -139,7 +139,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         String query = String.format("isAuthorOfPublication:\"%s\"", authorId);
         Map<String, String> fqs = new HashMap<>();
         fqs.put("search.entitytype", Publication.ENTITY_TYPE);
-        fqs.put("fwbCompliant_b", "true");
+        fqs.put("fwbExportable_b", "true");
         return publicationService.findPublications(context, query, fqs)
             .map(Publication::getItem)
             .iterator();

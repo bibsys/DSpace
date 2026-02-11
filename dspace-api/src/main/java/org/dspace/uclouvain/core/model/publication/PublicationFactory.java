@@ -37,6 +37,8 @@ public class PublicationFactory {
         switch (docType) {
             case SpeechPublication.DOCUMENT_TYPE:
                 return new SpeechPublication(item);
+            case ArticlePublication.DOCUMENT_TYPE:
+                return new ArticlePublication(item);
             // TODO :: Add other specific publication type
             default:
                 return new Publication(item);
