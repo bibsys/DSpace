@@ -71,6 +71,10 @@ public class ResearcherProfile {
         return UUIDUtils.fromString(dspaceObjectOwner.getAuthority());
     }
 
+    public UUID getItemId() {
+        return item.getID();
+    }
+
     /**
      * A profile is considered visible if accessible by anonymous users. This method
      * returns true if the given item has a READ policy related to ANONYMOUS group,
