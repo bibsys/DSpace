@@ -65,7 +65,7 @@ public class PublicationServiceImpl implements PublicationService {
             throws PublicationSetAuthorException {
         Item item = publication.getItem();
         try {
-            String authority = (author.getAuthority() != null) ? author.getAuthority().getID().toString() : null;
+            String authority = (author.getAuthority() != null) ? author.getAuthority().getItemId().toString() : null;
             int confidence = isNotEmpty(authority) ? CF_ACCEPTED : CF_UNSET;
             int place = author.getPlace();
 

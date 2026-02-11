@@ -28,7 +28,6 @@ import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.dspace.xmlworkflow.storedcomponents.service.CollectionRoleService;
-import org.dspace.xmlworkflow.storedcomponents.service.XmlWorkflowItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** 
@@ -40,10 +39,6 @@ public class ItemUtils {
 
     @Autowired
     private BitstreamService bitstreamService;
-    @Autowired
-    private XmlWorkflowItemService xmlWorkflowItemService;
-    @Autowired
-    private CollectionRoleService collectionRoleService;
 
     /** 
     * This method is used to extract all bitstreams from an item.
@@ -75,21 +70,24 @@ public class ItemUtils {
      * @return The list of all valid managers for the given item.
      * @throws SQLException for any database exception
      */
-    public List<EPerson> getManagersOfItem(Context context, Item item) throws SQLException {
+    public static List<EPerson> getManagersOfItem(Context context, Item item) throws SQLException {
         List<EPerson> managers = new ArrayList<>();
         Collection collection = item.getOwningCollection();
 
         if (collection == null) {
             // Check if the item is in the workflow; if yes, we need to use the XmlWorkflowItem to retrieve the
             // owning collection.
-            XmlWorkflowItem xmlWorkflowItem = this.xmlWorkflowItemService.findByItem(context, item);
+            XmlWorkflowItem xmlWorkflowItem = XmlWorkflowServiceFactory.getInstance().getXmlWorkflowItemService()
+                .findByItem(context, item);
             if (xmlWorkflowItem != null) {
                 collection = xmlWorkflowItem.getCollection();
             }
         }
 
         // Retrieve all the roles created for the item's collection.
-        for (CollectionRole role : this.collectionRoleService.findByCollection(context, collection)) {
+        List<CollectionRole> roles = XmlWorkflowServiceFactory.getInstance().getCollectionRoleService()
+            .findByCollection(context, collection);
+        for (CollectionRole role : roles) {
             if (role.getRoleId().equals(CollectionRoleService.LEGACY_WORKFLOW_STEP1_NAME)) {
                 for (Group group: role.getGroup().getMemberGroups()) {
                     managers.addAll(group.getMembers());
