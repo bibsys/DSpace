@@ -15,10 +15,10 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.dspace.content.Item;
-import org.dspace.content.MetadataFieldName;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
+import org.dspace.profile.ResearcherProfile;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.web.ContextUtil;
@@ -49,7 +49,7 @@ public class PublicationAuthor {
     private String role;
     private int place;
     private Map<String, String> identifiers = new HashMap<>();
-    private Item researcherProfileAuthority;
+    private ResearcherProfile researcherProfileAuthority;
 
     private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
     private final ItemService itemService = ContentServiceFactory.getInstance().getItemService();
@@ -82,6 +82,12 @@ public class PublicationAuthor {
         return this;
     }
 
+    public String getPrivateEmail() {
+        return researcherProfileAuthority != null
+            ? researcherProfileAuthority.getPrivateEmail().orElse(null)
+            : null;
+    }
+
     public String getInstitution() {
         return institution;
     }
@@ -108,13 +114,7 @@ public class PublicationAuthor {
     public String getOrcidID() {
         String orcidID = identifiers.getOrDefault("orcid", null);
         if (StringUtils.isBlank(orcidID) && researcherProfileAuthority != null) {
-            orcidID = itemService.getMetadataFirstValue(
-                researcherProfileAuthority,
-                new MetadataFieldName(
-                    configService.getProperty("uclouvain.global.metadata.person.orcidID.field", "dc.identifier.orcid")
-                ),
-                null
-            );
+            orcidID = researcherProfileAuthority.getOrcid().orElse(null);
             identifiers.put("orcid", orcidID);
         }
         return orcidID;
@@ -127,20 +127,13 @@ public class PublicationAuthor {
     public String getFgs() {
         String fgs = identifiers.getOrDefault("fgs", null);
         if (StringUtils.isBlank(fgs) && researcherProfileAuthority != null) {
-            fgs = itemService.getMetadataFirstValue(
-                researcherProfileAuthority,
-                new MetadataFieldName(configService.getProperty(
-                    "uclouvain.global.metadata.person.institutionalID.field",
-                    "person.identifier.fgs")
-                ),
-                null
-            );
+            fgs = researcherProfileAuthority.getFGS().orElse(null);
             identifiers.put("fgs", fgs);
         }
         return fgs;
     }
 
-    public Item getAuthority() {
+    public ResearcherProfile getAuthority() {
         return researcherProfileAuthority;
     }
     public PublicationAuthor setAuthority(UUID authorityID) {
@@ -157,7 +150,7 @@ public class PublicationAuthor {
             if (entityType != null && !entityType.equals(researchProfileEntityType)) {
                 throw new IllegalArgumentException("Item[" + authorityID + "] isn't a valid researcher profile");
             }
-            this.researcherProfileAuthority = authorityItem;
+            this.researcherProfileAuthority = new ResearcherProfile(authorityItem, false);
             return this;
         } catch (SQLException e) {
             throw new RuntimeException();

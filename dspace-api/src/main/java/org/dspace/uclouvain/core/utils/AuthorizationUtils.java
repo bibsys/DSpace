@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Utility class for authorization checks.
@@ -20,9 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class AuthorizationUtils {
-
-    @Autowired
-    private ItemUtils itemUtils;
 
     /**
      * Checks if the current user is a manager of the item's collection.
@@ -35,6 +31,6 @@ public class AuthorizationUtils {
      * @throws SQLException for any database exception.
      */
     public boolean isManagerOfItem(Context context, Item item, EPerson currentUser) throws SQLException {
-        return this.itemUtils.getManagersOfItem(context, item).contains(currentUser);
+        return ItemUtils.getManagersOfItem(context, item).contains(currentUser);
     }
 }

@@ -135,7 +135,7 @@ public class SolrServicePublicationIndexingPlugin
             .map(PublicationAuthor::getAuthority)
             .filter(Objects::nonNull)
             .forEach((author) -> {
-                addRead(document, findOwner(context, author));
+                addRead(document, findOwner(context, author.getItem()));
             });
     }
 
