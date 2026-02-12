@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.dspace.access.status.DefaultAccessStatusHelper;
 import org.dspace.access.status.factory.AccessStatusServiceFactory;
@@ -27,7 +26,6 @@ import org.dspace.content.Bundle;
 import org.dspace.content.Item;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
-import org.dspace.core.CrisConstants;
 import org.dspace.handle.factory.HandleServiceFactory;
 import org.dspace.handle.service.HandleService;
 import org.dspace.uclouvain.exceptions.EmailFailedInitException;
@@ -65,27 +63,16 @@ public abstract class AbstractNotifyEmail extends GenericPublicationEmail {
 
     @Override
     protected List<String> getRecipientAddresses() {
-        // Send email on both private and official adresses.
-        List<String> recipients = publication.getAuthors().stream()
-            .flatMap(author -> Stream.of(
-                author.getEmail(),
-                author.getPrivateEmail()
-            ))
-            .filter(this::isValidValue)
-            .distinct()
-            .collect(Collectors.toList());
+        // Send email on both private and official addresses.
+        List<String> recipients = publication.getAuthorsEmails(true, true);
         String submitterEmail = item.getSubmitter().getEmail();
         if (!recipients.contains(submitterEmail)) {
             recipients.add(submitterEmail);
         }
         if (log.isDebugEnabled()) {
-            log.debug("Initial TO recipient addresses for notify email are :: " + String.join(", ", recipients));
+            log.debug("Initial TO recipient addresses for notify email are :: {}", String.join(", ", recipients));
         }
         return recipients;
-    }
-
-    private boolean isValidValue(String value) {
-        return value != null && !value.equals(CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE);
     }
 
     protected String getHandle(Context context, Item item) throws SQLException {
