@@ -8,7 +8,6 @@
 package org.dspace.app.rest.authorization.impl;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +20,6 @@ import org.dspace.app.rest.model.BitstreamRest;
 import org.dspace.app.rest.model.ItemRest;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.service.BitstreamService;
@@ -30,6 +28,9 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
+import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -76,37 +77,51 @@ public class RequestCopyFeature implements AuthorizationFeature {
             log.warn("The configuration parameter \"request.item.type\" contains an invalid value.");
             return false;
         }
-        if (object instanceof ItemRest) {
-            ItemRest itemRest = (ItemRest) object;
-            String id = itemRest.getId();
-            Item item = itemService.find(context, UUID.fromString(id));
-            if (!item.isArchived()) {
+
+        // If the object of the request is an `Item`:
+        //   * Check this item is archived (if not, no request copy is possible)
+        //   * Check this item has, at lease, one unauthorized read access bitstream
+        // If the object of the request is a `Bitstream`
+        //   * Check the parent item is archived (if not, no request copy is possible)
+        //   * Check this specific bitstream is not authorized to be read.
+        if (object instanceof ItemRest itemRest) {
+            Item item = itemService.find(context, UUID.fromString(itemRest.getId()));
+            if (!item.isArchived() || !existsPersistentRecipient(item)) {
                 return false;
             }
-            List<Bundle> bunds = itemService.getBundles(item, Constants.DEFAULT_BUNDLE_NAME);
-
-            for (Bundle bund : bunds) {
-                List<Bitstream> bitstreams = bund.getBitstreams();
-                for (Bitstream bitstream : bitstreams) {
-                    boolean authorized = authorizeService.authorizeActionBoolean(context, bitstream, Constants.READ);
-                    if (!authorized) {
-                        return true;
-                    }
-                }
-            }
-        } else if (object instanceof BitstreamRest) {
-            BitstreamRest bitstreamRest = (BitstreamRest) object;
+            return itemService
+                .getBundles(item, Constants.DEFAULT_BUNDLE_NAME)
+                .stream()
+                .flatMap(bundle -> bundle.getBitstreams().stream())
+                .anyMatch(bitstream -> !isAuthorized(context, bitstream, Constants.READ));
+        } else if (object instanceof BitstreamRest bitstreamRest) {
             Bitstream bitstream = bitstreamService.find(context, UUID.fromString(bitstreamRest.getId()));
-
             DSpaceObject parentObject = bitstreamService.getParentObject(context, bitstream);
-            if (parentObject instanceof Item) {
-                if (((Item) parentObject).isArchived()) {
-                    return !authorizeService.authorizeActionBoolean(context, bitstream, Constants.READ);
-                }
+            if (parentObject instanceof Item item && item.isArchived() && existsPersistentRecipient(item)) {
+                return !authorizeService.authorizeActionBoolean(context, bitstream, Constants.READ);
             }
         }
         return false;
     }
+
+    private boolean isAuthorized(Context context, Bitstream bitstream, int authorization) {
+        try {
+            return authorizeService.authorizeActionBoolean(context, bitstream, authorization);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    private boolean existsPersistentRecipient(Item item) {
+        try {
+            Publication publication = PublicationFactory.build(item);
+            return !publication.getAuthorsEmails(true, true).isEmpty();
+        } catch (InvalidModelEntityTypeException imete) {
+            log.warn("Cannot convert Item#{} to Publication :: ", item.getID(), imete);
+            return false;
+        }
+    }
+
 
     @Override
     public String[] getSupportedTypes() {
