@@ -7,12 +7,16 @@
  */
 package org.dspace.uclouvain.core.model.publication;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.dspace.content.Item;
+import org.dspace.core.CrisConstants;
+import org.dspace.eperson.dto.RegistrationDataChanges;
 import org.dspace.uclouvain.core.model.ItemModel;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 
@@ -101,6 +105,25 @@ public class Publication extends ItemModel {
             .filter(author -> Objects.equals(author.getPlace(), place))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * Get emails of the authors of the publication.
+     * @param publicationEmail Include (or not) the email stored as a publication metadata (default=authors.email)
+     * @param privateEmail Include (or not) private/specific email of author link to a ResearchProfile authority.
+     * @return the list of emails for the publication. This list can be empty ! (especially if both params are `false`)
+     */
+    public List<String> getAuthorsEmails(boolean publicationEmail, boolean privateEmail) {
+        return getAuthors().stream()
+            .flatMap(author -> Stream.of(
+                publicationEmail ? author.getEmail() : null,
+                privateEmail ? author.getPrivateEmail() : null
+            ))
+            .filter(Objects::nonNull)
+            .filter(email -> !CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE.equals(email))
+            .filter(email -> email.matches(RegistrationDataChanges.EMAIL_PATTERN))
+            .distinct()
+            .toList();
     }
 
     public String getMainType() {

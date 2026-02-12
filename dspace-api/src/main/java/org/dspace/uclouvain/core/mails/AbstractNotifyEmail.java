@@ -65,27 +65,16 @@ public abstract class AbstractNotifyEmail extends GenericPublicationEmail {
 
     @Override
     protected List<String> getRecipientAddresses() {
-        // Send email on both private and official adresses.
-        List<String> recipients = publication.getAuthors().stream()
-            .flatMap(author -> Stream.of(
-                author.getEmail(),
-                author.getPrivateEmail()
-            ))
-            .filter(this::isValidValue)
-            .distinct()
-            .collect(Collectors.toList());
+        // Send email on both private and official addresses.
+        List<String> recipients = publication.getAuthorsEmails(true, true);
         String submitterEmail = item.getSubmitter().getEmail();
         if (!recipients.contains(submitterEmail)) {
             recipients.add(submitterEmail);
         }
         if (log.isDebugEnabled()) {
-            log.debug("Initial TO recipient addresses for notify email are :: " + String.join(", ", recipients));
+            log.debug("Initial TO recipient addresses for notify email are :: {}", String.join(", ", recipients));
         }
         return recipients;
-    }
-
-    private boolean isValidValue(String value) {
-        return value != null && !value.equals(CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE);
     }
 
     protected String getHandle(Context context, Item item) throws SQLException {
