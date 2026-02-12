@@ -14,7 +14,7 @@ import org.dspace.eperson.RegistrationTypeEnum;
  **/
 public class RegistrationDataChanges {
 
-    private static final String EMAIL_PATTERN =
+    public static final String EMAIL_PATTERN =
         "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)" +
             "+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
 
