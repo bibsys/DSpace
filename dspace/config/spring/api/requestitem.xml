@@ -33,6 +33,13 @@
         <property name="fullNameMetadata" value="dc.contributor.author" />
     </bean>
 
+    <bean class="org.dspace.uclouvain.app.requestitem.PublicationMetadataStrategy"
+          id="org.dspace.uclouvain.app.requestitem.PublicationMetadataStrategy">
+        <description>Get recipients from an archived UCLouvain publication.</description>
+        <property name="publicationEmail" value="true" />
+        <property name="authorityEmail" value="true" />
+    </bean>
+
     <bean class="org.dspace.app.requestitem.RequestItemHelpdeskStrategy"
           id="org.dspace.app.requestitem.RequestItemHelpdeskStrategy">
         <description>
@@ -62,8 +69,8 @@
         <constructor-arg>
             <description>A list of RequestItemAuthorExtractor beans</description>
             <list>
-              <ref bean='org.dspace.app.requestitem.RequestItemMetadataStrategy'/>
-              <ref bean='org.dspace.app.requestitem.RequestItemSubmitterStrategy'/>
+              <ref bean='org.dspace.uclouvain.app.requestitem.PublicationMetadataStrategy'/>
+              <!--<ref bean='org.dspace.app.requestitem.RequestItemSubmitterStrategy'/>-->
             </list>
         </constructor-arg>
     </bean>
