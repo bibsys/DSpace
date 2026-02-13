@@ -760,8 +760,8 @@
                 <!-- <ref bean="searchFilterSubject" /> -->
                 <ref bean="searchFilterIssued" />
                 <!-- <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
-                <ref bean="searchFilterLanguage" /> -->
+                <ref bean="searchFilterEntityType"/> -->
+                <ref bean="searchFilterLanguage" />
                 <ref bean="searchFilterAccessType"/>
             </list>
         </property>
@@ -1768,32 +1768,38 @@
         <!--Which sidebar facets are to be displayed-->
         <property name="sidebarFacets">
             <list>
-                <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterEditor" />
-                <ref bean="searchFilterOrgUnit" />
-                <ref bean="searchFilterSubject" />
-                <ref bean="searchFilterFunding" />
-                <ref bean="searchFilterContentInOriginalBundle"/>
-                <!-- <ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterPublicationType"/>
+                <ref bean="searchFilterAuthor" />
+                <!--<ref bean="searchFilterEditor" />-->
+                <ref bean="searchFilterOrgUnit" />
+                <ref bean="searchFilterIssued" />
+                <!--<ref bean="searchFilterSubject" />-->
+                <ref bean="searchFilterFunding" />
+                <!--<ref bean="searchFilterContentInOriginalBundle"/>-->
+                <!-- <ref bean="searchFilterEntityType"/> -->
+                <ref bean="searchFilterAccessType"/>
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
-        <property name="tagCloudFacetConfiguration" ref="defaultTagCloudFacetConfiguration"/>
+        <!--<property name="tagCloudFacetConfiguration" ref="defaultTagCloudFacetConfiguration"/>-->
         <!--The search filters which can be used on the discovery search page-->
         <property name="searchFilters">
             <list>
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterEditor" />
+                <ref bean="searchFilterSupervisor" />
+                <!--<ref bean="searchFilterEditor" />-->
                 <ref bean="searchFilterOrgUnit" />
-                <ref bean="searchFilterSubject" />
+                <ref bean="searchFilterIssued" />
+                <!--<ref bean="searchFilterSubject" />-->
                 <ref bean="searchFilterFunding" />
-                <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterFileNameInOriginalBundle" />
-                <ref bean="searchFilterFileDescriptionInOriginalBundle" />
+                <!--<ref bean="searchFilterContentInOriginalBundle"/>-->
+                <!--<ref bean="searchFilterFileNameInOriginalBundle" />-->
+                <!--<ref bean="searchFilterFileDescriptionInOriginalBundle" />-->
                 <!-- <ref bean="searchFilterEntityType"/> -->
                 <ref bean="searchFilterPublicationType"/>
+                <ref bean="searchFilterJournalTitle"/>
+                <ref bean="searchFilterAccessType"/>
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -3099,6 +3105,36 @@
         <property name="exposeMinAndMaxValue" value="true"/>
     </bean>
 
+    <bean id="searchFilterSupervisor" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="advisor"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.contributor.advisor</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="5"/>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
+        <property name="isOpenByDefault" value="true"/>
+        <property name="pageSize" value="10"/>
+        <property name="exposeMinAndMaxValue" value="true"/>
+    </bean>
+
+    <bean id="searchFilterJournalTitle" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="journalTitle"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.relation.journal</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
+        <property name="isOpenByDefault" value="true"/>
+        <property name="pageSize" value="10"/>
+        <property name="exposeMinAndMaxValue" value="true"/>
+    </bean>
+
     <!-- Index the authority value of each author (UUID of the objects) in the publication document. -->
     <!-- This is later used to find all related publications for a given author UUID. -->
     <bean id="authoritySearchFilterAuthor" class="org.dspace.discovery.configuration.AuthorityDiscoverySearchFilter">
@@ -3338,6 +3374,7 @@
 
     <bean id="searchFilterLanguage" class="org.dspace.discovery.configuration.MultiLanguageDiscoverSearchFilterFacet">
         <property name="indexFieldName" value="language" />
+        <property name="facetLimit" value="3"/>
         <property name="metadataFields">
             <list>
                 <value>dc.language.iso</value>
