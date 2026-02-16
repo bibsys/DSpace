@@ -24,8 +24,10 @@
         <entry key-ref="dc.date.issued" value-ref="dateContrib"/>
         <entry key-ref="dc.language.iso" value-ref="pubmedLanguageContrib"/>
         <entry key-ref="dc.subject" value-ref="keywordContrib"/>
+        <entry key-ref="dc.subject.mesh" value-ref="meshKeywordContrib"/>
         <entry key-ref="dcJournalTitle" value-ref="journalContrib"/>
         <entry key-ref="publication.serial.issn" value-ref="journalIssnContrib"/>
+        <entry key-ref="publication.serial.eissn" value-ref="journalEissnContrib"/>
         <entry key-ref="publication.serial.volume" value-ref="volumeContrib"/>
         <entry key-ref="publication.serial.issue" value-ref="issueContrib"/>
         <entry key-ref="publication.serial.pages" value-ref="paginationContrib"/>
@@ -100,6 +102,13 @@
         <property name="query" value="descendant::Keyword"/>
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
     </bean>
+
+    <bean id="meshKeywordContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
+        <property name="field" ref="dc.subject.mesh"/>
+        <property name="query" value="descendant::MeshHeading/DescriptorName"/>
+        <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
+    </bean>
+
     <bean id="yearContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
         <property name="field" ref="dc.date.issued"/>
         <property name="query" value="descendant::PubDate/Year"/>
@@ -124,18 +133,23 @@
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
     </bean>
 
-
     <bean id="journalContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
         <property name="field" ref="dcJournalTitle"/>
         <property name="query" value="descendant::Journal/Title"/>
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
     </bean>
 
-    <bean id="journalIssnContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
-        <property name="field" ref="publication.serial.issn"/>
-        <property name="query" value="descendant::Journal/ISSN"/>
+    <bean id="journalEissnContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
+        <property name="field" ref="publication.serial.eissn"/>
+        <property name="query" value="descendant::Journal/ISSN[@IssnType='Electronic']"/>
         <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
     </bean>
+
+    <bean id="journalIssnContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
+        <property name="field" ref="publication.serial.issn"/>
+        <property name="query" value="descendant::MedlineJournalInfo/ISSNLinking"/>
+        <property name="prefixToNamespaceMapping" ref="prefixToNamespaceMapping"/>
+    </bean>  
 
     <bean id="volumeContrib" class="org.dspace.importer.external.metadatamapping.contributor.SimpleXpathMetadatumContributor">
         <property name="field" ref="publication.serial.volume"/>
@@ -237,6 +251,10 @@
 
     <bean id="dc.subject" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
         <constructor-arg value="dc.subject"/>
+    </bean>
+
+    <bean id="dc.subject.mesh" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+        <constructor-arg value="dc.subject.mesh"/>
     </bean>
 
     <bean id="dc.identifier.pmid" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
