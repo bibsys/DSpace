@@ -85,7 +85,8 @@ public class PubmedLanguageMetadatumContributor<T> implements MetadataContributo
 
             for (MetadatumDTO metadatum : languageList) {
                 // Add the iso2 language code corresponding to the retrieved iso3 code to the metadata
-                values.add(metadataFieldMapping.toDCValue(field, iso3toIso2.get(metadatum.getValue().toLowerCase())));
+                // CHANGES : Do not return the converted value, use it as it is since pubmed returns iso3 format.
+                values.add(metadataFieldMapping.toDCValue(field, metadatum.getValue().toLowerCase()));
             }
         } catch (Exception e) {
             log.error("Error", e);
