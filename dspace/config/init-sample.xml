@@ -29,6 +29,11 @@
             <name>Publication</name>
             <entity-type>Publication</entity-type>
             <submission-type>publication</submission-type>
+            <templateItem>
+                <metadata schema="dc" element="language" qualifier="iso">
+                    <value>eng</value>
+                </metadata>
+            </templateItem>
         </collection>
         <collection identifier="2078.5/Dissertation">
             <name>Dissertation</name>
