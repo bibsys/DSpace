@@ -28,20 +28,13 @@ public class Journal extends ItemModel {
     public static final String EISSN_IDENTIFIER = "eissn";
 
     // METADATA FIELDS DEFINITIONS =====================================================================================
-    public static final String TITLE_FIELD =
-            configService.getProperty(FIELD_PREFIX + "title.field", "dc.title");
-    public static final String ISSN_FIELD =
-            configService.getProperty(FIELD_PREFIX + "journalissn.field", "dc.identifier.issn");
-    public static final String EISSN_FIELD =
-            configService.getProperty(FIELD_PREFIX + "journaleissn.field", "dc.identifier.eissn");
-    private static final String PUBLISHER_NAME_FIELD =
-            configService.getProperty(FIELD_PREFIX + "journal.publisher.name.field", "dc.publisher");
-    private static final String PUBLISHER_LOCATION_FIELD =
-        configService.getProperty(FIELD_PREFIX + "journal.publisher.location.field", "dc.publisher.location");
-    private static final String PEER_REVIEWED_FIELD =
-        configService.getProperty(FIELD_PREFIX + "journal.peerreviewed.field", "dc.description.peerreviewed");
-    private static final String STATUS_CODE_FIELD =
-            configService.getProperty(FIELD_PREFIX + "journal.statuscode.field", "dc.description.status");
+    public static final String TITLE_FIELD = getField("title", "dc.title");
+    public static final String ISSN_FIELD = getField("issn", "dc.identifier.issn");
+    public static final String EISSN_FIELD = getField("eissn", "dc.identifier.eissn");
+    private static final String PUBLISHER_NAME_FIELD = getField("publisherName", "dc.publisher");
+    private static final String PUBLISHER_LOCATION_FIELD = getField("publisherLocation", "dc.publisher.location");
+    private static final String PEER_REVIEWED_FIELD = getField("peerReviewed", "journal.peerReviewed");
+    private static final String STATUS_CODE_FIELD = getField("statusCode", "journal.statusCode");
 
     // CONSTRUCTOR =====================================================================================================
     public Journal(Item item) throws InvalidModelEntityTypeException {
@@ -52,6 +45,10 @@ public class Journal extends ItemModel {
     }
 
     // GETTER ==========================================================================================================
+    public String getEntityType() {
+        return ENTITY_TYPE;
+    }
+
     public String getTitle() {
         return getFirstMetadataValue(TITLE_FIELD);
     }
@@ -76,7 +73,25 @@ public class Journal extends ItemModel {
         return Boolean.parseBoolean(getFirstMetadataValue(PEER_REVIEWED_FIELD));
     }
 
+    public String isPeerReviewedString() {
+        return getFirstMetadataValue(PEER_REVIEWED_FIELD);
+    }
+
     public String getStatusCode() {
         return getFirstMetadataValue(STATUS_CODE_FIELD);
+    }
+
+    /**
+     * Get the metadata field string from a configuration key.
+     * If no config is found for the given key, use given default value.
+     * 
+     * @param fieldName The key of the metadatafield configuration to find.
+     * @param defaultValue The default value to use in case the config is not found.
+     * @return The value of the config key or default value if not found.
+     */
+    private static String getField(String fieldName, String defaultValue) {
+        return configService.getProperty(
+            "%sjournal.%s.field".formatted(FIELD_PREFIX, fieldName),
+            defaultValue);
     }
 }

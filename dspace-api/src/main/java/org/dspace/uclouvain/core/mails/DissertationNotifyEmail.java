@@ -8,12 +8,15 @@
 package org.dspace.uclouvain.core.mails;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.dspace.content.Item;
-import org.dspace.content.MetadataValue;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
+import org.dspace.uclouvain.core.model.publication.DissertationPublication;
+import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 
@@ -26,26 +29,26 @@ public abstract class DissertationNotifyEmail extends AbstractNotifyEmail {
     @Override
     protected List<String> getCCAddresses() {
         List<String> ccAddresses = new ArrayList<>();
-        ccAddresses.addAll(getAdvisorEmails(context, item));
+        ccAddresses.addAll(getSupervisorEmails(publication));
         ccAddresses.addAll(getManagerEmails(context, item));
         return ccAddresses.stream().distinct().toList();
     }
 
     /**
      * Get all advisors emails from the item metadata and return them as a list of strings.
-     * @param context The current DSpace application context.
-     * @param item The item to get the advisor emails from.
+     * @param publication The item to get the advisor emails from.
      * @return A list of strings containing all the advisor emails found in the item metadata.
      */
-    protected List<String> getAdvisorEmails(Context context, Item item) {
-        List<String> advisorMails = itemService.getMetadataByMetadataString(item, advisorEmailField)
-                .stream()
-                .map(MetadataValue::getValue)
-                .collect(Collectors.toList());
-        if (log.isDebugEnabled()) {
-            log.debug("Initial CC recipient addresses for notify email are :: " + String.join(", ", advisorMails));
+    protected List<String> getSupervisorEmails(Publication publication) {
+        if (publication instanceof DissertationPublication thesis) {
+            List<String> supervisorEmails = thesis.getSupervisorEmails();
+            if (log.isDebugEnabled()) {
+                String emails = String.join(", ", supervisorEmails);
+                log.debug("Initial CC recipient addresses for notify email are :: {}", emails);
+            }
+            return supervisorEmails;
         }
-        return advisorMails;
+        return Collections.emptyList();
     }
 
     /**
@@ -58,11 +61,11 @@ public abstract class DissertationNotifyEmail extends AbstractNotifyEmail {
     protected List<String> getManagerEmails(Context context, Item item) {
         try {
             return ItemUtils.getManagersOfItem(context, item).stream()
-                .map(manager -> manager.getEmail())
+                .map(EPerson::getEmail)
                 .filter(email -> email != null && !email.isEmpty())
                 .collect(Collectors.toList());
         } catch (Exception e) {
-            log.warn("Could not retrieve manager emails for item with id " + item.getID(), e);
+            log.warn("Could not retrieve manager emails for item with id {}", item.getID(), e);
             return List.of();
         }
     }
