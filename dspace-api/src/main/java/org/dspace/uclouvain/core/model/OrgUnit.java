@@ -29,13 +29,9 @@ public class OrgUnit extends ItemModel {
     public static final String UNIVERSITY = "University";
 
     // METADATA FIELDS DEFINITIONS =====================================================================================
-    public static final String TITLE_FIELD =
-            configService.getProperty(FIELD_PREFIX + "orgUnit.title.field", "dc.title");
-    public static final String TYPE_FIELD =
-            configService.getProperty(FIELD_PREFIX + "orgUnit.type.field", "dc.type");
-    public static final String ACRONYM_FIELD =
-            configService.getProperty(FIELD_PREFIX + "orgUnit.acronym.field", "oairecerif.acronym");
-
+    public static final String TITLE_FIELD = getField("title", "dc.title");
+    public static final String TYPE_FIELD = getField("type", "dc.type");
+    public static final String ACRONYM_FIELD = getField("acronym", "oairecerif.acronym");
 
     // CLASS ATTRIBUTES ================================================================================================
     private OrgUnit parent;
@@ -106,6 +102,20 @@ public class OrgUnit extends ItemModel {
     }
     public OrgUnit getParentUniversity() {
         return getParentUniversity(true);
+    }
+
+    /**
+     * Get the metadata field string from a configuration key.
+     * If no config is found for the given key, use given default value.
+     * 
+     * @param fieldName The key of the metadatafield configuration to find.
+     * @param defaultValue The default value to use in case the config is not found.
+     * @return The value of the config key or default value if not found.
+     */
+    private static String getField(String fieldName, String defaultValue) {
+        return configService.getProperty(
+            "%sorgUnit.%s.field".formatted(FIELD_PREFIX, fieldName),
+            defaultValue);
     }
 
 }
