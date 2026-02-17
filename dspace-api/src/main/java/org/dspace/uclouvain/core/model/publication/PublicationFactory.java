@@ -34,14 +34,21 @@ public class PublicationFactory {
             new MetadataFieldName(Publication.MAIN_TYPE_FIELD),
             null
         );
+        // DEV_NOTE : this check is required for version of java < 18 => NullPointerException if no check.
+        if (docType == null) {
+            return new Publication(item);
+        }
         switch (docType) {
-            case SpeechPublication.DOCUMENT_TYPE:
-                return new SpeechPublication(item);
             case ArticlePublication.DOCUMENT_TYPE:
                 return new ArticlePublication(item);
+            case BookPublication.DOCUMENT_TYPE:
+                return new BookPublication(item);
+            case BookChapterPublication.DOCUMENT_TYPE:
+                return new BookChapterPublication(item);
             case DissertationPublication.DOCUMENT_TYPE:
                 return new DissertationPublication(item);
-            // TODO :: Add other specific publication type
+            case SpeechPublication.DOCUMENT_TYPE:
+                return new SpeechPublication(item);
             default:
                 return new Publication(item);
         }
