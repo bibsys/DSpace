@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.content.Item;
@@ -41,14 +40,6 @@ public class ArticlePublication extends Publication {
     public static final String SUBTYPE_FEATURE_ARTICLE = "feature-article";
     public static final String SUBTYPE_NONE = "none";
 
-    private static final String JOURNAL_TITLE_FIELD = configService.getProperty(
-            FIELD_PREFIX + "journal.field", "dc.relation.journal");
-    private static final String JOURNAL_PUBSTATUS_FIELD = configService.getProperty(
-            FIELD_PREFIX + "publicationstatus.field", "publication.publicationStatus");
-    private static final String JOURNAL_PEERREVIEW_FIELD = configService.getProperty(
-            FIELD_PREFIX + "publication.journal.peer-review.field", "publication.serial.peerReviewed");
-
-
     // CONSTRUCTOR =====================================================================================================
     protected ArticlePublication(Item item) throws InvalidModelEntityTypeException {
         super(item);
@@ -59,13 +50,7 @@ public class ArticlePublication extends Publication {
         return List.of(Publication.STATUS_INPRESS, Publication.STATUS_PUBLISHED).contains(getPublicationStatus());
     }
     public String getPublicationStatus() {
-        return this.getFirstMetadataValue(JOURNAL_PUBSTATUS_FIELD);
-    }
-    public String getJournalTitle() {
-        return this.getFirstMetadataValue(JOURNAL_TITLE_FIELD);
-    }
-    public boolean isPeerReviewed() {
-        return Objects.equals(this.getFirstMetadataValue(JOURNAL_PEERREVIEW_FIELD), "true");
+        return this.getFirstMetadataValue(PUBLICATION_STATUS_FIELD);
     }
 
     // FWB METHODS IMPLEMENTATION ======================================================================================
