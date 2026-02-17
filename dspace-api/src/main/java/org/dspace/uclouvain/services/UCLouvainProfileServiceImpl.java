@@ -79,11 +79,15 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
 
     // IMPLEMENTED FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Item findById(Context context, String fgs) {
-        return findOneByAttribute(context, "person.identifier.fgs:" + fgs);
+        return findOneByAttribute(context, ResearcherProfile.FGS_FIELD + ":" + fgs);
     }
 
     public Item findByEmail(Context context, String email) {
-        return findOneByAttribute(context, "person.email:" + email);
+        return findOneByAttribute(context, ResearcherProfile.OFFICIAL_EMAIL_FIELD + ":" + email);
+    }
+
+    public Item findByOrcid(Context context, String orcid) {
+        return findOneByAttribute(context, ResearcherProfile.ORCID_FIELD + ":" + orcid);
     }
 
     public Item findByIdentifiers(Context context, String uuid, String fgs, String email) {

@@ -113,7 +113,7 @@ public class ExtractMetadataStep implements ListenerProcessingStep, UploadableSt
                         if (!alreadyFilledMetadata.contains(joiner.toString())) {
                             itemService.addMetadata(context, wsi.getItem(), metadataValue.getSchema(),
                                 metadataValue.getElement(), metadataValue.getQualifier(), null,
-                                metadataValue.getValue());
+                                metadataValue.getValue(), metadataValue.getAuthority(), metadataValue.getConfidence());
                         }
                     }
                 }

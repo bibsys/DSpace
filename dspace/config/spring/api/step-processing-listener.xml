@@ -9,7 +9,8 @@
 	        <map>
                 <entry key="dc.identifier.pmid">
                     <list>
-                        <ref bean="pubmedLiveImportDataProvider"/>
+                        <!-- <ref bean="pubmedLiveImportDataProvider"/> -->
+                        <ref bean="customPubmedDataProvider"/>
                     </list>
                 </entry>
                 <entry key="dc.identifier.scopus">
