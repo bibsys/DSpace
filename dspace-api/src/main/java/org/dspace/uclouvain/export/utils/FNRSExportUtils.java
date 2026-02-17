@@ -7,10 +7,14 @@
  */
 package org.dspace.uclouvain.export.utils;
 
+import java.util.List;
 import java.util.Objects;
 
+import org.dspace.uclouvain.core.model.publication.BookChapterPublication;
+import org.dspace.uclouvain.core.model.publication.BookPublication;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
+import org.dspace.uclouvain.core.model.publication.SpeechPublication;
 
 /**
  * Utils for standard FNRS export.
@@ -32,17 +36,16 @@ public class FNRSExportUtils {
      * @return True if the publication and the author are considered "FNRS valid".
      */
     public static boolean isFNRSValid(String authorId, Publication publication) {
-        String publicationType = publication.getMainType();
-        switch (publicationType) {
-            case "text::book":
-                return validateBook(authorId, publication);
-            case "text::book-chapter":
-                return validateBookChapter(authorId, publication);
-            case "text::conference-speech":
-                return validateConferenceSpeech(publication);
-            default:
-                return true;
+        if (publication instanceof BookPublication) {
+            return validateBook(authorId, publication);
         }
+        if (publication instanceof BookChapterPublication) {
+            return validateBookChapter(authorId, publication);
+        }
+        if (publication instanceof SpeechPublication speech) {
+            return validateConferenceSpeech(speech);
+        }
+        return true;
     }
 
     /**
@@ -74,22 +77,19 @@ public class FNRSExportUtils {
     /**
      * Validate a conference speech based on fnrs criteria.
      * The conference has to be one of the following:
-     * - an abstract
-     * - a keynote
-     * - a conference with a selection speech
-     * - a conference poster
+     *   - an abstract
+     *   - a keynote
+     *   - a conference with a selection speech
+     *   - a conference poster
      * If one of those criteria is met, then we consider the publication as valid.
      */
-    private static boolean validateConferenceSpeech(Publication publication) {
-        boolean isAbstract = publication.getMetadataValues("publication.isAbstract")
-            .stream()
-            .anyMatch(mv -> Objects.equals(mv, "true"));
-        boolean validSubtype = publication.getMetadataValues(Publication.SUB_TYPE_FIELD).stream().anyMatch(mv -> {
-            return Objects.equals(mv, "keynote")
-                || Objects.equals(mv, "with-selection-speech")
-                || Objects.equals(mv, "conference-poster");
-        });
-        return isAbstract || validSubtype;
+    private static boolean validateConferenceSpeech(SpeechPublication publication) {
+        List<String> validSubtypes = List.of(
+            SpeechPublication.SUBTYPE_KEYNOTE,
+            SpeechPublication.SUBTYPE_WITH_SELECTION,
+            SpeechPublication.SUBTYPE_POSTER
+        );
+        return publication.isAbstract() || validSubtypes.contains(publication.getSubType());
     }
 
     /**
