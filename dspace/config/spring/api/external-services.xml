@@ -98,6 +98,16 @@
         </property>
     </bean>
 
+    <bean id="customPubmedDataProvider" class="org.dspace.uclouvain.external.provider.UCLouvainDataProvider">
+        <property name="metadataSource" ref="customPubmedImportService"/>
+        <property name="sourceIdentifier" value="pubmed"/>
+        <property name="supportedEntityTypes">
+            <list>
+                <value>Publication</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="pubmedLiveImportDataProvider" class="org.dspace.external.provider.impl.LiveImportDataProvider">
         <property name="metadataSource" ref="pubmedImportService"/>
         <property name="sourceIdentifier" value="pubmed"/>
@@ -274,4 +284,3 @@
     </bean>
 
 </beans>
-

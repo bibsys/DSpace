@@ -32,6 +32,14 @@ public interface UCLouvainProfileService {
     Item findByEmail(Context context, String email);
 
     /**
+     * Find a profile item using an orcid.
+     * @param context The DSpace application context.
+     * @param orcid   The orcid to use to find the profile.
+     * @return Returns the profile that has the given orcid, null otherwise.
+     */
+    Item findByOrcid(Context context, String orcid);
+
+    /**
      * Find a profile corresponding to the given identifier.
      * @param context The current DSpace application context.
      * @param uuid uuid of the profile item.

@@ -75,8 +75,16 @@ public class Publication extends ItemModel implements FWBValidation {
 
     public static final String TITLE_FIELD =
         getField("title", "dc.title");
+    public static final String ABSTRACT_FIELD =
+        getField("abstract", "dc.description.abstract");
     public static final String DATE_ISSUED_FIELD =
         getField("dateIssued", "dc.date.issued");
+    public static final String LANGUAGE_FIELD =
+        getField("language", "dc.language.iso");
+    public static final String KEYWORD_FIELD =
+        getField("keyword", "dc.subject");
+    public static final String MESH_KEYWORD_FIELD =
+        getField("meshKeyword", "dc.subject.mesh");
     public static final String PUBLICATION_STATUS_FIELD =
         getField("publication-status", "publication.publicationStatus");
 
@@ -99,6 +107,14 @@ public class Publication extends ItemModel implements FWBValidation {
         getField("journalEissn", "publication.serial.eissn");
     public static final String JOURNAL_PEER_REVIEWED_FIELD =
         getField("journalPeerReviewed", "publication.serial.peerReviewed");
+    public static final String JOURNAL_VOLUME_FIELD =
+        getField("journalVolume", "publication.serial.volume");
+    public static final String JOURNAL_ISSUE_FIELD =
+        getField("journalIssue", "publication.serial.issue");
+    public static final String JOURNAL_PAGES_FIELD =
+        getField("journalPages", "publication.serial.pages");
+    public static final String JOURNAL_DATE_ISSUED_FIELD =
+        getField("journalDateIssued", "publication.serial.dateIssued");
 
     public static final String EDITOR_NAME_FIELD =
         getField("editorName", "publication.editor.name");
