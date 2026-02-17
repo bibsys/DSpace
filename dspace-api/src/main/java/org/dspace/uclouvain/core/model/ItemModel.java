@@ -69,9 +69,8 @@ public abstract class ItemModel {
      * @param mdField the metadata field name with '.' as separator.
      * @return the list of corresponding values (returning at least an empty list)
      */
-    public List<String> getMetadataValues(String mdField) {
-        return itemService
-            .getMetadataByMetadataString(item, mdField)
+    protected List<String> getMetadataValues(String mdField) {
+        return getMetadata(mdField)
             .stream()
             .map(MetadataValue::getValue)
             .collect(Collectors.toList());
@@ -84,5 +83,9 @@ public abstract class ItemModel {
      */
     protected String getFirstMetadataValue(String mdField) {
         return getMetadataValues(mdField).stream().findFirst().orElse(null);
+    }
+
+    private List<MetadataValue> getMetadata(String mdField) {
+        return itemService.getMetadataByMetadataString(item, mdField);
     }
 }
