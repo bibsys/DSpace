@@ -9,6 +9,7 @@ package org.dspace.uclouvain.core.model.publication;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.content.Item;
@@ -26,25 +27,11 @@ public class SpeechPublication extends Publication {
     // METADATA FIELDS DEFINITIONS =====================================================================================
     public static final String DOCUMENT_TYPE = "text::conference-speech";
 
-    public static final String CONFERENCE_NAME_FIELD = configService.getProperty(
-            FIELD_PREFIX + "publication.conferenceName.field",
-            "publication.conference.name");
-    public static final String CONFERENCE_LOCATION_FIELD = configService.getProperty(
-            FIELD_PREFIX + "publication.conferenceLocation.field",
-            "publication.conference.location");
-    public static final String CONFERENCE_START_DATE_FIELD = configService.getProperty(
-            FIELD_PREFIX + "publication.conferenceStartDate.field",
-            "publication.conference.startDate");
-    public static final String CONFERENCE_END_DATE_FIELD = configService.getProperty(
-            FIELD_PREFIX + "publication.conferenceEndDate.field",
-            "publication.conference.endDate");
-    private static final String JOURNAL_TITLE_FIELD = configService.getProperty(
-            FIELD_PREFIX + "journal.field",
-            "dc.relation.journal");
-    private static final String HOST_BOOK_TITLE_FIELD = configService.getProperty(
-            FIELD_PREFIX + "hosttitle.field",
-            "publication.host.title"
-    );
+    public static final String SUBTYPE_KEYNOTE = "keynote";
+    public static final String SUBTYPE_WITH_SELECTION = "with-selection-speech";
+    public static final String SUBTYPE_WITHOUT_SELECTION = "without-selection-speech";
+    public static final String SUBTYPE_POSTER = "conference-poster";
+    public static final String SUBTYPE_NONE = "none";
 
     // CONSTRUCTOR =====================================================================================================
     protected SpeechPublication(Item item) throws InvalidModelEntityTypeException {
@@ -68,6 +55,10 @@ public class SpeechPublication extends Publication {
     public boolean isPublished() {
         return itemService.hasMetadata(item, JOURNAL_TITLE_FIELD)
             || itemService.hasMetadata(item, HOST_BOOK_TITLE_FIELD);
+    }
+
+    public boolean isAbstract() {
+        return Objects.equals(getFirstMetadataValue(Publication.CONFERENCE_IS_ABSTRACT_FIELD), "true");
     }
 
     // FWB METHODS IMPLEMENTATION ======================================================================================

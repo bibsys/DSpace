@@ -20,10 +20,10 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.event.Consumer;
 import org.dspace.event.Event;
-import org.dspace.services.ConfigurationService;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.MetadataField;
-import org.dspace.uclouvain.core.utils.DateUtils;
+import org.dspace.uclouvain.core.model.publication.DissertationPublication;
+import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 
 /**
  * Consumer to extract the year from the defense date and put it into the default issue date of the dissertation.
@@ -33,26 +33,16 @@ import org.dspace.uclouvain.core.utils.DateUtils;
 public class DissertationExtractYearConsumer implements Consumer {
 
     private Set<UUID> idsToProcess = new HashSet<>();
-    private ConfigurationService configService;
     private ItemService itemService;
-    private MetadataField publicationTypeField;
     private MetadataField defenseDateField;
     private MetadataField dateIssuedField;
     private Logger logger;
 
     @Override
     public void initialize() throws Exception {
-        configService = DSpaceServicesFactory.getInstance().getConfigurationService();
         itemService = ContentServiceFactory.getInstance().getItemService();
-        publicationTypeField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.maintype.field")
-        );
-        defenseDateField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.defensedate.field")
-        );
-        dateIssuedField = new MetadataField(
-            configService.getProperty("uclouvain.global.metadata.dateissued.field")
-        );
+        defenseDateField = new MetadataField(Publication.DEFENSE_DATE_FIELD);
+        dateIssuedField = new MetadataField(Publication.DATE_ISSUED_FIELD);
         logger = LogManager.getLogger(DissertationExtractYearConsumer.class);
     }
 
@@ -77,25 +67,24 @@ public class DissertationExtractYearConsumer implements Consumer {
                 if (item == null) {
                     continue;
                 }
-
                 // Make sure that the publication type is 'text::thesis' before doing anything.
-                String publicationType = itemService.getMetadataFirstValue(item, publicationTypeField, Item.ANY);
-                if (publicationType == null || !publicationType.equals("text::thesis")) {
+                Publication publication = PublicationFactory.build(item);
+                if (!(publication instanceof DissertationPublication dissertationPublication)) {
                     continue;
                 }
-
-                String defenseDate = itemService.getMetadataFirstValue(item, defenseDateField, null);
-                String issueYear = itemService.getMetadataFirstValue(item, dateIssuedField, null);
-                if (defenseDate != null) {
-                    String defenseYear = Integer.toString(DateUtils.convertDSpaceDate(defenseDate).getYear());
-                    if (!defenseYear.equals(issueYear)) {
-                        // If the two values are different, override the metadata.
+                int defenseYear = dissertationPublication.getDefenseDateYear();
+                int issueYear = publication.getIssuedYear();
+                if (defenseYear != -1) {
+                    if (defenseYear != issueYear) { // If the two values are different, override the metadata.
                         itemService.setMetadataSingleValue(
-                            context, item, dateIssuedField, null, defenseYear
+                            context,
+                            item,
+                            dateIssuedField,
+                            null,
+                            String.valueOf(defenseYear)
                         );
                     }
-                } else if (issueYear != null) {
-                    // Clear issue year
+                } else if (issueYear != -1) { // Clear issue year
                     itemService.clearMetadata(
                         context,
                         item,
@@ -106,10 +95,7 @@ public class DissertationExtractYearConsumer implements Consumer {
                     );
                 }
             } catch (Exception e) {
-                logger.error(
-                    "Could not extract defense date year for item with id: [" + itemId + "]", e
-                );
-                continue;
+                logger.error("Could not extract defense date year for item with id: [{}]", itemId, e);
             }
         }
         // At the end of process, clear the set.

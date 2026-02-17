@@ -15,9 +15,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.mails.DissertationDepositEmail;
-import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
+import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
 import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
@@ -31,11 +32,6 @@ import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
  */
 public class PublicationNotifyDepositAction extends ProcessingAction {
     protected static final Logger logger = LogManager.getLogger(PublicationNotifyDepositAction.class);
-    protected final String MAINTYPE_FIELD = DSpaceServicesFactory
-        .getInstance()
-        .getConfigurationService()
-        .getProperty("uclouvain.global.metadata.maintype.field", "dc.type.maintype");
-
     @Override
     public void activate(Context c, XmlWorkflowItem wf) {}
 
@@ -44,18 +40,23 @@ public class PublicationNotifyDepositAction extends ProcessingAction {
         final ActionResult result = new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
         // Retrieve the item.
         Item item = wfi.getItem();
+        // If item is not null and of type publication, send a specific email depending on its publication type.
         if (item != null && "Publication".equals(itemService.getEntityType(item))) {
-            // If item is not null and of type publication, send a specific email depending on its publication type.
-            String publicationType = itemService.getMetadataFirstValue(item, new MetadataField(MAINTYPE_FIELD), null);
+            Publication publication;
             try {
-                switch (publicationType) {
+                publication = PublicationFactory.build(item);
+            } catch (InvalidModelEntityTypeException e) {
+                return result;
+            }
+            try {
+                switch (publication.getMainType()) {
                     case "text::thesis":
                         new DissertationDepositEmail(context, item).sendEmail();
                         break;
                     default:
                         logger.warn(
                             "Reached the notifyAuthorsAction with an non-processable publication type "
-                            + "'" + publicationType + "', UUID: " + item.getID()
+                            + "'" + publication.getMainType() + "', UUID: " + item.getID()
                         );
                 }
             } catch (Exception e) {
