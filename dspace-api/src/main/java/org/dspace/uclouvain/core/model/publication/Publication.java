@@ -51,26 +51,69 @@ public class Publication extends ItemModel implements FWBValidation {
     public static final String STATUS_PUBLISHED = "published";
 
     // METADATA FIELDS DEFINITIONS =====================================================================================
-    public static final String AUTHOR_NAME_FIELD =
-            configService.getProperty(FIELD_PREFIX + "publication.authorName.field", "dc.contributor.author");
-    public static final String AUTHOR_EMAIL_FIELD =
-            configService.getProperty(FIELD_PREFIX + "publication.authorEmail.field", "authors.email");
-    public static final String AUTHOR_ORCID_FIELD =
-            configService.getProperty(FIELD_PREFIX + "publication.authorOrcid.field", "authors.identifier.orcid");
-    public static final String AUTHOR_INSTITUTION_FIELD =
-            configService.getProperty(FIELD_PREFIX + "publication.authorInstitution.field", "authors.institution.code");
-    public static final String AUTHOR_ROLE_FIELD =
-            configService.getProperty(FIELD_PREFIX + "publication.authorRole.field", "authors.role");
-    public static final String AUTHOR_FGS_FIELD =
-            configService.getProperty(FIELD_PREFIX + "publication.authorFgs.field", "authors.identifier.fgs");
-    public static final String AUTHOR_ETAL_FIELD =
-            configService.getProperty(FIELD_PREFIX + "publication.additional.author", "dc.contributor.etal");
     public static final String MAIN_TYPE_FIELD =
-            configService.getProperty(FIELD_PREFIX + "maintype.field", "dc.type.maintype");
+        getField("mainType", "dc.type.maintype");
     public static final String SUB_TYPE_FIELD =
-            configService.getProperty(FIELD_PREFIX + "subtype.field", "dc.type.subtype");
+        getField("subType", "dc.type.subtype");
+
+    public static final String AUTHOR_NAME_FIELD =
+        getField("authorName", "dc.contributor.author");
+    public static final String AUTHOR_EMAIL_FIELD =
+        getField("authorEmail", "authors.email");
+    public static final String AUTHOR_ORCID_FIELD =
+        getField("authorOrcid", "authors.identifier.orcid");
+    public static final String AUTHOR_INSTITUTION_FIELD =
+        getField("authorInstitution", "authors.institution.code");
+    public static final String AUTHOR_ROLE_FIELD =
+        getField("authorRole", "authors.role");
+    public static final String AUTHOR_FGS_FIELD =
+        getField("authorFgs", "authors.identifier.fgs");
+    public static final String AUTHOR_ETAL_FIELD =
+        getField("additionalAuthors", "dc.contributor.etal");
+    public static final String ADVISOR_EMAIL_FIELD =
+        getField("advisorEmail", "advisors.email");
+
+    public static final String TITLE_FIELD =
+        getField("title", "dc.title");
     public static final String DATE_ISSUED_FIELD =
-            configService.getProperty(FIELD_PREFIX + "dateissued.field", "dc.date.issued");
+        getField("dateIssued", "dc.date.issued");
+    public static final String PUBLICATION_STATUS_FIELD =
+        getField("publication-status", "publication.publicationStatus");
+
+    public static final String CONFERENCE_NAME_FIELD =
+        getField("conferenceName", "publication.conference.name");
+    public static final String CONFERENCE_LOCATION_FIELD =
+        getField("conferenceLocation", "publication.conference.location");
+    public static final String CONFERENCE_START_DATE_FIELD =
+        getField("conferenceStartDate", "publication.conference.startDate");
+    public static final String CONFERENCE_END_DATE_FIELD =
+        getField("conferenceEndDate", "publication.conference.endDate");
+    public static final String CONFERENCE_IS_ABSTRACT_FIELD =
+        getField("conferenceIsAbstract", "publication.isAbstract");
+
+    public static final String JOURNAL_TITLE_FIELD =
+        getField("journalTitle", "dc.relation.journal");
+    public static final String JOURNAL_ISSN_FIELD =
+        getField("journalIssn", "publication.serial.issn");
+    public static final String JOURNAL_EISSN_FIELD =
+        getField("journalEissn", "publication.serial.eissn");
+    public static final String JOURNAL_PEER_REVIEWED_FIELD =
+        getField("journalPeerReviewed", "publication.serial.peerReviewed");
+
+    public static final String EDITOR_NAME_FIELD =
+        getField("editorName", "publication.editor.name");
+    public static final String EDITOR_LOCATION_FIELD =
+        getField("editorLocation", "publication.editor.location");
+
+    public static final String HOST_BOOK_TITLE_FIELD =
+        getField("hostTitle", "publication.host.title");
+    public static final String HOST_DOCUMENT_TYPE_FIELD =
+        getField("hostType", "publication.host.type");
+    public static final String HOST_DOCUMENT_ISBN_FIELD =
+        getField("hostIsbn", "publication.host.isbn");
+
+    public static final String DEFENSE_DATE_FIELD =
+        getField("dissertationDefenseDate", "dissertation.defenseDate");
 
     // CLASS ATTRIBUTES ================================================================================================
     AccessStatusHelper helper = (AccessStatusHelper) CoreServiceFactory
@@ -280,5 +323,17 @@ public class Publication extends ItemModel implements FWBValidation {
         } catch (SQLException e) {
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * Get the metadata field string from a configuration key.
+     * If no config is found for the given key, use given default value.
+     *
+     * @param fieldName The key of the metadata field configuration to find.
+     * @param defaultValue The default value to use in case the config is not found.
+     * @return The value of the config key or default value if not found.
+     */
+    private static String getField(String fieldName, String defaultValue) {
+        return configService.getProperty("%spublication.%s.field".formatted(FIELD_PREFIX, fieldName), defaultValue);
     }
 }
