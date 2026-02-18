@@ -7,6 +7,7 @@
  */
 package org.dspace.administer;
 
+import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.dspace.scripts.configuration.ScriptConfiguration;
 
@@ -34,6 +35,24 @@ public class ProcessCleanerConfiguration<T extends ProcessCleaner> extends Scrip
             options.addOption("c", "completed", false,
                 "delete the process with COMPLETED status (default if no statuses are specified)");
             options.getOption("c").setType(boolean.class);
+
+            options.addOption(
+                Option.builder("d")
+                    .longOpt("delay")
+                    .hasArg(true)
+                    .desc("delay (in days) by which the processes must be completed/failed")
+                    .type(Number.class)
+                    .build()
+            );
+
+            options.addOption(
+                Option.builder("u")
+                    .longOpt("user")
+                    .hasArg(true)
+                    .desc("User email address to use to execute the task.")
+                    .type(Number.class)
+                    .build()
+            );
 
             super.options = options;
         }
