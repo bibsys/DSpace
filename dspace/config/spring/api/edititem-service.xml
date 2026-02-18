@@ -28,6 +28,7 @@
                             <property name="groups">
                                 <list>
                                     <value>Manager</value>
+                                    <value>Delegator</value>
                                 </list>
                             </property>
                             <property name="submissionDefinition" value="publication-edit" />
