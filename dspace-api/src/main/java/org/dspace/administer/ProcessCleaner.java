@@ -21,6 +21,7 @@ import org.dspace.content.ProcessStatus;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
+import org.dspace.eperson.service.EPersonService;
 import org.dspace.scripts.DSpaceRunnable;
 import org.dspace.scripts.Process;
 import org.dspace.scripts.factory.ScriptServiceFactory;
@@ -52,6 +53,7 @@ public class ProcessCleaner extends DSpaceRunnable<ProcessCleanerConfiguration<P
 
     private Integer days;
 
+    private String email;
 
     @Override
     public void setup() throws ParseException {
@@ -63,9 +65,11 @@ public class ProcessCleaner extends DSpaceRunnable<ProcessCleanerConfiguration<P
         this.cleanFailed = commandLine.hasOption('f');
         this.cleanRunning = commandLine.hasOption('r');
         this.cleanCompleted = commandLine.hasOption('c') || (!cleanFailed && !cleanRunning);
+        this.email = commandLine.getOptionValue("user");
 
-        this.days = configurationService.getIntProperty("process-cleaner.days", 14);
-
+        this.days = (commandLine.hasOption("delay"))
+            ? Integer.parseInt(commandLine.getOptionValue("delay"))
+            : configurationService.getIntProperty("process-cleaner.days", 14);
         if (this.days <= 0) {
             throw new IllegalStateException("The number of days must be a positive integer.");
         }
@@ -143,9 +147,16 @@ public class ProcessCleaner extends DSpaceRunnable<ProcessCleanerConfiguration<P
     }
 
     private void assignCurrentUserInContext(Context context) throws SQLException {
+        EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
+        if (email != null) {
+            EPerson ePerson = ePersonService.findByEmail(context, email);
+            if (ePerson != null) {
+                context.setCurrentUser(ePerson);
+            }
+        }
         UUID uuid = getEpersonIdentifier();
         if (uuid != null) {
-            EPerson ePerson = EPersonServiceFactory.getInstance().getEPersonService().find(context, uuid);
+            EPerson ePerson = ePersonService.find(context, uuid);
             context.setCurrentUser(ePerson);
         }
     }
