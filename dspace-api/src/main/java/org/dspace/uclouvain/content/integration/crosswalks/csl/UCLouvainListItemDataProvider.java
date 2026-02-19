@@ -116,11 +116,15 @@ public class UCLouvainListItemDataProvider extends DSpaceListItemDataProvider {
         CSLName[] names = publication
                 .getAuthors(roles.toArray(String[]::new))
                 .stream()
-                .map(author -> new DCPersonName(author.getName()))
+                .map(this::formatAuthorName)
                 .map(super::toCSLName)
                 .toArray(CSLName[]::new);
         if (ArrayUtils.isNotEmpty(names)) {
             consumer.accept(names);
         }
+    }
+
+    protected DCPersonName formatAuthorName(PublicationAuthor author) {
+        return new DCPersonName(author.getName());
     }
 }
