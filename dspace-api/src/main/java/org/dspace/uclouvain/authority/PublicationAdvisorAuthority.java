@@ -52,6 +52,13 @@ public class PublicationAdvisorAuthority extends PublicationAuthorAuthority {
             "advisors_institution_code",
             true
         );
+        fillMetadata(
+            extras,
+            item,
+            "uclouvain.global.metadata.person.entityName.field",
+            "advisors_entity_name",
+            false
+        );
         return extras;
     }
 }
