@@ -42,9 +42,9 @@
          This bean could add or modify some metadata into the CSL item data that will be used to generate citation
   -->
   <bean id="FnrsListItemDataProvider"
-        class="org.dspace.uclouvain.content.integration.crosswalks.csl.FnrsListItemDataProvider"
-        parent="DSpaceListItemDataProvider"
-        scope="prototype">
+      class="org.dspace.uclouvain.content.integration.crosswalks.csl.FnrsListItemDataProvider"
+      parent="DSpaceListItemDataProvider"
+      scope="prototype">
   </bean>
 
 
