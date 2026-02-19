@@ -13,9 +13,11 @@ import de.undercouch.citeproc.ListItemDataProvider;
 import de.undercouch.citeproc.csl.CSLDate;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
+import org.dspace.content.DCPersonName;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 
 /**
  * Implementation of {@link ListItemDataProvider} to provide {@link CSLItemData}
@@ -35,6 +37,17 @@ public class FnrsListItemDataProvider extends UCLouvainListItemDataProvider {
     public CSLItemDataBuilder handleAdditionalFields(Item item, CSLItemDataBuilder itemBuilder) {
         manageIssueDate(item, itemBuilder);
         return itemBuilder;
+    }
+
+    @Override
+    protected DCPersonName formatAuthorName(PublicationAuthor author) {
+        String displayName = author.getName();
+        if (Objects.equals(PublicationAuthor.ROLE_FIRST_AUTHOR, author.getRole())) {
+            displayName += " (co-first)";
+        } else if (Objects.equals(PublicationAuthor.ROLE_LAST_AUTHOR, author.getRole())) {
+            displayName += " (co-last)";
+        }
+        return new DCPersonName(displayName);
     }
 
     /**
