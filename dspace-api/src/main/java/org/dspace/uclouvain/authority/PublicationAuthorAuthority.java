@@ -84,6 +84,13 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
             "authors_institution_code",
             true
         );
+        fillMetadata(
+            extras,
+            item,
+            "uclouvain.global.metadata.person.entityName.field",
+            "authors_entity_name",
+            false
+        );
         return extras;
     }
 
