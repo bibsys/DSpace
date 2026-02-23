@@ -132,6 +132,10 @@ public class PublicationAuthor {
         }
         return fgs;
     }
+    public PublicationAuthor setFgs(String fgs) {
+        this.identifiers.put("fgs", fgs);
+        return this;
+    }
 
     public ResearcherProfile getAuthority() {
         return researcherProfileAuthority;
