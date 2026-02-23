@@ -8,14 +8,11 @@
 package org.dspace.app.rest.security;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.core.Context;
-import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,12 +49,8 @@ public class GroupSecurityEvaluator {
             return false;
         }
         try {
-            if (authorizeService.isAdmin(context)) {
-                return true;
-            }
-            List<Group> userGroups = groupService.allMemberGroups(context, context.getCurrentUser());
-            Set<String> groupNameSet = Set.of(groupNames);
-            return userGroups.stream().anyMatch(g -> groupNameSet.contains(g.getName()));
+            return authorizeService.isAdmin(context)
+                || groupService.isMember(context, context.getCurrentUser(), groupNames);
         } catch (SQLException e) {
             return false;
         }
