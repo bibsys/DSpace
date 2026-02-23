@@ -318,6 +318,19 @@ public class GroupServiceImpl extends DSpaceObjectServiceImpl<Group> implements 
         }
     }
 
+    @Override
+    public boolean isMember(Context context, EPerson ePerson, String... groupNames) throws SQLException {
+        List<Group> userGroups = allMemberGroups(context, ePerson);
+        Set<String> groupNameSet = Set.of(groupNames);
+        return userGroups.stream().anyMatch(g -> groupNameSet.contains(g.getName()));
+    }
+
+    @Override
+    public boolean isMember(Context context, EPerson ePerson, Group... groups) throws SQLException {
+        Set<Group> groupSet = Set.of(groups);
+        return allMemberGroups(context, ePerson).stream().anyMatch(groupSet::contains);
+    }
+
     private boolean isAuthenticatedUser(final Context context, final EPerson ePerson) {
         return Objects.equals(context.getCurrentUser(), ePerson);
     }
