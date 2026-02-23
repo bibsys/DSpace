@@ -63,7 +63,8 @@ public class Publication extends ItemModel implements FWBValidation {
             configService.getProperty(FIELD_PREFIX + "publication.authorRole.field", "authors.role");
     public static final String AUTHOR_FGS_FIELD =
             configService.getProperty(FIELD_PREFIX + "publication.authorFgs.field", "authors.identifier.fgs");
-
+    public static final String AUTHOR_ETAL_FIELD =
+            configService.getProperty(FIELD_PREFIX + "publication.additional.author", "dc.contributor.etal");
     public static final String MAIN_TYPE_FIELD =
             configService.getProperty(FIELD_PREFIX + "maintype.field", "dc.type.maintype");
     public static final String SUB_TYPE_FIELD =
@@ -134,6 +135,15 @@ public class Publication extends ItemModel implements FWBValidation {
             .filter(author -> Objects.equals(author.getPlace(), place))
             .findFirst()
             .orElse(null);
+    }
+
+    /**
+     * Methods to know if the publication is made with additional author not encoded into the repository (aka 'et al.')
+     *
+     * @return true if the publication has extra additional authors, false, otherwise
+     */
+    public boolean hasExtraAuthors() {
+        return Objects.equals(this.getFirstMetadataValue(AUTHOR_ETAL_FIELD), "true");
     }
 
     /**
