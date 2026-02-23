@@ -198,6 +198,11 @@ public class Publication extends ItemModel implements FWBValidation {
         }
     }
 
+    /** Determine if a publication could be retired (aka withdraw) */
+    public boolean isWithdrawable() {
+        return true;
+    }
+
     // PROTECTED METHODS ===============================================================================================
     /** Get the issued date of the publication; `null` if it cannot be determined */
     protected LocalDate getPublicationDateIssued() {
