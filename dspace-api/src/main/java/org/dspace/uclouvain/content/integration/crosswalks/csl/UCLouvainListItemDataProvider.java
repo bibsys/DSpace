@@ -7,10 +7,12 @@
  */
 package org.dspace.uclouvain.content.integration.crosswalks.csl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.undercouch.citeproc.ListItemDataProvider;
@@ -18,7 +20,8 @@ import de.undercouch.citeproc.csl.CSLDateBuilder;
 import de.undercouch.citeproc.csl.CSLItemData;
 import de.undercouch.citeproc.csl.CSLItemDataBuilder;
 import de.undercouch.citeproc.csl.CSLName;
-import org.apache.commons.lang3.ArrayUtils;
+import de.undercouch.citeproc.csl.CSLNameBuilder;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.DCPersonName;
 import org.dspace.content.Item;
 import org.dspace.content.integration.crosswalks.csl.DSpaceListItemDataProvider;
@@ -60,13 +63,14 @@ public class UCLouvainListItemDataProvider extends DSpaceListItemDataProvider {
                 PublicationAuthor.ROLE_INVENTOR,
                 PublicationAuthor.ROLE_PREFACE_WRITER
             );
-            consumeAuthorsByRole(publication, authorsRoles, itemBuilder::author);
+            consumeAuthorsByRole(publication, authorsRoles, true, itemBuilder::author);
             consumeAuthorsByRole(publication, List.of(PublicationAuthor.ROLE_DIRECTOR), itemBuilder::editorialDirector);
             consumeAuthorsByRole(publication, List.of(PublicationAuthor.ROLE_TRANSLATOR), itemBuilder::translator);
             consumeAuthorsByRole(publication, List.of(PublicationAuthor.ROLE_COLLABORATOR), itemBuilder::contributor);
             // Add default behavior for thesis supervisors and for host document authors
             consumeCSLNamesIfNotBlank(director, item, itemBuilder::director);
-            consumeCSLNamesIfNotBlank(containerAuthor, item, itemBuilder::containerAuthor);
+            consumeRawNamesIfNotBlank(containerAuthor, item, itemBuilder::containerAuthor);
+            consumeRawNamesIfNotBlank(editor, item, itemBuilder::editor);
             return itemBuilder;
         } catch (InvalidModelEntityTypeException e) {
             // If the cast into {@link Publication} isn't possible, then use the default behavior
@@ -113,14 +117,40 @@ public class UCLouvainListItemDataProvider extends DSpaceListItemDataProvider {
     }
 
     private void consumeAuthorsByRole(Publication publication, List<String> roles, Consumer<CSLName[]> consumer) {
-        CSLName[] names = publication
-                .getAuthors(roles.toArray(String[]::new))
-                .stream()
-                .map(this::formatAuthorName)
-                .map(super::toCSLName)
-                .toArray(CSLName[]::new);
-        if (ArrayUtils.isNotEmpty(names)) {
-            consumer.accept(names);
+        consumeAuthorsByRole(publication, roles, false, consumer);
+    }
+
+    private void consumeAuthorsByRole(
+            Publication publication,
+            List<String> roles,
+            boolean includeEtAl,
+            Consumer<CSLName[]> consumer
+    ) {
+        List<CSLName> names = publication
+            .getAuthors(roles.toArray(String[]::new))
+            .stream()
+            .map(this::formatAuthorName)
+            .map(super::toCSLName)
+            .collect(Collectors.toCollection(ArrayList::new)); // we need a mutable list !
+
+        // If the publication contains not encoded additional authors, add a fake placeholder author with "et al." value
+        if (includeEtAl && publication.hasExtraAuthors()) {
+            names.add(new CSLNameBuilder().literal("et al.").build());
+        }
+
+        if (!names.isEmpty()) {
+            consumer.accept(names.toArray(CSLName[]::new));
+        }
+    }
+
+    private void consumeRawNamesIfNotBlank(String value, Item item, Consumer<CSLName[]> consumer) {
+        if (StringUtils.isNotBlank(value)) {
+            String mdValue = getMetadataFirstValue(item, value);
+            if (StringUtils.isNotBlank(mdValue)) {
+                // Create a single CSLName with a 'literal' value containing metadata value
+                CSLName data = new CSLNameBuilder().literal(mdValue).build();
+                consumer.accept(new CSLName[]{data});
+            }
         }
     }
 
