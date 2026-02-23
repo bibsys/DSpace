@@ -157,6 +157,13 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
         handleAdditionalFields(item, itemBuilder);
 
         CSLItemData cslItemData = itemBuilder.build();
+        if (LOGGER.isDebugEnabled()) {
+            JsonBuilder jsonBuilder = new MapJsonBuilderFactory().createJsonBuilder();
+            String jsonRawData = prettyPrint(jsonBuilder.toJson(cslItemData));
+            LOGGER.debug("CSL data for item#{}", item.getID());
+            LOGGER.debug(jsonRawData);
+        }
+
         this.items.put(cslItemData.getId(), cslItemData);
 
         // ... then reset model with original fields
@@ -355,7 +362,9 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
     protected CSLName toCSLName(DCPersonName name) {
         String lastName = StringUtils.isNotBlank(name.getLastName()) ? name.getLastName() : null;
         String firstName = StringUtils.isNotBlank(name.getFirstNames()) ? name.getFirstNames() : null;
-        return new CSLName(lastName, firstName, null, null, null, null, null, null, null, null, null, null);
+        return (lastName != null  && firstName != null)
+            ? new CSLName(lastName, firstName, null, null, null, null, null, null, null, null, null, null)
+            : new CSLName(null, null, null, null, null, null, null, null, null, lastName, null, null);
     }
 
     protected String[] getMetadataValues(Item item, String metadataField) {
@@ -394,7 +403,10 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
     protected void consumeCSLNamesIfNotBlank(String value, Item item, Consumer<CSLName[]> consumer) {
         if (StringUtils.isNotBlank(value)) {
-            consumer.accept(getCslNameFromMetadataValue(item, value));
+            CSLName[] values = getCslNameFromMetadataValue(item, value);
+            if (values.length > 0) {
+                consumer.accept(values);
+            }
         }
     }
 
