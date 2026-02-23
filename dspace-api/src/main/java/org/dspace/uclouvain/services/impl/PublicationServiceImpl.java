@@ -12,14 +12,14 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.dspace.content.authority.Choices.CF_UNSET;
 
-import java.util.HashMap;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
@@ -28,7 +28,14 @@ import org.dspace.discovery.DiscoverResult;
 import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.indexobject.IndexableItem;
+import org.dspace.eperson.EPerson;
+import org.dspace.eperson.service.EPersonService;
+import org.dspace.eperson.service.GroupService;
+import org.dspace.profile.ResearcherProfile;
+import org.dspace.profile.service.ResearcherProfileService;
+import org.dspace.services.ConfigurationService;
 import org.dspace.uclouvain.core.model.OrgUnit;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 import org.dspace.uclouvain.core.model.exceptions.PublicationSetAuthorException;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
@@ -42,104 +49,82 @@ public class PublicationServiceImpl implements PublicationService {
     ItemService itemService;
     @Autowired
     SearchService searchService;
+    @Autowired
+    EPersonService ePersonService;
+    @Autowired
+    ResearcherProfileService researcherProfileService;
+    @Autowired
+    ConfigurationService configService;
+    @Autowired
+    GroupService groupService;
 
     // PUBLIC METHODS ==================================================================================================
-
-    public PublicationAuthor setAuthor(Context context, Publication publication,
-            String name, String email, String orcid, String fgs,
-            String institution, String role, UUID authority, Integer place)
-            throws PublicationSetAuthorException {
-        PublicationAuthor author = new PublicationAuthor()
-                .setName(name)
-                .setEmail(email)
-                .setOrcidID(orcid)
-                .setRole(role)
-                .setInstitution(institution)
-                .setAuthority(authority)
-                .setPlace(place);
-        this.setAuthor(context, publication, author);
-        return author;
-    }
-
-    public void setAuthor(Context context, Publication publication, PublicationAuthor author)
+    public PublicationAuthor setAuthor(Context context, Publication publication, PublicationAuthor author)
             throws PublicationSetAuthorException {
         Item item = publication.getItem();
         try {
-            String authority = (author.getAuthority() != null) ? author.getAuthority().getItemId().toString() : null;
+            String authority = (author.getAuthority() != null)
+                ? author.getAuthority().getItemId().toString()
+                : null;
             int confidence = isNotEmpty(authority) ? CF_ACCEPTED : CF_UNSET;
             int place = author.getPlace();
 
-            // Name, email, fgs and role are mandatory so no need to check for existing value.
-            itemService.setMetadataInPlace(
-                    context, item, Publication.AUTHOR_NAME_FIELD, null, author.getName(), authority,
-                    place,
-                    confidence);
-            itemService.setMetadataInPlace(
-                    context, item, Publication.AUTHOR_EMAIL_FIELD, null, author.getEmail(),
-                    authority, place,
-                    confidence);
-            itemService.setMetadataInPlace(
-                    context, item, Publication.AUTHOR_FGS_FIELD, null, author.getFgs(), authority,
-                    place, confidence);
-            itemService.setMetadataInPlace(
-                    context, item, Publication.AUTHOR_ROLE_FIELD, null, author.getRole(), null,
-                    place, CF_UNSET);
+            MetadataSetter setter = (field, value, auth, conf) ->
+                    itemService.setMetadataInPlace(context, item, field, null, value, auth, place, conf);
 
+            setter.set(Publication.AUTHOR_NAME_FIELD, author.getName(), authority, confidence);
+            setter.set(Publication.AUTHOR_EMAIL_FIELD, author.getEmail(), authority, confidence);
+            setter.set(Publication.AUTHOR_FGS_FIELD, author.getFgs(), authority, confidence);
+            setter.set(Publication.AUTHOR_ROLE_FIELD, author.getRole(), null, CF_UNSET);
             if (author.getOrcidID() != null) {
-                itemService.setMetadataInPlace(
-                        context, item, Publication.AUTHOR_ORCID_FIELD, null,
-                        author.getOrcidID(), authority, place,
-                        confidence);
+                setter.set(Publication.AUTHOR_ORCID_FIELD, author.getOrcidID(), authority, confidence);
             }
             if (author.getInstitution() != null) {
-                itemService.setMetadataInPlace(
-                        context, item, Publication.AUTHOR_INSTITUTION_FIELD, null,
-                        author.getInstitution(), null, place,
-                        confidence);
+                setter.set(Publication.AUTHOR_INSTITUTION_FIELD, author.getInstitution(), null, confidence);
             }
+            return author;
         } catch (Exception e) {
             throw new PublicationSetAuthorException(item, author);
         }
     }
 
-    public Stream<Publication> findByAuthors(
-        Context context, List<Item> authors
-    ) throws SearchServiceException {
-        String query = authors.stream()
-            .map(author -> "isAuthorOfPublication:\"%s\"".formatted(author.getID().toString()))
-            .collect(Collectors.joining(" OR "));
-        return findPublications(context, query, new HashMap<>());
-    }
-
-    public Stream<Publication> findByAffiliations(
-        Context context, List<OrgUnit> entities) throws SearchServiceException {
-        String query = entities.stream()
-            .map(entity -> "isOrgUnitOfPublication:\"%s\"".formatted(entity.getID().toString()))
-            .collect(Collectors.joining(" OR "));
-        return findPublications(context, query, new HashMap<>());
-    }
-
-    public Stream<Publication> findByFunding(
-        Context context, String fundingOrganization, String fundingProgram
-    ) throws SearchServiceException {
-        String query = "funding.organization:\"%s\"".formatted(fundingOrganization);
-        Map<String, String> filterQueries = new HashMap<>();
-        if (isNotBlank(fundingProgram)) {
-            filterQueries.put("funding.program", fundingProgram);
+    public Stream<Publication> findByAuthors(Context context, List<Item> authors) throws SearchServiceException {
+        if (authors == null || authors.isEmpty()) {
+            return Stream.empty();
         }
-        return findPublications(context, query, filterQueries);
+        String query = authors.stream()
+            .map(author -> "isAuthorOfPublication:\"" + author.getID() + "\"")
+            .collect(Collectors.joining(" OR "));
+        return findPublications(context, query, Map.of());
     }
 
-    public Stream<Publication> findPublications(
-        Context context, String query, Map<String, String> filterQueries
-    ) throws SearchServiceException {
+    public Stream<Publication> findByAffiliations(Context context, List<OrgUnit> entities)
+            throws SearchServiceException {
+        if (entities == null || entities.isEmpty()) {
+            return Stream.empty();
+        }
+        String query = entities.stream()
+            .map(entity -> "isOrgUnitOfPublication:\"" + entity.getID() + "\"")
+            .collect(Collectors.joining(" OR "));
+        return findPublications(context, query, Map.of());
+    }
+
+    public Stream<Publication> findByFunding(Context context, String fundingOrg, String fundingProg)
+            throws SearchServiceException {
+        String query = "funding.organization:\"%s\"".formatted(fundingOrg);
+        Map<String, String> filters = isNotBlank(fundingProg)
+            ? Map.of("funding.program", fundingProg)
+            : Map.of();
+        return findPublications(context, query, filters);
+    }
+
+    public Stream<Publication> findPublications(Context context, String query, Map<String, String> filterQueries)
+            throws SearchServiceException {
         DiscoverQuery dq = new DiscoverQuery();
         dq.addDSpaceObjectFilter(IndexableItem.TYPE);
         dq.setQuery(query);
         dq.setMaxResults(SearchService.MAX_RESULT);
-        filterQueries.entrySet().forEach(entry -> {
-            dq.addFilterQueries("%s:\"%s\"".formatted(entry.getKey(), entry.getValue()));
-        });
+        filterQueries.forEach((key, value) -> dq.addFilterQueries("%s:\"%s\"".formatted(key, value)));
         DiscoverResult searchResult = searchService.search(context, dq);
         return searchResult.getIndexableObjects()
             .stream()
@@ -147,13 +132,61 @@ public class PublicationServiceImpl implements PublicationService {
             .filter(Objects::nonNull);
     }
 
-    // PRIVATE METHODS =================================================================================================
+    public boolean isAuthorOfPublication(Context context, Item item) throws SQLException, AuthorizeException {
+        EPerson user = context.getCurrentUser();
+        Publication publication = buildPublication(item);
+        if (user == null || publication == null) {
+            return false;
+        }
+        ResearcherProfile profile = researcherProfileService.findById(context, user.getID());
+        return publication.getAuthors().stream()
+            .map(PublicationAuthor::getAuthority)
+            .filter(Objects::nonNull)
+            .anyMatch(authorAuthority -> Objects.equals(authorAuthority.getItemId(), profile.getItemId()));
+    }
 
+
+    public boolean authorizeWithdrawItem(Context context, Item item) {
+        try {
+            Publication publication = PublicationFactory.build(item);
+            // First of all, determine if this publication is 'withdrawable', if not, no need extra check.
+            if (!publication.isWithdrawable()) {
+                return false;
+            }
+            // To determine if the current logged user can withdraw this publication, we will check
+            //   1) if user has manager rights
+            //   2) if user is submitter of the publication
+            //   3) if user is owner of the publication (DSpace basic behavior)
+            //   4) if user is author of the publication
+            EPerson user = context.getCurrentUser();
+            if (user == null) {
+                return false;
+            }
+            return ePersonService.isOwnerOfItem(user, item)
+                || Objects.equals(item.getSubmitter(), user)
+                || isManager(context, user)
+                || isAuthorOfPublication(context, item);
+        } catch (InvalidModelEntityTypeException | SQLException | AuthorizeException e) {
+            return false;
+        }
+    }
+
+    // PRIVATE METHODS =================================================================================================
     private Publication buildPublication(Item item) {
         try {
             return PublicationFactory.build(item);
         } catch (Exception ignored) {
             return null;
         }
+    }
+
+    private boolean isManager(Context context, EPerson user) throws SQLException {
+        String[] managerGroups = configService.getArrayProperty("uclouvain.feature.roles.manager", new String[] {});
+        return groupService.isMember(context, user, managerGroups);
+    }
+
+    @FunctionalInterface
+    private interface MetadataSetter {
+        void set(String field, String value, String auth, int confidence) throws Exception;
     }
 }

@@ -34,6 +34,8 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
+import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.utils.DSpace;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
@@ -484,6 +486,7 @@ public class AuthorizeUtil {
         throws SQLException, AuthorizeException {
         boolean authorized = false;
         AuthorizeService authorizeService = AuthorizeServiceFactory.getInstance().getAuthorizeService();
+        // Compute basic DSpace authorization
         if (AuthorizeConfiguration.canCollectionAdminPerformItemWithdrawn()) {
             authorized = authorizeService.authorizeActionBoolean(context, item
                 .getOwningCollection(), Constants.ADMIN);
@@ -497,11 +500,22 @@ public class AuthorizeUtil {
             authorized = authorizeService.authorizeActionBoolean(context, item
                 .getOwningCollection(), Constants.REMOVE, false);
         }
+        if (authorized) {
+            return; // at this step, if user is already authorized, then juste return; no need additional check
+        }
 
+        // Compute UCLouvain special authorization.
+        EPerson user = context.getCurrentUser();
+        if (user != null) {
+            // TODO: This is not the best way to call specific publicationService to determine if item can be withdraw;
+            //       It should be better to call a generic service that determine which service must be called depending
+            //       on item (orgUnit, researchProfile, publicatio, journal, ...)
+            PublicationService publicationService = UCLouvainServiceFactory.getInstance().getPublicationService();
+            authorized = publicationService.authorizeWithdrawItem(context, item);
+        }
         // authorized
         if (!authorized) {
-            throw new AuthorizeException(
-                "To withdraw item must be COLLECTION_ADMIN or have REMOVE authorization on owning Collection");
+            throw new AuthorizeException("Not authorized to withdraw item#%s".formatted(item.getID()));
         }
     }
 
