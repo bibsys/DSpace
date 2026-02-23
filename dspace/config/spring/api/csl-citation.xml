@@ -31,7 +31,7 @@
     <property name="eventPlace" value="publication.conference.location"/>
     <property name="collectionTitle" value="publication.collection.name"/>
     <property name="collectionNumber" value="publication.collection.number"/>
-    <property name="containerAuthor" value="publication.host.authors"/>
+    <property name="editor" value="publication.host.authors"/>
     <property name="edition" value="publication.editionStatement"/>
 
     <property name="typeSpecificFieldMap" ref="typeSpecificFieldMapDef"/>

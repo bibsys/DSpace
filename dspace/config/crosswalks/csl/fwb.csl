@@ -210,6 +210,9 @@
           <names variable="container-author">
             <name and="symbol" delimiter=", " delimiter-precedes-last="never"/>
           </names>
+          <names variable="editor">
+            <name and="symbol" delimiter=", " delimiter-precedes-last="never"/>
+          </names>
           <text variable="container-title" font-style="italic"/>
           <group prefix="(" suffix=")">
             <choose>
