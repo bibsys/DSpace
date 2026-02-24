@@ -20,6 +20,9 @@
           <label>Description of the file</label>
           <input-type>textarea</input-type>
           <hint>You can enter a description for this file or a specific version comment ('preprint', 'postprint'...)</hint>
+          <settings>
+            <setting name="rows">3</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -1307,7 +1310,7 @@
           <dc-schema>dc</dc-schema>
           <dc-element>relation</dc-element>
           <repeatable>true</repeatable>
-          <label>References</label>
+          <label>External links</label>
           <input-type value-pairs-name="references_identifiers">qualdrop_value</input-type>
           <hint>Enter reference to other resources that can complement the submission</hint>
         </field>
