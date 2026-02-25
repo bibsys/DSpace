@@ -61,7 +61,7 @@ public class VirtualFieldCitations implements VirtualField {
 
     @Autowired
     @Qualifier("DSpaceListItemDataProvider")
-    private ObjectFactory<DSpaceListItemDataProvider> dSpaceListItemDataProviderObjectFactory;
+    protected ObjectFactory<DSpaceListItemDataProvider> dSpaceListItemDataProviderObjectFactory;
 
     @Autowired
     private CSLGeneratorFactory cslGeneratorFactory;
@@ -104,7 +104,7 @@ public class VirtualFieldCitations implements VirtualField {
 
     }
 
-    private DSpaceListItemDataProvider getDSpaceListItemDataProviderInstance() {
+    protected DSpaceListItemDataProvider getDSpaceListItemDataProviderInstance() {
         return dSpaceListItemDataProviderObjectFactory.getObject();
     }
 
