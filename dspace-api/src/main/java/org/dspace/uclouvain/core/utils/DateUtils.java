@@ -12,9 +12,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
+import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 import java.time.temporal.ChronoField;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.dspace.uclouvain.exceptions.DateConversionException;
@@ -27,6 +29,20 @@ import org.dspace.uclouvain.exceptions.DateConversionException;
 public class DateUtils {
 
     public static final String DSPACE_FORMAT = "yyyy-MM-dd";
+
+    private static final List<DateTimeFormatter> INPUT_FORMATS = List.of(
+        DateTimeFormatter.ISO_DATE_TIME,
+        DateTimeFormatter.ISO_LOCAL_DATE_TIME,
+        DateTimeFormatter.ISO_LOCAL_DATE,
+        DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("MM-dd-yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("yyyy/MM/dd", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("MM/dd/yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.ENGLISH),
+        DateTimeFormatter.ofPattern("yyyy MMMM dd", Locale.ENGLISH)
+    );
 
     protected DateUtils() {
         throw new UnsupportedOperationException();  // required by "(design) HideUtilityClassConstructor" code checker
@@ -80,5 +96,30 @@ public class DateUtils {
         Date inputDate = sdf.parse(date);
         sdf.applyPattern(DSPACE_FORMAT);
         return sdf.format(inputDate);
+    }
+
+    /**
+     * Try to convert a given date string into a given format.
+     * We try to guess the format of the given date string in order to convert it.
+     * If no format could be guessed, return null.
+     * 
+     * @param date The date string to convert.
+     * @param outputFormat The format to convert the date string into.
+     * @return The converted date string or null if no matching format found for the given date string.
+     */
+    public static String convertDateString(String date, String outputFormat) {
+        if (date == null) {
+            return null;
+        }
+        for (DateTimeFormatter formatter : INPUT_FORMATS) {
+            try {
+                LocalDate localDate = LocalDate.parse(date, formatter);
+                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(outputFormat);
+                return localDate.format(outputFormatter);
+            } catch (DateTimeParseException ex) {
+                continue;
+            }
+        }
+        return null;
     }
 }
