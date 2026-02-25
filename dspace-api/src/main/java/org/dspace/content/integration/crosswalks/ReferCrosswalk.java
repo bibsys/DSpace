@@ -124,6 +124,10 @@ public class ReferCrosswalk implements ItemExportCrosswalk {
 
     private List<String> allowedGroups;
 
+    private boolean exposed = true;
+
+    private int weight = 50;
+
     @PostConstruct
     private void postConstruct() throws IOException {
         String parent = configurationService.getProperty("dspace.dir") + File.separator + "config" + File.separator;
@@ -566,6 +570,25 @@ public class ReferCrosswalk implements ItemExportCrosswalk {
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
+
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
+    }
+
+    @Override
+    public boolean isExposed() {
+        return exposed;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
+    @Override
+    public int getWeight() {
+        return this.weight;
+    }
+
 
     public void setFileName(String fileName) {
         this.fileName = fileName;
