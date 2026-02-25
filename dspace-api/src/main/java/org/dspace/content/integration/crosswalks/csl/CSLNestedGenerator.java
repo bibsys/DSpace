@@ -63,7 +63,15 @@ public class CSLNestedGenerator implements CSLGenerator {
     }
 
     private String getStyle(String style) throws IOException {
-        return CSL.supportsStyle(style) ? style : readXmlStyleContent(style);
+        //DEV NOTE :: Revert logic; first check in custom citation files, then into supported CSL processor style
+        try {
+            return readXmlStyleContent(style);
+        } catch (IOException ioe) {
+            if (CSL.supportsStyle(style)) {
+                return style;
+            }
+            throw ioe;
+        }
     }
 
     private String readXmlStyleContent(String style) throws IOException {
