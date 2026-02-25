@@ -19,7 +19,7 @@ import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeExceptio
 public class BookChapterPublication extends Publication {
 
     // METADATA FIELDS DEFINITIONS =====================================================================================
-    public static final String DOCUMENT_TYPE = "text::book-chapter";
+    public static final String DOCUMENT_TYPE = "text::book-part";
 
     // CONSTRUCTOR =====================================================================================================
     protected BookChapterPublication(Item item) throws InvalidModelEntityTypeException {

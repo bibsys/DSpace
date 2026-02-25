@@ -78,6 +78,10 @@
         <property name="urlSearch" value="${pubmed.url.search}"/>
     </bean>
 
+    <bean id="customCrossRefImportService" class="org.dspace.uclouvain.external.importer.json.crossref.UCLouvainCrossRefImportSourceService">
+        <property name="url" value="${crossref.url}"/>
+    </bean>
+
     <bean id="pubmedImportService"
           class="org.dspace.importer.external.pubmed.service.PubmedImportMetadataSourceServiceImpl">
         <property name="metadataFieldMapping" ref="pubmedMetadataFieldMapping"/>
