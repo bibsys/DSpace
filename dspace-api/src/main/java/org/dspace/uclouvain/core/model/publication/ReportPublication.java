@@ -10,19 +10,13 @@ package org.dspace.uclouvain.core.model.publication;
 import org.dspace.content.Item;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 
-/**
- * Object representing a book chapter object (text::book).
- * With some specific method concerning book chapter metadata.
- *
- * @author Renaud Michotte (renaud.michotte@uclouvain.be)
- */
-public class BookChapterPublication extends Publication {
+public class ReportPublication extends Publication {
 
     // METADATA FIELDS DEFINITIONS =====================================================================================
-    public static final String DOCUMENT_TYPE = "text::book-part";
+    public static final String DOCUMENT_TYPE = "text::report";
 
     // CONSTRUCTOR =====================================================================================================
-    protected BookChapterPublication(Item item) throws InvalidModelEntityTypeException {
+    protected ReportPublication(Item item) throws InvalidModelEntityTypeException {
         super(item);
     }
 }
