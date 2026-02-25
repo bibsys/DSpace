@@ -50,6 +50,19 @@ public class Publication extends ItemModel implements FWBValidation {
     public static final String STATUS_INPRESS = "accepted/in-press";
     public static final String STATUS_PUBLISHED = "published";
 
+    public static final String LANGUAGE_FRENCH = "fre";
+    public static final String LANGUAGE_ENGLISH = "eng";
+    public static final String LANGUAGE_DUTCH = "dut";
+    public static final String LANGUAGE_GERMAN = "ger";
+    public static final String LANGUAGE_ITALIAN = "ita";
+    public static final String LANGUAGE_GREEK = "gre";
+    public static final String LANGUAGE_LATIN = "lat";
+    public static final String LANGUAGE_POLISH = "pol";
+    public static final String LANGUAGE_PORTUGUESE = "por";
+    public static final String LANGUAGE_SPANISH = "spa";
+    public static final String LANGUAGE_RUSSIAN = "rus";
+    public static final String LANGUAGE_OTHER = "und";
+
     // METADATA FIELDS DEFINITIONS =====================================================================================
     public static final String MAIN_TYPE_FIELD =
         getField("mainType", "dc.type.maintype");
@@ -98,6 +111,8 @@ public class Publication extends ItemModel implements FWBValidation {
         getField("conferenceEndDate", "publication.conference.endDate");
     public static final String CONFERENCE_IS_ABSTRACT_FIELD =
         getField("conferenceIsAbstract", "publication.isAbstract");
+    public static final String SPEECH_STATUS_FIELD =
+        getField("speechStatus", "publication.speech.status");
 
     public static final String JOURNAL_TITLE_FIELD =
         getField("journalTitle", "dc.relation.journal");
@@ -121,15 +136,29 @@ public class Publication extends ItemModel implements FWBValidation {
     public static final String EDITOR_LOCATION_FIELD =
         getField("editorLocation", "publication.editor.location");
 
-    public static final String HOST_BOOK_TITLE_FIELD =
+    public static final String HOST_DOCUMENT_TITLE_FIELD =
         getField("hostTitle", "publication.host.title");
     public static final String HOST_DOCUMENT_TYPE_FIELD =
         getField("hostType", "publication.host.type");
     public static final String HOST_DOCUMENT_ISBN_FIELD =
         getField("hostIsbn", "publication.host.isbn");
+    public static final String HOST_DOCUMENT_PAGES_FIELD =
+        getField("hostPages", "publication.host.pages");
+    public static final String HOST_DOCUMENT_YEAR_FIELD =
+        getField("hostYear", "publication.host.dateIssued");
+
+    public static final String COLLECTION_NAME_FIELD =
+        getField("collectionName", "publication.collection.name");
+    public static final String COLLECTION_NUMBER_FIELD =
+        getField("collectionName", "publication.collection.number");
+    public static final String COLLECTION_ISSN_FIELD =
+        getField("collectionName", "publication.collection.issn");
 
     public static final String DEFENSE_DATE_FIELD =
         getField("dissertationDefenseDate", "dissertation.defenseDate");
+
+    public static final String IDENTIFIER_ISBN_FIELD =
+        getField("identifierISBN", "dc.identifier.isbn");
 
     // CLASS ATTRIBUTES ================================================================================================
     AccessStatusHelper helper = (AccessStatusHelper) CoreServiceFactory
