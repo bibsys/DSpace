@@ -69,6 +69,9 @@ public abstract class UCLouvainImportSourceServiceImpl implements UCLouvainImpor
         List<MetadataValueDTO> list, String field, List<String> values,
         String authority, int confidence, boolean placeholder
     ) {
+        if (values == null) {
+            return;
+        }
         values.forEach(val -> addMetadata(list, field, val, authority, confidence, placeholder));
     }
 }

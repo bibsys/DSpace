@@ -33,6 +33,10 @@ public class SpeechPublication extends Publication {
     public static final String SUBTYPE_POSTER = "conference-poster";
     public static final String SUBTYPE_NONE = "none";
 
+    public static final String STATUS_PUBLISHED_SERIAL = "published_in_serial";
+    public static final String STATUS_PUBLISHED_BOOK = "published_in_book";
+    public static final String STATUS_NOT_PUBLISHED = "not_published";
+
     // CONSTRUCTOR =====================================================================================================
     protected SpeechPublication(Item item) throws InvalidModelEntityTypeException {
         super(item);
@@ -54,7 +58,7 @@ public class SpeechPublication extends Publication {
 
     public boolean isPublished() {
         return itemService.hasMetadata(item, JOURNAL_TITLE_FIELD)
-            || itemService.hasMetadata(item, HOST_BOOK_TITLE_FIELD);
+            || itemService.hasMetadata(item, HOST_DOCUMENT_TITLE_FIELD);
     }
 
     public boolean isAbstract() {
