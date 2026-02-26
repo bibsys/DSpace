@@ -9,9 +9,13 @@ package org.dspace.app.rest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
@@ -23,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,6 +45,7 @@ public class ExportRestController {
 
     // MAIN ENDPOINTS --------------------------------------------------------------------------------------------------
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @GetMapping(value = "/custom")
     public ResponseEntity<StreamingResponseBody> customExport(
         Context context, HttpServletResponse response, HttpServletRequest request,
@@ -50,6 +56,7 @@ public class ExportRestController {
         return parseResponse(result, request, response);
     }
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @GetMapping(value = "/fwb")
     public ResponseEntity<StreamingResponseBody> fwbExport(
         Context context, HttpServletResponse response, HttpServletRequest request,
@@ -63,6 +70,7 @@ public class ExportRestController {
         return parseResponse(result, request, response);
     }
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @GetMapping(value = "/fnrs")
     public ResponseEntity<StreamingResponseBody> fnrsExport(
         Context context, HttpServletResponse response, HttpServletRequest request,
@@ -76,22 +84,33 @@ public class ExportRestController {
         return parseResponse(result, request, response);
     }
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @GetMapping(value = "/byAuthor")
     public ResponseEntity<StreamingResponseBody> byAuthorExport(
         Context context, HttpServletResponse response, HttpServletRequest request,
-        @RequestParam(value = "authorUUID", required = false) String authorUUID,
-        @RequestParam(value = "authorFGS", required = false) String authorFGS,
-        @RequestParam(value = "authorName", required = false) String authorName,
-        @RequestParam(value = "crosswalk", required = true) String crosswalkName
+        @RequestParam(value = "crosswalk") String crosswalkName
     ) throws Exception {
-        if (authorUUID == null && authorFGS == null && authorName == null) {
-            throw new DSpaceBadRequestException("No author was provided.");
+        // We can't use `@RequestParam` because Spring split parameter "Name, Firstname" as 2 separated params.
+        // To solve this problem with easy solution, use classic `request.getParameterValues` method.
+        Map<String, List<String>> rawParams = Map.of(
+            "uuid", List.of(Optional.ofNullable(request.getParameterValues("authorUUID")).orElse(new String[0])),
+            "fgs",  List.of(Optional.ofNullable(request.getParameterValues("authorFGS")).orElse(new String[0])),
+            "orcid", List.of(Optional.ofNullable(request.getParameterValues("authorORCID")).orElse(new String[0])),
+            "name", List.of(Optional.ofNullable(request.getParameterValues("authorName")).orElse(new String[0]))
+        );
+        List<Pair<String, String>> identifiers = rawParams
+            .entrySet()
+            .stream()
+            .flatMap(entry -> entry.getValue().stream().map(val -> Pair.of(entry.getKey(), val)))
+            .toList();
+        if (identifiers.isEmpty()) {
+            throw new DSpaceBadRequestException("No author identifiers were provided.");
         }
-        ExportResult result =
-            uclouvainExportService.findByAuthor(context, authorUUID, authorFGS, authorName, crosswalkName);
+        ExportResult result = uclouvainExportService.findByAuthor(context, identifiers, crosswalkName);
         return parseResponse(result, request, response);
     }
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @GetMapping(value = "/byAffiliation")
     public ResponseEntity<StreamingResponseBody> byDepartment(
         Context context, HttpServletResponse response, HttpServletRequest request,
@@ -107,6 +126,7 @@ public class ExportRestController {
         return parseResponse(result, request, response);
     }
 
+    @PreAuthorize("hasAuthority('AUTHENTICATED')")
     @GetMapping(value = "/byFunding")
     public ResponseEntity<StreamingResponseBody> byFunding(
         Context context, HttpServletResponse response, HttpServletRequest request,
