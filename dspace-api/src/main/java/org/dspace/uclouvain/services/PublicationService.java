@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
@@ -71,11 +72,14 @@ public interface PublicationService {
      * Find all publication linked to at least one of the given author.
      *
      * @param context The current DSpace application context
-     * @param authors A list of authors to find publications for
+     * @param identifiers The list of author identifier to search for.
+     *                    Each author identifier is a pair of identifier type (uuid, fgs, name, ...) and
+     *                    identifier value.
      * @return stream containing all found publications
      * @throws SearchServiceException If any solr exception occurred while searching.
      */
-    Stream<Publication> findByAuthors(Context context, List<Item> authors) throws SearchServiceException;
+    Stream<Publication> findByAuthors(Context context, List<Pair<String, String>> identifiers)
+            throws SearchServiceException;
 
     /**
      * Find all publication linked to at least one of the given affiliation.
