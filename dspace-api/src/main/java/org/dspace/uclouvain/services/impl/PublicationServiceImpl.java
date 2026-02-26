@@ -16,9 +16,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
@@ -41,6 +44,7 @@ import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.services.PublicationService;
+import org.dspace.uclouvain.services.UCLouvainProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PublicationServiceImpl implements PublicationService {
@@ -57,6 +61,8 @@ public class PublicationServiceImpl implements PublicationService {
     ConfigurationService configService;
     @Autowired
     GroupService groupService;
+    @Autowired
+    UCLouvainProfileService uclouvainProfileService;
 
     // PUBLIC METHODS ==================================================================================================
     public PublicationAuthor setAuthor(Context context, Publication publication, PublicationAuthor author)
@@ -88,14 +94,55 @@ public class PublicationServiceImpl implements PublicationService {
         }
     }
 
-    public Stream<Publication> findByAuthors(Context context, List<Item> authors) throws SearchServiceException {
-        if (authors == null || authors.isEmpty()) {
+    public Stream<Publication> findByAuthors(Context context, List<Pair<String, String>> identifiers)
+        throws SearchServiceException {
+
+        if (identifiers == null || identifiers.isEmpty()) {
             return Stream.empty();
         }
-        String query = authors.stream()
-            .map(author -> "isAuthorOfPublication:\"" + author.getID() + "\"")
+
+        // We will normalize identifiers list.
+        // Specific author identifier (fgs, orcid, ...) should reference an existing researcher profile.
+        // If we found a matching profile for this identifier, we will replace initial specific identifier by a
+        // normalized 'uuid' identifier.
+        List<Pair<String, String>> normalizedIdentifiers = identifiers.stream()
+            .flatMap(pair -> {
+                if (Objects.equals("fgs", pair.getLeft())) {
+                    Item profile = uclouvainProfileService.findById(context, pair.getRight());
+                    // DEV-NOTE : returning empty stream == removing this identifier from list
+                    return (profile != null) ? Stream.of(Pair.of("uuid", profile.getID().toString())) : Stream.empty();
+                } else if (Objects.equals("orcid", pair.getLeft())) {
+                    Item profile = uclouvainProfileService.findByOrcid(context, pair.getRight());
+                    return (profile != null) ? Stream.of(Pair.of("uuid", profile.getID().toString())) : Stream.empty();
+                } else {
+                    return Stream.of(pair);
+                }
+            })
+            .toList();
+
+        // Validate normalized identifiers
+        // At this time, we should only have "uuid" or "name" identifier type in the list.
+        // If another identifier type is found, generate a "fail-fast" error
+        Set<String> validTypes = Set.of("uuid", "name");
+        for (Pair<String, String> identifier : normalizedIdentifiers) {
+            if (!validTypes.contains(identifier.getLeft())) {
+                throw new SearchServiceException("Unsupported identifier type :: " + identifier.getLeft());
+            }
+        }
+
+        // Build query based on normalized identifiers
+        String query = normalizedIdentifiers.stream()
+            .map(identifier -> switch (identifier.getLeft()) {
+                case "uuid" -> "isAuthorOfPublication:\"%s\"".formatted(identifier.getRight());
+                case "name" -> "author_keyword:\"%s\"".formatted(identifier.getRight());
+                default -> ""; // should never happen... but switch need a default :(
+            })
+            .filter(StringUtils::isNotEmpty)
             .collect(Collectors.joining(" OR "));
-        return findPublications(context, query, Map.of());
+
+        return StringUtils.isNotEmpty(query)
+            ? findPublications(context, query, Map.of())
+            : Stream.empty();
     }
 
     public Stream<Publication> findByAffiliations(Context context, List<OrgUnit> entities)

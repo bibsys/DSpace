@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
@@ -94,12 +95,15 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
 
     // 'Find by' exports
 
-    public ExportResult findByAuthor(
-        Context context, String authorUUID, String authorFGS, String authorName, String crosswalk
-    ) throws CrosswalkException, CrosswalkNotFoundException, AuthorNotFoundException, SearchServiceException {
+    /**
+     * Allow to find publications based on publications authors.
+     * Each provided identifiers must be a valid identifier type (at this time we allow "uuid", "fgs", "name")
+     */
+    public ExportResult findByAuthor(Context context, List<Pair<String, String>> authorIdentifiers, String crosswalk)
+        throws CrosswalkException, AuthorNotFoundException, SearchServiceException {
         ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(crosswalk);
-        List<Item> authors = findAuthors(context, authorUUID, authorFGS, authorName);
-        Iterator<Item> publications = publicationService.findByAuthors(context, authors)
+        Iterator<Item> publications = publicationService
+            .findByAuthors(context, authorIdentifiers)
             .map(Publication::getItem)
             .iterator();
         return new TempFileExportResult(context, itemCrosswalk, publications);
