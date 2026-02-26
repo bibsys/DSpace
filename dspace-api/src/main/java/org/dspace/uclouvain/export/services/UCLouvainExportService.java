@@ -7,6 +7,9 @@
  */
 package org.dspace.uclouvain.export.services;
 
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.content.crosswalk.CrosswalkException;
 import org.dspace.core.Context;
 import org.dspace.discovery.SearchServiceException;
@@ -60,9 +63,9 @@ public interface UCLouvainExportService {
     /**
      * Generate an export of all the publications of the given author (or authors if a name was given).
      * @param context The current DSpace application context.
-     * @param authorFGS The FGS of the author to export the publications of.
-     * @param authorUUID The UUID of the author to export the publications of.
-     * @param authorName The name of the author(s) to export the publication of.
+     * @param authorIdentifiers The list of author identifier to search for.
+     *                          Each author identifier is a pair of identifier type (uuid, fgs, name, ...) and
+     *                          identifier value.
      * @param crosswalk The crosswalk to use to generate the export.
      * @return An export result containing the generated export.
      * @throws CrosswalkException If an error occurred generating the export.
@@ -70,9 +73,8 @@ public interface UCLouvainExportService {
      * @throws AuthorNotFoundException If no author could be found using provided identifiers or name.
      * @throws SearchServiceException If an error occurred when retrieving the author's publications.
      */
-    public ExportResult findByAuthor(
-        Context context, String authorFGS, String authorUUID, String authorName, String crosswalk
-    ) throws CrosswalkException, CrosswalkNotFoundException, AuthorNotFoundException, SearchServiceException;
+    ExportResult findByAuthor(Context context, List<Pair<String, String>> authorIdentifiers, String crosswalk)
+        throws CrosswalkException, CrosswalkNotFoundException, AuthorNotFoundException, SearchServiceException;
 
 
     /**
