@@ -1645,6 +1645,28 @@
       <row>
         <field>
           <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <label>Editor name</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>editor</dc-element>
+          <dc-qualifier>location</dc-qualifier>
+          <label>Editor location</label>
+          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
+          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
+          <input-type>onebox</input-type>
+          <hint/>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
           <dc-element>serial</dc-element>
           <dc-qualifier>volume</dc-qualifier>
           <label>Volume</label>
@@ -1940,28 +1962,6 @@
           <dc-qualifier>location</dc-qualifier>
           <label>Editor location</label>
           <type-bind type-bind-field="dc.type.maintype">text::report</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-        </field>
-      </row>
-      <row>
-        <field>
-          <dc-schema>publication</dc-schema>
-          <dc-element>editor</dc-element>
-          <dc-qualifier>name</dc-qualifier>
-          <label>Editor name</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
-          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
-          <input-type>onebox</input-type>
-          <hint/>
-        </field>
-        <field>
-          <dc-schema>publication</dc-schema>
-          <dc-element>editor</dc-element>
-          <dc-qualifier>location</dc-qualifier>
-          <label>Editor location</label>
-          <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
-          <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type>onebox</input-type>
           <hint/>
         </field>
