@@ -810,6 +810,7 @@
                         <ref bean="sortDateIssuedDesc" />
                         <ref bean="sortDateAccessionedAsc" />
                         <ref bean="sortDateAccessionedDesc" />
+                        <ref bean="sortDocumentTypeDesc" />
                     </list>
                 </property>
             </bean>
@@ -4125,6 +4126,11 @@
         <property name="defaultSortOrder" value="desc"/>
     </bean>
 
+    <bean id="sortDocumentTypeDesc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
+        <property name="metadataField" value="dc.type.maintype"/>
+        <property name="defaultSortOrder" value="desc"/>
+    </bean>
+
     <bean id="sortDateIssuedAsc" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
         <property name="metadataField" value="dc.date.issued"/>
         <property name="type" value="date"/>
@@ -4150,10 +4156,10 @@
     </bean>
 
     <bean id="sortLastModified" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
-		<property name="metadataField" value="lastModified" />
-		<property name="type" value="date" />
+		    <property name="metadataField" value="lastModified" />
+		    <property name="type" value="date" />
         <property name="defaultSortOrder" value="desc"/>
-	</bean>
+	  </bean>
 
     <bean id="sortFamilyName" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
         <property name="metadataField" value="person.familyName"/>
