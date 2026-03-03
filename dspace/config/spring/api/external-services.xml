@@ -119,6 +119,16 @@
         </property>
     </bean>
 
+    <bean id="customArXivImportDataProvider" class="org.dspace.uclouvain.external.provider.UCLouvainDataProvider">
+        <property name="metadataSource" ref="customArXivImportService"/>
+        <property name="sourceIdentifier" value="arxiv"/>
+        <property name="supportedEntityTypes">
+            <list>
+                <value>Publication</value>
+            </list>
+        </property>
+    </bean>
+
     <bean id="arxivLiveImportDataProvider" class="org.dspace.external.provider.impl.LiveImportDataProvider">
         <property name="metadataSource" ref="ArXivImportService"/>
         <property name="sourceIdentifier" value="arxiv"/>

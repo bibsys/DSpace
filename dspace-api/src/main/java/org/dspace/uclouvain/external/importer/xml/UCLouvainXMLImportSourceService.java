@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.dspace.content.dto.MetadataValueDTO;
 import org.dspace.uclouvain.external.importer.UCLouvainImportSourceServiceImpl;
 import org.jdom2.Element;
+import org.jdom2.Namespace;
 import org.jdom2.filter.Filters;
 import org.jdom2.xpath.XPathExpression;
 import org.jdom2.xpath.XPathFactory;
@@ -58,6 +59,18 @@ public abstract class UCLouvainXMLImportSourceService extends UCLouvainImportSou
      * @return An new XpathExpression object.
      */
     protected XPathExpression<Element> buildXpath(String path) {
-        return XPathFactory.instance().compile(path, Filters.element());
+        return XPathFactory.instance().compile(path, Filters.element(), null, getNamespaces());
+    }
+
+    protected XPathExpression<Element> buildXpath(String path, List<Namespace> namespaces) {
+        return XPathFactory.instance().compile(path, Filters.element(), null, namespaces);
+    }
+
+    /**
+     * Get available namespace for a specific XML source.
+     * @return A list of all needed namespace for a specific XML source.
+     */
+    protected List<Namespace> getNamespaces() {
+        return List.of();
     }
 }
