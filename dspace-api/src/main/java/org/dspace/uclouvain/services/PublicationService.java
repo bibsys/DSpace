@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.services;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -17,11 +18,12 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
+import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.SearchServiceException;
-import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.core.model.exceptions.PublicationSetAuthorException;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
+import org.dspace.uclouvain.export.services.UCLouvainExportService;
 
 public interface PublicationService {
 
@@ -66,7 +68,7 @@ public interface PublicationService {
      * @throws PublicationSetAuthorException if any error occurred while persisting information in publication.
      */
     PublicationAuthor setAuthor(Context context, Publication publication, PublicationAuthor author)
-            throws PublicationSetAuthorException;
+        throws PublicationSetAuthorException;
 
     /**
      * Find all publication linked to at least one of the given author.
@@ -75,22 +77,59 @@ public interface PublicationService {
      * @param identifiers The list of author identifier to search for.
      *                    Each author identifier is a pair of identifier type (uuid, fgs, name, ...) and
      *                    identifier value.
+     * @param filters A map of filters to use to filter solr query response
+     * @param sort the option to use to sort publications
+     * @param direction the sort direction to apply on sort option (ASC or DESC)
      * @return stream containing all found publications
      * @throws SearchServiceException If any solr exception occurred while searching.
      */
-    Stream<Publication> findByAuthors(Context context, List<Pair<String, String>> identifiers)
-            throws SearchServiceException;
+    Stream<Publication> findByAuthors(
+        Context context,
+        List<Pair<String, String>> identifiers,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException;
 
     /**
-     * Find all publication linked to at least one of the given affiliation.
+     * Find all publication linked to at least one of the given affiliation names.
      *
      * @param context The current DSpace application context
-     * @param affiliations A list of affiliation to find publications for
+     * @param names A list of affiliation names to find publications for
+     * @param filters A map of filters to use to filter solr query response
+     * @param sort the option to use to sort publications
+     * @param direction the sort direction to apply on sort option (ASC or DESC)
      * @return A stream of all the found publications
      * @throws SearchServiceException If any solr exception occurred while searching
      */
-    Stream<Publication> findByAffiliations(Context context, List<OrgUnit> affiliations)
-        throws SearchServiceException;
+    Stream<Publication> findByAffiliationNames(
+        Context context,
+        List<String> names,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException;
+
+    /**
+     * Find all publication linked to at least one of the given affiliation uuids.
+     *
+     * @param context The current DSpace application context
+     * @param uuids A list of affiliation uuids to find publications for
+     * @param includeDescendant is the publication related to descendant entities must be included
+     * @param filters A map of filters to use to filter solr query response
+     * @param sort the option to use to sort publications
+     * @param direction the sort direction to apply on sort option (ASC or DESC)
+     * @return A stream of all the found publications
+     * @throws SearchServiceException If any solr exception occurred while searching
+     */
+    Stream<Publication> findByAffiliationUUIDs(
+        Context context,
+        List<String> uuids,
+        boolean includeDescendant,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException;
 
     /**
      * Find all publication linked to at specific funding.
@@ -98,24 +137,39 @@ public interface PublicationService {
      * @param context The current DSpace application context
      * @param fundingOrganization The organization of the funding (required)
      * @param fundingProgram The program of the funding (optional)
+     * @param filters A map of filters to use to filter solr query response
+     * @param sort the option to use to sort publications
+     * @param direction the sort direction to apply on sort option (ASC or DESC)
      * @return A stream of all the publications linked to the given funding
      * @throws SearchServiceException If any solr exception occurred while searching
      */
-    Stream<Publication> findByFunding(Context context, String fundingOrganization, String fundingProgram)
-        throws SearchServiceException;
+    Stream<Publication> findByFunding(
+        Context context,
+        String fundingOrganization,
+        String fundingProgram,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException, ParseException;
 
     /**
      * Find all publication items matching the given query and filter queries.
-     * TODO: Improve this logic to handle more params (sort, filters...). It would be better to externalize this code.
      *
      * @param context The current DSpace context
      * @param query The main query to match
      * @param filterQueries Additional filter queries to match
+     * @param sort the option to use to sort publications
+     * @param sortDirection the sort direction to apply on sort option (ASC or DESC)
      * @return A stream of all found publications based on the given query
      * @throws SearchServiceException If any solr exception occurred while searching
      */
-    Stream<Publication> findPublications(Context context, String query, Map<String, String> filterQueries)
-        throws SearchServiceException;
+    Stream<Publication> findPublications(
+        Context context,
+        String query,
+        Map<String, String> filterQueries,
+        String sort,
+        DiscoverQuery.SORT_ORDER sortDirection
+    ) throws SearchServiceException;
 
     /**
      * Determine if the current logged user is an author of the publication
