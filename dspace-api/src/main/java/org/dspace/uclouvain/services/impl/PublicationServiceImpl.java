@@ -13,6 +13,8 @@ import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.dspace.content.authority.Choices.CF_UNSET;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,6 +24,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.solr.client.solrj.util.ClientUtils;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.content.service.ItemService;
@@ -37,14 +40,16 @@ import org.dspace.eperson.service.GroupService;
 import org.dspace.profile.ResearcherProfile;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.services.ConfigurationService;
-import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 import org.dspace.uclouvain.core.model.exceptions.PublicationSetAuthorException;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
+import org.dspace.uclouvain.export.services.UCLouvainExportService;
 import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.uclouvain.services.UCLouvainProfileService;
+import org.dspace.uclouvain.services.queryFilters.SolrQueryFiltersFactory;
+import org.dspace.uclouvain.services.queryFilters.SolrSortOptionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class PublicationServiceImpl implements PublicationService {
@@ -94,13 +99,19 @@ public class PublicationServiceImpl implements PublicationService {
         }
     }
 
-    public Stream<Publication> findByAuthors(Context context, List<Pair<String, String>> identifiers)
-        throws SearchServiceException {
-
+    public Stream<Publication> findByAuthors(
+        Context context,
+        List<Pair<String, String>> identifiers,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException {
         if (identifiers == null || identifiers.isEmpty()) {
             return Stream.empty();
         }
-
+        // Convert filters to Solr query filters
+        List<String> queryFilters = convertQueryFilters(filters);
+        String sortField = convertSortOption(sort);
         // We will normalize identifiers list.
         // Specific author identifier (fgs, orcid, ...) should reference an existing researcher profile.
         // If we found a matching profile for this identifier, we will replace initial specific identifier by a
@@ -119,7 +130,6 @@ public class PublicationServiceImpl implements PublicationService {
                 }
             })
             .toList();
-
         // Validate normalized identifiers
         // At this time, we should only have "uuid" or "name" identifier type in the list.
         // If another identifier type is found, generate a "fail-fast" error
@@ -129,7 +139,6 @@ public class PublicationServiceImpl implements PublicationService {
                 throw new SearchServiceException("Unsupported identifier type :: " + identifier.getLeft());
             }
         }
-
         // Build query based on normalized identifiers
         String query = normalizedIdentifiers.stream()
             .map(identifier -> switch (identifier.getLeft()) {
@@ -139,39 +148,102 @@ public class PublicationServiceImpl implements PublicationService {
             })
             .filter(StringUtils::isNotEmpty)
             .collect(Collectors.joining(" OR "));
-
         return StringUtils.isNotEmpty(query)
-            ? findPublications(context, query, Map.of())
+            ? findPublications(context, query, queryFilters, sortField, direction)
             : Stream.empty();
     }
 
-    public Stream<Publication> findByAffiliations(Context context, List<OrgUnit> entities)
-            throws SearchServiceException {
-        if (entities == null || entities.isEmpty()) {
+    @Override
+    public Stream<Publication> findByAffiliationNames(
+        Context context,
+        List<String> affiliationNames,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException {
+        if (affiliationNames == null || affiliationNames.isEmpty()) {
             return Stream.empty();
         }
-        String query = entities.stream()
-            .map(entity -> "isOrgUnitOfPublication:\"" + entity.getID() + "\"")
+        List<String> queryFilters = convertQueryFilters(filters);
+        String sortField = convertSortOption(sort);
+        String queryField = "oairecerif.affiliation.orgunitDepartment";
+        String query = affiliationNames.stream()
+            .map(name -> String.format("%s:\"%s\"", queryField, ClientUtils.escapeQueryChars(name)))
             .collect(Collectors.joining(" OR "));
-        return findPublications(context, query, Map.of());
+        return findPublications(context, query, queryFilters, sortField, direction);
     }
 
-    public Stream<Publication> findByFunding(Context context, String fundingOrg, String fundingProg)
-            throws SearchServiceException {
-        String query = "funding.organization:\"%s\"".formatted(fundingOrg);
-        Map<String, String> filters = isNotBlank(fundingProg)
-            ? Map.of("funding.program", fundingProg)
-            : Map.of();
-        return findPublications(context, query, filters);
+    @Override
+    public Stream<Publication> findByAffiliationUUIDs(
+        Context context,
+        List<String> affiliationUUIDs,
+        boolean includeDescendant,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException {
+        if (affiliationUUIDs == null || affiliationUUIDs.isEmpty()) {
+            return Stream.empty();
+        }
+        List<String> queryFilters = convertQueryFilters(filters);
+        String sortField = convertSortOption(sort);
+        String queryField = (includeDescendant)
+            ? "hierarchical_entity_authority"
+            : "isOrgUnitOfPublication";
+        String query = affiliationUUIDs.stream()
+            .map(uuid -> String.format("%s:\"%s\"", queryField, uuid))
+            .collect(Collectors.joining(" OR "));
+        return findPublications(context, query, queryFilters, sortField, direction);
     }
 
-    public Stream<Publication> findPublications(Context context, String query, Map<String, String> filterQueries)
-            throws SearchServiceException {
+    @Override
+    public Stream<Publication> findByFunding(
+        Context context,
+        String fundingOrg,
+        String fundingProg,
+        Map<String, String> filters,
+        UCLouvainExportService.SortOption sort,
+        DiscoverQuery.SORT_ORDER direction
+    ) throws SearchServiceException {
+        if (isNotBlank(fundingProg)) {
+            filters.put("fundingProgram", fundingProg);
+        }
+        List<String> queryFilters = convertQueryFilters(filters);
+        String sortField = convertSortOption(sort);
+        String query = "funding.organization:\"%s\"".formatted(ClientUtils.escapeQueryChars(fundingOrg));
+        return findPublications(context, query, queryFilters, sortField, direction);
+    }
+
+    @Override
+    public Stream<Publication> findPublications(
+        Context context,
+        String query,
+        Map<String, String> filterQueries,
+        String sort,
+        DiscoverQuery.SORT_ORDER sortDirection
+    ) throws SearchServiceException {
+        List<String> filters = convertQueryFilters(filterQueries);
+        return findPublications(context, query, filters, sort, sortDirection);
+    }
+
+    private Stream<Publication> findPublications(
+        Context context,
+        String query,
+        List<String> filterQueries,
+        String sortField,
+        DiscoverQuery.SORT_ORDER sortDirection
+    ) throws SearchServiceException {
         DiscoverQuery dq = new DiscoverQuery();
         dq.addDSpaceObjectFilter(IndexableItem.TYPE);
+        if (StringUtils.isNotBlank(sortField)) {
+            sortDirection = (sortDirection != null) ? sortDirection : DiscoverQuery.SORT_ORDER.asc;
+            dq.setSortField(sortField, sortDirection);
+        }
         dq.setQuery(query);
         dq.setMaxResults(SearchService.MAX_RESULT);
-        filterQueries.forEach((key, value) -> dq.addFilterQueries("%s:\"%s\"".formatted(key, value)));
+        if (filterQueries != null) {
+            filterQueries.forEach(dq::addFilterQueries);
+        }
         DiscoverResult searchResult = searchService.search(context, dq);
         return searchResult.getIndexableObjects()
             .stream()
@@ -230,6 +302,28 @@ public class PublicationServiceImpl implements PublicationService {
     private boolean isManager(Context context, EPerson user) throws SQLException {
         String[] managerGroups = configService.getArrayProperty("uclouvain.feature.roles.manager", new String[] {});
         return groupService.isMember(context, user, managerGroups);
+    }
+
+
+    // CONVERTING QUERY FILTERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    private List<String> convertQueryFilters(Map<String, String> filters) {
+        return (filters == null || filters.isEmpty())
+            ? Collections.emptyList()
+            : filters
+                .entrySet().stream()
+                .map(entry -> {
+                    try {
+                        return SolrQueryFiltersFactory.build(entry.getKey()).parse(entry.getValue());
+                    } catch (ParseException e) {
+                        return "%s:\"%s\"".formatted(entry.getKey(), entry.getValue());
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    private String convertSortOption(UCLouvainExportService.SortOption option) {
+        return SolrSortOptionFactory.build(option.toString()).getSortField();
     }
 
     @FunctionalInterface
