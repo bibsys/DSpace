@@ -20,7 +20,8 @@
                 </entry>
                 <entry key="dc.identifier.arxiv">
                     <list>
-                        <ref bean="arxivLiveImportDataProvider"/>
+                        <!-- <ref bean="arxivLiveImportDataProvider"/> -->
+                         <ref bean="customArXivImportDataProvider"/>
                     </list>
                 </entry>
                 <entry key="dc.identifier.doi">
