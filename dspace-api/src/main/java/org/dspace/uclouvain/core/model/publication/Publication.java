@@ -162,6 +162,8 @@ public class Publication extends ItemModel implements FWBValidation {
     public static final String DEFENSE_DATE_FIELD =
         getField("dissertationDefenseDate", "dissertation.defenseDate");
 
+    public static final String DOI_IDENTIFIER_FIELD =
+        getField("doiIdentifier", "dc.identifier.doi");
     public static final String IDENTIFIER_ISBN_FIELD =
         getField("identifierISBN", "dc.identifier.isbn");
 
