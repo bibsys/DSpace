@@ -9,9 +9,12 @@ package org.dspace.uclouvain.discovery.indexing;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -26,9 +29,11 @@ import org.dspace.discovery.IndexableObject;
 import org.dspace.discovery.SolrServiceIndexPlugin;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
+import org.dspace.uclouvain.core.model.publication.PublicationEntity;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.validation.fnrs.FNRSValidator;
 import org.dspace.util.UUIDUtils;
@@ -60,6 +65,7 @@ public class SolrServicePublicationIndexingPlugin
             Publication publication = PublicationFactory.build(getItem(dso));
             addFWBValidationKeys(context, publication.getItem(), document);
             addFNRSValidationKeys(publication.getItem(), document);
+            addAncestorEntities(publication, document);
             authorFgsIndexing(publication, document);
             readPermissionsIndexing(context, publication, document);
         } catch (InvalidModelEntityTypeException e) {
@@ -100,6 +106,33 @@ public class SolrServicePublicationIndexingPlugin
         document.addField("fnrsRelevant_b", isRelevant);
         if (isRelevant) {
             document.addField("fnrsValid_b", fnrsValidator.isValid(item));
+        }
+    }
+
+    /**
+     * Index all entities linked to an existing {@link org.dspace.uclouvain.core.model.OrgUnit} and their ancestors.
+     *
+     * @param publication the publication to analyze.
+     * @param document The Solr document to add the keys to.
+     */
+    private void addAncestorEntities(Publication publication, SolrInputDocument document) {
+        Set<UUID> ancestorUUIDs = new HashSet<>();
+        publication.getEntities().stream()
+            .filter(PublicationEntity::hasAuthority)
+            .map(PublicationEntity::getAuthority)
+            .forEach(entity -> {
+                OrgUnit current = entity;
+                while (current != null) {
+                    // .add() return false if UUID is already present into the set.
+                    // This protects against infinite parenthood loops.
+                    if (!ancestorUUIDs.add(current.getID())) {
+                        break;
+                    }
+                    current = current.getParent();
+                }
+            });
+        if (!ancestorUUIDs.isEmpty()) {
+            document.addField("hierarchical_entity_authority", ancestorUUIDs.stream().map(UUID::toString).toList());
         }
     }
 

@@ -23,7 +23,7 @@ import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
 import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.uclouvain.core.model.OrgUnit;
-import org.dspace.uclouvain.discovery.indexing.SolrServicePublicationOrgUnitIndexingPlugin;
+import org.dspace.uclouvain.discovery.indexing.SolrServiceOrgUnitIndexingPlugin;
 import org.dspace.uclouvain.services.OrgUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -74,11 +74,11 @@ public class OrgUnitServiceImpl implements OrgUnitService {
             }
             if (!StringUtils.isBlank(instAcronym)) {
                 clauses.add("%s:\"%s\"".formatted(
-                        SolrServicePublicationOrgUnitIndexingPlugin.PARENT_UNIVERSITY_ACRONYM_KEY, instAcronym));
+                        SolrServiceOrgUnitIndexingPlugin.PARENT_UNIVERSITY_ACRONYM_KEY, instAcronym));
             }
             if (!StringUtils.isBlank(instName)) {
                 clauses.add("%s:\"%s\"".formatted(
-                        SolrServicePublicationOrgUnitIndexingPlugin.PARENT_UNIVERSITY_NAME_KEY, instName));
+                        SolrServiceOrgUnitIndexingPlugin.PARENT_UNIVERSITY_NAME_KEY, instName));
             }
         } else {
             if (!StringUtils.isBlank(instAcronym)) {
