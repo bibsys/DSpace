@@ -73,6 +73,11 @@ public class Publication extends ItemModel implements FWBValidation {
     public static final String ADVISOR_EMAIL_FIELD =
         getField("advisorEmail", "advisors.email");
 
+    public static final String ENTITY_DEPARTMENT_FIELD =
+        getField("entityDepartmentName", "oairecerif.affiliation.orgunitDepartment");
+    public static final String ENTITY_INSTITUTION_FIELD =
+            getField("entityInstitutionName", "oairecerif.affiliation.orgunit");
+
     public static final String TITLE_FIELD =
         getField("title", "dc.title");
     public static final String ABSTRACT_FIELD =
@@ -221,6 +226,25 @@ public class Publication extends ItemModel implements FWBValidation {
             .filter(email -> !CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE.equals(email))
             .filter(email -> email.matches(RegistrationDataChanges.EMAIL_PATTERN))
             .distinct()
+            .toList();
+    }
+
+    /**
+     * Allows retrieving all entities related to the publication.
+     * These entity could be linked (or not !) to an {@link org.dspace.uclouvain.core.model.OrgUnit} object
+     *
+     * @return The list of {@link PublicationEntity} of the publication.
+     */
+    public List<PublicationEntity> getEntities() {
+        return itemService
+            .getMetadataByMetadataString(item, ENTITY_DEPARTMENT_FIELD)
+            .stream()
+            .map(mv -> new PublicationEntity()
+                .setName(mv.getValue())
+                .setAuthority((mv.getAuthority() != null) ? UUID.fromString(mv.getAuthority()) : null)
+                .setInstitution(itemService.getMetadata(item, ENTITY_INSTITUTION_FIELD, mv.getPlace()))
+                .setPlace(mv.getPlace())
+            )
             .toList();
     }
 

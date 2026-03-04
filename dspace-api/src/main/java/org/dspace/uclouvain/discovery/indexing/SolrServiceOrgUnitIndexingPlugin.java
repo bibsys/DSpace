@@ -23,13 +23,13 @@ import org.dspace.uclouvain.core.model.OrgUnit;
  * Solr indexer for `OrgUnit` special parent university keys.
  * Stores the 2 keys 'parentUniversity.acronym' and 'parentUniversity.name' in the item document.
  *
- * @author Renaud Michotte <renaud.michotte@uclouvain.be>
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-public class SolrServicePublicationOrgUnitIndexingPlugin
+public class SolrServiceOrgUnitIndexingPlugin
     extends SolrServiceUCLouvainIndexingPlugin
     implements SolrServiceIndexPlugin {
 
-    private static final Logger log = LogManager.getLogger(SolrServicePublicationOrgUnitIndexingPlugin.class);
+    private static final Logger log = LogManager.getLogger(SolrServiceOrgUnitIndexingPlugin.class);
     public static final String PARENT_UNIVERSITY_ACRONYM_KEY = "parentUniversity.acronym";
     public static final String PARENT_UNIVERSITY_NAME_KEY = "parentUniversity.name";
 
