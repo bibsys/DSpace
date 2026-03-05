@@ -7,7 +7,6 @@
  */
 package org.dspace.uclouvain.consumer;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -34,14 +33,12 @@ public class DissertationExtractYearConsumer implements Consumer {
 
     private Set<UUID> idsToProcess = new HashSet<>();
     private ItemService itemService;
-    private MetadataField defenseDateField;
     private MetadataField dateIssuedField;
     private Logger logger;
 
     @Override
     public void initialize() throws Exception {
         itemService = ContentServiceFactory.getInstance().getItemService();
-        defenseDateField = new MetadataField(Publication.DEFENSE_DATE_FIELD);
         dateIssuedField = new MetadataField(Publication.DATE_ISSUED_FIELD);
         logger = LogManager.getLogger(DissertationExtractYearConsumer.class);
     }
@@ -49,14 +46,14 @@ public class DissertationExtractYearConsumer implements Consumer {
     @Override
     public void consume(Context context, Event event) throws Exception {
         // If event.detail is null, we cannot know which metadata was affected so we add the item to the list anyway.
-        if (event.getDetail() == null || areDetailValid(event.getDetail())) {
+        if (areDetailsValid(event)) {
             idsToProcess.add(event.getSubjectID());
         }
     }
 
-    private boolean areDetailValid(String details) {
-        return Arrays.stream(details.split(", "))
-            .anyMatch(detail -> detail.equals(defenseDateField.getFullString("_")));
+    private boolean areDetailsValid(Event event) {
+        return event.getDetail() == null && event.getDetailsMetadata(".").stream()
+            .anyMatch(detail -> detail.equals(Publication.DEFENSE_DATE_FIELD));
     }
 
     @Override
