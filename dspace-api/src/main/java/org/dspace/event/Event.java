@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.logging.log4j.Logger;
@@ -543,6 +544,21 @@ public class Event implements Serializable {
      */
     public String getDetail() {
         return detail;
+    }
+
+    /**
+     * Retrieve metadata from details of event as a list.
+     * Use separator to change format of metadata field.
+     * 
+     * @param separator The separator used for rendering metadata field string.
+     * @return A list of metadata field string contained in the details.
+     */
+    public List<String> getDetailsMetadata(String separator) {
+        return detail == null
+            ? List.of()
+            : Stream.of(detail.split(", "))
+                .map(metadata -> metadata.replaceAll("_", separator))
+                .toList();
     }
 
     /**
