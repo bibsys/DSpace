@@ -61,8 +61,16 @@ public class SpeechPublication extends Publication {
             || itemService.hasMetadata(item, HOST_DOCUMENT_TITLE_FIELD);
     }
 
+    public boolean publishedInSerial() {
+        return Objects.equals(getFirstMetadataValue(SPEECH_STATUS_FIELD), STATUS_PUBLISHED_SERIAL);
+    }
+
+    public boolean publishedInBook() {
+        return Objects.equals(getFirstMetadataValue(SPEECH_STATUS_FIELD), STATUS_PUBLISHED_BOOK);
+    }
+
     public boolean isAbstract() {
-        return Objects.equals(getFirstMetadataValue(Publication.CONFERENCE_IS_ABSTRACT_FIELD), "true");
+        return Objects.equals(getFirstMetadataValue(CONFERENCE_IS_ABSTRACT_FIELD), "true");
     }
 
     // FWB METHODS IMPLEMENTATION ======================================================================================
