@@ -22,6 +22,7 @@
         <entry key="publication-fwb-pdf" value-ref="pdfPublicationCrosswalkFwb"/>
         <entry key="publication-fnrs" value-ref="cslItemDataCrosswalkFnrs"/>
         <entry key="publication-fnrs-pdf" value-ref="pdfPublicationCrosswalkFnrs"/>
+        <entry key="publication-ris" value-ref="referCrosswalkRIS"/>
         <!-- <entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry> -->
         <!--<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
 				<entry key="person-cerif-xml" value-ref="referCrosswalkPersonCerifXml"></entry>
@@ -209,6 +210,17 @@
     <property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-xml.template"/>
     <property name="converter" ref="safeHtmlXmlValueConverter"/>
   </bean>
+  <!-- RIS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+  <bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkRIS">
+    <property name="templateFileName" value="crosswalks/template/ris.template"/>
+    <property name="mimeType" value="application/x-research-info-systems; charset=UTF-8"/>
+    <property name="fileName" value="publications.ris"/>
+    <property name="entityType" value="Publication"/>
+    <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+    <property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-generic.template"/>
+    <property name="converter" ref="risValueConverter"/>
+  </bean>
+
   <bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkJson">
     <property name="mimeType" value="application/json; charset=UTF-8"/>
     <property name="fileName" value="publications.json"/>
@@ -589,6 +601,7 @@
   </bean>
   <bean class="org.dspace.content.integration.crosswalks.METSStreamDisseminationCrosswalk" id="metsCrosswalk"/>
   <bean class="org.dspace.uclouvain.content.integration.crosswalks.converter.SafeHTMLXmlValueConverter" id="safeHtmlXmlValueConverter"/>
+  <bean class="org.dspace.uclouvain.content.integration.crosswalks.converter.RisSanitizeConverter" id="risValueConverter"/>
   <bean class="org.dspace.content.integration.crosswalks.converter.XmlValueConverter" id="xmlValueConverter"/>
   <bean class="org.dspace.content.integration.crosswalks.converter.JsonValueConverter" id="jsonValueConverter"/>
   <bean class="org.dspace.content.integration.crosswalks.postprocessors.JsonPostProcessor" id="jsonPostProcessor"/>
@@ -615,6 +628,7 @@
         <entry key="handleLink" value-ref="virtualFieldHandleLink"/>
         <entry key="fnrsCategory" value-ref="virtualFieldFNRSCategory"/>
         <entry key="fnrsCitations" value-ref="virtualFieldFNRSCitations"/>
+        <entry key="conference-dates" value-ref="virtualFieldConferenceDates"/>
       </map>
     </constructor-arg>
   </bean>
@@ -623,6 +637,7 @@
   <bean class="org.dspace.uclouvain.content.integration.crosswalks.virtualfields.VirtualFieldHandleLink" id="virtualFieldHandleLink"/>
   <bean class="org.dspace.uclouvain.content.integration.crosswalks.virtualfields.VirtualFieldFNRSCategory" id="virtualFieldFNRSCategory"/>
   <bean class="org.dspace.uclouvain.content.integration.crosswalks.virtualfields.VirtualFieldFNRSCitation" id="virtualFieldFNRSCitations"/>
+  <bean class="org.dspace.uclouvain.content.integration.crosswalks.virtualfields.VirtualFieldConferenceDates" id="virtualFieldConferenceDates"/>
   <bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldAuthority" id="virtualFieldAuthority"/>
   <bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldPrimaryDOI" id="virtualFieldPrimaryDOI"/>
   <bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldAlternativeDOI" id="virtualFieldAlternativeDOI"/>
@@ -675,6 +690,7 @@
   <bean id="org.dspace.util.MapConverters" class="org.dspace.util.MapConverters">
     <constructor-arg name="mapConverters">
       <map>
+        <entry key="risTypes" value-ref="mapConverterRisTypes"/>
         <entry key="coarTypes" value-ref="mapConverterCoarTypes"/>
         <entry key="fundingTypes" value-ref="mapConverterFundingTypes"/>
         <entry key="eventTypes" value-ref="mapConverterEventTypes"/>
@@ -691,6 +707,11 @@
         <entry key="right2conceptUrl" value-ref="mapConverterDataciteToPublicationAccessRights"/>
       </map>
     </constructor-arg>
+  </bean>
+  <bean name="mapConverterRisTypes" class="org.dspace.util.SimpleMapConverter" init-method="init">
+    <property name="converterNameFile" value="mapConverter-risTypes.properties"/>
+    <property name="configurationService" ref="org.dspace.services.ConfigurationService"/>
+    <property name="defaultValue" value="STD"/>
   </bean>
   <bean name="mapConverterCoarTypes" class="org.dspace.util.SimpleMapConverter" init-method="init">
     <property name="converterNameFile" value="mapConverter-coarTypes.properties"/>
