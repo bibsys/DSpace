@@ -173,6 +173,7 @@
     <property name="mimeType" value="application/pdf"/>
     <property name="entityType" value="Publication"/>
     <property name="referCrosswalk" ref="referCrosswalkFWBPublicationUclouvainXml"/>
+    <property name="exposed" value="false"/>
   </bean>
   <bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkFWBPublicationUclouvainXml">
     <property name="templateFileName" value="crosswalks/template/uclouvain/publication-fwb-xml.template"/>
