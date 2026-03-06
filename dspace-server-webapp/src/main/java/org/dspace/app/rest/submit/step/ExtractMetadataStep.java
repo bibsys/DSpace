@@ -10,6 +10,7 @@ package org.dspace.app.rest.submit.step;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -41,6 +42,7 @@ import org.dspace.importer.external.datamodel.ImportRecord;
 import org.dspace.importer.external.metadatamapping.MetadatumDTO;
 import org.dspace.importer.external.service.ImportService;
 import org.dspace.submit.listener.MetadataListener;
+import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.utils.DSpace;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,6 +69,12 @@ public class ExtractMetadataStep implements ListenerProcessingStep, UploadableSt
     private ItemService itemService = ContentServiceFactory.getInstance().getItemService();
     private ImportService importService = new DSpace().getSingletonService(ImportService.class);
     private MetadataListener listener = new DSpace().getSingletonService(MetadataListener.class);
+
+    // List of fields that can be overridden by external import.
+    // For theses fields we will use SET action instead of ADD.
+    private final List<String> acceptedOverrides = Arrays.asList(
+        Publication.JOURNAL_PEER_REVIEWED_FIELD
+    );
 
     // we need to use thread local as we need to store the status of the item before that changes are performed
     private ThreadLocal<Map<String, List<MetadataValue>>> metadataMap =
@@ -110,10 +118,17 @@ public class ExtractMetadataStep implements ListenerProcessingStep, UploadableSt
                         if (StringUtils.isNoneBlank(metadataValue.getQualifier())) {
                             joiner.add(metadataValue.getQualifier());
                         }
-                        if (!alreadyFilledMetadata.contains(joiner.toString())) {
+                        String metadataFieldString = joiner.toString();
+                        if (!alreadyFilledMetadata.contains(metadataFieldString)) {
                             itemService.addMetadata(context, wsi.getItem(), metadataValue.getSchema(),
                                 metadataValue.getElement(), metadataValue.getQualifier(), null,
                                 metadataValue.getValue(), metadataValue.getAuthority(), metadataValue.getConfidence());
+                        // If override is accepted for the current field, set a new metadata.
+                        } else if (acceptedOverrides.contains(metadataFieldString)) {
+                            itemService.setMetadataInPlace(
+                                context, wsi.getItem(), metadataFieldString, null,
+                                metadataValue.getValue(), metadataValue.getAuthority(), 0, metadataValue.getConfidence()
+                            );
                         }
                     }
                 }
