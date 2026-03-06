@@ -10,6 +10,7 @@
     <xsl:param name="currentDate" />
     <xsl:param name="highlightText"/>
     <xsl:param name="documentTitle" select="'Liste des publications'"/>
+    <xsl:param name="documentSubtitle"/>
 
     <xsl:param name="fontFamily" />
     <xsl:param name="fontSize" select="'10pt'"/>
@@ -127,7 +128,11 @@
                         <fo:block font-size="{$xlFontSize}" font-weight="bold">
                             <xsl:value-of select="$documentTitle"/>
                         </fo:block>
-                        <fo:block font-size="{$fontSize}" color="$secondaryColor">Liste établie conformément à la structure F.R.S.-FNRS.</fo:block>
+                        <xsl:if test="string-length($documentSubtitle)>0">
+                          <fo:block font-size="{$fontSize}" color="$secondaryColor">
+                            <xsl:value-of select="$documentSubtitle"/>
+                          </fo:block>
+                        </xsl:if>
                     </fo:block>
 					<xsl:for-each select="Publication[generate-id()=generate-id(key('categorySection', normalize-space(Category))[1])]">
                         <xsl:sort select="normalize-space(Category)" order="ascending"/>

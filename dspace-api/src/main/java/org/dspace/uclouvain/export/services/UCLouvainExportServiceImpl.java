@@ -55,11 +55,15 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
     protected PublicationService publicationService;
 
     private final Logger logger = LogManager.getLogger(UCLouvainExportServiceImpl.class);
-    // TODO: Change to correct crosswalk name once created.
+
     private static final String FWB_CROSSWALK_KEY = "publication-fwb-pdf";
+    private static final String FWB_DOCUMENT_TITLE = "Publications de \"%s\"";
+    private static final String FWB_DOCUMENT_SUBTITLE = "Bibliographie certifiée FWB";
+
     private static final String FNRS_CROSSWALK_KEY = "publication-fnrs-pdf";
     private static final String FNRS_DOCUMENT_TITLE = "Publications de \"%s\"";
-    private static final String FWB_DOCUMENT_TITLE = "Publications de \"%s\"";
+    private static final String FNRS_DOCUMENT_SUBTITLE = "Liste établie conformément à la structure F.R.S.-FNRS.";
+
 
     // Custom export
 
@@ -80,6 +84,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(FWB_CROSSWALK_KEY);
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
         itemCrosswalk.addTransformerParameter("documentTitle", FWB_DOCUMENT_TITLE.formatted(author.getName()));
+        itemCrosswalk.addTransformerParameter("documentSubtitle", FWB_DOCUMENT_SUBTITLE);
         return new TempFileExportResult(context, itemCrosswalk, publications);
     }
 
@@ -90,6 +95,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         ItemExportCrosswalk itemCrosswalk = findItemExportCrosswalk(FNRS_CROSSWALK_KEY);
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
         itemCrosswalk.addTransformerParameter("documentTitle", FNRS_DOCUMENT_TITLE.formatted(author.getName()));
+        itemCrosswalk.addTransformerParameter("documentSubtitle", FNRS_DOCUMENT_SUBTITLE);
         return new TempFileExportResult(context, itemCrosswalk, publications);
     }
 

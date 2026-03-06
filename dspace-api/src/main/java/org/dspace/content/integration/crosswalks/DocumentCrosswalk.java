@@ -66,6 +66,20 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
 
     protected Map<String, String> additionalTransformerParams = new HashMap<>();
 
+    private boolean exposed = true;
+
+    private int weight = 50;
+
+    @Override
+    public boolean isExposed() {
+        return exposed;
+    }
+
+    @Override
+    public int getWeight() {
+        return this.weight;
+    }
+
     @Override
     public void disseminate(Context context, DSpaceObject dso, OutputStream out)
         throws CrosswalkException, IOException, SQLException, AuthorizeException {
@@ -220,5 +234,13 @@ public class DocumentCrosswalk implements ItemExportCrosswalk {
 
     public void addTransformerParameter(String key, String value) {
         additionalTransformerParams.put(key, value);
+    }
+
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 }
