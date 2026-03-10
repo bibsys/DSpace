@@ -11,28 +11,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 
 public class AffiliationEntityRestModel {
-    public UUID UUID;
+    public UUID uuid;
     public String name;
     public String acronym;
     public String type;
     public boolean isSelectable;
     public int weight;
     public UUID parent;
-    public List<AffiliationEntityRestModel> children = new ArrayList<AffiliationEntityRestModel>();
+    public List<AffiliationEntityRestModel> children = new ArrayList<>();
 
-    public AffiliationEntityRestModel() {
-    }
+    @JsonProperty("documentCount")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public Long relatedPublicationCount = null;
 
-    public AffiliationEntityRestModel(AffiliationEntityRestModel model) {
-        this.UUID = model.UUID;
-        this.name = model.name;
-        this.acronym = model.acronym;
-        this.type = model.type;
-        this.isSelectable = model.isSelectable;
-        this.weight = model.weight;
-        this.parent = model.parent;
-        model.children.forEach(modelChild -> this.children.add(new AffiliationEntityRestModel(modelChild)));
+
+    public AffiliationEntityRestModel(OrgUnit model) {
+        this.uuid = model.getID();
+        this.name = model.getTitle();
+        this.acronym = model.getAcronym();
+        this.type = model.getType();
+        this.isSelectable = model.isSelectable();
+        this.weight = model.getWeight();
+        this.parent = (model.getParent() != null) ? model.getParent().getID() : null;
     }
 }

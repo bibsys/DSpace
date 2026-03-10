@@ -10,19 +10,25 @@ package org.dspace.uclouvain.services.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
+import org.dspace.discovery.DiscoverFacetField;
 import org.dspace.discovery.DiscoverQuery;
 import org.dspace.discovery.DiscoverResult;
 import org.dspace.discovery.SearchService;
 import org.dspace.discovery.SearchServiceException;
+import org.dspace.discovery.configuration.DiscoveryConfigurationParameters;
 import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.uclouvain.core.model.OrgUnit;
+import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.discovery.indexing.SolrServiceOrgUnitIndexingPlugin;
 import org.dspace.uclouvain.services.OrgUnitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +39,7 @@ public class OrgUnitServiceImpl implements OrgUnitService {
     SearchService searchService;
 
     // PUBLIC METHODS =================================================================================================
-
+    @Override
     public OrgUnit findByIdentifier(Context context, String uuid) {
         String query = "search.resourceid:\"%s\"".formatted(uuid);
 
@@ -132,6 +138,7 @@ public class OrgUnitServiceImpl implements OrgUnitService {
         }
     }
 
+    @Override
     public List<OrgUnit> findByName(Context context, List<String> affiliations) {
         // We have a list of strings that represent affiliations:
         // - ex: ["SSS/SIONS", "SSS/IONS/CEMO", "SSS/MEDE", "StLuc"]
@@ -148,8 +155,56 @@ public class OrgUnitServiceImpl implements OrgUnitService {
             .toList();
     }
 
+    @Override
     public OrgUnit findFirstByName(Context context, List<String> affiliations) {
         return findByName(context, affiliations).stream().findFirst().orElse(null);
+    }
+
+    @Override
+    public List<OrgUnit> findAll(Context context) {
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
+        discoverQuery.addFilterQueries("dspace.entity.type:" + OrgUnit.ENTITY_TYPE);
+        discoverQuery.setMaxResults(SearchService.MAX_RESULT);
+        discoverQuery.setQuery("*:*");
+        try {
+            DiscoverResult result = searchService.search(context, discoverQuery);
+            return result.getIndexableObjects()
+                .stream()
+                .map(indexableObject -> buildOrgUnit(((IndexableItem) indexableObject).getIndexedObject()))
+                .filter(Objects::nonNull)
+                .toList();
+        } catch (SearchServiceException sse) {
+            return Collections.emptyList();
+        }
+    }
+
+    @Override
+    public Map<UUID, Long> getPublicationCount(Context context) {
+        String facetName = "isHierarchicalOrgUnitOfPublication_keyword";
+
+        DiscoverQuery discoverQuery = new DiscoverQuery();
+        discoverQuery.setDSpaceObjectFilter(IndexableItem.TYPE);
+        discoverQuery.addFilterQueries("dspace.entity.type:" + Publication.ENTITY_TYPE);
+        discoverQuery.setMaxResults(0); // We just need to return facet
+        discoverQuery.setQuery("*:*");
+        discoverQuery.addFacetField(new DiscoverFacetField(
+            facetName,
+            DiscoveryConfigurationParameters.TYPE_STANDARD,
+            -1,
+            DiscoveryConfigurationParameters.SORT.COUNT
+        ));
+        Map<UUID, Long> counterMap = new HashMap<>();
+        try {
+            DiscoverResult discoverResult = searchService.search(context, discoverQuery);
+            List<DiscoverResult.FacetResult> results = discoverResult.getFacetResult(facetName);
+            for (DiscoverResult.FacetResult entry : results) {
+                counterMap.put(UUID.fromString(entry.getDisplayedValue()), entry.getCount());
+            }
+        } catch (SearchServiceException e) {
+            // do nothing
+        }
+        return counterMap;
     }
 
     // PRIVATE METHODS =================================================================================================

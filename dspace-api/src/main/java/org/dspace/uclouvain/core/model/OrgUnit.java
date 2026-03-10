@@ -28,10 +28,14 @@ public class OrgUnit extends ItemModel {
     public static final String RESEARCH_INSTITUTE = "Research Institute";
     public static final String UNIVERSITY = "University";
 
+    public static final int DEFAULT_WEIGHT = 50;
+
     // METADATA FIELDS DEFINITIONS =====================================================================================
     public static final String TITLE_FIELD = getField("title", "dc.title");
     public static final String TYPE_FIELD = getField("type", "dc.type");
     public static final String ACRONYM_FIELD = getField("acronym", "oairecerif.acronym");
+    public static final String IS_SELECTABLE_FIELD = getField("isSelectable", "organization.isSelectable");
+    public static final String WEIGHT_FIELD = getField("weight", "organization.weight");
 
     // CLASS ATTRIBUTES ================================================================================================
     private OrgUnit parent;
@@ -51,6 +55,16 @@ public class OrgUnit extends ItemModel {
     }
     public String getAcronym() {
         return getFirstMetadataValue(ACRONYM_FIELD);
+    }
+    public boolean isSelectable() {
+        return Boolean.parseBoolean(getFirstMetadataValue(IS_SELECTABLE_FIELD));
+    }
+    public int getWeight() {
+        try {
+            return Integer.parseInt(getFirstMetadataValue(WEIGHT_FIELD));
+        } catch (NumberFormatException e) {
+            return DEFAULT_WEIGHT;
+        }
     }
 
     // FUNCTIONS =======================================================================================================
