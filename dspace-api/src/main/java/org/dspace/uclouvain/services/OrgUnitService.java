@@ -9,6 +9,8 @@ package org.dspace.uclouvain.services;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.dspace.core.Context;
 import org.dspace.uclouvain.core.model.OrgUnit;
@@ -52,7 +54,7 @@ public interface OrgUnitService {
 
     /**
      * Find matching OrgUnits for a given list of affiliation names.
-     * Each affiliations has to be splitted into levels based on the '/' element.
+     * Each affiliation has to be split into levels based on the '/' element.
      * We only work with level 3 and 2 so affiliations of only 1 level are ignored.
      * Ex. of accepted affiliation: ['LS/SGSI/SISG', 'SSS/FASB'].
      * Ex. of ignored affiliation: ['StLuc', 'SSH'].
@@ -69,4 +71,18 @@ public interface OrgUnitService {
      * @param affiliations The list of affiliations to find matching orgUnit of.
      */
     OrgUnit findFirstByName(Context context, List<String> affiliations);
+
+    /**
+     * Find all stored and indexed {@link OrgUnit}
+     * @param context The current DSpace context.
+     * @return the list of all known OrgUnit
+     */
+    List<OrgUnit> findAll(Context context);
+
+    /**
+     * Get the dictionary of publication count related to {@link OrgUnit}
+     * @param context The current DSpace context.
+     * @return a map where each entry represent the {@link OrgUnit} as key, and publication count as value
+     */
+    Map<UUID, Long> getPublicationCount(Context context);
 }
