@@ -132,7 +132,9 @@ public class SolrServicePublicationIndexingPlugin
                 }
             });
         if (!ancestorUUIDs.isEmpty()) {
-            document.addField("hierarchical_entity_authority", ancestorUUIDs.stream().map(UUID::toString).toList());
+            List<String> toIndexValues = ancestorUUIDs.stream().map(UUID::toString).toList();
+            document.addField("isHierarchicalOrgUnitOfPublication", toIndexValues);
+            document.addField("isHierarchicalOrgUnitOfPublication_keyword", toIndexValues);
         }
     }
 

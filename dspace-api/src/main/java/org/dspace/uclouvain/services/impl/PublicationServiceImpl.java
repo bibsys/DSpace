@@ -188,7 +188,7 @@ public class PublicationServiceImpl implements PublicationService {
         List<String> queryFilters = convertQueryFilters(filters);
         String sortField = convertSortOption(sort);
         String queryField = (includeDescendant)
-            ? "hierarchical_entity_authority"
+            ? "isHierarchicalOrgUnitOfPublication"
             : "isOrgUnitOfPublication";
         String query = affiliationUUIDs.stream()
             .map(uuid -> String.format("%s:\"%s\"", queryField, uuid))
