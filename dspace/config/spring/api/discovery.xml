@@ -787,6 +787,7 @@
                 <ref bean="searchFilterIsAuthorOfPublicationRelation"/>
                 <ref bean="searchFilterIsProjectOfPublicationRelation"/>
                 <ref bean="searchFilterIsOrgUnitOfPublicationRelation"/>
+                <ref bean="searchFilterIsHierarchicalOrgUnitOfPublicationRelation"/>
                 <ref bean="searchFilterIsPublicationOfJournalIssueRelation"/>
                 <ref bean="searchFilterIsJournalOfPublicationRelation"/>
                 <ref bean="searchFilterLanguage" />
@@ -3063,6 +3064,19 @@
                 <value>oairecerif.affiliation.orgunit</value>
                 <value>oairecerif.affiliation.orgunitDepartment</value>
             </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+
+    <!-- This facet is a fake placeholder facet configuration;
+         not filled with real metadata but only by custom Solr plugin. This is required to allow correct
+         "publications" section on page OrgUnit detail page
+    -->
+    <bean id="searchFilterIsHierarchicalOrgUnitOfPublicationRelation" class="org.dspace.discovery.configuration.AuthorityDiscoverySearchFilter">
+        <property name="indexFieldName" value="isHierarchicalOrgUnitOfPublication"/>
+        <property name="metadataFields">
+          <list/>
         </property>
         <property name="isOpenByDefault" value="false"/>
         <property name="pageSize" value="10"/>
