@@ -32,7 +32,7 @@
           <dc-qualifier>license</dc-qualifier>
           <label>If applicable, select a creative commons license to apply to the file</label>
           <input-type value-pairs-name="bitstream_licenses">dropdown</input-type>
-          <hint>License type: CC-BY, CC-BY-SA...</hint>
+          <hint>License type: CC-BY, CC-BY-SA... Get help on &lt;a target="cc-licence" href="https://creativecommons.org/share-your-work/cclicenses/"&gt;https://creativecommons.org/share-your-work/cclicenses/&lt;/a&gt;</hint>
           <!-- <required>You must select a license for the file</required> -->
         </field>
       </row>
@@ -1696,7 +1696,6 @@
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
           <hint>Enter the issue number of the serial the document belongs</hint>
-          <required>You need to specify issue number (or 'n/a')</required>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -2642,6 +2641,10 @@
       <pair>
         <displayed-value>Latin</displayed-value>
         <stored-value>lat</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Multiple languages</displayed-value>
+        <stored-value>mul</stored-value>
       </pair>
       <pair>
         <displayed-value>Polish</displayed-value>
