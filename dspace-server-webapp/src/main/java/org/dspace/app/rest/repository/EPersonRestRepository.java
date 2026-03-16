@@ -244,7 +244,7 @@ public class EPersonRestRepository extends DSpaceObjectRestRepository<EPerson, E
     }
 
     @Override
-    @PreAuthorize("@groupSecurity.isManager() || hasPermission(#id, 'EPERSON', 'READ')")
+    @PreAuthorize("@groupSecurity.isManager() || @groupSecurity.isDelegator() || hasPermission(#id, 'EPERSON', 'READ')")
     public EPersonRest findOne(Context context, UUID id) {
         EPerson eperson = null;
         try {
