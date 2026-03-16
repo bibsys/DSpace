@@ -64,4 +64,13 @@ public class GroupSecurityEvaluator {
         String[] managerGroups = configService.getArrayProperty("uclouvain.feature.roles.manager", new String[] {});
         return isMemberOf(managerGroups);
     }
+
+    /**
+     * Check whether the current DSpace user could be considered as a "Manager"
+     * @return true is the current logged user is a manager, false otherwise
+     */
+    public boolean isDelegator() {
+        String[] managerGroups = configService.getArrayProperty("uclouvain.feature.roles.delegator", new String[] {});
+        return isMemberOf(managerGroups);
+    }
 }
