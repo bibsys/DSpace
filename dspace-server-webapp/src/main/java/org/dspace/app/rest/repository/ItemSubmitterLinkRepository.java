@@ -43,7 +43,7 @@ public class ItemSubmitterLinkRepository extends AbstractDSpaceRestRepository
      * @param projection       - the current projection
      * @return the submitter for the item
      */
-    @PreAuthorize("@groupSecurity.isManager() || hasPermission(#id, 'ITEM', 'READ')")
+    @PreAuthorize("@groupSecurity.isManager() || @groupSecurity.isDelegator() || hasPermission(#id, 'ITEM', 'READ')")
     public EPersonRest getItemSubmitter(@Nullable HttpServletRequest request, UUID id,
                                         @Nullable Pageable optionalPageable, Projection projection) {
         try {
