@@ -7,7 +7,7 @@
  */
 package org.dspace.submit.extraction;
 
-import static org.dspace.submit.extraction.grobid.client.ConsolidateHeaderEnum.NO_CONSOLIDATION;
+import static org.dspace.submit.extraction.grobid.client.ConsolidateHeaderEnum.CONSOLIDATE_AND_INJECT_METADATA;
 
 import java.io.InputStream;
 import java.util.List;
@@ -65,7 +65,7 @@ public class GrobidImportMetadataSourceServiceImpl extends AbstractPlainMetadata
     @Override
     protected List<PlainMetadataSourceDto> readData(InputStream inputStream) throws FileSourceException {
         try {
-            TEI tei = grobidClient.processHeaderDocument(inputStream, NO_CONSOLIDATION);
+            TEI tei = grobidClient.processHeaderDocument(inputStream, CONSOLIDATE_AND_INJECT_METADATA);
             return List.of(convertToPlainMetadataSourceDto(tei.getTeiHeader()));
         } catch (RuntimeException ex) {
             LOGGER.error("An error occurs processing header document", ex);

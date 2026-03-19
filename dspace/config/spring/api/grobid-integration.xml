@@ -19,13 +19,12 @@
         <entry key-ref="dcTitle" value-ref="grobidTitleContributor" />
         <entry key-ref="dcAuthors" value-ref="grobidAuthorsContributor" />
         <entry key-ref="dcJournal" value-ref="grobidJournalContributor" />
-		<entry key-ref="dcIssued" value-ref="grobidIssuedContributor" />
-		<entry key-ref="dcJissn" value-ref="grobidJissnContributor" />
+        <entry key-ref="dcIssued" value-ref="grobidIssuedContributor" />
+        <entry key-ref="dcJissn" value-ref="grobidJissnContributor" />
         <entry key-ref="dcPisbn" value-ref="grobidPisbnContributor" />
-        <!-- Using 'dc.identifier.doi' instead of 'dc.identifier' to be more precise. -->
-		<entry key-ref="grobid.doi" value-ref="grobidDoiContributor" />
-		<entry key-ref="dcAbstract" value-ref="grobidAbstractContributor" />
-		<entry key-ref="dcAllKeyword" value-ref="grobidKeywordsContributor" />
+        <entry key-ref="dcAbstract" value-ref="grobidAbstractContributor" />
+        <entry key-ref="dcAllKeyword" value-ref="grobidKeywordsContributor" />
+        <entry key-ref="grobid.doi" value-ref="grobidDoiContributor" />
         <entry key-ref="grobid.journalVolume" value-ref="grobidSerialVolume"/>
         <entry key-ref="grobid.journalIssue" value-ref="grobidSerialIssue"/>
         <entry key-ref="grobid.journalPages" value-ref="grobidSerialPages"/>
@@ -37,10 +36,14 @@
         <property name="key" value="analytictitle" />
     </bean>
     
-    <bean id="grobidAuthorsContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
+    <bean id="grobidAuthorsContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleAdditionMetadataContributor">
         <property name="field" ref="dcAuthors"/>
         <property name="key" value="analyticname" />
+        <property name="additionalMetadata" ref="authorAdditionalMetadata"/>
     </bean>
+    <util:map id="authorAdditionalMetadata" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+        <entry key="authors.role" value="author" />
+    </util:map>
 
     <bean id="grobidJournalContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
         <property name="field" ref="grobid.journalTitle"/>
@@ -62,10 +65,18 @@
         <property name="key" value="isbn" />
     </bean>
     
-    <bean id="grobidDoiContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
+    <bean id="grobidDoiContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleAdditionMetadataContributor">
         <property name="field" ref="grobid.doi"/>
         <property name="key" value="doi" />
+        <property name="additionalMetadata" ref="doiAdditionalMetadata"/>
     </bean>
+    <!-- By default, if grobid find a DOI, we don't know the document type.... But if we don't save a value for this
+         metadata, the specific fields will be removed by `cleaner` consumer. To avoid this issue, force a default
+         value for this field (that could be override next by DOI importer for more accurate value) -->
+    <util:map id="doiAdditionalMetadata" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
+      <entry key="dc.type.maintype" value="text::journal-article"/>
+      <entry key="dc.type.subtype" value="research-article"/>
+    </util:map>
     
     <bean id="grobidAbstractContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
         <property name="field" ref="dcAbstract"/>
