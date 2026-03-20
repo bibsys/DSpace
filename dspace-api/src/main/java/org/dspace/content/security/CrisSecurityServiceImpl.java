@@ -90,7 +90,8 @@ public class CrisSecurityServiceImpl implements CrisSecurityService {
             case PUBLICATION_EDIT:
                 return authorizeService.isAdmin(context, user)
                     || hasAccessByGroup(context, user, accessMode.getGroups())
-                    || hasAccessByCustomPolicy(context, item, user, accessMode);
+                    || hasAccessByCustomPolicy(context, item, user, accessMode)
+                    || (user != null && user.equals(item.getSubmitter()));
             case ALL:
                 return true;
             case NONE:
