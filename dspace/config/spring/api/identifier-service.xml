@@ -14,20 +14,18 @@
     </bean>
 
     <!-- If you disable versioning, you need to use the default HandleIdentifierProvider. -->
-    <!--
     <bean id="org.dspace.identifier.HandleIdentifierProvider" class="org.dspace.identifier.HandleIdentifierProvider" scope="singleton">
         <property name="configurationService" ref="org.dspace.services.ConfigurationService"/>
     </bean>
-    -->
 
       <!-- If you enabled versioning, you should use one of the versioned
            handle identifier provider instead of the default one.
            The VersionedHandleIdentifierProvider creates a new versioned
            handle for every new version.
            -->
-    <bean id="org.dspace.identifier.HandleIdentifierProvider" class="org.dspace.identifier.VersionedHandleIdentifierProvider" scope="singleton">
+    <!--<bean id="org.dspace.identifier.HandleIdentifierProvider" class="org.dspace.identifier.VersionedHandleIdentifierProvider" scope="singleton">
         <property name="configurationService" ref="org.dspace.services.ConfigurationService"/>
-    </bean>
+    </bean>-->
     <!--
            The VersionedHandleIdentifierProviderWithCanonicalHandles
            preserves the first handle for every new version. Whenever
