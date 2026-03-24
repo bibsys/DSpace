@@ -219,11 +219,12 @@ public class PublicationServiceImpl implements PublicationService {
         Context context,
         String query,
         Map<String, String> filterQueries,
-        String sort,
+        UCLouvainExportService.SortOption sort,
         DiscoverQuery.SORT_ORDER sortDirection
     ) throws SearchServiceException {
         List<String> filters = convertQueryFilters(filterQueries);
-        return findPublications(context, query, filters, sort, sortDirection);
+        String sortOption = convertSortOption(sort);
+        return findPublications(context, query, filters, sortOption, sortDirection);
     }
 
     private Stream<Publication> findPublications(
