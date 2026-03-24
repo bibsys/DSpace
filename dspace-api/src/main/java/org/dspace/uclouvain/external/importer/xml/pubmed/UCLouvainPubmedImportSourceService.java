@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.URIBuilder;
@@ -193,9 +194,8 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
         List<MetadataValueDTO> mdValues = new ArrayList<>();
         addMetadata(mdValues, Publication.TITLE_FIELD,
             getFirstText(root, "//ArticleTitle"), null, CF_UNSET, false);
-        // TODO: Multiple abstract can exist see how to extract them.
-        addAllMetadata(mdValues, Publication.ABSTRACT_FIELD,
-            getAllText(root, "//AbstractText"), null, CF_UNSET, false);
+        addMetadata(mdValues, Publication.ABSTRACT_FIELD,
+            parseAbstract(buildXpath("//Abstract").evaluateFirst(root), "\n"), null, CF_UNSET, false);
         addMetadata(mdValues, Publication.DATE_ISSUED_FIELD,
             parsePubmedDate(buildXpath("//PubDate").evaluateFirst(root)), null, CF_UNSET, false);
         addMetadata(mdValues, Publication.LANGUAGE_FIELD,
@@ -265,6 +265,19 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
     }
 
     // Private methods specific to Pubmed import.
+
+    /**
+     * Retrieve a single parsed abstract from all found abstract in Pubmed XML.
+     * 
+     * @param abstractRoot The main abstract node to extract elements from.
+     * @param separator The string to use as a separator between each abstract.
+     * @return A string containing all abstract texts separated with the given separator.
+     */
+    private String parseAbstract(Element abstractRoot, String separator) {
+        return getAllText(abstractRoot, "//AbstractText")
+            .stream()
+            .collect(Collectors.joining(separator));
+    }
 
     /**
      * Parse a date found in Pubmed XML to a common DSpace date.
