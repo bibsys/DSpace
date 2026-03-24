@@ -167,7 +167,7 @@ public interface PublicationService {
         Context context,
         String query,
         Map<String, String> filterQueries,
-        String sort,
+        UCLouvainExportService.SortOption sort,
         DiscoverQuery.SORT_ORDER sortDirection
     ) throws SearchServiceException;
 

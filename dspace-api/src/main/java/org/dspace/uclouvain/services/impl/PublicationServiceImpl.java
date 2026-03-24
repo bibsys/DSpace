@@ -219,11 +219,12 @@ public class PublicationServiceImpl implements PublicationService {
         Context context,
         String query,
         Map<String, String> filterQueries,
-        String sort,
+        UCLouvainExportService.SortOption sort,
         DiscoverQuery.SORT_ORDER sortDirection
     ) throws SearchServiceException {
         List<String> filters = convertQueryFilters(filterQueries);
-        return findPublications(context, query, filters, sort, sortDirection);
+        String sortOption = convertSortOption(sort);
+        return findPublications(context, query, filters, sortOption, sortDirection);
     }
 
     private Stream<Publication> findPublications(
@@ -323,7 +324,9 @@ public class PublicationServiceImpl implements PublicationService {
     }
 
     private String convertSortOption(UCLouvainExportService.SortOption option) {
-        return SolrSortOptionFactory.build(option.toString()).getSortField();
+        return (option != null)
+            ? SolrSortOptionFactory.build(option.toString()).getSortField()
+            : null;
     }
 
     @FunctionalInterface
