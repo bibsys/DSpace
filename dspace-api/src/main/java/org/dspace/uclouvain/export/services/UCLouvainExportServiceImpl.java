@@ -113,7 +113,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         }
         String solrQuery = buildSearchQuery(queryParts, operator);
         Iterator<Item> publications = publicationService
-            .findPublications(context, solrQuery, filters, sort.toString(), direction)
+            .findPublications(context, solrQuery, filters, sort, direction)
             .map(Publication::getItem)
             .iterator();
         return new TempFileExportResult(context, itemCrosswalk, publications);
