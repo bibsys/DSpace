@@ -13,14 +13,20 @@ import static java.util.Comparator.reverseOrder;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.collections4.ListUtils.partition;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.dspace.content.authority.Choices.CF_ACCEPTED;
+import static org.dspace.content.authority.Choices.CF_UNSET;
+import static org.dspace.core.CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE;
 import static org.orcid.jaxb.model.common.CitationType.FORMATTED_UNSPECIFIED;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -48,11 +54,17 @@ import org.dspace.orcid.model.OrcidTokenResponseDTO;
 import org.dspace.orcid.model.OrcidWorkFieldMapping;
 import org.dspace.orcid.service.OrcidSynchronizationService;
 import org.dspace.orcid.service.OrcidTokenService;
+import org.dspace.profile.ResearcherProfile;
+import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
+import org.dspace.uclouvain.services.UCLouvainProfileService;
 import org.dspace.web.ContextUtil;
 import org.orcid.jaxb.model.common.ContributorRole;
 import org.orcid.jaxb.model.common.WorkType;
 import org.orcid.jaxb.model.v3.release.common.Contributor;
 import org.orcid.jaxb.model.v3.release.common.ContributorAttributes;
+import org.orcid.jaxb.model.v3.release.common.ContributorEmail;
+import org.orcid.jaxb.model.v3.release.common.ContributorOrcid;
 import org.orcid.jaxb.model.v3.release.common.PublicationDate;
 import org.orcid.jaxb.model.v3.release.common.Subtitle;
 import org.orcid.jaxb.model.v3.release.common.Title;
@@ -108,6 +120,9 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
 
     @Autowired
     private OrcidTokenService orcidTokenService;
+
+    @Autowired
+    UCLouvainProfileService uclouvainProfileService;
 
     private OrcidWorkFieldMapping fieldMapping;
 
@@ -323,12 +338,11 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
         addMetadataValue(externalDataObject, fieldMapping.getShortDescriptionField(), () -> getDescription(work));
         addMetadataValue(externalDataObject, fieldMapping.getLanguageField(), () -> getLanguage(work));
 
-        for (String contributorField : fieldMapping.getContributorFields().keySet()) {
-            // Get all contributors without role filter since we want to put everything in 'dc.contributor.author'.
-            // ContributorRole role = fieldMapping.getContributorFields().get(contributorField);
-            addMetadataValues(externalDataObject, contributorField, () -> getAllContributors(work));
-        }
-
+        addNestedContributors(externalDataObject, work, Publication.AUTHOR_NAME_FIELD);
+        // for (String contributorField : fieldMapping.getContributorFields().keySet()) {
+        //    // ContributorRole role = fieldMapping.getContributorFields().get(contributorField);
+        //    addMetadataValues(externalDataObject, contributorField, () -> getAllContributorNames(work));
+        // }
         for (String externalIdField : fieldMapping.getExternalIdentifierFields().keySet()) {
             String type = fieldMapping.getExternalIdentifierFields().get(externalIdField);
             addMetadataValues(externalDataObject, externalIdField, () -> getExternalIds(work, type));
@@ -456,7 +470,7 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
      * @param work The work to extract contributor from.
      * @return A list of all the contributors present in the work.
      */
-    private List<String> getAllContributors(Work work) {
+    private List<String> getAllContributorNames(Work work) {
         WorkContributors workContributors = work.getWorkContributors();
         if (workContributors == null) {
             return emptyList();
@@ -466,6 +480,164 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
             .map(contributor -> getContributorName(contributor))
             .flatMap(Optional::stream)
             .collect(Collectors.toList());
+    }
+
+    /**
+     * Add all contributors of an Orcid work to the externalObject
+     * @param externalDataObject the external object to fill with authors
+     * @param work the work to analyze
+     * @param metadata the basic metadata field where will be stored author names
+     */
+    private void addNestedContributors(ExternalDataObject externalDataObject, Work work, String metadata) {
+        if (work.getWorkContributors() == null || work.getWorkContributors().getContributor() == null) {
+            return;
+        }
+        // Stream through contributors and flatten the metadata lists into the data object
+        work.getWorkContributors().getContributor().stream()
+            .map(contributor -> extractContributorMetadata(contributor, metadata))
+            .flatMap(List::stream)
+            .forEach(externalDataObject::addMetadata);
+    }
+
+    private List<MetadataValueDTO> extractContributorMetadata(Contributor contributor, String metadata) {
+        // DEV NOTES :: For each extracted authors, we need to provide all nested metadata, even if no value are found
+        // for the contributor (otherwise, it will cause a data mismatch between authors metadata).
+        // If a metadata isn't found, it could be replaced with "PLACEHOLDER_METADATA_VALUE" constant
+        Item profile = searchContributorProfile(contributor);
+        return (profile != null)
+            ? extractContributorMetadataFromProfile(profile, metadata)
+            : extractContributorMetadataFromWork(contributor, metadata);
+    }
+
+    /**
+     * Try to find a Research profile item by analyze of a {@link Contributor} from an Orcid Work.
+     * @param contributor the contributor to analyze
+     * @return the corresponding research profile if exists
+     */
+    private Item searchContributorProfile(Contributor contributor) {
+        Context context = new Context();
+        Item profile = null;
+        if (contributor.getContributorOrcid() != null) {
+            String orcidID = contributor.getContributorOrcid().getPath();
+            profile = uclouvainProfileService.findByOrcid(context, orcidID);
+        }
+        if (profile == null && contributor.getContributorEmail() != null) {
+            String email = contributor.getContributorEmail().getValue();
+            profile = uclouvainProfileService.findByEmail(context, email);
+        }
+        return profile;
+    }
+
+    /**
+     * Extract author metadata from a know Researcher profile.
+     * @param profileItem the Item representing the research profile to analyze
+     * @param metadata the metadata field where to store the contributor name
+     * @return the List of extract metadata for the contributor
+     */
+    private List<MetadataValueDTO> extractContributorMetadataFromProfile(Item profileItem, String metadata) {
+        return Optional.ofNullable(profileItem.getName()).map(name -> {
+            ResearcherProfile profile = new ResearcherProfile(profileItem, false);
+            UUID authority = profileItem.getID();
+            List<MetadataValueDTO> contributorMetadata = new ArrayList<>();
+            // Add mandatory fields
+            contributorMetadata.add(createMetadataValue(metadata, name, authority));
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_ROLE_FIELD,
+                PublicationAuthor.ROLE_AUTHOR,
+                null
+            ));
+            // Add email
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_EMAIL_FIELD,
+                profile.getEmail().orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
+                authority
+            ));
+            // Add institution
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_INSTITUTION_FIELD,
+                profile.getInstitution().orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
+                authority
+            ));
+            // Add FGS
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_FGS_FIELD,
+                profile.getFGS().orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
+                authority
+            ));
+            // Add ORCID
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_ORCID_FIELD,
+                profile.getOrcid().orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
+                authority
+            ));
+            return contributorMetadata;
+        }).orElse(Collections.emptyList());
+    }
+
+    /**
+     * Extract author metadata from a {@link Contributor} stored into an Orcid Work.
+     * @param contributor the contributor tag to analyze
+     * @param metadata the metadata field where to store the contributor name
+     * @return the List of extract metadata for the contributor
+     */
+    private List<MetadataValueDTO> extractContributorMetadataFromWork(Contributor contributor, String metadata) {
+        // Return early if no name is present to avoid unnecessary processing
+        return getContributorName(contributor).map(contributorName -> {
+            List<MetadataValueDTO> contributorMetadata = new ArrayList<>();
+            // Add mandatory fields
+            contributorMetadata.add(createMetadataValue(metadata, contributorName, null));
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_ROLE_FIELD,
+                PublicationAuthor.ROLE_AUTHOR,
+                null
+            ));
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_FGS_FIELD,
+                PLACEHOLDER_PARENT_METADATA_VALUE,
+                null
+            ));
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_INSTITUTION_FIELD,
+                PLACEHOLDER_PARENT_METADATA_VALUE,
+                null
+            ));
+            // Add ORCID
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_ORCID_FIELD,
+                Optional.ofNullable(contributor.getContributorOrcid())
+                    .map(ContributorOrcid::getPath)
+                    .orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
+                null
+            ));
+            // Add Email
+            contributorMetadata.add(createMetadataValue(
+                Publication.AUTHOR_EMAIL_FIELD,
+                Optional.ofNullable(contributor.getContributorEmail())
+                    .map(ContributorEmail::getValue)
+                    .orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
+                null
+            ));
+            return contributorMetadata;
+        }).orElse(Collections.emptyList());
+    }
+
+    /**
+     * Create a {@link org.dspace.content.dto.MetadataValueDTO} from basic information
+     * @param field the metadata field
+     * @param value the metadata value
+     * @param authority the authority uuid related to associate with the metadata
+     * @return the corresponding MetadataValueDTO
+     */
+    private MetadataValueDTO createMetadataValue(String field, String value, UUID authority) {
+        int confidence = (authority != null) ? CF_ACCEPTED : CF_UNSET;
+        String authorityValue = (authority != null) ? authority.toString() : null;
+        MetadataFieldName mdField = new MetadataFieldName(field);
+        return new MetadataValueDTO(
+            mdField.schema, mdField.element, mdField.qualifier,
+            null,
+            value,
+            authorityValue, confidence
+        );
     }
 
     private void addMetadataValuesFromCitation(ExternalDataObject externalDataObject, Citation citation)
