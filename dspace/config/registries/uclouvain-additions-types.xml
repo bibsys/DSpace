@@ -312,6 +312,12 @@
     </dc-type>
     <!-- OAIRECERIF SCHEMA -->
     <dc-type>
+      <schema>oairecerif</schema>
+      <element>acronym</element>
+      <qualifier>display</qualifier>
+      <scope_note>The value to display for this acronym into frontend application</scope_note>
+    </dc-type>
+    <dc-type>
         <schema>oairecerif</schema>
         <element>affiliation</element>
         <qualifier>orgunitDepartment</qualifier>
