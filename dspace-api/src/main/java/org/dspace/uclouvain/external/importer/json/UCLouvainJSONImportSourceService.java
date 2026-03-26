@@ -8,7 +8,6 @@
 package org.dspace.uclouvain.external.importer.json;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.jayway.jsonpath.ReadContext;
 import org.dspace.content.dto.MetadataValueDTO;
@@ -24,17 +23,13 @@ public abstract class UCLouvainJSONImportSourceService extends UCLouvainImportSo
      * @return The first string value of the found node based on the given path and root node.
      */
     protected String getFirst(ReadContext root, String path) {
-        return Optional.ofNullable(root.read(path))
-            .map(node -> {
-                if (node instanceof String s) {
-                    return (String) s;
-                }
-
-                if (node instanceof List<?> list && !list.isEmpty()) {
-                    Object first = list.get(0);
-                    return first instanceof String s ? s : null;
-                }
+        Object node = root.read(path);
+        if (node instanceof List<?> list) {
+            if (list.isEmpty()) {
                 return null;
-            }).orElse(null);
+            }
+            node = list.get(0);
+        }
+        return (node != null) ? String.valueOf(node) : null;
     }
 }
