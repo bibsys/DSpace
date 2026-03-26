@@ -28,12 +28,15 @@ public class AffiliationEntityRestModel {
     @JsonProperty("documentCount")
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public Long relatedPublicationCount = null;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public String displayAcronym;
 
 
     public AffiliationEntityRestModel(OrgUnit model) {
         this.uuid = model.getID();
         this.name = model.getTitle();
         this.acronym = model.getAcronym();
+        this.displayAcronym = model.getDisplayAcronym();
         this.type = model.getType();
         this.isSelectable = model.isSelectable();
         this.weight = model.getWeight();

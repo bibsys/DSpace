@@ -38,6 +38,7 @@ import org.dspace.discovery.SearchUtils;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.exceptions.NotUniqueResultException;
 
 /**
@@ -199,19 +200,23 @@ public class OrgUnitImporter extends AbstractCLICommand {
     private void addEntityMetadata(Item item, Entity entity, Item parent) throws SQLException {
         MetadataField mdField;
         // Adds `entity.name` into `dc.title` metadata field.
-        mdField = metadataFieldService.findByString(context, "dc.title", '.');
+        mdField = metadataFieldService.findByString(context, OrgUnit.TITLE_FIELD, '.');
         itemService.addMetadata(context, item, mdField, null, entity.name);
         // Adds `entity.acronym` into `oairecerif.acronym` metadata field.
         if (entity.getAcronym() != null) {
-            mdField = metadataFieldService.findByString(context, "oairecerif.acronym", '.');
+            mdField = metadataFieldService.findByString(context, OrgUnit.ACRONYM_FIELD, '.');
             itemService.addMetadata(context, item, mdField, null, entity.acronym);
         }
+        if (entity.displayAcronym != null) {
+            mdField = metadataFieldService.findByString(context, OrgUnit.DISPLAY_ACRONYM_FIELD, '.');
+            itemService.addMetadata(context, item, mdField, null, entity.displayAcronym);
+        }
         // Adds `entity.type` into `dc.type` metadata field.
-        mdField = metadataFieldService.findByString(context, "dc.type", '.');
+        mdField = metadataFieldService.findByString(context, OrgUnit.TYPE_FIELD, '.');
         String mdValue = (entity.type != null) ? entity.type : defaultEntityType;
         itemService.addMetadata(context, item, mdField, null, mdValue);
         // Adds `entity.selectable` into `organization.isSelectable` metadata field.
-        mdField = metadataFieldService.findByString(context, "organization.isSelectable", '.');
+        mdField = metadataFieldService.findByString(context, OrgUnit.IS_SELECTABLE_FIELD, '.');
         itemService.addMetadata(context, item, mdField, null, String.valueOf(entity.selectable));
         // Adds `entity.identifiers` into `organization.identifier.xxx`
         if (entity.identifiers != null && !entity.identifiers.isEmpty()) {
@@ -228,7 +233,7 @@ public class OrgUnitImporter extends AbstractCLICommand {
         }
 
         // Add a weight (priority level) to the affiliation.
-        mdField = metadataFieldService.findByString(context, "organization.weight", '.');
+        mdField = metadataFieldService.findByString(context, OrgUnit.WEIGHT_FIELD, '.');
         itemService.addMetadata(context, item, mdField, null, String.valueOf(entity.weight));
     }
 
@@ -259,6 +264,7 @@ public class OrgUnitImporter extends AbstractCLICommand {
 class Entity {
     public String name;
     public String acronym;
+    public String displayAcronym = null;
     public List<Identifier> identifiers;
     public boolean discoverable = true;
     public boolean selectable = true;

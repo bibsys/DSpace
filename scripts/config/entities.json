@@ -1400,6 +1400,7 @@
   {
     "name": "Université Saint-Louis",
     "acronym": "USL-B",
+    "displayAcronym": "USL-B (pré-fusion)",
     "selectable": false,
     "type": "University",
     "identifiers": [
