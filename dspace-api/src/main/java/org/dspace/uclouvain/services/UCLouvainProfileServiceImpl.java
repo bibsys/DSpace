@@ -41,6 +41,7 @@ import org.dspace.eperson.service.EPersonService;
 import org.dspace.profile.ResearcherProfile;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.OrgUnit;
+import org.dspace.uclouvain.profileIngester.exceptions.IDMCheckException;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -198,10 +199,17 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
             .stream()
             .map(mv -> Integer.parseInt(mv.getValue()))
             .toList();
-        if (!idmService.isPersonIDMValid(idmEntries)) {
-            log.info("Canceled profile creation for fgs=['" + fgs + "'] :: no IDM entry is valid.");
+        try {
+            boolean idmValid = idmService.isPersonIDMValid(idmEntries);
+            if (!idmValid) {
+                log.info("Canceled profile creation for fgs=['" + fgs + "'] :: no IDM entry is valid.");
+                return null;
+            }
+        } catch (IDMCheckException idme) {
+            log.info("Canceled profile creation for fgs=['" + fgs + "'] :: {}", idme.getMessage());
             return null;
         }
+
         // Create an empty profile with the fgs and complete with additional metadata:
         //   * email
         //   * concatenation of first and last name to create 'dc.title'.
