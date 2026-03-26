@@ -85,7 +85,9 @@ public class EnrichMetadataConsumer implements Consumer {
                         itemService.addMetadata(
                             context, item,
                             metadata.getSchema(), metadata.getElement(), metadata.getQualifier(),
-                            null, metadata.getValue()
+                            null,
+                            metadata.getValue(),
+                            metadata.getAuthority(), metadata.getConfidence()
                         );
                     }
                 }
