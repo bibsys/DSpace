@@ -9,7 +9,9 @@ package org.dspace.uclouvain.profileIngester.services;
 
 import java.util.List;
 
+import org.dspace.uclouvain.profileIngester.exceptions.IDMCheckException;
+
 public interface IDMPersonValidityService {
-    public boolean isPersonIDMValid(String fgs);
-    public boolean isPersonIDMValid(List<Integer> idmRows);
+    public boolean isPersonIDMValid(String fgs) throws IDMCheckException;
+    public boolean isPersonIDMValid(List<Integer> idmRows) throws IDMCheckException;
 }

@@ -28,6 +28,7 @@ import org.dspace.uclouvain.core.model.PersonEventModel;
 import org.dspace.uclouvain.exceptions.UserNotFoundException;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.profileIngester.actions.factory.ProfileActionFactory;
+import org.dspace.uclouvain.profileIngester.exceptions.IDMCheckException;
 import org.dspace.uclouvain.profileIngester.exceptions.ProfileActionException;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.rabbitMQ.connectors.PersonEventConnector;
@@ -176,11 +177,17 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
      * @param event The event to get a profile action class for.
      */
     private void processEvent(Context context, PersonEventModel event) throws ProfileActionException {
-        if (idmService.isPersonIDMValid(event.getFgs())) {
-            ProfileActionFactory.getInstance().getProfileActionClass(event.getAction()).process(context, event);
-        } else {
-            logger.info(
-                "[IGNORED EVENT] Received person with fgs " + event.getFgs() + " has no valid IDM membership..."
+        try {
+            if (idmService.isPersonIDMValid(event.getFgs())) {
+                ProfileActionFactory.getInstance().getProfileActionClass(event.getAction()).process(context, event);
+            } else {
+                logger.info(
+                    "[IGNORED EVENT] Received person with fgs " + event.getFgs() + " has no valid IDM membership..."
+                );
+            }
+        } catch (IDMCheckException idme) {
+            logger.warn(
+                "[IGNORED EVENT] Impossible to check IDM validity of " + event.getFgs() + " :: " + idme.getMessage()
             );
         }
     }
