@@ -199,6 +199,9 @@
           <input-type>institution-affiliation-select</input-type>
           <hint>Enter the name of the institution of the affiliation</hint>
           <required>Please enter an affiliation institution for this profile.</required>
+          <settings>
+            <setting name="excludedValues">USL-B, UNamur</setting>
+          </settings>
         </field>
         <field>
           <dc-schema>person</dc-schema>
@@ -321,6 +324,9 @@
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
           <hint>Enter the name of the institution of the affiliation</hint>
+          <settings>
+            <setting name="excludedValues">USL-B, UNamur</setting>
+          </settings>
           <!-- <required>Please enter an affiliation institution for this profile.</required> -->
         </field>
         <field>
@@ -592,6 +598,9 @@
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
           <hint>Enter the name of the institution of the affiliation</hint>
+          <settings>
+            <setting name="excludedValues">USL-B, UNamur</setting>
+          </settings>
           <!-- <required>Please enter an affiliation institution for this profile.</required> -->
         </field>
         <field>
@@ -710,6 +719,15 @@
           <input-type>onebox</input-type>
           <required />
           <hint />
+        </field>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>acronym</dc-element>
+          <dc-qualifier>display</dc-qualifier>
+          <label>Acronym or short form of title to display to end-user on submission forms</label>
+          <input-type>onebox</input-type>
+          <hint />
+          <required />
         </field>
       </row>
       <row>
