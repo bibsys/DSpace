@@ -17,11 +17,16 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class GenericHttpClient {
 
     private HttpClient httpClient;
     private String baseUrl;
     private String token;
+
+    private static final Logger log = LogManager.getLogger(GenericHttpClient.class);
 
     public GenericHttpClient() {
         this.httpClient = HttpClient.newHttpClient();
@@ -47,7 +52,11 @@ public class GenericHttpClient {
         HttpRequest.Builder requestBuilder = this.generateHttpRequestBuilder(requestUrl);
         requestBuilder.setHeader("accept", "application/json");
         HttpRequest request = requestBuilder.build();
-        return this.httpClient.send(request, BodyHandlers.ofString());
+        HttpResponse<String> response = this.httpClient.send(request, BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            log.warn("Unexpected response code :: GET {} got {} :: {}", url, response.statusCode(),response.body());
+        }
+        return response;
     }
 
     /**
