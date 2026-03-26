@@ -109,7 +109,11 @@ public class GenericHttpClient {
         HttpRequest.Builder requestBuilder = this.generateHttpRequestBuilder(requestUrl);
         requestBuilder.setHeader("accept", "application/json");
         HttpRequest request = requestBuilder.build();
-        return this.httpClient.send(request, BodyHandlers.ofString());
+        HttpResponse<String> response = this.httpClient.send(request, BodyHandlers.ofString());
+        if (response.statusCode() != 200) {
+            log.warn("Unexpected response code :: GET {} got {} :: {}", url, response.statusCode(),response.body());
+        }
+        return response;
     }
 
     /**
