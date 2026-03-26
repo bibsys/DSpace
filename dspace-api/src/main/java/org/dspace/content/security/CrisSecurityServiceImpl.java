@@ -10,6 +10,7 @@ package org.dspace.content.security;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,6 +27,10 @@ import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
+import org.dspace.uclouvain.core.model.publication.DissertationPublication;
+import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -88,15 +93,33 @@ public class CrisSecurityServiceImpl implements CrisSecurityService {
             case SUBMITTER_GROUP:
                 return isUserInSubmitterGroup(context, item, user);
             case PUBLICATION_EDIT:
-                return authorizeService.isAdmin(context, user)
-                    || hasAccessByGroup(context, user, accessMode.getGroups())
-                    || hasAccessByCustomPolicy(context, item, user, accessMode)
-                    || (user != null && user.equals(item.getSubmitter()));
+                return isValidForPublicationEdit(context, user, item, accessMode);
             case ALL:
                 return true;
             case NONE:
             default:
                 return false;
+        }
+    }
+
+    private boolean isValidForPublicationEdit(Context context, EPerson user, Item item, AccessItemMode accessMode)
+            throws SQLException {
+        // 1. Check basic permissions
+        if (authorizeService.isAdmin(context, user)
+                || hasAccessByGroup(context, user, accessMode.getGroups())
+                || hasAccessByCustomPolicy(context, item, user, accessMode)) {
+            return true;
+        }
+        // 2. Check if user is the submitter
+        if (user == null || !user.equals(item.getSubmitter())) {
+            return false;
+        }
+        // 3. Special rule: Submitters can edit anything except "text::thesis"
+        try {
+            Publication publication = PublicationFactory.build(item);
+            return !Objects.equals(publication.getMainType(), DissertationPublication.DOCUMENT_TYPE);
+        } catch (InvalidModelEntityTypeException ignored) {
+            return false;
         }
     }
 
