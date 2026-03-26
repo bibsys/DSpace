@@ -22,7 +22,8 @@
         <entry key="publication-fwb-pdf" value-ref="pdfPublicationCrosswalkFwb"/>
         <entry key="publication-fnrs" value-ref="cslItemDataCrosswalkFnrs"/>
         <entry key="publication-fnrs-pdf" value-ref="pdfPublicationCrosswalkFnrs"/>
-        <entry key="publication-ris" value-ref="referCrosswalkRIS"/>
+        <entry key="publication-ris" value-ref="referCrosswalkRISMultiple"/>
+        <entry key="publication-ris-single" value-ref="referCrosswalkRISSingle"/>
         <!-- <entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry> -->
         <!--<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
 				<entry key="person-cerif-xml" value-ref="referCrosswalkPersonCerifXml"></entry>
@@ -211,12 +212,22 @@
     <property name="converter" ref="safeHtmlXmlValueConverter"/>
   </bean>
   <!-- RIS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkRIS">
+  <bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkRISSingle">
     <property name="templateFileName" value="crosswalks/template/ris.template"/>
     <property name="mimeType" value="application/x-research-info-systems; charset=UTF-8"/>
     <property name="fileName" value="publications.ris"/>
     <property name="entityType" value="Publication"/>
-    <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+    <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE}"/>
+    <property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-generic.template"/>
+    <property name="converter" ref="risValueConverter"/>
+    <property name="exposed" value="false"/>
+  </bean>
+  <bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkRISMultiple">
+    <property name="templateFileName" value="crosswalks/template/ris.template"/>
+    <property name="mimeType" value="application/x-research-info-systems; charset=UTF-8"/>
+    <property name="fileName" value="publications.ris"/>
+    <property name="entityType" value="Publication"/>
+    <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).MULTIPLE}"/>
     <property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-generic.template"/>
     <property name="converter" ref="risValueConverter"/>
   </bean>
