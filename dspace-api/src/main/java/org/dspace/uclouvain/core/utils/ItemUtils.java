@@ -10,7 +10,11 @@ package org.dspace.uclouvain.core.utils;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
@@ -23,6 +27,8 @@ import org.dspace.content.service.BitstreamService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
+import org.dspace.eperson.factory.EPersonServiceFactory;
+import org.dspace.eperson.service.GroupService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
@@ -71,30 +77,27 @@ public class ItemUtils {
      * @throws SQLException for any database exception
      */
     public static List<EPerson> getManagersOfItem(Context context, Item item) throws SQLException {
-        List<EPerson> managers = new ArrayList<>();
-        Collection collection = item.getOwningCollection();
-
-        if (collection == null) {
-            // Check if the item is in the workflow; if yes, we need to use the XmlWorkflowItem to retrieve the
-            // owning collection.
-            XmlWorkflowItem xmlWorkflowItem = XmlWorkflowServiceFactory.getInstance().getXmlWorkflowItemService()
-                .findByItem(context, item);
-            if (xmlWorkflowItem != null) {
-                collection = xmlWorkflowItem.getCollection();
-            }
+        Collection itemCollection = getMainCollection(context, item);
+        if (itemCollection == null) {
+            return Collections.emptyList();
         }
 
-        // Retrieve all the roles created for the item's collection.
-        List<CollectionRole> roles = XmlWorkflowServiceFactory.getInstance().getCollectionRoleService()
-            .findByCollection(context, collection);
+        // Use a Set to avoid duplicates if a user belongs to multiple groups
+        Set<EPerson> managers = new HashSet<>();
+        CollectionRoleService roleService = XmlWorkflowServiceFactory.getInstance().getCollectionRoleService();
+        GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
+        // Retrieve all roles and filter for the specific manager role
+        List<CollectionRole> roles = roleService.findByCollection(context, itemCollection);
         for (CollectionRole role : roles) {
-            if (role.getRoleId().equals(CollectionRoleService.LEGACY_WORKFLOW_STEP1_NAME)) {
-                for (Group group: role.getGroup().getMemberGroups()) {
-                    managers.addAll(group.getMembers());
+            if (CollectionRoleService.LEGACY_WORKFLOW_STEP1_NAME.equals(role.getRoleId())) {
+                Group roleGroup = role.getGroup();
+                if (roleGroup != null) {
+                    // allMembers handles nested groups and returns a unique list of EPeople
+                    managers.addAll(groupService.allMembers(context, roleGroup));
                 }
             }
         }
-        return managers;
+        return new ArrayList<>(managers);
     }
 
     /** 
@@ -121,20 +124,29 @@ public class ItemUtils {
      * @return The main collection to which the item belongs. Returns null if not found.
      */
     public static Collection getMainCollection(Context context, Item item) {
+        return Optional.ofNullable(item.getOwningCollection())
+            .or(() -> findWorkspaceCollection(context, item))
+            .or(() -> findWorkflowCollection(context, item))
+            .orElse(null);
+    }
+    private static Optional<Collection> findWorkspaceCollection(Context context, Item item) {
         try {
-            WorkspaceItem wsItem =
-                ContentServiceFactory.getInstance().getWorkspaceItemService().findByItem(context, item);
-            if (wsItem != null) {
-                return wsItem.getCollection();
-            }
-            XmlWorkflowItem wfItem =
-                XmlWorkflowServiceFactory.getInstance().getXmlWorkflowItemService().findByItem(context, item);
-            if (wfItem != null) {
-                return wfItem.getCollection();
-            }
-            return item.getOwningCollection();
-        } catch (SQLException sqe) {
-            return null;
+            WorkspaceItem wsItem = ContentServiceFactory.getInstance()
+                .getWorkspaceItemService()
+                .findByItem(context, item);
+            return Optional.ofNullable(wsItem).map(WorkspaceItem::getCollection);
+        } catch (SQLException e) {
+            return Optional.empty();
+        }
+    }
+    private static Optional<Collection> findWorkflowCollection(Context context, Item item) {
+        try {
+            XmlWorkflowItem wfItem = XmlWorkflowServiceFactory.getInstance()
+                .getXmlWorkflowItemService()
+                .findByItem(context, item);
+            return Optional.ofNullable(wfItem).map(XmlWorkflowItem::getCollection);
+        } catch (SQLException e) {
+            return Optional.empty();
         }
     }
 
