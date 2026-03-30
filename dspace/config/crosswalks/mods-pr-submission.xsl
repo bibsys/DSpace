@@ -943,6 +943,12 @@
             <xsl:attribute name="qualifier">provenance</xsl:attribute>
             <xsl:text>Original handle value [</xsl:text><xsl:value-of select="normalize-space(.)"/><xsl:text>]</xsl:text>
         </xsl:element>
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">identifier</xsl:attribute>
+            <xsl:attribute name="qualifier">handle</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
     </xsl:template>
     <!-- DOI -> dc.identifier.doi ==================================== -->
     <xsl:template match="/mods:mods/mods:identifier[@type='doi']">
