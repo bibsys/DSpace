@@ -81,6 +81,7 @@
 		<property name="citationCrosswalks">
 			<util:map>
 				<entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex" />
+        <entry key="formatted-apa" value-ref="cslItemDataCrosswalkApa" />
 			</util:map>
 		</property>
 	</bean>
@@ -107,6 +108,7 @@
 		<property name="citationCrosswalks">
 			<util:map>
 				<entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex" />
+        <entry key="formatted-apa" value-ref="cslItemDataCrosswalkApa" />
 			</util:map>
 		</property>
 	</bean>
@@ -133,6 +135,7 @@
 		<property name="citationCrosswalks">
 			<util:map>
 				<entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex" />
+        <entry key="formatted-apa" value-ref="cslItemDataCrosswalkApa" />
 			</util:map>
 		</property>
 	</bean>
