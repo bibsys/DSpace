@@ -600,7 +600,7 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
      * @throws SQLException for database error
      */
     private void findAffiliationAuthorityRelation(Context context, Element dmdSec) throws SQLException {
-        String xpathQuery = ".//mods:mods/mods:relatedItem[@otherType='affiliation']";
+        String xpathQuery = ".//mods:mods[mods:genre!='doctoral thesis']/mods:relatedItem[@otherType='affiliation']";
         String instXpathquery = "mods:name[@type='corporate']";
         for (Element affiliationElement : xpathElements(dmdSec, xpathQuery)) {
             Element instElement = xpathElements(affiliationElement, instXpathquery).stream().findFirst().orElse(null);
