@@ -63,7 +63,6 @@ import org.orcid.jaxb.model.common.ContributorRole;
 import org.orcid.jaxb.model.common.WorkType;
 import org.orcid.jaxb.model.v3.release.common.Contributor;
 import org.orcid.jaxb.model.v3.release.common.ContributorAttributes;
-import org.orcid.jaxb.model.v3.release.common.ContributorEmail;
 import org.orcid.jaxb.model.v3.release.common.ContributorOrcid;
 import org.orcid.jaxb.model.v3.release.common.PublicationDate;
 import org.orcid.jaxb.model.v3.release.common.Subtitle;
@@ -103,6 +102,8 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
      * </ul>
      */
     private final static Pattern ORCID_ID_PATTERN = Pattern.compile("(\\d{4}-){3}\\d{3}(\\d|X)");
+    private final static Pattern UCLOUVAIN_MAIL_PATTERN =
+            Pattern.compile("@(student\\.)?uclouvain\\.be$", Pattern.CASE_INSENSITIVE);
 
     private final static int MAX_PUT_CODES_SIZE = 100;
 
@@ -596,11 +597,6 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
                 PLACEHOLDER_PARENT_METADATA_VALUE,
                 null
             ));
-            contributorMetadata.add(createMetadataValue(
-                Publication.AUTHOR_INSTITUTION_FIELD,
-                PLACEHOLDER_PARENT_METADATA_VALUE,
-                null
-            ));
             // Add ORCID
             contributorMetadata.add(createMetadataValue(
                 Publication.AUTHOR_ORCID_FIELD,
@@ -609,14 +605,18 @@ public class OrcidPublicationDataProvider extends AbstractExternalDataProvider {
                     .orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
                 null
             ));
-            // Add Email
-            contributorMetadata.add(createMetadataValue(
-                Publication.AUTHOR_EMAIL_FIELD,
-                Optional.ofNullable(contributor.getContributorEmail())
-                    .map(ContributorEmail::getValue)
-                    .orElse(PLACEHOLDER_PARENT_METADATA_VALUE),
-                null
-            ));
+            // Add Email & institution
+            String emailValue = (contributor.getContributorEmail() != null)
+                ? contributor.getContributorEmail().getValue()
+                : PLACEHOLDER_PARENT_METADATA_VALUE;
+            contributorMetadata.add(createMetadataValue(Publication.AUTHOR_EMAIL_FIELD, emailValue, null));
+            // Determine institution based on email pattern
+            String institutionValue = PLACEHOLDER_PARENT_METADATA_VALUE;
+            if (emailValue != null && UCLOUVAIN_MAIL_PATTERN.matcher(emailValue).find()) {
+                institutionValue = "UCLouvain";
+            }
+            contributorMetadata.add(createMetadataValue(Publication.AUTHOR_INSTITUTION_FIELD, institutionValue, null));
+
             return contributorMetadata;
         }).orElse(Collections.emptyList());
     }
