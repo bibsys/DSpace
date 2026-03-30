@@ -395,7 +395,8 @@
             <xsl:value-of select="normalize-space(./mods:name[@type='corporate'])"/>
         </xsl:element>
         <xsl:choose>
-            <xsl:when test="./mods:name[@type='corporate']/text() = 'UCLouvain' and
+            <xsl:when test="../mods:genre/text() = 'doctoral thesis' and
+                            ./mods:name[@type='corporate']/text() = 'UCLouvain' and
                            (./mods:titleInfo/mods:title/text() = 'Louvain School of Management' or
                             ./mods:titleInfo/mods:title/text() = 'Ecole Polytechnique de Louvain' or
                             ./mods:titleInfo/mods:title/text() = 'Ingénierie biologique, agronomique et environnementale' or
