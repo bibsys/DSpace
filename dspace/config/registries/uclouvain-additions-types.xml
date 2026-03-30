@@ -36,6 +36,12 @@
         <scope_note>To store original FedoraCommons PID</scope_note>
     </dc-type>
     <dc-type>
+         <schema>dc</schema>
+         <element>identifier</element>
+         <qualifier>handle</qualifier>
+         <scope-note>To store legacy or alternative CNRI handle URI</scope-note>
+    </dc-type>
+    <dc-type>
         <schema>dc</schema>
         <element>identifier</element>
         <qualifier>ipc</qualifier>
