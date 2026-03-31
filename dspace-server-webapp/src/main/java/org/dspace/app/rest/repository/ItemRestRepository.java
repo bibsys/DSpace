@@ -54,6 +54,7 @@ import org.dspace.content.service.ItemService;
 import org.dspace.content.service.RelationshipService;
 import org.dspace.content.service.RelationshipTypeService;
 import org.dspace.content.service.WorkspaceItemService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.exception.SQLRuntimeException;
 import org.dspace.util.UUIDUtils;
@@ -162,7 +163,8 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
                          Patch patch) throws AuthorizeException, SQLException {
         Item item = itemService.find(context, id);
         if (!authorizeService.isAdmin(context) &&
-                !editMetadataFeature.isAuthorized(context, converter.toRest(item, utils.obtainProjection()))) {
+                !authorizeService.authorizeActionBoolean(context, item, Constants.WRITE)) {
+                // !editMetadataFeature.isAuthorized(context, converter.toRest(item, utils.obtainProjection()))) {
             throw new AccessDeniedException("Current user not authorized for this operation");
         }
         patchDSpaceObject(apiCategory, model, id, patch);
@@ -359,9 +361,10 @@ public class ItemRestRepository extends DSpaceObjectRestRepository<Item, ItemRes
         if (item == null) {
             throw new ResourceNotFoundException(apiCategory + "." + model + " with id: " + uuid + " not found");
         }
-        if (!authorizeService.isAdmin(context) && !editMetadataFeature.isAuthorized(context, itemRest)) {
-            throw new AccessDeniedException("Current user not authorized for this operation");
-        }
+        // DEV_NOTE: USELESS because of the pre-authorize.
+        // if (!authorizeService.isAdmin(context) && !editMetadataFeature.isAuthorized(context, itemRest)) {
+        //     throw new AccessDeniedException("Current user not authorized for this operation");
+        // }
 
         if (StringUtils.equals(uuid.toString(), itemRest.getId())) {
             metadataConverter.setMetadata(context, item, itemRest.getMetadata());
