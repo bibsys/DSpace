@@ -417,13 +417,16 @@ public class ExportRestController {
      * @return the map of filters to apply on a basic search to limit result.
      */
     private Map<String, String> extractFiltersQueryFromRequest(HttpServletRequest request) {
-        Map<String, String> rawFilters = new HashMap<>();
-        rawFilters.put("documentType", extractDocumentTypeFilterQueryFromRequest(request));
-        rawFilters.put("year", extractYearRangeFilterQueryFromRequest(request));
-        rawFilters.put("includePoster", extractPosterFilterQueryFromRequest(request));
-        return rawFilters.entrySet().stream()
-            .filter(entry -> StringUtils.isNotBlank(entry.getValue()))
-            .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, String> filters = new HashMap<>();
+        addIfNotBlank(filters, "documentType", extractDocumentTypeFilterQueryFromRequest(request));
+        addIfNotBlank(filters, "year", extractYearRangeFilterQueryFromRequest(request));
+        addIfNotBlank(filters, "includePoster", extractPosterFilterQueryFromRequest(request));
+        return Collections.unmodifiableMap(filters);
+    }
+    private void addIfNotBlank(Map<String, String> map, String key, String value) {
+        if (StringUtils.isNotBlank(value)) {
+            map.put(key, value);
+        }
     }
 
     private String extractDocumentTypeFilterQueryFromRequest(HttpServletRequest request) {
