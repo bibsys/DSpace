@@ -40,7 +40,6 @@ import org.dspace.eperson.service.GroupService;
 import org.dspace.profile.ResearcherProfile;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.services.ConfigurationService;
-import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 import org.dspace.uclouvain.core.model.exceptions.PublicationSetAuthorException;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
@@ -265,32 +264,6 @@ public class PublicationServiceImpl implements PublicationService {
             .anyMatch(authorAuthority -> Objects.equals(authorAuthority.getItemId(), profile.getItemId()));
     }
 
-
-    public boolean authorizeWithdrawItem(Context context, Item item) {
-        try {
-            Publication publication = PublicationFactory.build(item);
-            // First of all, determine if this publication is 'withdrawable', if not, no need extra check.
-            if (!publication.isWithdrawable()) {
-                return false;
-            }
-            // To determine if the current logged user can withdraw this publication, we will check
-            //   1) if user has manager rights
-            //   2) if user is submitter of the publication
-            //   3) if user is owner of the publication (DSpace basic behavior)
-            //   4) if user is author of the publication
-            EPerson user = context.getCurrentUser();
-            if (user == null) {
-                return false;
-            }
-            return ePersonService.isOwnerOfItem(user, item)
-                || Objects.equals(item.getSubmitter(), user)
-                || isManager(context, user)
-                || isAuthorOfPublication(context, item);
-        } catch (InvalidModelEntityTypeException | SQLException | AuthorizeException e) {
-            return false;
-        }
-    }
-
     // PRIVATE METHODS =================================================================================================
     private Publication buildPublication(Item item) {
         try {
@@ -299,12 +272,6 @@ public class PublicationServiceImpl implements PublicationService {
             return null;
         }
     }
-
-    private boolean isManager(Context context, EPerson user) throws SQLException {
-        String[] managerGroups = configService.getArrayProperty("uclouvain.feature.roles.manager", new String[] {});
-        return groupService.isMember(context, user, managerGroups);
-    }
-
 
     // CONVERTING QUERY FILTERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private List<String> convertQueryFilters(Map<String, String> filters) {
