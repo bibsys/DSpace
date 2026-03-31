@@ -34,8 +34,6 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
-import org.dspace.uclouvain.services.PublicationService;
 import org.dspace.utils.DSpace;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.storedcomponents.CollectionRole;
@@ -507,11 +505,7 @@ public class AuthorizeUtil {
         // Compute UCLouvain special authorization.
         EPerson user = context.getCurrentUser();
         if (user != null) {
-            // TODO: This is not the best way to call specific publicationService to determine if item can be withdraw;
-            //       It should be better to call a generic service that determine which service must be called depending
-            //       on item (orgUnit, researchProfile, publicatio, journal, ...)
-            PublicationService publicationService = UCLouvainServiceFactory.getInstance().getPublicationService();
-            authorized = publicationService.authorizeWithdrawItem(context, item);
+            authorized = authorizeService.authorizeActionBoolean(context, item, Constants.WRITE);
         }
         // authorized
         if (!authorized) {
@@ -532,26 +526,28 @@ public class AuthorizeUtil {
      */
     public static void authorizeReinstateItem(Context context, Item item)
         throws SQLException, AuthorizeException {
+        // We just need to check if user has WRITE permission on the item to grant the right to reinstate.
         AuthorizeService authorizeService = AuthorizeServiceFactory.getInstance().getAuthorizeService();
-        List<Collection> colls = item.getCollections();
+        authorizeService.authorizeAction(context, item, Constants.WRITE);
+        // List<Collection> colls = item.getCollections();
 
-        for (Collection coll : colls) {
-            if (!AuthorizeConfiguration
-                .canCollectionAdminPerformItemReinstatiate()) {
-                if (AuthorizeConfiguration
-                    .canCommunityAdminPerformItemReinstatiate()
-                    && authorizeService.authorizeActionBoolean(context,
-                                                               coll.getCommunities().get(0), Constants.ADMIN)) {
-                    // authorized
-                } else {
-                    authorizeService.authorizeAction(context, coll,
-                                                     Constants.ADD, false);
-                }
-            } else {
-                authorizeService.authorizeAction(context, coll,
-                                                 Constants.ADD);
-            }
-        }
+        // for (Collection coll : colls) {
+        //     if (!AuthorizeConfiguration
+        //         .canCollectionAdminPerformItemReinstatiate()) {
+        //         if (AuthorizeConfiguration
+        //             .canCommunityAdminPerformItemReinstatiate()
+        //             && authorizeService.authorizeActionBoolean(context,
+        //                                                        coll.getCommunities().get(0), Constants.ADMIN)) {
+        //             // authorized
+        //         } else {
+        //             authorizeService.authorizeAction(context, coll,
+        //                                              Constants.ADD, false);
+        //         }
+        //     } else {
+        //         authorizeService.authorizeAction(context, coll,
+        //                                          Constants.ADD);
+        //     }
+        // }
     }
 
     /**

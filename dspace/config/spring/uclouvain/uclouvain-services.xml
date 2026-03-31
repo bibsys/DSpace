@@ -76,10 +76,13 @@
             </util:list>
         </property>
     </bean>
+    <bean id="uclouvainAuthorizeService" class="org.dspace.uclouvain.authorize.UCLouvainAuthorizeServiceImpl"/>
+    <bean id="publicationItemAuthorize" class="org.dspace.uclouvain.authorize.item.PublicationItemAuthorize"/>
+    <bean id="epersonAuthorize" class="org.dspace.uclouvain.authorize.eperson.EPersonAuthorize"/>
+    <bean id="bundleAuthorize" class="org.dspace.uclouvain.authorize.bundle.BundleAuthorize"/>
 
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
-    <bean id="authorizationUtils" class="org.dspace.uclouvain.core.utils.AuthorizationUtils" />
     <bean id="metadataTransactionCache" class="org.dspace.uclouvain.content.tracking.MetadataTransactionCache"/>
 
     <!-- CLIENTS ========================================================== -->
