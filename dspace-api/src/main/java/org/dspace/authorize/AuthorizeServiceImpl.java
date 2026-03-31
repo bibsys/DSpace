@@ -51,6 +51,7 @@ import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
+import org.dspace.uclouvain.authorize.UCLouvainAuthorizeService;
 import org.dspace.workflow.WorkflowItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -89,6 +90,8 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     private SearchService searchService;
     @Autowired(required = true)
     private List<RelationshipAuthorizer> relationshipAuthorizers;
+    @Autowired
+    private UCLouvainAuthorizeService uclouvainAuthorizeService;
 
 
     protected AuthorizeServiceImpl() {
@@ -276,6 +279,12 @@ public class AuthorizeServiceImpl implements AuthorizeService {
                 c.cacheAuthorizedAction(o, action, e, useInheritance, true, null);
                 return true;
             }
+        }
+
+        // Handle specific uclouvain authorization.
+        if (uclouvainAuthorizeService.authorizeActionBoolean(c, o, action, userToCheck)) {
+            c.cacheAuthorizedAction(o, action, e, true, null);
+            return true;
         }
 
         // In case the dso is an bundle or bitstream we must ignore custom

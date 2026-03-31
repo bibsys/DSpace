@@ -181,13 +181,4 @@ public interface PublicationService {
      * @throws AuthorizeException if any authorization exception occurred
      */
     boolean isAuthorOfPublication(Context context, Item item) throws SQLException, AuthorizeException;
-
-    /**
-     * Determine if the item could be retired depending on the context (if the item is a publication)
-     *
-     * @param context the current DSpace context
-     * @param item the item to analyze
-     * @return true if the item can be withdrawn; false otherwise (or any exception occurred)
-     */
-    boolean authorizeWithdrawItem(Context context, Item item);
 }
