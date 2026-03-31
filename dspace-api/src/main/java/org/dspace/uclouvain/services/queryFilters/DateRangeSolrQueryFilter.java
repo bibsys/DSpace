@@ -84,7 +84,7 @@ public class DateRangeSolrQueryFilter implements SolrQueryFilter, SolrSortOption
         }
         String startDate = matcher.group("startDate");
         String endDate = matcher.group("endDate");
-        String indexField = dateIssuedFilter.getIndexFieldName();
+        String indexField = "%s.year".formatted(dateIssuedFilter.getIndexFieldName());
 
         return (StringUtils.isBlank(endDate))
             ? "%s:%s".formatted(indexField, startDate)
