@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.converter;
 
+import java.sql.SQLException;
 import java.util.Optional;
 
 import org.dspace.app.rest.model.ItemRest;
@@ -16,6 +17,7 @@ import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
 import org.dspace.content.security.service.MetadataSecurityService;
 import org.dspace.content.service.ItemService;
+import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.discovery.IndexableObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +63,16 @@ public class ItemConverter
      */
     @Override
     public MetadataValueList getPermissionFilteredMetadata(Context context, Item item, Projection projection) {
+        try {
+            // If user has WRITE permission on the item, always authorize full metadata READ (skip other checks).
+            if (authorizeService.authorizeActionBoolean(context, item, Constants.WRITE)) {
+                return new MetadataValueList(
+                    itemService.getMetadata(item, Item.ANY, Item.ANY, Item.ANY, Item.ANY, true));
+            }
+        } catch (SQLException e) {
+            // Ignore
+        }
+
         boolean preventSecurityCheck = preventSecurityCheck(projection);
         if (projection.isAllLanguages()) {
             return new MetadataValueList(

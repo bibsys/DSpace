@@ -172,4 +172,11 @@ public class ItemUtils {
     public static boolean isWorkspace(Context context, Item item) throws SQLException {
         return ContentServiceFactory.getInstance().getWorkspaceItemService().findByItem(context, item) != null;
     }
+
+    public static boolean isSubmitter(Context context, EPerson user, Item item) {
+        if (item.getSubmitter() == null) {
+            return false;
+        }
+        return item.getSubmitter().getID().equals(user.getID());
+    }
 }
