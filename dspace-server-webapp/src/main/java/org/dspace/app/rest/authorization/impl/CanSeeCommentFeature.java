@@ -49,8 +49,6 @@ public class CanSeeCommentFeature implements AuthorizationFeature {
     @Autowired
     private ItemService itemService;
     @Autowired
-    private AuthorizationUtils authUtils;
-    @Autowired
     private AuthorizeService authorizeService;
     @Autowired
     private GroupService groupService;
@@ -69,7 +67,7 @@ public class CanSeeCommentFeature implements AuthorizationFeature {
             String[] authorizedGroups = configService
                     .getArrayProperty("comments.feature.authorized-group", new String[] {});
             return authorizeService.isAdmin(context)
-                || authUtils.isManagerOfItem(context, item, currentUser)
+                || AuthorizationUtils.isManagerOfItem(context, item, currentUser)
                 || Arrays.stream(authorizedGroups).anyMatch(g -> safeIsMember(context, currentUser, g));
         } catch (Exception e) {
             logger.warn("Could not check for comment visibility", e);

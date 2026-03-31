@@ -7,14 +7,10 @@
  */
 package org.dspace.app.rest.security;
 
-import java.sql.SQLException;
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.dspace.app.rest.utils.ContextUtil;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.core.Context;
-import org.dspace.eperson.service.GroupService;
-import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.core.utils.AuthorizationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,14 +23,7 @@ import org.springframework.stereotype.Component;
 public class GroupSecurityEvaluator {
 
     @Autowired
-    private ConfigurationService configService;
-    @Autowired
-    private GroupService groupService;
-    @Autowired
     private HttpServletRequest request;
-    @Autowired
-    private AuthorizeService authorizeService;
-
     /**
      * Check whether the current DSpace user is a member of at least one of the given groups.
      * An admin user is considered a member of any group.
@@ -45,15 +34,7 @@ public class GroupSecurityEvaluator {
      */
     public boolean isMemberOf(String... groupNames) {
         Context context = ContextUtil.obtainContext(request);
-        if (context == null || context.getCurrentUser() == null) {
-            return false;
-        }
-        try {
-            return authorizeService.isAdmin(context)
-                || groupService.isMember(context, context.getCurrentUser(), groupNames);
-        } catch (SQLException e) {
-            return false;
-        }
+        return AuthorizationUtils.isMemberOf(context, context.getCurrentUser(), groupNames);
     }
 
     /**
@@ -61,8 +42,8 @@ public class GroupSecurityEvaluator {
      * @return true is the current logged user is a manager, false otherwise
      */
     public boolean isManager() {
-        String[] managerGroups = configService.getArrayProperty("uclouvain.feature.roles.manager", new String[] {});
-        return isMemberOf(managerGroups);
+        Context context = ContextUtil.obtainContext(request);
+        return AuthorizationUtils.isManager(context, context.getCurrentUser());
     }
 
     /**
@@ -70,7 +51,7 @@ public class GroupSecurityEvaluator {
      * @return true is the current logged user is a manager, false otherwise
      */
     public boolean isDelegator() {
-        String[] managerGroups = configService.getArrayProperty("uclouvain.feature.roles.delegator", new String[] {});
-        return isMemberOf(managerGroups);
+        Context context = ContextUtil.obtainContext(request);
+        return AuthorizationUtils.isDelegator(context, context.getCurrentUser());
     }
 }
