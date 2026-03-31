@@ -60,12 +60,14 @@ public class EditMetadataFeature implements AuthorizationFeature {
         ) {
             String defaultGroupUUID = configurationService.getProperty("edit.metadata.allowed-group");
             if (StringUtils.isBlank(defaultGroupUUID)) {
-                return authorizeServiceRestUtil.authorizeActionBoolean(context, object, DSpaceRestPermission.WRITE);
+                // NOTE: Use 'ADMIN' here instead of 'WRITE' to avoid seeing 'administer' in frontend for authors.
+                return authorizeServiceRestUtil.authorizeActionBoolean(context, object, DSpaceRestPermission.ADMIN);
             }
             Group defaultGroup = StringUtils.isNotBlank(defaultGroupUUID) ?
                                  groupService.find(context, UUID.fromString(defaultGroupUUID)) : null;
             if (Objects.nonNull(defaultGroup) && groupService.isMember(context, defaultGroup)) {
-                return authorizeServiceRestUtil.authorizeActionBoolean(context, object, DSpaceRestPermission.WRITE);
+                // NOTE: Use 'ADMIN' here instead of 'WRITE' to avoid seeing 'administer' in frontend for authors.
+                return authorizeServiceRestUtil.authorizeActionBoolean(context, object, DSpaceRestPermission.ADMIN);
             }
         }
         return false;
