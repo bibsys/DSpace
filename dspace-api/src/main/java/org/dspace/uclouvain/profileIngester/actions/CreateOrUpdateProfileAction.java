@@ -61,7 +61,7 @@ public class CreateOrUpdateProfileAction extends ProfileAction {
             return;
         }
         // Try to find an existing profile with the user email.
-        Item profile = uclouvainProfileService.findByEmail(context, profileData.getEmail());
+        Item profile = uclouvainProfileService.findByFGS(context, fgs);
         try {
             boolean changed;
             if (profile == null) {

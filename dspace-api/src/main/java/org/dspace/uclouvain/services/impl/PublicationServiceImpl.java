@@ -119,7 +119,7 @@ public class PublicationServiceImpl implements PublicationService {
         List<Pair<String, String>> normalizedIdentifiers = identifiers.stream()
             .flatMap(pair -> {
                 if (Objects.equals("fgs", pair.getLeft())) {
-                    Item profile = uclouvainProfileService.findById(context, pair.getRight());
+                    Item profile = uclouvainProfileService.findByFGS(context, pair.getRight());
                     // DEV-NOTE : returning empty stream == removing this identifier from list
                     return (profile != null) ? Stream.of(Pair.of("uuid", profile.getID().toString())) : Stream.empty();
                 } else if (Objects.equals("orcid", pair.getLeft())) {
