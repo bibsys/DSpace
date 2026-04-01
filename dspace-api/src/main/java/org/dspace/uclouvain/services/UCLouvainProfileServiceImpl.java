@@ -79,28 +79,28 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
     private static final String PROFILE_ENTITY_TYPE = "Person";
 
     // IMPLEMENTED FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    public Item findById(Context context, String fgs) {
-        return findOneByAttribute(context, ResearcherProfile.FGS_FIELD + ":" + fgs);
+    public Item findByFGS(Context context, String fgs) {
+        return findOneByAttribute(context, formatFilter(ResearcherProfile.FGS_FIELD, fgs));
     }
 
     public Item findByEmail(Context context, String email) {
-        return findOneByAttribute(context, ResearcherProfile.OFFICIAL_EMAIL_FIELD + ":" + email);
+        return findOneByAttribute(context, formatFilter(ResearcherProfile.OFFICIAL_EMAIL_FIELD, email));
     }
 
     public Item findByOrcid(Context context, String orcid) {
-        return findOneByAttribute(context, ResearcherProfile.ORCID_FIELD + ":" + orcid);
+        return findOneByAttribute(context, formatFilter(ResearcherProfile.ORCID_FIELD, orcid));
     }
 
     public Item findByIdentifiers(Context context, String uuid, String fgs, String email) {
         String query = null;
         if (!StringUtils.isBlank(uuid)) {
-            query = "%s:\"%s\"".formatted("search.resourceid", uuid);
+            query = formatFilter("search.resourceid", uuid);
         }
         if (!StringUtils.isBlank(fgs)) {
-            query = "%s:\"%s\"".formatted(ResearcherProfile.FGS_FIELD, fgs);
+            query = formatFilter(ResearcherProfile.FGS_FIELD, fgs);
         }
         if (!StringUtils.isBlank(email)) {
-            query = "%s:\"%s\"".formatted(ResearcherProfile.OFFICIAL_EMAIL_FIELD, email);
+            query = formatFilter(ResearcherProfile.OFFICIAL_EMAIL_FIELD, email);
         }
         if (query == null) {
             throw new IllegalArgumentException("At least one search criteria is required");
@@ -254,6 +254,11 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
     }
 
     // PRIVATE FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    private String formatFilter(String field, String value) {
+        return "%s:\"%s\"".formatted(field, value);
+    }
+
     /**
      * Find a profile item using a given attribute filter.
      * @param context The current DSpace context.
