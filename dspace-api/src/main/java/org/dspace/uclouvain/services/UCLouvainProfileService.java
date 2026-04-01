@@ -21,7 +21,7 @@ public interface UCLouvainProfileService {
      * @param fgs     The FGS identifier to use to find the profile.
      * @return Returns the profile that has the given identifier, null otherwise.
      */
-    Item findById(Context context, String fgs);
+    Item findByFGS(Context context, String fgs);
 
     /**
      * Find a profile item using an email.
