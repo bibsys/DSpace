@@ -28,7 +28,7 @@ public class DeleteProfileAction extends ProfileAction {
      */
     public void process(Context context, PersonEventModel event) throws ProfileActionException {
         String fgs = event.getFgs();
-        Item profile = uclouvainProfileService.findById(context, fgs);
+        Item profile = uclouvainProfileService.findByFGS(context, fgs);
         if (profile == null) {
             logger.info("[DELETE CANCELED] Profile<fgs=[" + fgs + "]> doesn't exists.");
             return;
