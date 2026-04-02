@@ -113,6 +113,8 @@ import org.dspace.uclouvain.content.tracking.Changes;
 import org.dspace.uclouvain.content.tracking.CommentMetadataChangesLogger;
 import org.dspace.uclouvain.content.tracking.MetadataTransactionCache;
 import org.dspace.uclouvain.content.tracking.MetadataValueSnapshot;
+import org.dspace.uclouvain.core.mails.PublicationNotifyAuthorReinstateEmail;
+import org.dspace.uclouvain.core.mails.PublicationNotifyAuthorWithdrawEmail;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemValidators.ItemValidator;
 import org.dspace.uclouvain.itemValidators.factories.ItemValidatorFactory;
@@ -978,6 +980,12 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         // Write log
         log.info(LogHelper.getHeader(context, "withdraw_item", "user="
             + e.getEmail() + ",item_id=" + item.getID()));
+
+        try {
+            new PublicationNotifyAuthorWithdrawEmail(context, item, e).sendEmail();
+        } catch (Exception ex) {
+            log.error("Unable to send notify email for withdraw action.", ex);
+        }
     }
 
     @Override
@@ -1044,6 +1052,12 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         // Write log
         log.info(LogHelper.getHeader(context, "reinstate_item", "user="
             + e.getEmail() + ",item_id=" + item.getID()));
+
+        try {
+            new PublicationNotifyAuthorReinstateEmail(context, item, e).sendEmail();
+        } catch (Exception ex) {
+            log.error("Unable to send notify email for reinstate action.", ex);
+        }
     }
 
     @Override
