@@ -80,11 +80,11 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
 
     // IMPLEMENTED FUNCTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public Item findByFGS(Context context, String fgs) {
-        return findOneByAttribute(context, formatFilter(ResearcherProfile.FGS_FIELD, fgs));
+        return findOneByAttribute(context, formatFilter(ResearcherProfile.FGS_MATCH_FIELD, fgs));
     }
 
     public Item findByEmail(Context context, String email) {
-        return findOneByAttribute(context, formatFilter(ResearcherProfile.OFFICIAL_EMAIL_FIELD, email));
+        return findOneByAttribute(context, formatFilter(ResearcherProfile.OFFICIAL_EMAIL_MATCH_FIELD, email));
     }
 
     public Item findByOrcid(Context context, String orcid) {
@@ -97,10 +97,10 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
             query = formatFilter("search.resourceid", uuid);
         }
         if (!StringUtils.isBlank(fgs)) {
-            query = formatFilter(ResearcherProfile.FGS_FIELD, fgs);
+            query = formatFilter(ResearcherProfile.FGS_MATCH_FIELD, fgs);
         }
         if (!StringUtils.isBlank(email)) {
-            query = formatFilter(ResearcherProfile.OFFICIAL_EMAIL_FIELD, email);
+            query = formatFilter(ResearcherProfile.OFFICIAL_EMAIL_MATCH_FIELD, email);
         }
         if (query == null) {
             throw new IllegalArgumentException("At least one search criteria is required");

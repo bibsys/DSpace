@@ -797,6 +797,9 @@
                 <ref bean="searchFilterJournalStatusCode"/>
                 <ref bean="searchFilterPublicationFundingOrganization"/>
                 <ref bean="searchFilterPublicationFundingProgram"/>
+                <ref bean="searchFilterPersonPrivateEmail"/>
+                <ref bean="searchFilterPersonOfficialEmail"/>
+                <ref bean="searchFilterPersonFGS"/>
             </list>
         </property>
         <!--The sort filters for the discovery search (same as defaultConfiguration above)-->
@@ -3514,6 +3517,39 @@
         <property name="metadataFields">
             <list>
                 <value>person.givenName</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+
+    <bean id="searchFilterPersonPrivateEmail" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="privateEmail"/>
+        <property name="metadataFields">
+            <list>
+                <value>person.email</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+
+    <bean id="searchFilterPersonOfficialEmail" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="officialEmail"/>
+        <property name="metadataFields">
+            <list>
+                <value>person.email.official</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+
+    <bean id="searchFilterPersonFGS" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="fgs"/>
+        <property name="metadataFields">
+            <list>
+                <value>person.identifier.fgs</value>
             </list>
         </property>
         <property name="isOpenByDefault" value="false"/>
