@@ -456,9 +456,9 @@ public class ResearcherProfileServiceImpl implements ResearcherProfileService {
 
     public Map<String, String> getProfileIdentifiers(ResearcherProfile profile) {
         return createIdentifiersMap(
-                Map.entry(ResearcherProfile.EMAIL_FIELD, profile.getPrivateEmail()),
-                Map.entry(ResearcherProfile.OFFICIAL_EMAIL_FIELD, profile.getEmail()),
-                Map.entry(ResearcherProfile.FGS_FIELD, profile.getFGS()),
+                Map.entry(ResearcherProfile.EMAIL_MATCH_FIELD, profile.getPrivateEmail()),
+                Map.entry(ResearcherProfile.OFFICIAL_EMAIL_MATCH_FIELD, profile.getEmail()),
+                Map.entry(ResearcherProfile.FGS_MATCH_FIELD, profile.getFGS()),
                 Map.entry(ResearcherProfile.ORCID_FIELD, profile.getOrcid())
             );
     }
