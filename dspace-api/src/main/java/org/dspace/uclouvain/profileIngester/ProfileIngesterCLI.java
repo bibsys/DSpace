@@ -98,6 +98,8 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
         String epersonEmail = cli.getOptionValue("e");
         String errorQueueName = cli.getOptionValue("eq", connector.getQueueName() + "_error");
 
+        PersonEventErrorConnector errorConnector = new PersonEventErrorConnector(errorQueueName);
+
         Context context = new Context();
         // Get the eperson to use as initiator.
         EPerson ePerson = EPersonServiceFactory.getInstance().getEPersonService().findByEmail(context, epersonEmail);
@@ -105,10 +107,11 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
             throw new UserNotFoundException(epersonEmail);
         }
         context.setCurrentUser(ePerson);
+        context.setMode(Context.Mode.BATCH_EDIT);
 
         while (true) {
             try {
-                profileIngester.ingestEvent(context, connector, errorQueueName);
+                profileIngester.ingestEvent(context, connector, errorConnector);
             } catch (InterruptedException ie) {
                 logger.info("Execution interrupted manually");
                 Thread.currentThread().interrupt();
@@ -126,7 +129,7 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
      * @param errorQueueName The queue name to post potential error message to.
      * @throws Exception
      */
-    private void ingestEvent(Context context, PersonEventConnector connector, String errorQueueName)
+    private void ingestEvent(Context context, PersonEventConnector connector, PersonEventErrorConnector errorConnector)
         throws Exception {
         // Set a random uuid to this thread context to identify this job in the logs.
         String jobId = UUID.randomUUID().toString();
@@ -148,7 +151,7 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
                 PersonEventModel event = objectMapper.readValue(eventString, PersonEventModel.class);
                 processEvent(context, event);
             } catch (Exception e) {
-                logError(errorQueueName, eventString, e);
+                logError(errorConnector, eventString, e);
             } finally {
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                 ThreadContext.remove("jobId");
@@ -199,8 +202,7 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
      * @param cause The error itself.
      * @throws IOException
      */
-    private void logError(String queueName, String event, Exception cause) throws IOException {
-        PersonEventErrorConnector errorConnector = new PersonEventErrorConnector(queueName);
+    private void logError(PersonEventErrorConnector errorConnector, String event, Exception cause) throws IOException {
         try {
             // Push error into specific queue.
             errorConnector.publishErrorMessage(event, cause);
