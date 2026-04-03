@@ -42,6 +42,11 @@ public class ResearcherProfile {
     public static final String INSTITUTION_FIELD = "person.affiliation.institution";
     public static final String DEPARTMENT_FIELD = "person.affiliation.department";
 
+    // Use these solr fields for exact search in Solr.
+    public static final String EMAIL_MATCH_FIELD = "privateEmail_keyword";
+    public static final String OFFICIAL_EMAIL_MATCH_FIELD = "officialEmail_keyword";
+    public static final String FGS_MATCH_FIELD = "fgs_keyword";
+
     /**
      * Create a new ResearcherProfile object from the given item.
      *
