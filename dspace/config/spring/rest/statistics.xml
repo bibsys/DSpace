@@ -1154,8 +1154,8 @@
                         <ref bean="affiliation-mainReports"/>
                         <ref bean="affiliation-publicationsReports"/>
                         <ref bean="affiliation-rpPublicationsReports"/>
-                        <ref bean="affiliation-projectsReports"/>
-                        <ref bean="affiliation-rpProjectsReports"/>
+                        <!--<ref bean="affiliation-projectsReports"/>
+                        <ref bean="affiliation-rpProjectsReports"/>-->
                     </list>
                 </entry>
                 <entry key="item-Project">
@@ -1168,7 +1168,7 @@
                     <list>
                         <ref bean="person-mainReports"/>
                         <ref bean="person-publicationsReports"/>
-                        <ref bean="person-projectsReports"/>
+                        <!--<ref bean="person-projectsReports"/>-->
                     </list>
                 </entry>
                 <entry key="bitstream">
