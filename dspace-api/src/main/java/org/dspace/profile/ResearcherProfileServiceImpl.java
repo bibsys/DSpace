@@ -131,6 +131,19 @@ public class ResearcherProfileServiceImpl implements ResearcherProfileService {
     }
 
     @Override
+    public List<ResearcherProfile> findByName(Context context, String name) throws SQLException, AuthorizeException {
+        DiscoverQuery dq = new DiscoverQuery();
+        dq.setDSpaceObjectFilter(IndexableItem.TYPE);
+        dq.addFilterQueries("dspace.entity.type:" + getProfileType());
+        dq.setQuery("penName_keyword:\"%s\" OR title_keyword:\"%s\"".formatted(name, name));
+        DiscoverResult discoverResult = search(context, dq);
+        List<IndexableObject> indexableObjects = discoverResult.getIndexableObjects();
+        return indexableObjects.stream()
+            .map(object -> new ResearcherProfile((Item) object.getIndexedObject(), false))
+            .toList();
+    }
+
+    @Override
     public ResearcherProfile findFirstByIdentifiers(Context context, Map<String, String> identifiers)
             throws AuthorizeException, SQLException {
         return this.findByIdentifiers(context, identifiers).stream().findFirst().orElse(null);
