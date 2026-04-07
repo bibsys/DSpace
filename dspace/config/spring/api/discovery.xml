@@ -1872,6 +1872,7 @@
                 <ref bean="searchFilterPersonOrgUnit"/>
                 <ref bean="searchFilterBirthdate"/>
                 <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterPenName"/>
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -3498,7 +3499,17 @@
         <property name="isOpenByDefault" value="false"/>
         <property name="pageSize" value="10"/>
         <property name="exposeMinAndMaxValue" value="true"/>
+    </bean>
 
+    <bean id="searchFilterPenName" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="penName"/>
+        <property name="metadataFields">
+            <list>
+                <value>crisrp.name</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
     </bean>
 
     <bean id="searchFilterFamilyName" class="org.dspace.discovery.configuration.DiscoverySearchFilter">

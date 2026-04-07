@@ -36,10 +36,22 @@ public interface ResearcherProfileService {
      * @param context the relevant DSpace Context.
      * @param id      the ResearcherProfile id
      * @return the found ResearcherProfile
-     * @throws SQLException
-     * @throws AuthorizeException
+     * @throws SQLException for any database exception
+     * @throws AuthorizeException for any authorize exception
      */
-    public ResearcherProfile findById(Context context, UUID id) throws SQLException, AuthorizeException;
+    ResearcherProfile findById(Context context, UUID id) throws SQLException, AuthorizeException;
+
+
+    /**
+     * Find {@link ResearcherProfile} matching author names
+     *
+     * @param context the relevant DSpace context
+     * @param name    the author name to search
+     * @return the list of matching {@link ResearcherProfile}
+     * @throws SQLException for any database exception
+     * @throws AuthorizeException for any authorize exception
+     */
+    List<ResearcherProfile> findByName(Context context, String name) throws SQLException, AuthorizeException;
 
     /**
      * Find a unique `ResearcherProfile` using search criteria.
@@ -50,7 +62,7 @@ public interface ResearcherProfileService {
      * @throws SQLException if any database occurred
      * @throws AuthorizeException if any authorization occurred
      */
-    public ResearcherProfile findFirstByIdentifiers(Context context, Map<String, String> identifiers)
+    ResearcherProfile findFirstByIdentifiers(Context context, Map<String, String> identifiers)
         throws SQLException, AuthorizeException;
 
     /**
@@ -59,7 +71,7 @@ public interface ResearcherProfileService {
      * @param identifiers The identifiers to search on (fgs, email...).
      * @return A list of matching researcher profiles.
      */
-    public List<ResearcherProfile> findByIdentifiers(Context context, Map<String, String> identifiers);
+    List<ResearcherProfile> findByIdentifiers(Context context, Map<String, String> identifiers);
 
     /**
      * Create a new researcher profile for the given ePerson.
@@ -67,11 +79,11 @@ public interface ResearcherProfileService {
      * @param  context                the relevant DSpace Context.
      * @param  ePerson                the ePerson
      * @return                        the created profile
-     * @throws SQLException
-     * @throws AuthorizeException
+     * @throws SQLException for any database exception
+     * @throws AuthorizeException for any authorize exception
      * @throws SearchServiceException
      */
-    public ResearcherProfile createAndReturn(Context context, EPerson ePerson)
+    ResearcherProfile createAndReturn(Context context, EPerson ePerson)
         throws AuthorizeException, SQLException, SearchServiceException;
 
     /**
@@ -82,23 +94,23 @@ public interface ResearcherProfileService {
      *
      * @param  context            the relevant DSpace Context.
      * @param  id                 the researcher profile id
-     * @throws AuthorizeException
-     * @throws SQLException
+     * @throws SQLException for any database exception
+     * @throws AuthorizeException for any authorize exception
      */
-    public void deleteById(Context context, UUID id) throws SQLException, AuthorizeException;
+    void deleteById(Context context, UUID id) throws SQLException, AuthorizeException;
 
     /**
-     * Changes the visibility of the given profile using the given new visible
-     * value. The visiblity controls whether the Profile is Anonymous READ or not.
+     * Changes the visibility of the given profile using the given new visible value.
+     * The visibility controls whether the Profile is Anonymous READ or not.
      *
      * @param  context            the relevant DSpace Context.
      * @param  profile            the researcher profile to update
      * @param  visible            the visible value to set. If true the profile will
      *                            be visible to all users.
-     * @throws SQLException
-     * @throws AuthorizeException
+     * @throws SQLException for any database exception
+     * @throws AuthorizeException for any authorize exception
      */
-    public void changeVisibility(Context context, ResearcherProfile profile, boolean visible)
+    void changeVisibility(Context context, ResearcherProfile profile, boolean visible)
         throws AuthorizeException, SQLException;
 
     /**
@@ -141,7 +153,7 @@ public interface ResearcherProfileService {
      * @param profile The profile to generate a map for.
      * @return A map containing the identifiers of the given profile.
      */
-    public Map<String, String> getAuthorsIdentifiers(ResearcherProfile profile);
+    Map<String, String> getAuthorsIdentifiers(ResearcherProfile profile);
 
     /**
      * Retrieve a map of identifiers for the given profile.
@@ -149,5 +161,5 @@ public interface ResearcherProfileService {
      * @param profile The profile to generate a map for.
      * @return A map containing the identifiers of the given profile.
      */
-    public Map<String, String> getProfileIdentifiers(ResearcherProfile profile);
+    Map<String, String> getProfileIdentifiers(ResearcherProfile profile);
 }
