@@ -544,6 +544,7 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
             if (fgs != null) {
                 identifiers.put("person.identifier.fgs", fgs);
             }
+            boolean authorityLinked = false;
             if (!identifiers.isEmpty()) {
                 String pretty = identifiers.entrySet().stream()
                     .map(entry -> entry.getKey() + ":" + entry.getValue())
@@ -551,6 +552,7 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
                 log.debug("  * Identifiers are " + pretty);
                 ResearcherProfile profile = researcherProfileService.findFirstByIdentifiers(context, identifiers);
                 if (profile != null) {
+                    authorityLinked = true;
                     Item profileItem = profile.getItem();
                     log.debug("  * Matching authority found: " + profileItem.getID());
                     updateAuthorElementValues(authorElement, profileItem);
@@ -558,8 +560,23 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
                 } else {
                     log.debug("  * No matching authority for this author");
                 }
-            } else {
-                log.debug("  * No identifiers found for this author. No authority link possible");
+            }
+            if (!authorityLinked && StringUtils.isNotBlank(authorName)) {
+                log.debug("  * No identifier found for this author; try to search on authorName....");
+                List<ResearcherProfile> profiles = researcherProfileService.findByName(context, authorName);
+                log.debug("  * Found " + profiles.size() + " profiles for this author name");
+                if (profiles.size() == 1) {
+                    authorityLinked = true;
+                    Item profileItem = profiles.get(0).getItem();
+                    log.debug("  * Matching authority found: " + profileItem.getID());
+                    updateAuthorElementValues(authorElement, profileItem);
+                    authorElement.setAttribute("authority", profileItem.getID().toString());
+                } else if (profiles.size() > 1) {
+                    log.debug("  * Multiple profiles found. Can't link this author to an unique authority");
+                }
+            }
+            if (!authorityLinked) {
+                log.debug("  * None authority found for this author");
             }
         }
     }
