@@ -57,51 +57,23 @@
         </Context>
 
         <!--
-            Openaire Guidelines 3.0:
-
-            - https://guidelines.openaire.eu/
-
+            OpenAire Guidelines 4.0: https://openaire-guidelines-for-literature-repository-managers.readthedocs.io/en/v4.0.0/
             There is a limitation over the embargoedEndDate parameter:
-
-            - Predefined DSpace fields don't allow to set this up with a default.
-         -->
-        <Context baseurl="openaire" name="Openaire Context">
-            <!-- Date format, field prefixes, etc are ensured by the transformer -->
-            <Transformer ref="openaireTransformer"/>
-            <!-- Openaire filter -->
-            <Filter ref="openAireFilter"/>
-            <!-- Just an alias, in fact it returns all items within the driver context -->
-            <Set ref="openaireFundedResourcesSet"/>
-            <!-- Metadata Formats -->
-            <Format ref="oaidc"/>
-            <Format ref="mets"/>
-            <Description>
-                This context complies with OpenAIRE Guidelines for Literature Repositories v3.0.
-            </Description>
-        </Context>
-
-        <!--
-            Openaire Guidelines 4.0:
-
-            - https://openaire-guidelines-for-literature-repository-managers.readthedocs.io/en/v4.0.0/
-
-            There is a limitation over the embargoedEndDate parameter:
-
             - Predefined DSpace fields don't allow to set this up with a default.
          -->
         <Context baseurl="openaire4" name="Openaire 4 Context">
             <!-- Date format, field prefixes, etc are ensured by the transformer -->
             <Transformer ref="openaire4Transformer"/>
-            <!-- Openaire filter -->
             <Filter ref="openaire4Filter"/>
-            <!-- Metadata Formats -->
             <Format ref="oaidc"/>
             <Format ref="oaiopenaire"/>
             <Description>
-                This contexts complies with Openaire Guidelines for Literature Repositories v4.0.
+                This contexts complies with OpenAire Guidelines for Literature Repositories v4.0.
             </Description>
         </Context>
-        <!--
+
+
+      <!--
             Rioxx Guidelines v3.0 Final:
             - https://www.rioxx.net/profiles/v3-0-final
 
