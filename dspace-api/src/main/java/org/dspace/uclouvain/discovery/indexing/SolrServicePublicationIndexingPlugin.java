@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.discovery.indexing;
 
+import static org.dspace.uclouvain.core.utils.ItemUtils.extractItemFiles;
+
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -68,10 +70,45 @@ public class SolrServicePublicationIndexingPlugin
             addAncestorEntities(publication, document);
             authorFgsIndexing(publication, document);
             readPermissionsIndexing(context, publication, document);
+            addMetricsAdditionalKeys(context, publication.getItem(), document);
         } catch (InvalidModelEntityTypeException e) {
             log.debug(e.getMessage());
         }
+    }
 
+    private void addMetricsAdditionalKeys(Context context, Item item, SolrInputDocument document) {
+        document.addField(
+            "attached_files_counter_i",
+            extractItemFiles(item).size()
+        );
+        document.addField(
+            "authors_counter_i",
+            itemService.getMetadataByMetadataString(item, Publication.AUTHOR_NAME_FIELD).size()
+        );
+        document.addField(
+            "affiliation_department_counter_i",
+            itemService.getMetadataByMetadataString(item, Publication.ENTITY_DEPARTMENT_FIELD).size()
+        );
+        document.addField(
+            "funding_counter_i",
+            itemService.getMetadataByMetadataString(item, Publication.FUNDING_ORGANIZATION_FIELD).size()
+        );
+        document.addField(
+            "author_institution_counter_i",
+            itemService.getMetadataByMetadataString(item, Publication.AUTHOR_INSTITUTION_FIELD)
+                .stream()
+                .map(MetadataValue::getValue)
+                .distinct()
+                .count()
+        );
+        document.addField(
+            "affiliation_institution_counter_i",
+            itemService.getMetadataByMetadataString(item, Publication.ENTITY_INSTITUTION_FIELD)
+                .stream()
+                .map(MetadataValue::getValue)
+                .distinct()
+                .count()
+        );
     }
 
     /**
