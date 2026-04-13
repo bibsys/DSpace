@@ -167,6 +167,9 @@ public class Publication extends ItemModel implements FWBValidation {
     public static final String IDENTIFIER_ISBN_FIELD =
         getField("identifierISBN", "dc.identifier.isbn");
 
+    public static final String FUNDING_ORGANIZATION_FIELD =
+        getField("fundingOrganization", "funding.organization");
+
     // CLASS ATTRIBUTES ================================================================================================
     AccessStatusHelper helper = (AccessStatusHelper) CoreServiceFactory
         .getInstance()
