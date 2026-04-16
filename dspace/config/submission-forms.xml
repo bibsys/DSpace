@@ -1210,6 +1210,9 @@
           <input-type>institution-affiliation-select</input-type>
           <hint>Choose an institution into the list &lt;b&gt;OR&lt;/b&gt; enter a custom value</hint>
           <required>Please enter an institution for this affiliation.</required>
+          <settings>
+            <setting name="excludedValues">UNamur</setting>
+          </settings>
         </field>
         <field>
           <dc-schema>oairecerif</dc-schema>
