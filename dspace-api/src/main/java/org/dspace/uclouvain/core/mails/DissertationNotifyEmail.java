@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.core.mails;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,9 +22,11 @@ import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 
 public abstract class DissertationNotifyEmail extends AbstractNotifyEmail {
+    protected List<String> forcedManagers;
 
     public DissertationNotifyEmail(Context context, Item item) throws EmailFailedInitException {
         super(context, item);
+        forcedManagers = Arrays.asList(getConfigurationAttributes("additional-cc-addresses"));
     }
 
     @Override
@@ -31,6 +34,7 @@ public abstract class DissertationNotifyEmail extends AbstractNotifyEmail {
         List<String> ccAddresses = new ArrayList<>();
         ccAddresses.addAll(getSupervisorEmails(publication));
         ccAddresses.addAll(getManagerEmails(context, item));
+        ccAddresses.addAll(forcedManagers);
         return ccAddresses.stream().distinct().toList();
     }
 

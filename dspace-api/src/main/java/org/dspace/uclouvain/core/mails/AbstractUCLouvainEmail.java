@@ -43,6 +43,7 @@ public abstract class AbstractUCLouvainEmail implements UCLouvainEmail {
     // ATTRIBUTES ======================================================================================================
     protected String mailSubject;
     protected List<String> forcedRecipients;
+    protected String replyTo;
     protected HashMap<String, List<String>> metadataMap;
     protected Item item;
     protected Context context;
@@ -71,6 +72,7 @@ public abstract class AbstractUCLouvainEmail implements UCLouvainEmail {
         this.metadataMap = MetadataUtils.getValuesHashMap(item.getMetadata());
         this.mailSubject = getConfigurationAttribute("subject");
         this.forcedRecipients = Arrays.asList(getConfigurationAttributes("recipients"));
+        this.replyTo = getReplyTo();
     }
 
     protected String getConfigurationAttribute(String attribute) {
@@ -80,6 +82,19 @@ public abstract class AbstractUCLouvainEmail implements UCLouvainEmail {
     protected String[] getConfigurationAttributes(String attribute) {
         String propertyKey = String.format("uclouvain.%s.mail.%s", getConfigurationName(), attribute);
         return configService.getArrayProperty(propertyKey, new String[0]);
+    }
+
+    /**
+     * Get the 'reply-to' address from configuration.
+     * First check if it exists at the email level. If not use the global default config.
+     *
+     * @return The 'reply-to' address to use.
+     */
+    protected String getReplyTo() {
+        String configuredReplyTo = getConfigurationAttribute("reply-to");
+        return (configuredReplyTo != null)
+            ? configuredReplyTo
+            : configService.getProperty("uclouvain.default.mail.reply-to");
     }
 
     /**
@@ -116,6 +131,7 @@ public abstract class AbstractUCLouvainEmail implements UCLouvainEmail {
         try {
             Email email = Email.getEmail(getTemplatePath());
             email.setSubject(buildMailSubject());
+            email.setReplyTo(replyTo);
             email.addArgument(DateUtils.getLocaleDateString("dd/MM/yyyy - HH:mm:ss"));
 
             recipients.forEach(email::addRecipient);
