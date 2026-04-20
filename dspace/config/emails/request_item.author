@@ -80,11 +80,6 @@
             Pour répondre à cette demande, vous pouvez utiliser le lien suivant : ${params[6]}.<br/>
             Que vous choisissiez d'accepter ou de refuser cette demande, il est toujours préférable d'y répondre
         </p>
-        <h5>Attention:</h5>
-        <p>
-            <font style="color:red">Si vous n'êtes pas un auteur de ce document</font>, mais que vous l'avez soumis à la place de l'auteur, veuillez <b>rediriger ce message a/aux auteur(s)</b>.<br/>
-            Seuls les auteurs du document devraient décider d'envoyer une copie du/des fichier(s) attaché(s).
-        </p>
         <p>Si vous avez des questions au sujet de cette requête, vous pouvez contacter <a href="mailto:${params[10]}">${params[10]}.</a></p>
         <p style="margin-top:2rem">L'équipe ${config.get('dspace.name')}</p>
 
@@ -111,11 +106,6 @@
         <blockquote><p>${params[5]}</p></blockquote>
 #end
         <p>To answer, click ${params[6]}. Whether you choose to grant or deny the request, we think that it's in your best interest to respond.
-        <h5>Attention:</h5>
-        <p>
-            <font style="color:red">If you are not an author of this document</font>, and only submitted the document on the author's behalf, please <b>redirect this message to the author(s)</b>.<br/>
-            Only the author(s) should answer the request to send a copy.
-        </p>
         <p>If you have any questions concerning this request, please contact <a href="mailto:${params[10]}">${params[10]}</a>.</p>
         <p style="margin-top:3rem">The ${config.get('dspace.name')} Team</p>
     </body>

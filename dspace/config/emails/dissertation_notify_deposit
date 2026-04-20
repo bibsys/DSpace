@@ -58,7 +58,7 @@
     <p>Madame/Monsieur,</p>
     <p>
       Votre thèse a bien été encodée dans le dépôt DIAL.pr avec les détails ci-dessous.
-      Après votre défense publique, quand nous aurons reçu toutes les informations nécessaires (avis de réussite et autorisation de diffusion de la thèse signée par l'ADRE), votre thèse sera publiée dans DIAL.pr et vous en serez averti.e.<br/>
+      Après votre défense publique, quand nous aurons reçu toutes les informations nécessaires ("avis de réussite" et "autorisation de diffusion électronique d'une thèse universitaire - License de droits d'auteur"), votre thèse sera publiée dans DIAL.pr et vous en serez averti.e.<br/>
     </p>
     <h4 class="heading">Informations relatives à la thèse</h4>
     <table class="metadata-table" style="border: 1px solid #777">
@@ -81,12 +81,14 @@
     #end
 
     <p>L'équipe ${config.get('dspace.name')}.</p>
+    <br/>
+    <p>Vous avez une question ? <a href="mailto:dial@uclouvain.be">Contactez l'équipe DIAL</a> ou <a href="https://www.uclouvain.be/fr/bibliotheques/dial.pr">consultez les guides et tutoriels</a></p>
 
     <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
     <p>Dear Sir/Madam,</p>
     <p>
       Your dissertation has been well deposited into DIAL.pr with the following details.
-      After you public defense, when we will have received all the necessary informations (notice of success and authorization to disseminate the dissertation signed by the ADRE), your dissertation will be published in DIAL.pr and you will be notified.<br/>
+      After you public defense, when we will have received all the necessary informations ("notice of success" and "authorization for electronic dissemination of a doctoral thesis - Copyright License"), your dissertation will be published in DIAL.pr and you will be notified.<br/>
     </p>
     <h4 class="heading">Dissertation data</h4>
     <table class="metadata-table" style="border: 1px solid #777">
@@ -109,5 +111,7 @@
     #end
 
     <p>The ${config.get('dspace.name')} team.</p>
+    <br/>
+    <p>Do you have a question ? <a href="mailto:dial@uclouvain.be">Contact the DIAL team</a> or <a href="https://www.uclouvain.be/en/university-libraries/dial.pr">read the user guides and tutorials</a></p>
   </body>
 </html>
