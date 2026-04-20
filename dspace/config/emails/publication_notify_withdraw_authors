@@ -57,7 +57,7 @@
     </div>
     <p>Madame/Monsieur,</p>
     <p>
-      Nous tenons à vous informer qu'une publication dont vous êtes l'auteur/autrice vient d'être retirée de l'archive de DIAL.pr.<br/>
+      Nous tenons à vous informer qu'une publication dont vous êtes l'auteur/autrice vient d'être retirée de l'archive de DIAL.pr. Ceci signifie que cette publication n'est plus visible en parcourant le dépôt ni dans les résultats de recherche. Elle peut être retrouvée via votre onglet "Mes dépôts".<br/>
     </p>
     <p>Action opérée par l'utilisateur suivant: ${params[2]}</p>
     <h4 class="heading">Informations relatives à la publication</h4>
@@ -79,11 +79,13 @@
     </table>
 
     <p>L'équipe ${config.get('dspace.name')}.</p>
+    <br/>
+    <p>Vous avez une question ? <a href="mailto:dial@uclouvain.be">Contactez l'équipe DIAL</a> ou <a href="https://www.uclouvain.be/fr/bibliotheques/dial.pr">consultez les guides et tutoriels</a></p>
 
     <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
     <p>Dear Sir/Madam,</p>
     <p>
-      We would like to inform you that a publication where you are mentioned as an author has been withdrawn from the public archive of DIAL.pr.<br/>
+      We would like to inform you that a publication where you are mentioned as an author has been withdrawn from the public archive of DIAL.pr. This means that this publication is no longer visible when browsing the public archive nor in the search results. It's visible through your "My Submissions" tab.<br/>
     </p>
     <p>
       The action was performed by the following user: ${params[2]}
@@ -107,5 +109,7 @@
     </table>
 
     <p>The ${config.get('dspace.name')} team.</p>
+    <br/>
+    <p>Do you have a question ? <a href="mailto:dial@uclouvain.be">Contact the DIAL team</a> or <a href="https://www.uclouvain.be/en/university-libraries/dial.pr">read the user guides and tutorials</a></p>
   </body>
 </html>
