@@ -234,16 +234,26 @@ public class IndexEventConsumer implements Consumer {
                 indexObject(ctx, iu, true);
             }
         } finally {
-            if (!objectsToUpdate.isEmpty() || !uniqueIdsToDelete.isEmpty()) {
+            try {
+                if (!objectsToUpdate.isEmpty() || !uniqueIdsToDelete.isEmpty()) {
 
-                indexer.commit();
+                    indexer.commit();
 
-                // "free" the resources
-                objectsToUpdate.clear();
-                uniqueIdsToDelete.clear();
-                createdItemsToUpdate.clear();
+                    // "free" the resources
+                    objectsToUpdate.clear();
+                    uniqueIdsToDelete.clear();
+                    createdItemsToUpdate.clear();
+                }
+            } catch (Exception e) {
+                ctx.setMode(originalMode);
+                throw new Exception(
+                    "Could not commit changes to Solr in IndexEventConsumer ::"
+                    + " Objects to update were: " + objectsToUpdate.stream().map(IndexableObject::getID).toList()
+                    + " Objects to delete were: " + uniqueIdsToDelete
+                    + " Objects to create were: " + createdItemsToUpdate.stream().map(IndexableObject::getID).toList()
+                    + " :: " + e.getMessage()
+                );
             }
-
             ctx.setMode(originalMode);
         }
     }
