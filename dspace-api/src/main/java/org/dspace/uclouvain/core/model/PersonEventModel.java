@@ -18,6 +18,7 @@ import org.apache.commons.lang.StringUtils;
  * @param fgs The id of the person.
  * @param action The action that has been performed.
  * @param information Additional information for this event.
+ * @param bypassIDM Toggle this flag to bypass IDM validation.
  * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
@@ -25,6 +26,8 @@ public class PersonEventModel {
     private String fgs;
     private String action;
     private String information;
+    // This flag allows to bypass the idm validation.
+    private boolean bypassIDM = false;
 
     public static final String ACTION_CREATE = "create";
     public static final String ACTION_UPDATE = "update";
@@ -63,5 +66,13 @@ public class PersonEventModel {
 
     public void setInformation(String information) {
         this.information = information;
+    }
+
+    public boolean bypassIDM() {
+        return this.bypassIDM;
+    }
+
+    public void setBypassIDM(boolean bypassIDM) {
+        this.bypassIDM = bypassIDM;
     }
 }
