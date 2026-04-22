@@ -174,14 +174,14 @@ public class ProfileIngesterCLI extends AbstractCLICommand {
 
     /**
      * Using the recovered event, try to find and execute a profile action class.
-     * Only process the event if the person has a valid IDM entry id.
+     * Only process the event if the person has a valid IDM entry id or 'bypassIDM' mode is active.
      * 
      * @param context The current DSpace context.
      * @param event The event to get a profile action class for.
      */
     private void processEvent(Context context, PersonEventModel event) throws ProfileActionException {
         try {
-            if (idmService.isPersonIDMValid(event.getFgs())) {
+            if (event.bypassIDM() || idmService.isPersonIDMValid(event.getFgs())) {
                 ProfileActionFactory.getInstance().getProfileActionClass(event.getAction()).process(context, event);
             } else {
                 logger.info(
