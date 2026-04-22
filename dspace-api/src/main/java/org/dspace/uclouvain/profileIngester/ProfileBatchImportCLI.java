@@ -43,6 +43,12 @@ public class ProfileBatchImportCLI extends AbstractCLICommand {
         .desc("Optional event information string to send for each fgs. Default is null")
         .required(false)
         .build();
+    private static final Option OPT_EVENT_BYPASS_IDM = Option.builder("b")
+        .longOpt("bypass_idm")
+        .hasArg(false)
+        .required(false)
+        .desc("Optional flag to bypass the idm validation of the person event.")
+        .build();
     public static final String USAGE_DESCRIPTION =
         "A command-line tool to create events for profile ingester from a file containing fsg identifiers.";
 
@@ -58,6 +64,7 @@ public class ProfileBatchImportCLI extends AbstractCLICommand {
         serviceOptions.addOption(OPT_FILE);
         serviceOptions.addOption(OPT_EVENT_ACTION);
         serviceOptions.addOption(OPT_EVENT_INFORMATION);
+        serviceOptions.addOption(OPT_EVENT_BYPASS_IDM);
         infoOptions.addOption(OPT_HELP);
     }
 
@@ -70,12 +77,13 @@ public class ProfileBatchImportCLI extends AbstractCLICommand {
         String filePath = CLI.getOptionValue("f");
         String action = CLI.getOptionValue("ea", PersonEventModel.ACTION_CREATE);
         String information = CLI.getOptionValue("ei");
+        boolean bypassIDM = CLI.hasOption("b");
 
         if (!PersonEventModel.AVAILABLE_ACTIONS.contains(action)) {
             throw new IllegalArgumentException("Invalid event action type :: " + action);
         }
 
-        profileBatchImport.run(connector, filePath, action, information);
+        profileBatchImport.run(connector, filePath, action, information, bypassIDM);
     }
 
     /**
@@ -85,8 +93,11 @@ public class ProfileBatchImportCLI extends AbstractCLICommand {
      * @param filePath The path of the file containing the fgs identifiers.
      * @param action The action to use to craft the event.
      * @param info Any information to add to the event 'information' property.
+     * @param bypassIDM Whether or not to bypass idm validation at profile ingest.
      */
-    public void run(PersonEventConnector connector, String filePath, String action, String info) throws Exception {
+    public void run(
+        PersonEventConnector connector, String filePath, String action, String info, boolean bypassIDM
+    ) throws Exception {
         BufferedReader reader = new BufferedReader(new FileReader(filePath));
         logger.info("Found file, pushing entries to RabbitMQ...");
 
@@ -97,6 +108,9 @@ public class ProfileBatchImportCLI extends AbstractCLICommand {
             event.setFgs(line);
             event.setAction(action);
             event.setInformation(info);
+            if (bypassIDM) {
+                event.setBypassIDM(bypassIDM);
+            }
             try {
                 connector.publishJSONMessage(event);
                 pushed++;
