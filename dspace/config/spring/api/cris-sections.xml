@@ -7,8 +7,8 @@
         <property name="components">
             <list>
                 <ref bean="sectionresearchoutputs" />
-                <ref bean="sectionfundings_and_projects" />
-                <ref bean="sectionresearcherprofiles" />
+                <!--<ref bean="sectionfundings_and_projects" />-->
+                <!--<ref bean="sectionresearcherprofiles" />-->
                 <ref bean="sectionsite" />
             </list>
         </property>
@@ -20,7 +20,7 @@
         <constructor-arg name="sectionComponents">
             <list>
                 <list>
-                    <bean class="org.dspace.layout.CrisLayoutBrowseComponent">
+                    <!--<bean class="org.dspace.layout.CrisLayoutBrowseComponent">
                         <property name="browseNames">
                             <list>
                                 <value>rodept</value>
@@ -32,13 +32,13 @@
                             </list>
                         </property>
                         <property name="style" value="col-md-4"/>
-                    </bean>
+                    </bean>-->
                     <bean class="org.dspace.layout.CrisLayoutSearchComponent">
                         <property name="discoveryConfigurationName" value="researchoutputs" />
-                        <property name="style" value="col-md-8"/>
+                        <property name="style" value="col-md-12"/>
                     </bean>
                 </list>
-                <list>
+                <!--<list>
                     <bean class="org.dspace.layout.CrisLayoutTopComponent">
                         <property name="discoveryConfigurationName" value="researchoutputs" />
                         <property name="sortField" value="dc.date.accessioned" />
@@ -53,13 +53,13 @@
                         <property name="style" value="col-md-6"/>
                         <property name="numberOfItems" value="5"/>
                     </bean>
-                </list>
-                <list>
+                </list>-->
+                <!--<list>
                     <bean class="org.dspace.layout.CrisLayoutFacetComponent">
                         <property name="discoveryConfigurationName" value="researchoutputs" />
                         <property name="style" value="col-md-12"/>
                     </bean>
-                </list>
+                </list>-->
             </list>
         </constructor-arg>
     </bean>
@@ -125,7 +125,7 @@
         <constructor-arg name="visible" value="false"/>
         <constructor-arg name="sectionComponents">
           <list>
-            <list>
+            <!--<list>
                 <bean class="org.dspace.layout.CrisLayoutSearchComponent">
                     <property name="discoveryConfigurationName" value="site" />
                     <property name="style" value="col-md-12"/>
@@ -175,7 +175,7 @@
                     <property name="style" value="col-md-6"/>
                     <property name="numberOfItems" value="5"/>
                 </bean>
-            </list>
+            </list>-->
           </list>
         </constructor-arg>
     </bean>
