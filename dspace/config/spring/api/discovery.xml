@@ -714,12 +714,13 @@
                 <ref bean="graphPublicationByType" />
                 <ref bean="graphPublicationByDate" />
                 <ref bean="searchFilterAuthor" />
+                <ref bean="searchFilterCollectionName"/>
                 <ref bean="searchFilterSubject" />
-                <ref bean="searchFilterIssued" />
-                <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+                <!--<ref bean="searchFilterIssued" />-->
+                <!--<ref bean="searchFilterContentInOriginalBundle"/>-->
+                <!--<ref bean="searchFilterEntityType"/>-->
                 <ref bean="searchFilterLanguage" />
-                <ref bean="searchFilterAccessType"/>
+                <!--<ref bean="searchFilterAccessType"/>-->
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -732,6 +733,7 @@
                 <ref bean="graphPublicationByDate" />
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
+                <ref bean="searchFilterCollectionName"/>
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
@@ -1711,13 +1713,15 @@
         <!--Which sidebar facets are to be displayed-->
         <property name="sidebarFacets">
             <list>
+                <ref bean="searchFilterType" />
                 <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterEditor" />
-                <ref bean="searchFilterOrgUnit" />
+                <ref bean="searchFilterCollectionName" />
+                <!--<ref bean="searchFilterEditor" />-->
+                <!--<ref bean="searchFilterOrgUnit" />-->
                 <ref bean="searchFilterSubject" />
-                <ref bean="searchFilterFunding" />
+                <!--<ref bean="searchFilterFunding" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
-                <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterEntityType"/>-->
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -1725,16 +1729,18 @@
         <!--The search filters which can be used on the discovery search page-->
         <property name="searchFilters">
             <list>
+                <ref bean="searchFilterType" />
                 <ref bean="searchFilterTitle" />
                 <ref bean="searchFilterAuthor" />
-                <ref bean="searchFilterEditor" />
-                <ref bean="searchFilterOrgUnit" />
+                <!--<ref bean="searchFilterEditor" />-->
+                <!--<ref bean="searchFilterOrgUnit" />-->
                 <ref bean="searchFilterSubject" />
-                <ref bean="searchFilterFunding" />
+                <ref bean="searchFilterCollectionName" />
+                <!--<ref bean="searchFilterFunding" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
                 <ref bean="searchFilterFileNameInOriginalBundle" />
                 <ref bean="searchFilterFileDescriptionInOriginalBundle" />
-                <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterEntityType"/>-->
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -3057,7 +3063,7 @@
         <property name="facetLimit" value="5"/>
         <property name="sortOrderSidebar" value="COUNT"/>
         <property name="sortOrderFilterPage" value="COUNT"/>
-
+        <property name="isOpenByDefault" value="true"/>
 
     </bean>
 
@@ -3072,6 +3078,7 @@
         <property name="sortOrderSidebar" value="COUNT"/>
         <property name="sortOrderFilterPage" value="COUNT"/>
         <property name="splitter" value="::"/>
+        <property name="isOpenByDefault" value="true"/>
 
     </bean>
 
@@ -3131,7 +3138,7 @@
         <property name="facetLimit" value="5"/>
         <property name="sortOrderSidebar" value="COUNT"/>
         <property name="sortOrderFilterPage" value="COUNT"/>
-        <property name="isOpenByDefault" value="false"/>
+        <property name="isOpenByDefault" value="true"/>
         <property name="pageSize" value="10"/>
         <property name="exposeMinAndMaxValue" value="true"/>
 
@@ -3146,7 +3153,7 @@
         <property name="type" value="standard"/>
         <property name="sortOrderSidebar" value="COUNT"/>
         <property name="sortOrderFilterPage" value="COUNT"/>
-        <property name="isOpenByDefault" value="false"/>
+        <property name="isOpenByDefault" value="true"/>
         <property name="pageSize" value="10"/>
 
     </bean>
@@ -3204,11 +3211,27 @@
         <property name="indexFieldName" value="itemtype" />
         <property name="splitter" value="::" />
         <property name="onlyLastNodeRelevant" value="true" />
+        <property name="isOpenByDefault" value="true" />
         <property name="metadataFields">
             <list>
                 <value>dc.type</value>
             </list>
         </property>
+    </bean>
+
+    <bean id="searchFilterCollectionName" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="collectionName"/>
+        <property name="metadataFields">
+            <list>
+                <value>publication.collection.name</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="5"/>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
+        <property name="pageSize" value="10"/>
+        <property name="isOpenByDefault" value="true" />
+        <property name="exposeMinAndMaxValue" value="true"/>
     </bean>
 
     <bean id="searchFilterLanguage" class="org.dspace.discovery.configuration.MultiLanguageDiscoverSearchFilterFacet">
