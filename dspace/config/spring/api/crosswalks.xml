@@ -9,8 +9,8 @@
 	<bean class="org.dspace.content.integration.crosswalks.StreamDisseminationCrosswalkMapper">
 		<constructor-arg>
 			<map>
-				<entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex"></entry>
-				<entry key="endnote" value-ref="referCrosswalkEndnote"></entry>
+				<!--<entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex"></entry>
+				<entry key="endnote" value-ref="referCrosswalkEndnote"></entry>-->
 				
 				<entry key="publication-cerif-xml" value-ref="referCrosswalkPublicationCerifXml"></entry>
 				<entry key="publication-json" value-ref="cslItemDataCrosswalkJson"></entry>
@@ -21,7 +21,7 @@
 				<entry key="publication-chicago" value-ref="cslItemDataCrosswalkChicago"></entry>
 				<entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry>
 
-				<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
+				<!--<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
 				<entry key="person-cerif-xml" value-ref="referCrosswalkPersonCerifXml"></entry>
 				<entry key="person-json" value-ref="referCrosswalkPersonJson"></entry>
 				<entry key="person-pdf" value-ref="pdfCrosswalkPerson"></entry>
@@ -68,7 +68,7 @@
 				<entry key="event-cerif-xml" value-ref="referCrosswalkEventCerifXml"></entry>
 				
 				<entry key="collection-xls" value-ref="xlsCrosswalkCollection"></entry>
-                <entry key="item-zip" value-ref="zipCrosswalk"></entry>
+                <entry key="item-zip" value-ref="zipCrosswalk"></entry>-->
 			</map>
 		</constructor-arg>
 	</bean>
