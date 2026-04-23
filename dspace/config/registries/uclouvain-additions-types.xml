@@ -28,6 +28,18 @@
         <element>audience</element>
         <scope_note>Target audience for an item</scope_note>
     </dc-type>
+    <!-- PUBLICATION SCHEMA -->
+    <dc-schema>
+        <name>publication</name>
+        <namespace>https://uclouvain.be/ontology/publication</namespace>
+    </dc-schema>
+    <!-- COLLECTIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>collection</element>
+        <qualifier>name</qualifier>
+        <scope_note>To specify the collection name to which the publication belongs</scope_note>
+    </dc-type>
     <!-- LOM SCHEMA -->
     <dc-schema>
         <name>lom</name>
