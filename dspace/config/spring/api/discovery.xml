@@ -800,6 +800,8 @@
                 <ref bean="searchFilterPersonPrivateEmail"/>
                 <ref bean="searchFilterPersonOfficialEmail"/>
                 <ref bean="searchFilterPersonFGS"/>
+                <ref bean="searchFilterJournalISSN"/>
+                <ref bean="searchFilterJournalEISSN"/>
             </list>
         </property>
         <!--The sort filters for the discovery search (same as defaultConfiguration above)-->
@@ -3562,6 +3564,28 @@
         <property name="metadataFields">
             <list>
                 <value>person.identifier.fgs</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+
+    <bean id="searchFilterJournalISSN" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="issn"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.identifier.issn</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+
+    <bean id="searchFilterJournalEISSN" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="eissn"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.identifier.eissn</value>
             </list>
         </property>
         <property name="isOpenByDefault" value="false"/>
