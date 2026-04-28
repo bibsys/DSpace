@@ -31,10 +31,15 @@ public class Journal extends ItemModel {
     public static final String TITLE_FIELD = getField("title", "dc.title");
     public static final String ISSN_FIELD = getField("issn", "dc.identifier.issn");
     public static final String EISSN_FIELD = getField("eissn", "dc.identifier.eissn");
-    private static final String PUBLISHER_NAME_FIELD = getField("publisherName", "dc.publisher");
-    private static final String PUBLISHER_LOCATION_FIELD = getField("publisherLocation", "dc.publisher.location");
-    private static final String PEER_REVIEWED_FIELD = getField("peerReviewed", "journal.peerReviewed");
-    private static final String STATUS_CODE_FIELD = getField("statusCode", "journal.statusCode");
+    public static final String PUBLISHER_NAME_FIELD = getField("publisherName", "dc.publisher");
+    public static final String PUBLISHER_LOCATION_FIELD = getField("publisherLocation", "dc.publisher.location");
+    public static final String PEER_REVIEWED_FIELD = getField("peerReviewed", "journal.peerReviewed");
+    public static final String STATUS_CODE_FIELD = getField("statusCode", "journal.statusCode");
+
+    // Use these fields for exact search in Solr.
+    public static final String TITLE_MATCH_FIELD = "title_keyword";
+    public static final String ISSN_MATCH_FIELD = "issn_keyword";
+    public static final String EISSN_MATCH_FIELD = "eissn_keyword";
 
     // CONSTRUCTOR =====================================================================================================
     public Journal(Item item) throws InvalidModelEntityTypeException {
