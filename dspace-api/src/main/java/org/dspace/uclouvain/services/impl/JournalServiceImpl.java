@@ -36,17 +36,17 @@ public class JournalServiceImpl implements JournalService {
 
     @Override
     public Journal findByIssn(Context context, String issn) {
-        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.ISSN_FIELD, issn));
+        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.ISSN_MATCH_FIELD, issn));
     }
     @Override
     public Journal findByEissn(Context context, String eissn) {
-        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.EISSN_FIELD, eissn));
+        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.EISSN_MATCH_FIELD, eissn));
     }
     @Override
     public Journal findByIdentifiers(Context context, String issn, String eissn) {
         String query = Stream.of(
-            isNotEmpty(issn) ? "%s: \"%s\"".formatted(Journal.ISSN_FIELD, issn) : null,
-            isNotEmpty(eissn) ? "%s: \"%s\"".formatted(Journal.EISSN_FIELD, eissn) : null
+            isNotEmpty(issn) ? "%s: \"%s\"".formatted(Journal.ISSN_MATCH_FIELD, issn) : null,
+            isNotEmpty(eissn) ? "%s: \"%s\"".formatted(Journal.EISSN_MATCH_FIELD, eissn) : null
         ).filter(Objects::nonNull).collect(Collectors.joining(" OR "));
 
         if (query.isEmpty()) {
@@ -57,7 +57,7 @@ public class JournalServiceImpl implements JournalService {
     }
     @Override
     public Journal findByTitle(Context context, String journalTitle) {
-        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.TITLE_FIELD, journalTitle));
+        return searchByQuery(context, "%s:\"%s\"".formatted(Journal.TITLE_MATCH_FIELD, journalTitle));
     }
 
     private Journal searchByQuery(Context context, String query) {

@@ -32,6 +32,9 @@ public class CommentMetadataChangesLogger {
     CommentService commentService;
 
     public void logChanges(Context context, Item item, Changes<MetadataValueSnapshot> changes) throws SQLException {
+        if (context.ignoreAutomaticCommentCreation()) {
+            return;
+        }
         String content = Stream.of(
             changes.added().stream().map(this::convertAddMetadataSnapshot),
             changes.removed().stream().map(this::convertRemoveMetadataSnapshot),

@@ -45,7 +45,11 @@ public class CommentServiceImpl implements CommentService {
     public Comment create(Context context, Item owner, EPerson author, String content) throws SQLException {
         Comment comment = buildCommentSkeleton(owner, content);
         comment.setAuthorAuthority(author);
-        comment.setAuthorName(author.getFullName());
+        if (author != null) {
+            comment.setAuthorName(author.getFullName());
+        } else {
+            comment.setAuthorName("Anonymous");
+        }
         return createComment(context, comment);
     }
 
