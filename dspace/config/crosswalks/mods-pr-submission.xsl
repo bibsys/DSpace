@@ -93,6 +93,15 @@
             <xsl:attribute name="qualifier">maintype</xsl:attribute>
             <xsl:value-of select="normalize-space($value)"/>
         </xsl:element>
+        <!-- Special calls depending on document type -->
+        <xsl:if test="normalize-space($value)='text::conference-speech'">
+          <!-- The `publication.speech.status` should determined by conference metadata... but for some speech, we
+               don't have any conference metadata, but we have metadata about host (serial|book).
+               So we need a special template to create this DIM metadata -->
+          <xsl:call-template name="speechStatus"/>
+          <!-- just the same for 'publication.isAbstract' -->
+          <xsl:call-template name="isAbstract"/>
+        </xsl:if>
     </xsl:template>
     <xsl:template match="/mods:mods/mods:note[@type='document subtype']">
         <xsl:variable name="subtype">
@@ -839,26 +848,39 @@
     <!--   * originInfo/place                     -> publication.conference.location -->
     <!--   * originInfo/dateOther[@point='start'] -> publication.conference.startDate -->
     <!--   * originInfo/dateOther[@point='end']   -> publication.conference.endDate -->
+    <xsl:template name="speechStatus">
+      <xsl:variable name="status">
+        <xsl:choose>
+          <xsl:when test="//mods:relatedItem[@otherType='host']/mods:genre/text() = 'journal'">published_in_serial</xsl:when>
+          <xsl:when test="//mods:relatedItem[@otherType='host']/mods:genre/text() = 'book'">published_in_book</xsl:when>
+          <xsl:otherwise>not_published</xsl:otherwise>
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:element name="dim:field">
+        <xsl:attribute name="mdschema">publication</xsl:attribute>
+        <xsl:attribute name="element">speech</xsl:attribute>
+        <xsl:attribute name="qualifier">status</xsl:attribute>
+        <xsl:value-of select="$status"/>
+      </xsl:element>
+    </xsl:template>
+    <xsl:template name="isAbstract">
+      <xsl:if test="//mods:note[@type='is abstract'] = 'true'">
+        <xsl:element name="dim:field">
+          <xsl:attribute name="mdschema">publication</xsl:attribute>
+          <xsl:attribute name="element">isAbstract</xsl:attribute>
+          <xsl:text>true</xsl:text>
+        </xsl:element>
+      </xsl:if>
+    </xsl:template>
     <xsl:template match="/mods:mods/mods:relatedItem[@otherType='conference']">
-        <xsl:variable name="status">
-            <xsl:choose>
-                <xsl:when test="../mods:relatedItem[@otherType='host']/mods:genre/text() = 'journal'">published_in_serial</xsl:when>
-                <xsl:when test="../mods:relatedItem[@otherType='host']/mods:genre/text() = 'book'">published_in_book</xsl:when>
-                <xsl:otherwise>not_published</xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">publication</xsl:attribute>
-            <xsl:attribute name="element">speech</xsl:attribute>
-            <xsl:attribute name="qualifier">status</xsl:attribute>
-            <xsl:value-of select="$status"/>
-        </xsl:element>
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">publication</xsl:attribute>
-            <xsl:attribute name="element">conference</xsl:attribute>
-            <xsl:attribute name="qualifier">name</xsl:attribute>
-            <xsl:value-of select="./mods:titleInfo/mods:title"/>
-        </xsl:element>
+        <xsl:if test="./mods:titleInfo/mods:title">
+          <xsl:element name="dim:field">
+              <xsl:attribute name="mdschema">publication</xsl:attribute>
+              <xsl:attribute name="element">conference</xsl:attribute>
+              <xsl:attribute name="qualifier">name</xsl:attribute>
+              <xsl:value-of select="./mods:titleInfo/mods:title"/>
+          </xsl:element>
+        </xsl:if>
         <xsl:if test="./mods:originInfo/mods:place">
             <xsl:element name="dim:field">
                 <xsl:attribute name="mdschema">publication</xsl:attribute>
@@ -881,13 +903,6 @@
                 <xsl:attribute name="element">conference</xsl:attribute>
                 <xsl:attribute name="qualifier">endDate</xsl:attribute>
                 <xsl:value-of select="./mods:originInfo/mods:dateOther[@point='end']"/>
-            </xsl:element>
-        </xsl:if>
-        <xsl:if test="../mods:note[@type='is abstract'] = 'true'">
-            <xsl:element name="dim:field">
-                <xsl:attribute name="mdschema">publication</xsl:attribute>
-                <xsl:attribute name="element">isAbstract</xsl:attribute>
-                <xsl:text>true</xsl:text>
             </xsl:element>
         </xsl:if>
     </xsl:template>
