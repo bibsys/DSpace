@@ -7,6 +7,8 @@
  */
 package org.dspace.app.rest;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,9 +29,12 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.search.model.SolrSearchResponse;
 import org.dspace.uclouvain.search.services.UCLouvainSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,27 +53,37 @@ public class SearchRestController {
     @Autowired
     ItemService itemService;
 
-    IndexingService indexer = DSpaceServicesFactory.getInstance().getServiceManager()
-                                                   .getServiceByName(IndexingService.class.getName(),
-                                                                     IndexingService.class);
+    IndexingService indexer = DSpaceServicesFactory
+        .getInstance().getServiceManager()
+        .getServiceByName(IndexingService.class.getName(), IndexingService.class);
     IndexObjectFactoryFactory indexObjectServiceFactory = IndexObjectFactoryFactory.getInstance();
+
+    /**
+     * Prevent Spring from splitting request parameters (like fq) on commas.
+     * This is essential for Solr queries where values often contain commas (e.g., "Doe, John").
+     */
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(String[].class, new StringArrayPropertyEditor(null));
+    }
 
     // MAIN ENDPOINTS --------------------------------------------------------------------------------------------------
 
     @GetMapping
-    // Allow user to access to the search endpoint if he is a member of the configured group.
     @PreAuthorize("@groupSecurity.isMemberOf('Publication API Search')")
     public ResponseEntity<?> search(
         HttpServletResponse response, HttpServletRequest request,
         @RequestParam(value = "q", defaultValue = "*:*") String query,
-        @RequestParam(value = "fq", required = false) List<String> filterQueries,
+        @RequestParam(value = "fq", required = false) String[] filterQueries,
         @RequestParam(value = "page", defaultValue = "0") int page,
         @RequestParam(value = "size", defaultValue = "10") int size
     ) {
         Context context = ContextUtil.obtainContext(request);
         try {
-            SolrSearchResponse res = uclouvainSearchService
-                .searchPublications(context, query, filterQueries, page, size);
+            List<String> fqList = filterQueries != null
+                ? Arrays.asList(filterQueries)
+                : Collections.emptyList();
+            SolrSearchResponse res = uclouvainSearchService.searchPublications(context, query, fqList, page, size);
             return ResponseEntity.ok(res);
         } catch (SearchServiceException e) {
             throw new InvalidSearchRequestException(e.getMessage(), e);
@@ -88,21 +103,19 @@ public class SearchRestController {
         try {
             Item item = itemService.find(context, uuid);
             if (item == null) {
-                return ResponseEntity.badRequest()
+                return ResponseEntity
+                    .badRequest()
                     .body("Item not found for %s".formatted(uuid.toString()));
             }
-
             IndexableObject io = indexObjectServiceFactory.getIndexableObjects(context, item).stream()
                 .findFirst()
                 .orElse(null);
-
             if (io == null) {
-                return ResponseEntity.badRequest()
+                return ResponseEntity
+                    .badRequest()
                     .body("Cannot find an indexable object for %s".formatted(uuid.toString()));
             }
-
             indexer.indexContent(context, io, true, true);
-
             return ResponseEntity.ok("%s indexed".formatted(uuid.toString()));
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
