@@ -24,6 +24,7 @@
         <entry key-ref="dcPisbn" value-ref="grobidPisbnContributor" />
         <entry key-ref="dcAbstract" value-ref="grobidAbstractContributor" />
         <entry key-ref="dcAllKeyword" value-ref="grobidKeywordsContributor" />
+        <entry key-ref="grobid.etal" value-ref="grobidEtAlContributor" />
         <entry key-ref="grobid.doi" value-ref="grobidDoiContributor" />
         <entry key-ref="grobid.journalVolume" value-ref="grobidSerialVolume"/>
         <entry key-ref="grobid.journalIssue" value-ref="grobidSerialIssue"/>
@@ -44,6 +45,11 @@
     <util:map id="authorAdditionalMetadata" map-class="java.util.HashMap" key-type="java.lang.String" value-type="java.lang.String">
         <entry key="authors.role" value="author" />
     </util:map>
+
+    <bean id="grobidEtAlContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
+        <property name="field" ref="grobid.etal"/>
+        <property name="key" value="analyticetal" />
+    </bean>
 
     <bean id="grobidJournalContributor" class="org.dspace.importer.external.metadatamapping.contributor.SimpleMetadataContributor">
         <property name="field" ref="grobid.journalTitle"/>
@@ -122,5 +128,8 @@
     </bean>
     <bean id="grobid.journalTitle" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
         <constructor-arg value="dc.relation.journal"/>
+    </bean>
+    <bean id="grobid.etal" class="org.dspace.importer.external.metadatamapping.MetadataFieldConfig">
+      <constructor-arg value="dc.contributor.etal"/>
     </bean>
 </beans>

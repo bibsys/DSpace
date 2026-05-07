@@ -18,6 +18,16 @@ import org.dspace.uclouvain.core.model.MetadataField;
 
 public abstract class UCLouvainImportSourceServiceImpl implements UCLouvainImportSourceService {
     public abstract List<MetadataValueDTO> getMetadataList(String query);
+    public int authorLimit = Integer.MAX_VALUE;
+
+    /**
+     *  Method to set the limit of author to extract from external sources
+     *  @param authorLimit the number of author to extract. Use -1 to unlimited extraction
+     */
+    public void setAuthorLimit(int authorLimit) {
+        this.authorLimit = authorLimit;
+    }
+
 
     /**
      * Adds a metadata to the given metadata list.
