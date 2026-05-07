@@ -78,8 +78,8 @@ public class Journal extends ItemModel {
         return Boolean.parseBoolean(getFirstMetadataValue(PEER_REVIEWED_FIELD));
     }
 
-    public String isPeerReviewedString() {
-        return getFirstMetadataValue(PEER_REVIEWED_FIELD);
+    public String getPeerReviewed() {
+        return Boolean.toString(isPeerReviewed());
     }
 
     public String getStatusCode() {
@@ -90,7 +90,7 @@ public class Journal extends ItemModel {
      * Get the metadata field string from a configuration key.
      * If no config is found for the given key, use given default value.
      * 
-     * @param fieldName The key of the metadatafield configuration to find.
+     * @param fieldName The key of the metadata field configuration to find.
      * @param defaultValue The default value to use in case the config is not found.
      * @return The value of the config key or default value if not found.
      */

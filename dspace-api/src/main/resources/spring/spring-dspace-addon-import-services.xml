@@ -66,6 +66,7 @@
 
     <bean id="customArXivImportService" class="org.dspace.uclouvain.external.importer.xml.arXiv.UCLouvainArXivImportSourceService">
         <property name="url" value="http://export.arxiv.org/api/query"/>
+      <property name="authorLimit" value="${uclouvain.external-source.authors.limit}"/>
     </bean>
 
     <bean id="ArXivImportService"
@@ -80,10 +81,12 @@
     <bean id="customPubmedImportService" class="org.dspace.uclouvain.external.importer.xml.pubmed.UCLouvainPubmedImportSourceService">
         <property name="urlFetch" value="${pubmed.url.fetch}"/>
         <property name="urlSearch" value="${pubmed.url.search}"/>
+        <property name="authorLimit" value="${uclouvain.external-source.authors.limit}"/>
     </bean>
 
     <bean id="customCrossRefImportService" class="org.dspace.uclouvain.external.importer.json.crossref.UCLouvainCrossRefImportSourceService">
         <property name="url" value="${crossref.url}"/>
+        <property name="authorLimit" value="${uclouvain.external-source.authors.limit}"/>
     </bean>
 
     <bean id="pubmedImportService"
@@ -271,6 +274,8 @@
             </list>
         </property>
         <property name="metadataFieldMap" ref="grobidMetadataFieldMap"></property>
+        <property name="authorLimit" value="${uclouvain.external-source.authors.limit}"/>
+        <property name="consolidateHeader" value="CONSOLIDATE_AND_INJECT_METADATA"/>
     </bean>
 
 </beans>
