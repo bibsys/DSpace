@@ -272,7 +272,7 @@
       <step id="publication-funding" />
     </submission-process>
     <submission-process name="dissertation">
-      <step id="extractionstep" />
+      <!--<step id="extractionstep" />--> <!-- No need metadata enrichment (grobe, crossref, ...) for dissertation -->
       <step id="correction" />
       <step id="upload-mandatory" />
       <step id="dissertation-type"/>
