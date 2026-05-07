@@ -6,34 +6,16 @@
         "password": "admin"
     }],
     "users":[{
-        "email": "librarian@dspace.org",
-        "lastname": "Cover",
-        "firstname": "Harry",
-        "groups": ["librarian"],
-        "password": "librarian"
-    }, {
         "email": "manager@dspace.org",
-        "lastname": "Melmou",
-        "firstname": "Cara",
-        "groups": ["manager"],
-        "password": "manager"
-    }, {
-        "email": "manager2@dspace.org",
-        "lastname": "Éha",
-        "firstname": "Aline",
-        "groups": ["manager", "librarian"],
+        "lastname": "Croche",
+        "firstname": "Sarah",
+        "groups": ["Manager"],
         "password": "manager"
     }, {
         "email": "user1@dspace.org",
-        "lastname": "Affeu",
-        "firstname": "Pierre",
-        "groups": ["student"],
-        "password": "user"
-    }, {
-        "email": "user2@dspace.org",
-        "lastname": "Hochon",
-        "firstname": "Paul",
-        "groups": ["student"],
+        "lastname": "Permann",
+        "firstname": "Sue",
+        "groups": ["Authenticated users"],
         "password": "user"
     }]
 }
