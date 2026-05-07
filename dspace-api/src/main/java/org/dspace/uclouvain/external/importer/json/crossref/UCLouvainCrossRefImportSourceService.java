@@ -129,8 +129,13 @@ public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSou
     private List<MetadataValueDTO> extractAuthors(Context context, ReadContext root) {
         List<MetadataValueDTO> mdValues = new ArrayList<>();
         List<Map<String, String>> authors = root.read("$.author");
-        if (authors == null) {
+        if (authors == null || authors.isEmpty()) {
             return mdValues;
+        }
+
+        if (authors.size() > authorLimit) {
+            authors = authors.subList(0, authorLimit);
+            addMetadata(mdValues, Publication.AUTHOR_ETAL_FIELD, "true", null, CF_UNSET, false);
         }
 
         for (Map<String, String> author : authors) {
@@ -336,7 +341,7 @@ public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSou
             addMetadata(mdValues, Publication.EDITOR_LOCATION_FIELD,
                 journal.getPublisherLocation(), authority, CF_ACCEPTED, false);
             addMetadata(mdValues, Publication.JOURNAL_PEER_REVIEWED_FIELD,
-                journal.isPeerReviewedString(), authority, CF_ACCEPTED, false);
+                journal.getPeerReviewed(), authority, CF_ACCEPTED, false);
             return mdValues;
         }
 

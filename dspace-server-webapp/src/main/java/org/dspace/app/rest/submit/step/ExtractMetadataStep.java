@@ -71,9 +71,10 @@ public class ExtractMetadataStep implements ListenerProcessingStep, UploadableSt
     private MetadataListener listener = new DSpace().getSingletonService(MetadataListener.class);
 
     // List of fields that can be overridden by external import.
-    // For theses fields we will use SET action instead of ADD.
+    // For these fields we will use SET action instead of ADD.
     private final List<String> acceptedOverrides = Arrays.asList(
-        Publication.JOURNAL_PEER_REVIEWED_FIELD
+        Publication.JOURNAL_PEER_REVIEWED_FIELD,
+        Publication.AUTHOR_ETAL_FIELD
     );
 
     // we need to use thread local as we need to store the status of the item before that changes are performed
