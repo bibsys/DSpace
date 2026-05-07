@@ -158,16 +158,7 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
     private void addAncestorIdentifier(
             Context context, DSpaceObject dso, METSManifest manifest, PackageParameters params
     ) throws SQLException {
-        // FEDORA PID ---------------------------------------------------------
-        if (dso.getType() == Constants.ITEM && !params.workflowEnabled()) { // Only applied for ITEM
-            Item item = (Item) dso;
-            String fedoraPid = manifest.getMets().getAttributeValue("ID");
-            if (fedoraPid == null || fedoraPid.isEmpty()) {
-                return;
-            }
-            fedoraPid = fedoraPid.replace("-", ":"); // ID attribute use dash, but we want to use the original pattern
-            itemService.addMetadata(context, item, "fedora", "pid", null, null, fedoraPid);
-        }
+        // do nothing
     }
 
     /**

@@ -20,71 +20,36 @@
     <dc-type>
         <schema>dc</schema>
         <element>identifier</element>
-        <qualifier>fedora</qualifier>
-        <scope_note>To store original FedoraCommons PID</scope_note>
+        <qualifier>legacyOER</qualifier>
+        <scope_note>To store original oer ID</scope_note>
     </dc-type>
-    <!-- AUTHORS SCHEMA -->
+    <dc-type>
+        <schema>dc</schema>
+        <element>audience</element>
+        <scope_note>Target audience for an item</scope_note>
+    </dc-type>
+    <!-- LOM SCHEMA -->
     <dc-schema>
-        <name>authors</name>
-        <namespace>https://uclouvain.be/ontology/persons</namespace>
+        <name>lom</name>
+        <namespace>http://ltsc.ieee.org/xsd/LOM</namespace>
     </dc-schema>
     <dc-type>
-        <schema>authors</schema>
-        <element>email</element>
-        <qualifier />
-        <scope_note>Author email</scope_note>
+        <schema>lom</schema>
+        <element>educational</element>
+        <qualifier>language</qualifier>
+        <scope_note>Educational language</scope_note>
     </dc-type>
     <dc-type>
-        <schema>authors</schema>
-        <element>identifier</element>
-        <qualifier>fgs</qualifier>
-        <scope_note>UCLouvain global ID (aka FGS number)</scope_note>
+        <schema>lom</schema>
+        <element>educational</element>
+        <qualifier>typicalAgeRange</qualifier>
+        <scope_note>The typical expected age range</scope_note>
     </dc-type>
     <dc-type>
-        <schema>authors</schema>
-        <element>identifier</element>
-        <qualifier>noma</qualifier>
-        <scope_note>UCLouvain specific student ID</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>authors</schema>
-        <element>identifier</element>
-        <qualifier>orcid</qualifier>
-        <scope_note>Orcid ID</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>authors</schema>
-        <element>institution</element>
-        <qualifier>code</qualifier>
-        <scope_note>Author institution code at the publication datetime (i.e. 'UCLouvain')</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>authors</schema>
-        <element>institution</element>
-        <qualifier>name</qualifier>
-        <scope_note>Author institution full-name at the publication datetime (i.e. 'Université
-            catholique de Louvain')</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>authors</schema>
-        <element>role</element>
-        <qualifier />
-        <scope_note>Author role in this publication</scope_note>
-    </dc-type>
-    <!-- FEDORA SCHEMA -->
-    <dc-schema>
-        <name>fedora</name>
-        <namespace>https://fedora.lyrasis.org/resources/schema</namespace>
-    </dc-schema>
-    <dc-type>
-        <schema>fedora</schema>
-        <element>pid</element>
-        <scope_note>FedoraCommons object pid</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>fedora</schema>
-        <element>contentmodels</element>
-        <scope_note>FedoraCommons object content model</scope_note>
+        <schema>lom</schema>
+        <element>educational</element>
+        <qualifier>typicalLearningTime</qualifier>
+        <scope_note>The typical learning time of a course</scope_note>
     </dc-type>
     <!-- TAG SCHEMA -->
     <dc-schema>
@@ -95,10 +60,5 @@
         <schema>tag</schema>
         <element>certified</element>
         <scope_note>Specify the object is certified by a manager user</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>fedora</schema>
-        <element>contentmodels</element>
-        <scope_note>FedoraCommons object content model</scope_note>
     </dc-type>
 </dspace-dc-types>
