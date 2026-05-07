@@ -7,7 +7,7 @@
  */
 package org.dspace.submit.extraction;
 
-import static org.dspace.submit.extraction.grobid.client.ConsolidateHeaderEnum.CONSOLIDATE_AND_INJECT_METADATA;
+import static org.dspace.submit.extraction.grobid.client.ConsolidateHeaderEnum.NO_CONSOLIDATION;
 
 import java.io.InputStream;
 import java.util.List;
@@ -42,6 +42,7 @@ import org.dspace.submit.extraction.grobid.TeiHeader;
 import org.dspace.submit.extraction.grobid.Term;
 import org.dspace.submit.extraction.grobid.TextClass;
 import org.dspace.submit.extraction.grobid.Title;
+import org.dspace.submit.extraction.grobid.client.ConsolidateHeaderEnum;
 import org.dspace.submit.extraction.grobid.client.GrobidClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -56,6 +57,17 @@ public class GrobidImportMetadataSourceServiceImpl extends AbstractPlainMetadata
 
     @Autowired
     private GrobidClient grobidClient;
+    private int authorLimit = -1;
+    private ConsolidateHeaderEnum consolidateHeader = NO_CONSOLIDATION;
+
+    // SETTER ==========================================================================================================
+    public void setAuthorLimit(int authorLimit) {
+        this.authorLimit = authorLimit;
+    }
+    public void setConsolidateHeader(ConsolidateHeaderEnum consolidateHeader) {
+        this.consolidateHeader = consolidateHeader;
+    }
+
 
     @Override
     public String getImportSource() {
@@ -65,7 +77,7 @@ public class GrobidImportMetadataSourceServiceImpl extends AbstractPlainMetadata
     @Override
     protected List<PlainMetadataSourceDto> readData(InputStream inputStream) throws FileSourceException {
         try {
-            TEI tei = grobidClient.processHeaderDocument(inputStream, CONSOLIDATE_AND_INJECT_METADATA);
+            TEI tei = grobidClient.processHeaderDocument(inputStream, consolidateHeader);
             return List.of(convertToPlainMetadataSourceDto(tei.getTeiHeader()));
         } catch (RuntimeException ex) {
             LOGGER.error("An error occurs processing header document", ex);
@@ -123,9 +135,20 @@ public class GrobidImportMetadataSourceServiceImpl extends AbstractPlainMetadata
     }
 
     private void extractInfo(PlainMetadataSourceDto meatadata, List<Object> objects, String prefix) {
+        int extractedAuthorsCount = 0;
+        boolean addedEtAl = false;
+
         for (Object object : objects) {
             if (object instanceof Author) {
-                extractAuthors(meatadata, object, prefix);
+                boolean hasNoLimit = authorLimit < 0;
+                boolean withinLimit = extractedAuthorsCount < authorLimit;
+                if (hasNoLimit || withinLimit) {
+                    extractAuthors(meatadata, object, prefix);
+                    extractedAuthorsCount++;
+                } else if (!addedEtAl) {
+                    meatadata.addMetadata((prefix + "etal").toLowerCase(), "true");
+                    addedEtAl = true;
+                }
             } else if (object instanceof Title) {
                 extractTitle(meatadata, object, prefix);
             } else if (object instanceof Idno) {

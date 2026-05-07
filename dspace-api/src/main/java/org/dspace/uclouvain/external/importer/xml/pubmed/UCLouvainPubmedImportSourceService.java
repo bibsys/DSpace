@@ -144,6 +144,10 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
     private List<MetadataValueDTO> extractAuthors(Context context, Element root) {
         List<MetadataValueDTO> mdValues = new ArrayList<>();
         List<Element> authors = buildXpath("//AuthorList/Author").evaluate(root);
+        if (authors.size() > authorLimit) {
+            authors = authors.subList(0, authorLimit);
+            addMetadata(mdValues, Publication.AUTHOR_ETAL_FIELD, "true", null, CF_UNSET, false);
+        }
         for (Element author : authors) {
 
             Element identifier = author.getChild("Identifier");
@@ -254,7 +258,7 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
             addMetadata(mdValues, Publication.EDITOR_LOCATION_FIELD,
                 journal.getPublisherLocation(), authority, confidence, false);
             addMetadata(mdValues, Publication.JOURNAL_PEER_REVIEWED_FIELD,
-                journal.isPeerReviewedString(), authority, confidence, false);
+                journal.getPeerReviewed(), authority, confidence, false);
         } else {
             addMetadata(mdValues, Publication.JOURNAL_ISSN_FIELD, issn, null, CF_UNSET, false);
             addMetadata(mdValues, Publication.JOURNAL_EISSN_FIELD, eissn, null, CF_UNSET, false);
