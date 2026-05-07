@@ -52,7 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A command-line tool to batch ingest some SIP in METS packager format from Fedora.
+ * A command-line tool to batch ingest some SIP in METS packager format from OER.
  *
  * USAGE:
  *   dspace dsrun org.dspace.uclouvain.administer.RabbitMQPackager -e [mail] -q [queue_name] -E
@@ -151,6 +151,7 @@ public class RabbitMQPackager extends AbstractCLICommand {
      * @param errorQueueName The RabbitMQ queue name where the error messages will be published.
      */
     private void run(String email, String queueName, String errorQueueName) throws Exception {
+
         // Create a new context and populate it with required data.
         Context context = new Context();
         EPerson ePerson = ePersonService.findByEmail(context, email);
@@ -230,13 +231,13 @@ public class RabbitMQPackager extends AbstractCLICommand {
                 throw new PackageException("Invalid METS manifest");
             }
             // Get the PID from METS manifest && check if PID already exists into the system.
-            String fedoraPid = manifest.getID();
-            if (fedoraPid == null) {
-                throw new PackageException("Unable to find original PID");
+            String oerId = manifest.getID();
+            if (oerId == null) {
+                throw new PackageException("Unable to find original ID");
             }
-            fedoraPid = fedoraPid.replace("-", ":");
-            logger.info("\tFedora pid is :: " + fedoraPid);
-            DSpaceObject objectToReplace = getObjectFromIdentifier(context, "fedora.pid", fedoraPid);
+
+            logger.info("\tOer id is :: " + oerId);
+            DSpaceObject objectToReplace = getObjectFromIdentifier(context, "dc.identifier.legacyOER", oerId);
             // Ingest the object into DSpace system
             //   * If the `objectToReplace` is null, the `replace` function will simply ingest.
             //   * If ingest/replace is well done, we can remove the working packager file.

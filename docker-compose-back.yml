@@ -6,7 +6,7 @@ networks:
         - subnet: 192.168.0.0/24
 services:
   dspace: 
-    container_name: dspace
+    container_name: dspace-oer
     environment:
       dspace__P__dir: /dspace
       dspace__P__server__P__url: http://localhost:8080/server
@@ -20,7 +20,7 @@ services:
       # from the host machine. This IP range MUST correspond to the 'dspacenet' subnet defined above.
       proxies__P__trusted__P__ipranges: '192.168.0'
     # Will probably be modified, the dspace backend image
-    image: "test/dspace-cris"
+    image: "test/dspace-cris-oer"
     # build:
     #   context: .
     #   dockerfile: Dockerfile
@@ -52,7 +52,7 @@ services:
       /dspace/bin/dspace database migrate
       java -jar /dspace/webapps/server-boot.jar --dspace.dir=/dspace
   dspacedb: 
-    container_name: dspacedb
+    container_name: dspacedb-oer
     environment:
       PGDATA: /pgdata
       POSTGRES_USER: dspace
@@ -69,7 +69,7 @@ services:
     volumes:
       - pgdata:/pgdata
   dspacesolr:
-    container_name: dspacesolr
+    container_name: dspacesolr-oer
     image: solr:8.11-slim
     # Indicate services that needs to be started before the current one
     networks:
