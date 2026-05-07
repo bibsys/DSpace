@@ -56,9 +56,8 @@ public class AffiliationsRestController {
 
         // Get the tree from the service.
         // This tree is automatically regenerated once an OrgUnit is modified, so we are sure to be up-to-date.
-        List<AffiliationEntityRestModel> modelsList = this.deepCopy(
-            this.uclouvainAffiliationEntityRestService.getAffiliationsEntities()
-        );
+        List<AffiliationEntityRestModel> modelsList =
+                this.deepCopy(uclouvainAffiliationEntityRestService.getAffiliationsEntities());
         List<AffiliationEntityRestModel> dataToReturn;
 
         // Parent filtering
@@ -78,8 +77,7 @@ public class AffiliationsRestController {
         }
 
         // Depth filtering
-        // TODO: Find a way to make it work without modifying the original list => Will need to use deep copy.
-        if (depth != null && depth < modelsList.size()) {
+        if (depth != null && depth < dataToReturn.size()) {
             if (depth < 0) {
                 response.sendError(400, "Depth parameter invalid, it should be a positive integer");
                 return null;
