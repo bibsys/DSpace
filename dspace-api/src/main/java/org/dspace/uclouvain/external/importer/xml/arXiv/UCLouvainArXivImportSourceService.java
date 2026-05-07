@@ -123,8 +123,14 @@ public class UCLouvainArXivImportSourceService extends UCLouvainXMLImportSourceS
             return metadataList;
         }
         // Author names
-        addAllMetadata(metadataList, Publication.AUTHOR_NAME_FIELD,
-            getAllText(rootXml, "ns:author/ns:name"), null, CF_UNSET, false);
+        List<String> authors = getAllText(rootXml, "ns:author/ns:name");
+        if (authors.size() > authorLimit) {
+            authors = authors.subList(0, authorLimit);
+            addMetadata(metadataList, Publication.AUTHOR_ETAL_FIELD, "true", null, CF_UNSET, false);
+            addAllMetadata(metadataList, Publication.AUTHOR_NAME_FIELD, authors, null, CF_UNSET, false);
+        } else {
+            addAllMetadata(metadataList, Publication.AUTHOR_NAME_FIELD, authors, null, CF_UNSET, false);
+        }
         // Title
         addMetadata(metadataList, Publication.TITLE_FIELD,
             getFirstText(rootXml, "ns:title"), null, CF_UNSET, false);
