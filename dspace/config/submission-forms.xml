@@ -12,10 +12,8 @@
           <repeatable>false</repeatable>
           <label>Name</label>
           <input-type>onebox</input-type>
-          <hint>
-          Enter the names of the authors of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
-          </hint>
-          <required>You must enter at least the author.</required>
+          <hint>Enter the name of the author in the form "Lastname, Firstname" [i.e. Smith, Josh]. If any suggestions have been found, click on it to fill the form</hint>
+          <required>You must enter the author name</required>
         </field>
       </row>
       <row>
@@ -38,7 +36,8 @@
           <label>Institution</label>
           <style>col-6</style>
           <input-type>onebox</input-type>
-          <hint>Choose the author institution affiliation</hint>
+          <hint>Enter the author institution name</hint>
+          <required>You must enter the author institution name</required>
         </field>
         <field>
           <dc-schema>authors</dc-schema>
@@ -68,10 +67,10 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>code</dc-qualifier>
           <repeatable>false</repeatable>
-          <label>Degree code</label>
+          <label>Degree</label>
           <input-type>degree_select</input-type>
-          <hint>Select a degree code</hint>
-          <required>Select a degree code. If empty no data could be retrieved from OSIS; check about author inscriptions.</required>
+          <hint>Select a degree</hint>
+          <required>Select the degree related to the author.</required>
           <visibility>submission</visibility>
         </field>
         <field>
@@ -119,10 +118,8 @@
           <repeatable>false</repeatable>
           <label>Name</label>
           <input-type>onebox</input-type>
-          <hint>
-          Enter the names of the promoters of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J].
-          </hint>
-          <required>You must enter at least the promoter.</required>
+          <hint>Enter the supervisor name of this item in the form "Lastname, Firstname" [i.e. Smith, Josh or Smith, J]</hint>
+          <required>You must enter at least the supervisor</required>
         </field>
       </row>
       <row>
@@ -132,7 +129,7 @@
           <repeatable>false</repeatable>
           <label>Email</label>
           <input-type>onebox</input-type>
-          <hint>Enter the email where to contact the promoter</hint>
+          <hint>Enter the email where to contact the supervisor</hint>
           <required>You must enter a valid email address.</required>
         </field>
       </row>
@@ -144,7 +141,8 @@
           <repeatable>false</repeatable>
           <label>Institution</label>
           <input-type>onebox</input-type>
-          <hint>Choose the promoter institution affiliation</hint>
+          <hint>Choose the supervisor institution affiliation</hint>
+          <required>You must specify the institution name of the supervisor</required>
         </field>
       </row>
     </form>
@@ -155,7 +153,7 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>author</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Authors</label>
+          <label>Author(s)</label>
           <input-type>group</input-type>
           <hint>Enter the names of the authors of this item.</hint>
           <required>At least one author is required</required>
@@ -167,10 +165,10 @@
           <dc-element>contributor</dc-element>
           <dc-qualifier>advisor</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Promoters</label>
+          <label>Supervisor(s)</label>
           <input-type>group</input-type>
-          <hint>Enter the names of the promoters of this item.</hint>
-          <required>At least one promoter is required</required>
+          <hint>Enter each supervisor of the thesis.</hint>
+          <required>At least one supervisor is required</required>
         </field>
       </row>
       <row>
@@ -180,9 +178,8 @@
           <repeatable>false</repeatable>
           <label>Title</label>
           <input-type>onebox</input-type>
-          <hint>Enter the main title of the item.</hint>
-          <!--<hint>&lt;br/&gt;&lt;a href=&quot;www.google.com&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;</hint>-->
-          <required>You must enter a main title for this item.</required>
+          <hint>Enter the whole title and subtitle of the thesis. Use a colon between title and subtitle (unless title ends with a question mark).</hint>
+          <required>You must enter a title.</required>
         </field>
       </row>
       <row>
@@ -190,12 +187,12 @@
           <dc-schema>dc</dc-schema>
           <dc-element>description</dc-element>
           <dc-qualifier>abstract</dc-qualifier>
-          <!--<language value-pairs-name="common_iso_languages">true</language>-->
+          <language value-pairs-name="common_iso_languages">true</language>
           <repeatable>true</repeatable>
           <label>Abstract</label>
           <input-type>textarea</input-type>
-          <hint>Enter the abstract of the item.</hint>
-          <required>You must enter an abstract for this item.</required>
+          <hint>Enter the abstract of the item. For additional abstract, use the below "add" link.</hint>
+          <required>You must enter an abstract.</required>
         </field>
       </row>
       <row>
@@ -206,8 +203,8 @@
           <repeatable>false</repeatable>
           <label>Language</label>
           <input-type value-pairs-name="common_iso_languages_639_2">dropdown</input-type>
-          <hint>Select the language of the main content of the item.</hint>
-          <required>You must choose a language for this item.</required>
+          <hint>Select the language of the main content of the thesis.</hint>
+          <required>You must choose a language.</required>
         </field>
       </row>
       <row>
@@ -217,7 +214,7 @@
           <repeatable>true</repeatable>
           <label>Subject Keywords</label>
           <input-type>tag</input-type>
-          <hint>Enter appropriate subject keywords or phrases.</hint>
+          <hint>Use a comma between keywords.</hint>
         </field>
       </row>
       <row>
@@ -227,7 +224,7 @@
           <repeatable>false</repeatable>
           <label>Session</label>
           <input-type value-pairs-name="masterthesis_session">dropdown</input-type>
-          <hint>Session period during which the thesis was submitted.</hint>
+          <hint>Confidential data: it will not be published.</hint>
           <required>You must choose a session period for this item.</required>
         </field>
         <field>
@@ -237,7 +234,7 @@
           <repeatable>false</repeatable>
           <label>Year</label>
           <input-type>year</input-type>
-          <hint>Year during which the thesis was submitted.</hint>
+          <hint/>
           <required>You must choose a year period for this item.</required>
         </field>
       </row>

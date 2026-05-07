@@ -1,0 +1,42 @@
+## Email sent to a DSpace User when changes are requested for a thesis.
+## Parameters:  - {0} Date and time
+##              - {1} Title of the submission
+##              - {2} The change request
+#set($showChangeRequest = ${config.get("uclouvain.change_request.mail.changerequest.show")})
+
+-- ${params[0]} --
+
+------ Version française (English version below) ------
+
+Madame/Monsieur,
+
+Un gestionnaire à introduit une demande de modifications pour votre mémoire en soumission.
+
+Titre du mémoire: "${params[1]}".
+#if( $showChangeRequest )
+Demande de changement: "${params[2]}"
+#end
+
+Veuillez vous rendre sur la plateforme DIAL.mem dans votre espace "MyDIAL.mem" afin de modifier votre mémoire en fonction de la demande du gestionnaire. Les commentaires sont visible dans le formulaire d’édition du mémoire. 
+
+Si vous avez des questions vous pouvez contacter l'équipe support à l’adresse ${config.get("mail.helpdesk")}.
+
+Bien à vous,
+L'équipe ${config.get("dspace.name")}.
+
+------ English version ------
+
+Dear Sir/Madam,
+
+Please be notified that a manager requested changes on your thesis submission.
+Thesis title: "${params[1]}".
+#if( $showChangeRequest )
+Change request: "${params[2]}"
+#end
+
+Please go on the DIAL.mem platform, in your 'MyDIAL.mem' space, in order to modify the thesis according to the comment left by the manager. This comment is visible in the edition form of your submission.
+
+If you have any question you can still contact the support team ${config.get("mail.helpdesk")}.
+
+Best regards,
+The ${config.get("dspace.name")} team.
