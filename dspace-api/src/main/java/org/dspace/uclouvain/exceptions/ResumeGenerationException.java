@@ -5,7 +5,7 @@
  *
  * http://www.dspace.org/license/
  */
-package org.dspace.uclouvain.pdfAttestationGenerator.exceptions;
+package org.dspace.uclouvain.exceptions;
 
 public class ResumeGenerationException extends Exception {
     public ResumeGenerationException(String message) {
