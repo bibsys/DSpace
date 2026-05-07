@@ -340,34 +340,37 @@
   </xsl:template>
   <!-- IDENTIFIERS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
   <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='identifier']/doc:element" xmlns:mods="http://www.loc.gov/mods/v3">
-    <xsl:variable name="type" select="@name"/>
-    <xsl:variable name="value" select="doc:element/doc:field[@name='value']"/>
-    <xsl:if test="$type='uri' and contains($value, 'handle.net/')">
+    <xsl:for-each select="doc:element/doc:field[@name='value']">
+      <xsl:variable name="type" select="../../@name"/>
+      <xsl:if test="$type='uri' and contains(., 'handle.net/')">
+        <xsl:call-template name="identifier">
+          <xsl:with-param name="type" select="'hdl'"/>
+          <xsl:with-param name="value" select="substring-after(., 'handle.net/')"/>
+        </xsl:call-template>
+      </xsl:if>
       <xsl:call-template name="identifier">
-        <xsl:with-param name="type" select="'hdl'"/>
-        <xsl:with-param name="value" select="substring-after($value, 'handle.net/')"/>
+        <xsl:with-param name="type" select="$type"/>
+        <xsl:with-param name="value" select="."/>
       </xsl:call-template>
-    </xsl:if>
-    <xsl:call-template name="identifier">
-      <xsl:with-param name="type" select="$type"/>
-      <xsl:with-param name="value" select="$value"/>
-    </xsl:call-template>
+    </xsl:for-each>
   </xsl:template>
   <xsl:template name="identifier" xmlns:mods="http://www.loc.gov/mods/v3">
     <xsl:param name="type"/>
     <xsl:param name="value"/>
-    <xsl:if test="my:isNotEmpty($value)">
-      <mods:identifier>
-        <xsl:if test="my:isNotEmpty($type)">
-          <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
-        </xsl:if>
-        <xsl:choose>
-          <xsl:when test="$type='doi'">doi:<xsl:value-of select="$value"/></xsl:when>
-          <xsl:when test="$type='hdl'">hdl:<xsl:value-of select="$value"/></xsl:when>
-          <xsl:otherwise><xsl:value-of select="$value"/></xsl:otherwise>
-        </xsl:choose>
-      </mods:identifier>
-    </xsl:if>
+    <xsl:for-each select="$value">
+      <xsl:if test="my:isNotEmpty(.)">
+        <mods:identifier>
+          <xsl:if test="my:isNotEmpty($type)">
+            <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
+          </xsl:if>
+          <xsl:choose>
+            <xsl:when test="$type='doi'">doi:<xsl:value-of select="."/></xsl:when>
+            <xsl:when test="$type='hdl'">hdl:<xsl:value-of select="."/></xsl:when>
+            <xsl:otherwise><xsl:value-of select="."/></xsl:otherwise>
+          </xsl:choose>
+        </mods:identifier>
+      </xsl:if>
+    </xsl:for-each>
   </xsl:template>
   <!-- LANGUAGES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
   <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='language']/doc:element[@name='iso']/doc:element/doc:field[@name='value']" xmlns:mods="http://www.loc.gov/mods/v3">
