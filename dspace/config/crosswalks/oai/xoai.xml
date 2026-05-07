@@ -29,6 +29,7 @@
 
         <Context baseurl="periscops" name="FNRS Periscops project">
             <Filter ref="periscopsFilter"/>
+            <Format ref="oaidc"/>
             <Format ref="mets-fnrs"/>
             <Description>
                 Default context to disseminate all publication eligible for FNRS Periscops project
