@@ -33,6 +33,7 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.core.mails.ThesisChangeRequestEmail;
 import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
@@ -53,7 +54,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * metadata;
  * In the case 'Rejected', we change the state of the workflow item to 'Withdrawn' && we add it to archive;
  *
- * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  * @version $Revision$
  */
 public class UCLouvainThesisReviewAction extends ReviewAction {
@@ -206,6 +207,8 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             }
             // Encode the reason in the metadata field
             itemService.setMetadataSingleValue(context, wfi.getItem(), activeRF, null, reason);
+            // Send an email to submitter to notify for the change request.
+            new ThesisChangeRequestEmail(wfi.getItem(), reason).sendEmail();
             context.restoreAuthSystemState();
             return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
         } catch (Exception e) {
