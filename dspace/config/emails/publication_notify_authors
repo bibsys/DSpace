@@ -1,0 +1,110 @@
+## Email sent to a DSpace User when his submission has be validated and entered the archive
+## This email comes with an attachment: an attestation that confirms the submission.
+## Parameters:
+##    {0} Date and time
+##    {1} Information about the submission (title, abstract...) in french
+##    {2} Information about the submission (title, abstract...) in english
+##    {3} List of attached files. Each row is a tuple of filename, file access type and file url
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet':>
+        <style>
+          body {
+            font-family: 'Montserrat', arial, sans-serif;
+            font-size: 12px;
+          }
+          .banner {
+            display: block;
+            text-align: center;
+            background-color: rgb(74, 79, 85);
+            color: white;
+            padding: 10px;
+            margin-top: 0;
+          }
+          .language {
+            font-style: italic;
+            width: 100%;
+            text-align: center;
+          }
+          .timestamp {
+            text-align:right;
+          }
+          .heading {
+            text-decoration: underline;
+          }
+          .metadata-table th, .metadata-table td, .metadata-table tr {
+            margin: 0;
+          }
+          .metadata-table th {
+            width: 25%;
+            min-width: 150px;
+            font-weight: bold;
+            background-color: #EEE;
+            text-align: left;
+            padding-right: 10px;
+          }
+        </style>
+    </head>
+    <body>
+        <!-- Not working anymore since the image does not exist -->
+        <!-- <p style="margin:20px">
+          <img src="https://uclouvain.be/sites/all/themes/ucltheme/logo.png?newdesign2018"/>
+        </p> -->
+        <h1 class="banner">DIAL.pr</h1>
+        <p class="timestamp">${params[0]}</p>
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">
+            Version française (English version below)
+        </div>
+        <p>Madame/Monsieur,</p>
+        <p>
+          Nous vous informons qu'une publication dont vous êtes l'auteur/autrice viens d'être déposée dans DIAL.pr<br/>
+        </p>
+
+        <h4 class="heading">Informations sur la publication</h4>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                #foreach ($mapEntry in $params[1].entrySet())
+                    <tr>
+                        <th style="border-right: 1px solid #777">$mapEntry.key</th>
+                        <td>$mapEntry.value</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+        <h4 class="heading">Fichiers attachés</h4>
+        <ul>
+          #foreach ($attached_file in $params[3])
+            <li>$attached_file[0] ($attached_file[1])</li>
+          #end
+        </ul>
+
+        <p>L'équipe ${config.get('dspace.name')}.</p>
+
+        <div class="language" style="border-bottom:1px solid #777; color: #777;">English version</div>
+        <p>Dear Sir/Madam,</p>
+        <p>
+          We would like to inform you that a publication of which you are the author as been submitted in DIAL.pr.<br/>
+        </p>
+
+        <h4 class="heading">Publication data</h4>
+        <table class="metadata-table" style="border: 1px solid #777">
+            <tbody>
+                #foreach ($mapEntry in $params[2].entrySet())
+                    <tr>
+                        <th style="border-right: 1px solid #777">$mapEntry.key</th>
+                        <td>$mapEntry.value</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+        <h4 class="heading">Attached files</h4>
+        <ul>
+          #foreach ($attached_file in $params[3])
+            <li>$attached_file[0] ($attached_file[1])</li>
+          #end
+        </ul>
+
+        <p>The ${config.get('dspace.name')} Team.</p>
+    </body>
+ </html>
