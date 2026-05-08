@@ -30,7 +30,6 @@ import org.dspace.discovery.DiscoverQuery;
 import org.dspace.uclouvain.export.result.ExportResult;
 import org.dspace.uclouvain.export.services.UCLouvainExportService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -394,20 +393,10 @@ public class ExportRestController {
                 .withLength(result.getSize())
                 .withFileName(result.getFileName())
                 .withMimetype(result.getMimeType())
-                .withDisposition(buildContentDispositionString(result.getFileName()))
+                .withDisposition(HttpHeadersInitializer.CONTENT_DISPOSITION_INLINE)
                 .with(request)
                 .with(response);
         return headersInitializer.initialiseHeaders();
-    }
-
-    /**
-     * Build a full content-disposition string for a given file name.
-     */
-    private String buildContentDispositionString(String fileName) {
-        return ContentDisposition.builder(HttpHeadersInitializer.CONTENT_DISPOSITION_INLINE)
-                .filename(fileName)
-                .build()
-                .toString();
     }
 
     /**
