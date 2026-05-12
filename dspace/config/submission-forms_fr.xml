@@ -1366,6 +1366,10 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_speech_status">dropdown</input-type>
           <hint>Sélectionnez le statut de la publication dans la liste.</hint>
+          <required>Vous devez sélectionner une valeur</required>
+          <settings>
+            <setting name="useDefault">true</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -1376,6 +1380,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
           <hint>Sélectionnez le statut de la publication dans la liste.</hint>
+          <required>Vous devez sélectionner une valeur</required>
           <settings>
             <setting name="useDefault">true</setting>
           </settings>
@@ -1390,6 +1395,7 @@
           <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
           <hint>Sélectionnez le statut de la publication dans la liste.</hint>
+          <required>Vous devez sélectionner une valeur</required>
           <settings>
             <setting name="useDefault">true</setting>
           </settings>
@@ -1614,7 +1620,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <type-bind type-bind-field="publication.publicationStatus">submitted</type-bind>
           <input-type>onebox</input-type>
-          <hint>Entrez la pagination de la publication dans la revue. Utilisez '-' comme séparateur. Ne faites pas précéder la pagination de la mention "p." ou "pp.".</hint>
+          <hint>Entrez la pagination de la publication dans la revue. Utilisez '-' comme séparateur. Ne faites pas précéder la pagination de la mention "p." ou "pp.". "n/a" si pas de pagination.</hint>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1662,7 +1668,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <type-bind type-bind-field="publication.publicationStatus">accepted/in-press,published</type-bind>
           <input-type>onebox</input-type>
-          <hint>Entrez la pagination de la publication dans la revue. Utilisez '-' comme séparateur. Ne faites pas précéder la pagination de la mention "p." ou "pp.".</hint>
+          <hint>Entrez la pagination de la publication dans la revue. Utilisez '-' comme séparateur. Ne faites pas précéder la pagination de la mention "p." ou "pp.". "n/a" si pas de pagination.</hint>
           <required>Vous devez spécifier une pagination (ou 'n/a' si pas applicable)</required>
         </field>
         <field>
@@ -1734,7 +1740,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Entrez la pagination de la publication dans la revue. Utilisez '-' comme séparateur. Ne faites pas précéder la pagination de la mention "p." ou "pp.".</hint>
+          <hint>Entrez la pagination de la publication dans la revue. Utilisez '-' comme séparateur. Ne faites pas précéder la pagination de la mention "p." ou "pp.". "n/a" si pas de pagination.</hint>
           <required>Vous devez spécifier une pagination (ou 'n/a' si pas applicable)</required>
         </field>
         <field>
@@ -1919,7 +1925,7 @@
           <input-type>onebox</input-type>
           <hint>Entrez l'ISBN de l'ouvrage</hint>
           <required>L'ISBN du document hôte est requis</required>
-          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
+          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$</regex>
           <settings>
             <setting name="regexErrorMessage">Format ISBN invalide</setting>
           </settings>
@@ -1936,7 +1942,7 @@
           <input-type>onebox</input-type>
           <hint>Entrez l'ISBN de l'ouvrage.</hint>
           <required>L'ISBN du document hôte est requis</required>
-          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
+          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$</regex>
           <settings>
             <setting name="regexErrorMessage">Format ISBN invalide</setting>
           </settings>
