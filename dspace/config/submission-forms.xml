@@ -1366,6 +1366,10 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_speech_status">dropdown</input-type>
           <hint>Select in the list the publication status of the document.</hint>
+          <required>You must select a value</required>
+          <settings>
+            <setting name="useDefault">true</setting>
+          </settings>
         </field>
       </row>
       <row>
@@ -1376,6 +1380,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::book,text::book-part,text::journal-article</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
           <hint>Select in the list the publication status of the document.</hint>
+          <required>You must select a value</required>
           <settings>
             <setting name="useDefault">true</setting>
           </settings>
@@ -1390,6 +1395,7 @@
           <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type value-pairs-name="publication_status">dropdown</input-type>
           <hint>Select in the list the publication status of the document.</hint>
+          <required>You must select a value</required>
           <settings>
             <setting name="useDefault">true</setting>
           </settings>
@@ -1614,7 +1620,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <type-bind type-bind-field="publication.publicationStatus">submitted</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers.</hint>
+          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers. "n/a" if no pagination.</hint>
         </field>
         <field>
           <dc-schema>publication</dc-schema>
@@ -1662,7 +1668,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::journal-article</type-bind>
           <type-bind type-bind-field="publication.publicationStatus">accepted/in-press,published</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers.</hint>
+          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers. "n/a" if no pagination.</hint>
           <required>You need to specify pagination (or 'n/a')</required>
         </field>
         <field>
@@ -1734,7 +1740,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_serial</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers.</hint>
+          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers. "n/a" if no pagination.</hint>
           <required>You need to specify pagination (or 'n/a')</required>
         </field>
         <field>
@@ -1859,7 +1865,7 @@
           <label>Host document pagination</label>
           <type-bind type-bind-field="dc.type.maintype">text::book-part</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers.</hint>
+          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers. "n/a" if no pagination.</hint>
 
         </field>
       </row>
@@ -1872,7 +1878,7 @@
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book</type-bind>
           <input-type>onebox</input-type>
-          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers.</hint>
+          <hint>Enter pagination of the paper into the serial. Use a hyphen '-' to separate the starting and ending pages. Do not include "p." or "pp." before the page numbers. "n/a" if no pagination.</hint>
         </field>
       </row>
       <row>
@@ -1920,7 +1926,7 @@
           <input-type>onebox</input-type>
           <hint>Enter the host document ISBN.</hint>
           <required>Host document ISBN is required.</required>
-          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
+          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISBN format</setting>
           </settings>
@@ -1937,7 +1943,7 @@
           <input-type>onebox</input-type>
           <hint>Enter the host document ISBN.</hint>
           <required>Host document ISBN is required.</required>
-          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$/i</regex>
+          <regex>^(?=[0-9]{13}$|(?=(?:[0-9]+[-\ ]){4})[-\ 0-9]{17}$)97[89][-\ ]?[0-9]{1,5}[-\ ]?[0-9]+[-\ ]?[0-9]+[-\ ]?[0-9]|([nN][\/-]?[aA])$</regex>
           <settings>
             <setting name="regexErrorMessage">Invalid ISBN format</setting>
           </settings>
