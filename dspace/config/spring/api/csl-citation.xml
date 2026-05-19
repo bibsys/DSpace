@@ -34,7 +34,7 @@
     <property name="editor" value="publication.host.authors"/>
     <property name="edition" value="publication.editionStatement"/>
 
-    <property name="typeSpecificFieldMap" ref="typeSpecificFieldMapDef"/>
+    <property name="overrideMetadataList" ref="overrideMetadataByTypeList"/>
   </bean>
 
   <!-- FNRS data provider:
@@ -55,44 +55,117 @@
       <property name="defaultValue" value=""/>
 	</bean>
 
-  <!-- Specific metadata definition by publication type -->
-  <util:map id="typeSpecificFieldMapDef" map-class="java.util.HashMap">
-    <entry key="text::book-part">
-      <map>
-        <entry key="ISBN" value="publication.host.isbn"/>
-        <entry key="edition" value="publication.host.editionStatement"/>
-      </map>
-    </entry>
 
-    <entry key="text::journal-article">
-      <map>
-        <entry key="containerTitle" value="dc.relation.journal"/>
-        <entry key="volume" value="publication.serial.volume"/>
-        <entry key="issue" value="publication.serial.issue"/>
-        <entry key="page" value="publication.serial.pages"/>
-        <entry key="originalDate" value="publication.serial.dateIssued"/>
-      </map>
-    </entry>
-
-    <entry key="text::conference-speech">
-      <map>
-        <entry key="event" value="publication.conference.name"/>
-        <entry key="edition" value="publication.host.editionStatement"/>
-      </map>
-    </entry>
-
-    <entry key="text::thesis">
-      <map>
-        <entry key="director" value="dc.contributor.advisor"/>
-      </map>
-    </entry>
-
-    <entry key="text::patent">
-      <map>
-        <entry key="director" value="crispatent.patentOffice"/>
-        <entry key="number" value="dc.identifier.patentID"/>
-      </map>
-    </entry>
-  </util:map>
+  <!-- Specific metadata definition by publication type ============================================================ -->
+  <util:list id="overrideMetadataByTypeList">
+    <!-- Conference speech overriding ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="speechOverrideMetadata" class="org.dspace.content.integration.crosswalks.csl.ItemDataProviderOverrideMetadata">
+      <property name="matchingRules">
+        <util:map>
+          <entry key="dspace.entity.type" value="Publication"/>
+          <entry key="dc.type.maintype" value="text::conference-speech"/>
+        </util:map>
+      </property>
+      <property name="overrideRules">
+        <util:map>
+          <entry key="event" value="publication.conference.name"/>
+        </util:map>
+      </property>
+    </bean>
+    <bean id="speechPublishedInSerialOverrideMetadata" class="org.dspace.content.integration.crosswalks.csl.ItemDataProviderOverrideMetadata">
+      <property name="matchingRules">
+        <util:map>
+          <entry key="dspace.entity.type" value="Publication"/>
+          <entry key="dc.type.maintype" value="text::conference-speech"/>
+          <entry key="publication.speech.status" value="published_in_serial"/>
+        </util:map>
+      </property>
+      <property name="overrideRules">
+        <util:map>
+          <entry key="containerTitle" value="dc.relation.journal"/>
+          <entry key="volume" value="publication.serial.volume"/>
+          <entry key="issue" value="publication.serial.issue"/>
+          <entry key="page" value="publication.serial.pages"/>
+          <entry key="originalDate" value="publication.serial.dateIssued"/>
+        </util:map>
+      </property>
+    </bean>
+    <bean id="speechPublishedInBookOverrideMetadata" class="org.dspace.content.integration.crosswalks.csl.ItemDataProviderOverrideMetadata">
+      <property name="matchingRules">
+        <util:map>
+          <entry key="dspace.entity.type" value="Publication"/>
+          <entry key="dc.type.maintype" value="text::conference-speech"/>
+          <entry key="publication.speech.status" value="published_in_book"/>
+        </util:map>
+      </property>
+      <property name="overrideRules">
+        <util:map>
+          <entry key="edition" value="publication.host.editionStatement"/>
+        </util:map>
+      </property>
+    </bean>
+    <!-- Book-part overriding ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="bookPartOverrideMetadata" class="org.dspace.content.integration.crosswalks.csl.ItemDataProviderOverrideMetadata">
+      <property name="matchingRules">
+        <util:map>
+          <entry key="dspace.entity.type" value="Publication"/>
+          <entry key="dc.type.maintype" value="text::book-part"/>
+        </util:map>
+      </property>
+      <property name="overrideRules">
+        <util:map>
+          <entry key="ISBN" value="publication.host.isbn"/>
+          <entry key="edition" value="publication.host.editionStatement"/>
+        </util:map>
+      </property>
+    </bean>
+    <!-- Journal article overriding ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="journalArticleOverrideMetadata" class="org.dspace.content.integration.crosswalks.csl.ItemDataProviderOverrideMetadata">
+      <property name="matchingRules">
+        <util:map>
+          <entry key="dspace.entity.type" value="Publication"/>
+          <entry key="dc.type.maintype" value="text::journal-article"/>
+        </util:map>
+      </property>
+      <property name="overrideRules">
+        <util:map>
+          <entry key="containerTitle" value="dc.relation.journal"/>
+          <entry key="volume" value="publication.serial.volume"/>
+          <entry key="issue" value="publication.serial.issue"/>
+          <entry key="page" value="publication.serial.pages"/>
+          <entry key="originalDate" value="publication.serial.dateIssued"/>
+        </util:map>
+      </property>
+    </bean>
+    <!-- Dissertation overriding ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="thesisOverrideMetadata" class="org.dspace.content.integration.crosswalks.csl.ItemDataProviderOverrideMetadata">
+      <property name="matchingRules">
+        <util:map>
+          <entry key="dspace.entity.type" value="Publication"/>
+          <entry key="dc.type.maintype" value="text::thesis"/>
+        </util:map>
+      </property>
+      <property name="overrideRules">
+        <util:map>
+          <entry key="director" value="dc.contributor.advisor"/>
+        </util:map>
+      </property>
+    </bean>
+    <!-- Patent overriding ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <bean id="patentOverrideMetadata" class="org.dspace.content.integration.crosswalks.csl.ItemDataProviderOverrideMetadata">
+      <property name="matchingRules">
+        <util:map>
+          <entry key="dspace.entity.type" value="Publication"/>
+          <entry key="dc.type.maintype" value="text::patent"/>
+        </util:map>
+      </property>
+      <property name="overrideRules">
+        <util:map>
+          <entry key="director" value="crispatent.patentOffice"/>
+          <entry key="number" value="dc.identifier.patentID"/>
+        </util:map>
+      </property>
+    </bean>
+  </util:list>
 
 </beans>
