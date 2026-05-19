@@ -35,6 +35,7 @@ public class FnrsListItemDataProvider extends UCLouvainListItemDataProvider {
 
     @Override
     public CSLItemDataBuilder handleAdditionalFields(Item item, CSLItemDataBuilder itemBuilder) {
+        super.handleAdditionalFields(item, itemBuilder);
         manageIssueDate(item, itemBuilder);
         return itemBuilder;
     }
