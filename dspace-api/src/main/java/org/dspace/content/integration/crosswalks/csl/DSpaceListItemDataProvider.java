@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -135,7 +136,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
     private SimpleMapConverter typeConverter;
 
     // UCLouvain addition for specific fields that need to be added for some types.
-    private Map<String, Map<String, String>> typeSpecificFieldMap = new HashMap<>();
+    private List<ItemDataProviderOverrideMetadata> overrideMetadataList;
 
     public DSpaceListItemDataProvider(ItemService itemService) {
         this.itemService = itemService;
@@ -178,28 +179,31 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
      */
     private Map<String, Object> overrideFieldsForPubType(Item item) {
         Map<String, Object> originalFields = new HashMap<>();
-        if ((item.getType() != Constants.ITEM) || !(itemService.getEntityType(item).equals("Publication"))) {
+        if (item.getType() != Constants.ITEM) {
             return originalFields;
         }
-        // Get the publication type of the item.
-        String publicationType = getMetadataFirstValue(item, type);
-        if (typeSpecificFieldMap.containsKey(publicationType)) {
-            // Using the publication type get the fields to override.
-            typeSpecificFieldMap.get(publicationType).forEach((key, value) -> {
-                try {
-                    // retrieve the corresponding field from the current class and try to set its value.
-                    Field classField = getFieldIncludingParents(this.getClass(), key);
-                    originalFields.put(key, classField.get(this));
-                    classField.setAccessible(true);
-                    classField.set(this, value);
-                } catch (NoSuchFieldException e) {
-                    LOGGER.debug(
-                        "Tried to override a non existing property of {}: [{}]", this.getClass(), key
-                    );
-                } catch (IllegalAccessException ille) {
-                    LOGGER.debug("Cannot access field [{}] on class {}", key, this.getClass());
+        for (ItemDataProviderOverrideMetadata overrideMetadata : overrideMetadataList) {
+            boolean matches = overrideMetadata.isMatching(item);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Checking metadata configuration: {} -> matching? {}", overrideMetadata, matches);
+            }
+            if (matches && overrideMetadata.getOverrideRules() != null) {
+                for (Map.Entry<String, String> overrideRule : overrideMetadata.getOverrideRules().entrySet()) {
+                    String key = overrideRule.getKey();
+                    String value = overrideRule.getValue();
+                    try {
+                        Field classField = getFieldIncludingParents(this.getClass(), key);
+                        classField.setAccessible(true);
+                        originalFields.put(key, classField.get(this));
+                        classField.set(this, value);
+                        LOGGER.debug("Successfully override field [{}] with value [{}]", key, value);
+                    } catch (NoSuchFieldException e) {
+                        LOGGER.debug("Try overriding non-existing property of {} [{}]", this.getClass().getName(), key);
+                    } catch (IllegalAccessException ille) {
+                        LOGGER.warn("Cannot access or modify field [{}] on class {}", key, this.getClass().getName());
+                    }
                 }
-            });
+            }
         }
         return originalFields;
     }
@@ -445,13 +449,13 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
     }
 
-    public void setTypeSpecificFieldMap(Map<String, Map<String, String>> map) {
-        typeSpecificFieldMap = map;
+    public void setOverrideMetadataList(List<ItemDataProviderOverrideMetadata> overrideMetadataList) {
+        this.overrideMetadataList = overrideMetadataList;
+    }
+    public List<ItemDataProviderOverrideMetadata> getOverrideMetadataList() {
+        return overrideMetadataList;
     }
 
-    public Map<String, Map<String, String>> getTypeSpecificFieldMap() {
-        return typeSpecificFieldMap;
-    }
 
     private CSLType getPublicationType(String value) {
         try {
