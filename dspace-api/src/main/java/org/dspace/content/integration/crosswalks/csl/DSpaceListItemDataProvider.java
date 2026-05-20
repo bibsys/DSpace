@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import com.drew.lang.annotations.NotNull;
 import com.google.gson.GsonBuilder;
 import de.undercouch.citeproc.ListItemDataProvider;
 import de.undercouch.citeproc.csl.CSLDate;
@@ -173,7 +174,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
 
     /**
      * Overrides some properties of the current class depending on the configuration and type of the publication.
-     * 
+     *
      * @param item The item to override fields for. Used to extract the publication type.
      * @return a map of changed fields (key is the field name, value is the original metadata field to restore)
      */
@@ -390,6 +391,18 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
         }
     }
 
+    protected boolean isApplicable(Item item, @NotNull String metadataValue) {
+        // Check if metadataValue is applicable only for 'Publication'. Other entity type is "applicableProof" !
+        if (itemService.getEntityType(item).equals("Publication")) {
+            // Regex explanation:
+            // (?i)     -> Makes the matching case-insensitive (e.g., NA, na, nA, Na)
+            // ^n/?a$   -> Matches exact string starting with 'n', optional '/' in the middle, ending with 'a'
+            return !metadataValue.trim().matches("(?i)^(n/?a|not specified|no[tn] applicable)$");
+        }
+        return true;
+    }
+
+
     private void consumeIfNotBlank(String value, Consumer<String> consumer) {
         if (StringUtils.isNotBlank(value)) {
             consumer.accept(value);
@@ -399,7 +412,7 @@ public class DSpaceListItemDataProvider extends ListItemDataProvider {
     private void consumeMetadataIfNotBlank(String value, Item item, Consumer<String> consumer) {
         if (StringUtils.isNotBlank(value)) {
             String metadataFirstValue = getMetadataFirstValue(item, value);
-            if (StringUtils.isNotBlank(metadataFirstValue)) {
+            if (StringUtils.isNotBlank(metadataFirstValue) && isApplicable(item, metadataFirstValue)) {
                 consumer.accept(metadataFirstValue);
             }
         }
