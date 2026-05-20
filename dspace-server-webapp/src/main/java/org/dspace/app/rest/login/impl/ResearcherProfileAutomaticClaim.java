@@ -30,6 +30,7 @@ import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.profile.service.ResearcherProfileService;
+import org.dspace.uclouvain.async.PublicationProfileAsyncIndexingService;
 import org.dspace.uclouvain.services.UCLouvainProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -58,6 +59,9 @@ public class ResearcherProfileAutomaticClaim implements PostLoggedInAction {
 
     @Autowired
     private UCLouvainProfileService uclouvainProfileService;
+
+    @Autowired
+    private PublicationProfileAsyncIndexingService publicationProfileIndexingService;
 
     /**
      * The field of the eperson to search for.
@@ -123,7 +127,14 @@ public class ResearcherProfileAutomaticClaim implements PostLoggedInAction {
             itemService.addMetadata(context, item, "dspace", "object", "owner",
                 null, fullName, id.toString(), CF_ACCEPTED);
             itemService.update(context, item);
+            // Commit to make sure changes are applied (required for the re-index to work properly)
+            context.commit();
+            // Reload current user (can be detached due to commit) for next PostLoggedInAction.
+            currentUser = context.reloadEntity(currentUser);
             context.restoreAuthSystemState();
+
+            // Trigger a re-index of all publications to add correct 'read' solr key.
+            publicationProfileIndexingService.indexPublicationsForProfile(item.getID());
         }
 
     }
