@@ -144,7 +144,7 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
     }
 
     public List<Item> findLinkedPublications(Context context, Item profile) {
-        if (itemService.getEntityType(profile).equals(PROFILE_ENTITY_TYPE)) {
+        if (!itemService.getEntityType(profile).equals(PROFILE_ENTITY_TYPE)) {
             throw new IllegalArgumentException("`profile` parameter isn't a valid Person entity type");
         }
         DiscoverQuery dq = new DiscoverQuery();
