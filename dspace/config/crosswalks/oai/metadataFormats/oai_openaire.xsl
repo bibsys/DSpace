@@ -18,7 +18,11 @@
   <!-- CUSTOM FUNCTIONS ============================================================================================ -->
   <xsl:function name="my:isNotEmpty" as="xs:boolean">
     <xsl:param name="value" as="xs:string?"/>
-    <xsl:sequence select="exists($value) and string-length($value)>0 and $value!=$emptyValue"/>
+    <xsl:sequence select="
+        exists($value)
+        and string-length(normalize-space($value)) > 0
+        and $value != $emptyValue
+        and not(matches(normalize-space($value), '^(n/?a|not specified|no[tn] applicable)$', 'i'))"/>
   </xsl:function>
 
   <!-- ROOT ======================================================================================================== -->
