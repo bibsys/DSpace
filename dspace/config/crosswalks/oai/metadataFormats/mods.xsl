@@ -5,11 +5,23 @@
         xmlns:mods="http://www.loc.gov/mods/v3"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns:xlink="http://www.w3.org/1999/xlink"
-        version="1.0" xmlns:xl="http://www.w3.org/1999/XSL/Transform"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:my="http://custom.functions"
+        version="2.0" xmlns:xl="http://www.w3.org/1999/XSL/Transform"
         xsi:schemaLocation="http://www.loc.gov/mods/v3 http://www.loc.gov/standards/mods/v3/mods-3-1.xsd">
 	<xsl:output omit-xml-declaration="yes" method="xml" indent="yes" />
 
-    <xsl:variable name="EMPTY_VALUE" select="'#PLACEHOLDER_PARENT_METADATA_VALUE#'"/>
+    <xsl:variable name="emptyValue" select="'#PLACEHOLDER_PARENT_METADATA_VALUE#'"/>
+
+    <!-- CUSTOM FUNCTIONS ========================================================================================== -->
+    <xsl:function name="my:isNotEmpty" as="xs:boolean">
+      <xsl:param name="value" as="xs:string?"/>
+      <xsl:sequence select="
+          exists($value)
+          and string-length(normalize-space($value)) > 0
+          and $value != $emptyValue
+          and not(matches(normalize-space($value), '^(n/?a|not specified|no[tn] applicable)$', 'i'))"/>
+    </xsl:function>
 
     <!-- ROOT DOCUMENT ============================================================================================= -->
     <xsl:template match="/">
@@ -155,7 +167,7 @@
     </xsl:template>
     <xsl:template name="author-affiliation">
         <xsl:param name="name"/>
-        <xsl:if test="$name!=$EMPTY_VALUE">
+        <xsl:if test="my:isNotEmpty($name)">
             <mods:affiliation>
                 <xsl:choose>
                     <xsl:when test="$name='UCLouvain'">
@@ -177,7 +189,7 @@
     </xsl:template>
     <xsl:template name="author-role">
         <xsl:param name="name"/>
-        <xsl:if test="$name!=$EMPTY_VALUE">
+        <xsl:if test="my:isNotEmpty($name)">
             <mods:role>
                 <xsl:choose>
                     <!-- author, co-author -->
@@ -227,7 +239,7 @@
     <xsl:template name="author-identifier">
         <xsl:param name="identifier"/>
         <xsl:param name="type"/>
-        <xsl:if test="$identifier!=$EMPTY_VALUE">
+        <xsl:if test="my:isNotEmpty($identifier)">
             <mods:nameIdentifier>
                 <xsl:choose>
                     <xsl:when test="$type='orcid'">
@@ -239,7 +251,7 @@
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:if test="string-length($type) > 0">
+                        <xsl:if test="my:isNotEmpty($type)">
                             <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
                         </xsl:if>
                         <xsl:value-of select="$identifier"/>
@@ -252,11 +264,11 @@
     <xsl:template match="doc:metadata/doc:element[@name='oairecerif']/doc:element[@name='affiliation']/doc:element[@name='orgunit']/doc:element/doc:field[@name='value']">
         <xsl:variable name="pos" select="position()"/>
         <xsl:variable name="entityName" select="//doc:metadata/doc:element[@name='oairecerif']/doc:element[@name='affiliation']/doc:element[@name='orgunitDepartment']/doc:element/doc:field[@name='value'][$pos]"/>
-        <xsl:if test="text()!=$EMPTY_VALUE">
+        <xsl:if test="my:isNotEmpty(text())">
             <mods:relatedItem otherType="affiliation">
                 <mods:name type="corporate">
                     <mods:namePart><xsl:value-of select="text()"/></mods:namePart>
-                    <xsl:if test="$entityName!=$EMPTY_VALUE">
+                    <xsl:if test="my:isNotEmpty($entityName)">
                         <mods:namePart><xsl:value-of select="$entityName"/></mods:namePart>
                     </xsl:if>
                 </mods:name>
@@ -269,20 +281,20 @@
         <xsl:param name="editorName"/>
         <xsl:param name="editorLocation"/>
         <xsl:param name="editionStatement"/>
-        <xsl:if test="string-length($date)>0 or string-length($editorName)>0 or string-length($editorLocation)>0 or string-length($editionStatement)>0">
+        <xsl:if test="my:isNotEmpty($date) or my:isNotEmpty($editorName) or my:isNotEmpty($editorLocation) or my:isNotEmpty($editionStatement)">
             <mods:originInfo>
-                <xsl:if test="string-length($date)>0">
+                <xsl:if test="my:isNotEmpty($date)">
                     <mods:dateIssued encoding="iso8601"><xsl:value-of select="$date"/></mods:dateIssued>
                 </xsl:if>
-                <xsl:if test="string-length($editorName)>0">
+                <xsl:if test="my:isNotEmpty($editorName)">
                     <mods:publisher><xsl:value-of select="$editorName"/></mods:publisher>
                 </xsl:if>
-                <xsl:if test="string-length($editorLocation)>0">
+                <xsl:if test="my:isNotEmpty($editorLocation)">
                     <mods:place>
                         <mods:placeTerm type="text"><xsl:value-of select="$editorLocation"/></mods:placeTerm>
                     </mods:place>
                 </xsl:if>
-                <xsl:if test="string-length($editionStatement)>0">
+                <xsl:if test="my:isNotEmpty($editionStatement)">
                     <mods:edition><xsl:value-of select="$editionStatement"/></mods:edition>
                 </xsl:if>
             </mods:originInfo>
@@ -311,20 +323,20 @@
         <xsl:variable name="grantID" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='number']/doc:element/doc:field[@name='value'][$pos]"/>
         <mods:note type="funding">
             <xsl:text>This work was supported by </xsl:text><xsl:value-of select="text()"/>
-            <xsl:if test="$program!=$EMPTY_VALUE or $project!=$EMPTY_VALUE">
+            <xsl:if test="my:isNotEmpty($program) or my:isNotEmpty($project)">
                 <xsl:text> [</xsl:text>
-                <xsl:if test="$program!=$EMPTY_VALUE">
+                <xsl:if test="my:isNotEmpty($program)">
                     <xsl:value-of select="$program"/>
                 </xsl:if>
-                <xsl:if test="$project!=$EMPTY_VALUE">
-                    <xsl:if test="$program!=$EMPTY_VALUE">
+                <xsl:if test="my:isNotEmpty($project)">
+                    <xsl:if test="my:isNotEmpty($program)">
                         <xsl:text>/</xsl:text>
                     </xsl:if>
                     <xsl:value-of select="$project"/>
                 </xsl:if>
                 <xsl:text>]</xsl:text>
             </xsl:if>
-            <xsl:if test="$grantID!=$EMPTY_VALUE">
+            <xsl:if test="my:isNotEmpty($grantID)">
                 <xsl:text> [grant ID: </xsl:text>
                 <xsl:value-of select="$grantID"/>
                 <xsl:text>]</xsl:text>
@@ -391,7 +403,7 @@
             </xsl:when>
             <xsl:otherwise>
                 <mods:identifier>
-                    <xsl:if test="string-length($type)>0">
+                    <xsl:if test="my:isNotEmpty($type)">
                         <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
                     </xsl:if>
                     <xsl:value-of select="$value"/>
@@ -440,15 +452,15 @@
         <xl:variable name="name" select="doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='name']/doc:element/doc:field[@name='value']"/>
         <xl:variable name="number" select="doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='number']/doc:element/doc:field[@name='value']"/>
         <xl:variable name="issn" select="doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='issn']/doc:element/doc:field[@name='value']"/>
-        <xsl:if test="string-length($name)>0">
+        <xsl:if test="my:isNotEmpty($name)">
             <mods:relatedItem otherType="collection">
                 <mods:titleInfo>
                     <mods:title><xsl:value-of select="$name"/></mods:title>
-                    <xsl:if test="string-length($number)>0">
+                    <xsl:if test="my:isNotEmpty($number)">
                         <mods:partNumber><xsl:value-of select="$number"/></mods:partNumber>
                     </xsl:if>
                 </mods:titleInfo>
-                <xsl:if test="string-length($issn)>0">
+                <xsl:if test="my:isNotEmpty($issn)">
                     <mods:identifier type="issn"><xsl:value-of select="$issn"/></mods:identifier>
                 </xsl:if>
             </mods:relatedItem>
@@ -462,25 +474,25 @@
         <xsl:variable name="pagination" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='pages']/doc:element/doc:field[@name='value']"/>
         <xsl:variable name="isbn" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='isbn']/doc:element/doc:field[@name='value']"/>
         <xsl:variable name="peerReviewed" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='peerReviewed']/doc:element/doc:field[@name='value']"/>
-        <xsl:if test="string-length($title)>0">
+        <xsl:if test="my:isNotEmpty($title)">
             <mods:relatedItem type="host" otherType="parentDocument">
                 <mods:titleInfo>
                     <mods:title><xsl:value-of select="$title"/></mods:title>
                 </mods:titleInfo>
-                <xsl:if test="string-length($authors)>0">
+                <xsl:if test="my:isNotEmpty($authors)">
                     <mods:name>
                         <mods:namePart><xsl:value-of select="$authors"/></mods:namePart>
                     </mods:name>
                 </xsl:if>
-                <xsl:if test="string-length($type)>0">
+                <xsl:if test="my:isNotEmpty($type)">
                     <mods:genre><xsl:value-of select="$type"/></mods:genre>
                 </xsl:if>
-                <xsl:if test="string-length($pagination)>0">
+                <xsl:if test="my:isNotEmpty($pagination)">
                     <mods:physicalDescription>
                         <mods:note type="pagination"><xsl:value-of select="$pagination"/></mods:note>
                     </mods:physicalDescription>
                 </xsl:if>
-                <xsl:if test="string-length($isbn)>0">
+                <xsl:if test="my:isNotEmpty($isbn)">
                     <mods:identifier type="isbn"><xsl:value-of select="$isbn"/></mods:identifier>
                 </xsl:if>
                 <xsl:if test="$peerReviewed='true'">
@@ -504,27 +516,27 @@
         <xsl:variable name="issue" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issue']/doc:element/doc:field[@name='value']"/>
         <xsl:variable name="pages" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='pages']/doc:element/doc:field[@name='value']"/>
         <xsl:variable name="date" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='dateIssued']/doc:element/doc:field[@name='value']"/>
-        <xsl:if test="string-length($journalTitle)>0">
+        <xsl:if test="my:isNotEmpty($journalTitle)">
             <mods:relatedItem type="host" otherType="parentDocument">
                 <mods:genre authority="coar" valueURI="http://purl.org/coar/resource_type/c_0640">journal</mods:genre>
                 <mods:titleInfo>
                     <mods:title><xsl:value-of select="$journalTitle"/></mods:title>
                 </mods:titleInfo>
-                <xsl:if test="string-length($issn)>0">
+                <xsl:if test="my:isNotEmpty($issn)">
                     <mods:identifier type="issn"><xsl:value-of select="$issn"/></mods:identifier>
                 </xsl:if>
-                <xsl:if test="string-length($eissn)>0">
+                <xsl:if test="my:isNotEmpty($eissn)">
                     <mods:identifier type="eissn"><xsl:value-of select="$eissn"/></mods:identifier>
                 </xsl:if>
-                <xsl:if test="string-length($volume)>0 or string-length($issue)>0 or string-length($pages)>0 or string-length($date)>0">
+                <xsl:if test="my:isNotEmpty($volume) or my:isNotEmpty($issue) or my:isNotEmpty($pages) or my:isNotEmpty($date)">
                     <mods:part>
-                        <xsl:if test="string-length($volume)>0">
+                        <xsl:if test="my:isNotEmpty($volume)">
                             <mods:detail type="volume"><xsl:value-of select="$volume"/></mods:detail>
                         </xsl:if>
-                        <xsl:if test="string-length($issue)>0">
+                        <xsl:if test="my:isNotEmpty($issue)">
                             <mods:detail type="issue"><xsl:value-of select="$issue"/></mods:detail>
                         </xsl:if>
-                        <xsl:if test="string-length($pages)>0">
+                        <xsl:if test="my:isNotEmpty($pages)">
                             <mods:extent unit="pages">
                                 <xsl:choose>
                                     <xsl:when test="contains($pages,'-')">
@@ -532,12 +544,12 @@
                                         <mods:end><xsl:value-of select="substring-after($pages, '-')"/></mods:end>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <mods:start><xsl:value-of select="$volume"/></mods:start>
+                                        <mods:start><xsl:value-of select="$pages"/></mods:start>
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </mods:extent>
                         </xsl:if>
-                        <xsl:if test="string-length($date)>0">
+                        <xsl:if test="my:isNotEmpty($date)">
                             <mods:date><xsl:value-of select="$date"/></mods:date>
                         </xsl:if>
                     </mods:part>
@@ -549,12 +561,12 @@
     <xsl:template name="reportReference">
         <xsl:variable name="orgName" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='report']/doc:element[@name='organisation']/doc:element/doc:field[@name='value']"/>
         <xsl:variable name="period" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='report']/doc:element[@name='period']/doc:element/doc:field[@name='value']"/>
-        <xsl:if test="string-length($orgName)>0">
+        <xsl:if test="my:isNotEmpty($orgName)">
             <mods:relatedItem otherType="report reference">
                 <mods:name type="corporate">
                     <mods:namePart><xsl:value-of select="$orgName"/></mods:namePart>
                 </mods:name>
-                <xsl:if test="string-length($period)>0">
+                <xsl:if test="my:isNotEmpty($period)">
                     <mods:originInfo>
                         <mods:dateOther type="period"><xsl:value-of select="$period"/></mods:dateOther>
                     </mods:originInfo>
@@ -578,22 +590,22 @@
         <xsl:variable name="location" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='location']/doc:element/doc:field[@name='value']"/>
         <xsl:variable name="start" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='startDate']/doc:element/doc:field[@name='value']"/>
         <xsl:variable name="end" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='endDate']/doc:element/doc:field[@name='value']"/>
-        <xsl:if test="string-length($name)>0">
+        <xsl:if test="my:isNotEmpty($name)">
             <mods:relatedItem type="host" otherType="conference">
                 <mods:titleInfo>
                     <mods:title><xsl:value-of select="$name"/></mods:title>
                 </mods:titleInfo>
-                <xsl:if test="string-length($location)>0 or string-length($start)>0 or string-length($end)>0">
+                <xsl:if test="my:isNotEmpty($location) or my:isNotEmpty($start) or my:isNotEmpty($end)">
                     <mods:originInfo>
-                        <xsl:if test="string-length($location)>0">
+                        <xsl:if test="my:isNotEmpty($location)">
                             <mods:place>
                                 <mods:placeTerm type="text"><xsl:value-of select="$location"/></mods:placeTerm>
                             </mods:place>
                         </xsl:if>
-                        <xsl:if test="string-length($start)>0">
+                        <xsl:if test="my:isNotEmpty($start)">
                             <mods:dateOther point="start" encoding="iso8601"><xsl:value-of select="$start"/></mods:dateOther>
                         </xsl:if>
-                        <xsl:if test="string-length($end)>0">
+                        <xsl:if test="my:isNotEmpty($end)">
                             <mods:dateOther point="end" encoding="iso8601"><xsl:value-of select="$end"/></mods:dateOther>
                         </xsl:if>
                     </mods:originInfo>
