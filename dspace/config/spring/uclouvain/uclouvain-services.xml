@@ -81,6 +81,8 @@
     <bean id="epersonAuthorize" class="org.dspace.uclouvain.authorize.eperson.EPersonAuthorize"/>
     <bean id="bundleAuthorize" class="org.dspace.uclouvain.authorize.bundle.BundleAuthorize"/>
 
+    <bean id="publicationProfileAsyncIndexingService" class="org.dspace.uclouvain.async.PublicationProfileAsyncIndexingService"/>
+
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
     <bean id="metadataTransactionCache" class="org.dspace.uclouvain.content.tracking.MetadataTransactionCache"/>
