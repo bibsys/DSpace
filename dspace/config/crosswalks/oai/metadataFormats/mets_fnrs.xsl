@@ -157,7 +157,7 @@
                 <xsl:attribute name="ID"><xsl:value-of select="concat($record_id, '_', ancestor::doc:element[@name='bundle']/doc:field[@name='name']/text(), '_', doc:field[@name='sid']/text())"/></xsl:attribute>
                 <xsl:attribute name="MIMETYPE"><xsl:value-of select="doc:field[@name='format']/text()" /></xsl:attribute>
                 <xsl:attribute name="SEQ"><xsl:value-of select="position()" /></xsl:attribute>
-                <xsl:attribute name="AMDID">
+                <xsl:attribute name="ADMID">
                   <xsl:choose>
                     <xsl:when test="exists(. intersect $openAccessBitstreams)">
                       <xsl:text>RIGHTS_OPENACCESS</xsl:text>
