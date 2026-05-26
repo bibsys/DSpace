@@ -1,7 +1,7 @@
 {
   "uuid": "@virtual.id@",
   "documentType": "@dc.type.maintype@",
-  "year": "@dc.date.issued@",
+  "year": "@virtual.date.dc-date-issued.YYYY@",
   "reference": "@virtual.citations.html.apa@",
   "handle": "@virtual.handleLink@"
 }
