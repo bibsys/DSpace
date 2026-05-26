@@ -3,5 +3,5 @@
     <Handle>@virtual.handleLink@</Handle>
     <Category>@dc.type.maintype@</Category>
     <Access>@dcterms.accessRights@</Access>
-    <Issued>@dc.date.issued@</Issued>
+    <Issued>@virtual.date.dc-date-issued.YYYY@</Issued>
 </Publication>
