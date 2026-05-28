@@ -11,7 +11,7 @@ import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.dspace.content.authority.Choices.CF_UNSET;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +22,8 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ReadContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.dto.MetadataValueDTO;
 import org.dspace.core.Context;
@@ -47,6 +49,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  */
 public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSourceService {
+
+    private static final Logger logger = LogManager.getLogger(UCLouvainCrossRefImportSourceService.class);
+
     @Autowired
     private LiveImportClient liveImportClient;
     @Autowired
@@ -59,26 +64,33 @@ public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSou
     @Override
     public List<MetadataValueDTO> getMetadataList(String query) {
         Context context = ContextUtil.obtainCurrentRequestContext();
-        String rawResponse = fetchData(query);
-        ReadContext parsedJson = parseJsonResponse(rawResponse);
-        return generateMetadataList(context, parsedJson);
+        try {
+            String rawResponse = fetchData(query);
+            ReadContext parsedJson = parseJsonResponse(rawResponse);
+            return generateMetadataList(context, parsedJson);
+        } catch (Exception e) {
+            logger.warn("Error getting external metadata :: {}", e.getMessage(), e);
+            return Collections.emptyList();
+        }
     }
 
     private String fetchData(String query) {
         String finalUrl = url + "/" + query;
-        Map<String, Map<String, String>> params = new HashMap<>();
-        String response = liveImportClient.executeHttpGetRequest(2000, finalUrl, params);
-        return response;
+        return liveImportClient.executeHttpGetRequest(2000, finalUrl, Collections.emptyMap());
     }
 
     private ReadContext parseJsonResponse(String rawResponse) {
-        ReadContext root = JsonPath.parse(rawResponse);
-        Configuration conf = Configuration.builder()
-            // This is important: return null if a path is not found instead of throwing an exception.
-            .options(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.SUPPRESS_EXCEPTIONS)
-            .build();
-
-        return JsonPath.using(conf).parse((Object) root.read("$.message"));
+        try {
+            ReadContext root = JsonPath.parse(rawResponse);
+            Configuration conf = Configuration.builder()
+                    // This is important: return null if a path is not found instead of throwing an exception.
+                    .options(Option.DEFAULT_PATH_LEAF_TO_NULL, Option.SUPPRESS_EXCEPTIONS)
+                    .build();
+            return JsonPath.using(conf).parse((Object) root.read("$.message"));
+        } catch (IllegalArgumentException e) {
+            logger.warn("Error parsing JSON response :: {}", rawResponse, e);
+            return null;
+        }
     }
 
     // METADATA EXTRACTION =============================================================================================
