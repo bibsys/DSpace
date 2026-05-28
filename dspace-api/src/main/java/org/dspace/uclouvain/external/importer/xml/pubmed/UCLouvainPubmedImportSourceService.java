@@ -17,10 +17,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -75,10 +74,13 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
             Element parsedXml = parseXmlResponse(rawResponse);
             return generateMetadataList(context, parsedXml);
         } catch (URISyntaxException e) {
-            logger.error("Could not build Pubmed request URL.", e);
+            logger.warn("Could not build Pubmed request URL.", e);
+            return List.of();
+        } catch (Exception e) {
+            logger.warn("Error getting external metadata :: {}", e.getMessage(), e);
             return List.of();
         }
-    };
+    }
 
     private String fetchData(String query) throws URISyntaxException {
         URIBuilder uriBuilder = new URIBuilder(urlFetch);
@@ -86,8 +88,7 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
         uriBuilder.addParameter("db", "pubmed");
         uriBuilder.addParameter("retmode", "xml");
         uriBuilder.addParameter("id", query);
-        Map<String, Map<String, String>> params = new HashMap<>();
-        return liveImportClient.executeHttpGetRequest(2000, uriBuilder.toString(), params);
+        return liveImportClient.executeHttpGetRequest(2000, uriBuilder.toString(), Collections.emptyMap());
     }
 
     private Element parseXmlResponse(String xmlResponse) {
@@ -108,6 +109,7 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
             List<Element> recordsList = xpath.evaluate(root);
             return recordsList != null ? recordsList.get(0) : null;
         } catch (JDOMException | IOException e) {
+            logger.warn("Error parsing XML response: {}", xmlResponse, e);
             return null;
         }
     }
