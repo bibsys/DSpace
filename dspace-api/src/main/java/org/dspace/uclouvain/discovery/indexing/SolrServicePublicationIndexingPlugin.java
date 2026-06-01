@@ -198,24 +198,34 @@ public class SolrServicePublicationIndexingPlugin
      * @param document The solr document to add the read permissions to.
      */
     private void readPermissionsIndexing(Context context, Publication publication, SolrInputDocument document) {
-        // Add read permission for submitter
-        addRead(document, Optional.ofNullable(publication.getItem().getSubmitter()));
-        // Add read permission for any author
-        publication.getAuthors().stream()
+        List<EPerson> owners = new ArrayList<>();
+
+        // 1. Add read permission for submitter
+        if (publication.getItem().getSubmitter() != null) {
+            owners.add(publication.getItem().getSubmitter());
+        }
+
+        // 2. Add owners from authors
+        owners.addAll(publication.getAuthors().stream()
             .map(PublicationAuthor::getAuthority)
             .filter(Objects::nonNull)
-            .forEach((author) -> {
-                addRead(document, findOwner(context, author.getItem()));
-            });
-    }
+            .map(a -> findOwner(context, a.getItem()))
+            .flatMap(Optional::stream) // Removed empty|null owner
+            .toList());
 
-    /**
-     * Add a read permission to the document for the given person.
-     * @param document The solr Document.
-     * @param person The person to add a read permission for.
-     */
-    private void addRead(SolrInputDocument document, Optional<EPerson> person) {
-        person.ifPresent(personObj -> document.addField("read", "e" + personObj.getID().toString()));
+        // 3. Transform EPeople to Solr-formatted IDs (e.g., "e123")
+        Set<String> formattedIds = owners.stream()
+            .map(EPerson::getID)
+            .filter(Objects::nonNull)
+            .map(id -> "e" + id)
+            .collect(Collectors.toSet());
+
+        // 4. Create the log string
+        String ownersLogString = String.join(",", formattedIds);
+        log.debug("Adding `read` field to Solr for publication [{}] :: {}", publication.getID(), ownersLogString);
+
+        // 5. Add fields to Solr document individually
+        formattedIds.forEach(id -> document.addField("read", id));
     }
 
     /**
