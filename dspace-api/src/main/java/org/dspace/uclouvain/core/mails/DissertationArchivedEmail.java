@@ -8,11 +8,14 @@
 package org.dspace.uclouvain.core.mails;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
+import org.dspace.uclouvain.core.model.publication.DissertationPublication;
+import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
 
@@ -29,6 +32,17 @@ public class DissertationArchivedEmail extends DissertationNotifyEmail {
 
     public DissertationArchivedEmail(Context context, Item item) throws EmailFailedInitException {
         super(context, item);
+    }
+
+    @Override
+    protected List<String> getCCAddresses() {
+        List<String> ccAddresses = super.getCCAddresses();
+        ccAddresses.addAll(getSupervisorEmails(publication));
+        if (log.isDebugEnabled()) {
+            String emails = String.join(", ", ccAddresses);
+            log.debug("Initial CC recipient addresses for notify email are :: {}", emails);
+        }
+        return ccAddresses.stream().distinct().toList();
     }
 
     @Override
@@ -51,5 +65,16 @@ public class DissertationArchivedEmail extends DissertationNotifyEmail {
         } catch (Exception e) {
             throw new EmailGenerationException("An error occurred while filling email informations", e);
         }
+    }
+
+    /**
+     * Get all advisors emails from the item metadata and return them as a list of strings.
+     * @param publication The item to get the advisor emails from.
+     * @return A list of strings containing all the advisor emails found in the item metadata.
+     */
+    protected List<String> getSupervisorEmails(Publication publication) {
+        return (publication instanceof DissertationPublication thesis)
+            ? thesis.getSupervisorEmails()
+            : Collections.emptyList();
     }
 }
