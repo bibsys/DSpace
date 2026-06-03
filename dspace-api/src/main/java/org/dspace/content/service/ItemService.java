@@ -1056,6 +1056,14 @@ public interface ItemService
     EntityType getEntityType(Context context, Item item) throws SQLException;
 
     /**
+     * This is an optimized way of getting the entity-type of an item.
+     * 
+     * @param item The item to get the entity-type of.
+     * @return The entity type or null if none found.
+     */
+    public String getEntityTypeOptimized(Item item);
+
+    /**
      * Add the default policies, which have not been already added to the given
      * DSpace object
      *

@@ -1145,7 +1145,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         }
 
         // Clear any enhancement scheduled for this item.
-        clearItemEnhancers(context, item);
+        enhanceForDeletedItem(context, item);
 
         // Finally remove item row
         itemDAO.delete(context, item);
@@ -2486,8 +2486,15 @@ prevent the generation of resource policy entry values with null dspace_object a
      * @param context The current DSpace context.
      * @param item The item to clear the enhancement for.
      */
-    private void clearItemEnhancers(Context context, Item item) {
-        uclouvainItemEnhancerService.cleanForItem(context, item.getID());
+    private void enhanceForDeletedItem(Context context, Item item) {
+        String entityType = getEntityTypeOptimized(item);
+        if (entityType == null) {
+            log.info(
+                "Can't add deleted item for enhancement because entity-type can't be retrieved for item " + item.getID()
+            );
+            return;
+        }
+        uclouvainItemEnhancerService.addItemForEnhancement(context, item.getID(), entityType);
     }
 
     /**
@@ -2562,21 +2569,14 @@ prevent the generation of resource policy entry values with null dspace_object a
         metadataChangesLogger.logChanges(context, item, changes);
     }
 
-    /**
-     * This is an optimized way of getting the entity type of an item.
-     * This was created to improve performances of metadata tracking.
-     * 
-     * @param item The item to get the entity type of.
-     * @return A optional that may contain the entity type or null.
-     */
-    private Optional<String> getEntityTypeOptimized(Item item) {
-        if (item == null) {
-            return Optional.empty();
-        }
-        return item.getMetadata().stream()
-            .filter(metadata -> "dspace.entity.type".equals(metadata.getMetadataField().toString('.')))
-            .map(MetadataValue::getValue)
-            .findFirst();
+    public String getEntityTypeOptimized(Item item) {
+        return (item == null)
+            ? null
+            : item.getMetadata().stream()
+                .filter(metadata -> "dspace.entity.type".equals(metadata.getMetadataField().toString('.')))
+                .map(MetadataValue::getValue)
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -2593,7 +2593,7 @@ prevent the generation of resource policy entry values with null dspace_object a
 
         return (item != null)
             && context.isMetadataTrackingEnabled()
-            && trackedEntities.contains(getEntityTypeOptimized(item).map(String::toLowerCase).orElse(null));
+            && trackedEntities.contains(getEntityTypeOptimized(item));
     }
 
     private List<MetadataValueSnapshot> buildMetadataSnapshotList(Item item) {

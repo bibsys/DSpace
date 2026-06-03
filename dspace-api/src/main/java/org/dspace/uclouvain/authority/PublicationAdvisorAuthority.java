@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.dspace.content.Item;
+import org.dspace.profile.ResearcherProfile;
 
 /**
  * Simple authority to search for dissertation supervisor.
@@ -27,35 +28,35 @@ public class PublicationAdvisorAuthority extends PublicationAuthorAuthority {
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.emailOfficial.field",
+            ResearcherProfile.OFFICIAL_EMAIL_FIELD,
             "advisors_email",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.OrcidID.field",
+            ResearcherProfile.ORCID_FIELD,
             "advisors_identifier_orcid",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.institutionalID.field",
+            ResearcherProfile.FGS_FIELD,
             "advisors_identifier_fgs",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.institutionName.field",
+            ResearcherProfile.INSTITUTION_FIELD,
             "advisors_institution_code",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.entityName.field",
+            ResearcherProfile.DEPARTMENT_FIELD,
             "advisors_entity_name",
             false
         );
