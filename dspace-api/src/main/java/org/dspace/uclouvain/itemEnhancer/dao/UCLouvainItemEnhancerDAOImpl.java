@@ -7,14 +7,18 @@
  */
 package org.dspace.uclouvain.itemEnhancer.dao;
 
-import java.math.BigInteger;
+// import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import jakarta.persistence.Tuple;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
 import org.dspace.core.AbstractHibernateDAO;
@@ -24,17 +28,11 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance;
 import org.dspace.utils.DSpace;
 import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * DAO to interact with 'uclouvain_item_authority_metadata_enhancement' table.
- * This table is used as a queue for items that need to be updated using the
- * custom enhancement system.
- * The table contains 3 columns:
- * - The source_uuid, which is the item holding the proper metadata value.
- * - The target_uuid, which is the item to update the metadata of.
- * - The date_queued, which is giving a hint about the queue date.
  * 
  * @author: Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
@@ -46,109 +44,107 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
     ConfigurationService configurationService;
 
     /**
-     * Try to add a new entry to the database using a uuid pair (source + target).
-     * If the pair is already present in the table, update its 'date_queued'.
+     * Try to add a new entry to the database using a given item uuid and its entity-type.
+     * If the item is already present in the table, update its 'date_queued'.
      * 
-     * @param context    The current DSpace context.
-     * @param sourceUUID The UUID of the source item.
-     * @param targetUUID The UUID of the target item.
+     * @param context The current DSpace application context.
+     * @param uuid The UUID of the item to trigger an enhancement from.
+     * @param entityType The entity-type of the item.
      */
     @Override
-    public void addOrUpdateItemToUpdate(Context context, UUID sourceUUID, UUID targetUUID) throws Exception {
-        logger.debug("About to query the database to add an item for update (enhancement)");
+    public void addOrUpdateItemToUpdate(Context context, UUID uuid, String entityType) throws SQLException {
+        logger.debug("About to query the database to add an item for enhancement");
         Session session = getHibernateSession();
-        String sqlInsertOrUpdate;
-        if ("org.h2.Driver".equals(configurationService.getProperty("db.driver"))) {
-            // H2 doesn't support the INSERT OR UPDATE statement so let's use MERGE statement.
-            // Update queued date for records already in the queue.
-            sqlInsertOrUpdate = "MERGE INTO uclouvain_item_authority_metadata_enhancement as me"
-                    + " KEY (source_uuid, target_uuid)"
-                    + " VALUES (:source_uuid, :target_uuid, CURRENT_TIMESTAMP)";
+
+        // DEV_NOTE: Usage of hibernate instead of SQL for better readability/stability.
+        ItemToEnhance existingEntry = session.get(ItemToEnhance.class, uuid);
+        if (existingEntry == null) {
+            ItemToEnhance newItem = new ItemToEnhance();
+            newItem.setItemUUID(uuid);
+            newItem.setEntityType(entityType);
+            newItem.setDateQueued(new Date());
+            session.persist(newItem);
         } else {
-            sqlInsertOrUpdate =
-                "INSERT INTO uclouvain_item_authority_metadata_enhancement (source_uuid, target_uuid, date_queued)"
-                    + " VALUES (:source_uuid, :target_uuid, CURRENT_TIMESTAMP)"
-                    + " ON CONFLICT (source_uuid, target_uuid) DO UPDATE"
-                    + " SET date_queued = EXCLUDED.date_queued";
+            existingEntry.setDateQueued(new Date());
+            session.merge(existingEntry);
         }
-        logger.info(
-                "Adding an item to update to the database: source = " + sourceUUID + " target = " + targetUUID);
-        NativeQuery<?> queryInsertOrUpdate = session.createNativeQuery(sqlInsertOrUpdate);
-        // Fill the query parameters
-        queryInsertOrUpdate.setParameter("source_uuid", sourceUUID);
-        queryInsertOrUpdate.setParameter("target_uuid", targetUUID);
-        queryInsertOrUpdate.executeUpdate();
     }
 
     /**
-     * Retrieve all the entries from the table.
+     * Retrieve all the entries from the table until the given limit is reached.
      * Those are converted in 'ItemToEnhance' objects to be used in the code.
      * Can return an empty list if no entries are found.
      * 
-     * @param context The current DSpace context.
-     * @return A list of 'ItemToEnhance' objects which can be empty.
+     * @param context The current DSpace application context.
+     * @param limit Limit the number of item to retrieve. -1 for unlimited number of result.
+     * @return A possibly empty list of 'ItemToEnhance' objects.
      */
     @Override
-    public List<ItemToEnhance> getItemsToEnhance(Context context, Integer limit) throws Exception {
+    public List<ItemToEnhance> getItemsToEnhance(Context context, Integer limit) throws SQLException {
         Session session = getHibernateSession();
-        String sql = "SELECT source_uuid, target_uuid, date_queued"
-                + " FROM uclouvain_item_authority_metadata_enhancement"
-                + " ORDER BY date_queued ASC"
-                + " LIMIT :limit";
-        NativeQuery<ItemToEnhance> query = session.createNativeQuery(sql, ItemToEnhance.class);
-        query.setParameter("limit", limit);
+        String hql = "FROM ItemToEnhance ORDER BY dateQueued ASC";
+        Query<ItemToEnhance> query = session.createQuery(hql, ItemToEnhance.class);
+        if (limit > 0) {
+            query.setMaxResults(limit);
+        }
         return query.getResultList();
     }
 
     /**
      * Retrieve the total amount of entries for the database table.
-     * Note that depending on the used driver, the response will be cast to either BigInt or Long.
      * 
-     * @param context The current DSpace context.
+     * @param context The current DSpace application context.
      * @return The total number of entries for the table so the total number of item to enhance.
-     * 
-     * @throws Exception
      */
     @Override
     public Integer countItemsToEnhance(Context context) throws SQLException {
         Session session = getHibernateSession();
-        String sql = "SELECT count(*)"
-                + " FROM uclouvain_item_authority_metadata_enhancement";
-        NativeQuery<?> query = session.createNativeQuery(sql);
-        // count(*) result is mapped by hibernate to the BigInteger or Long type in java.
-        // For h2 (test env), it is mapped to BigInteger so we need to convert to BigInteger.
-        if ("org.h2.Driver".equals(configurationService.getProperty("db.driver"))) {
-            return ((BigInteger) query.getSingleResult()).intValue();
-        // For hibernate in classic DSpace env, convert to Long.
-        } else {
-            return ((Long) query.getSingleResult()).intValue();
-        }
+        String hql = "SELECT count(i) FROM ItemToEnhance i";
+        Query<Long> query = session.createQuery(hql, Long.class);
+        return query.getSingleResult().intValue();
     }
 
     /**
-     * Delete all the entries in the table that are related to the given item uuid.
+     * Delete the entry in the table that is related to the given item uuid.
      * 
-     * @param context The current DSpace context.
+     * @param context The current DSpace application context.
      * @param uuid The uuid of the item.
      * 
+     * @return An integer to indicate the number of deleted entries (should be 1).
+     */
+    @Override
+    public Integer cleanTableEntriesForItem(Context context, UUID uuid) throws SQLException {
+        Session session = getHibernateSession();
+        ItemToEnhance existing = session.get(ItemToEnhance.class, uuid);
+        if (existing != null) {
+            session.remove(existing);
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Delete all the entries in the table that have a date evaluated between the given 'startDate' and 'endDate'.
+     * 
+     * @param context   The current DSpace application context.
+     * @param startDate The start date to delete the correct entries.
+     * @param endDate   The end date to delete the correct entries.
      * @return An integer to indicate the number of deleted entries.
      */
     @Override
-    public Integer cleanTableEntriesForItem(Context context, UUID uuid) throws Exception {
+    public Integer cleanTableEntries(Context context, Date startDate, Date endDate) throws SQLException {
         Session session = getHibernateSession();
-        String sql = "DELETE FROM uclouvain_item_authority_metadata_enhancement"
-             + " WHERE source_uuid = :source_uuid OR target_uuid = :target_uuid";
-        NativeQuery<?> query = session.createNativeQuery(sql);
-        query.setParameter("source_uuid", uuid);
-        query.setParameter("target_uuid", uuid);
+        String hql = "DELETE FROM ItemToEnhance WHERE dateQueued BETWEEN :start_date AND :end_date";
+        Query<?> query = session.createQuery(hql, null);
+        query.setParameter("start_date", startDate);
+        query.setParameter("end_date", endDate);
         return query.executeUpdate();
     }
 
     /**
-     * Retrieves all the items that are linked to a source item.
+     * Retrieves all the items that are linked to a source item and the place of the metadata value linking them.
      * To find those item, we browse all the available metadata values to find one those who have an authority
      * valid equal to the uuid of a source item.
-     * The result list is parse into a lis of Item to have an easier access.
      * 
      * @param context The current DSpace context.
      * @param metadataField The metadata field to search for.
@@ -156,59 +152,30 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
      * @return A list of all related items which have at least one metadata referencing the source item.
      */
     @Override
-    public List<Item> getAuthorityLinkedItem(
+    public List<Pair<Item, Integer>> getAuthorityLinkedItem(
         Context context, MetadataField metadataField, String authority
-    ) throws Exception {
+    ) throws SQLException {
         Session session = getHibernateSession();
-        String sql = "SELECT result_item.*"
-            + " FROM"
-            + " (SELECT mv.dspace_object_id"
-                + " FROM metadatavalue as mv"
-                + " JOIN metadatafieldregistry as mf on mv.metadata_field_id = mf.metadata_field_id"
-                + " JOIN metadataschemaregistry as ms on mf.metadata_schema_id = ms.metadata_schema_id"
-                + " WHERE ms.short_id = :schema AND mf.element = :element"
-                + (
-                    metadataField.getQualifier() != null
-                        ? (" AND mf.qualifier = '" + metadataField.getQualifier().toString() + "'")
-                        : ""
-                )
-                + " AND mv.authority = :authority"
-                + " GROUP BY mv.dspace_object_id) as result_uuids,"
-            + " (SELECT * FROM item) as result_item"
-            + " WHERE result_uuids.dspace_object_id = result_item.uuid";
+        String hql = "SELECT DISTINCT mv.dSpaceObject, mv.place FROM MetadataValue mv " +
+                    "WHERE mv.metadataField = :metadataField " +
+                    "AND mv.authority = :authority";
 
-        NativeQuery<Item> query = session.createNativeQuery(sql, Item.class);
-        query.setParameter("schema", metadataField.getMetadataSchema().getName());
-        query.setParameter("element", metadataField.getElement());
+        // Use the 'Tuple' type to convert into a pair later.
+        Query<Tuple> query = session.createQuery(hql, Tuple.class);
+        query.setParameter("metadataField", metadataField);
         query.setParameter("authority", authority);
 
-        return query.getResultList();
-    }
-
-    /**
-     * Delete all the entries in the table that have a date evaluated between the given 'startDate' and 'endDate'.
-     * 
-     * @param context   The current DSpace context.
-     * @param startDate The start date to delete the correct entries.
-     * @param endDate   The end date to delete the correct entries.
-     * @return An integer to indicate the number of deleted entries.
-     */
-    @Override
-    public Integer cleanTableEntries(Context context, Date startDate, Date endDate) throws Exception {
-        Session session = getHibernateSession();
-        String sql = "DELETE FROM uclouvain_item_authority_metadata_enhancement"
-            + " WHERE date_queued BETWEEN :start_date AND :end_date";
-        NativeQuery<?> query = session.createNativeQuery(sql);
-        query.setParameter("start_date", startDate);
-        query.setParameter("end_date", endDate);
-        return query.executeUpdate();
+        // Map the tuple stream into a list of pairs.
+        return query.getResultList()
+            .stream()
+            .map(t -> Pair.of((Item) t.get(0, DSpaceObject.class), t.get(1, Integer.class)))
+            .collect(Collectors.toList());
     }
 
     /**
      * Returns the Hibernate Session currently opened.
      *
      * @return The current Session.
-     * @throws SQLException
      */
     private Session getHibernateSession() throws SQLException {
         @SuppressWarnings("rawtypes")
