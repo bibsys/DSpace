@@ -9,25 +9,24 @@ package org.dspace.uclouvain.itemEnhancer;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+import jakarta.annotation.PostConstruct;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
-import org.dspace.content.MetadataFieldName;
-import org.dspace.content.service.ItemService;
-import org.dspace.content.service.MetadataFieldService;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.itemEnhancer.dao.UCLouvainItemEnhancerDAO;
-import org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration;
-import org.dspace.uclouvain.itemEnhancer.exceptions.WrongEntityTypeException;
+import org.dspace.uclouvain.itemEnhancer.enhancers.MetadataEnhancer;
 import org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance;
 import org.springframework.beans.factory.annotation.Autowired;
-
 /**
  * Service to handle the custom enhancement system.
  * This class holds the configuration for the feature, describing which item must be enhanced
@@ -37,8 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerService {
 
-    // The full list of metadata enhancers configuration. See 'uclouvain-metadata-enhancers.xml' for full config.
-    private List<ItemEnhancerConfiguration> enhancers = new ArrayList<ItemEnhancerConfiguration>();
     private Logger logger = LogManager.getLogger(UCLouvainItemEnhancerServiceImpl.class);
 
     // Defines the maximum number of items to retrieve at the same time from the database using
@@ -46,199 +43,47 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
     private Integer pullLimit = 1000;
 
     @Autowired
-    private ItemService itemService;
-
-    @Autowired
-    private MetadataFieldService metadataFieldService;
-
-    @Autowired
     private UCLouvainItemEnhancerDAO uclouvainItemEnhancerDAO;
 
-    /**
-     * Get all the applicable configurations for a specific source item.
-     * If the source item has the same entity type as the config and holds a value for at least one
-     * of the configured metadata fields, then it is applicable.
-     * Returns an empty list if no configuration is matching.
-     * 
-     * @param item The source item to use in order to find applicable configurations.
-     * @return A list of applicable configurations, which could be empty if none found.
-     */
-    @Override
-    public List<ItemEnhancerConfiguration> getValidConfigurationsForItem(Item item) {
-        // First get entity type of the item.
-        String itemEntityType = itemService.getEntityType(item);
-        List<ItemEnhancerConfiguration> validConfigurations = new ArrayList<ItemEnhancerConfiguration>();
-        if (itemEntityType == null) {
-            logger.warn(
-                "Cannot get valid configuration for item " + item.getID() + " because the EntityType cannot be found."
-            );
-            return validConfigurations;
-        }
+    private List<MetadataEnhancer<Object>> enhancers = new ArrayList<>();
+    // Map containing all enhancers sorted by entityType and supported action.
+    // First layer is the entityType, second layer is the action.
+    private Map<String, Map<String, List<MetadataEnhancer<Object>>>> enhancersMap = new HashMap<>();
 
-        // Loop over all the configurations and find valid ones using the item entity type.
-        enhancers
-            .stream()
-            .filter(enhancer -> enhancer.getSourceEntityType().equals(itemEntityType))
-            .forEach(enhancer -> {
-                for (String mdField: enhancer.getSourceMetadataFields()) {
-                    if (itemService.getMetadata(item, mdField, Item.ANY) != null) {
-                        // If at least one of the configured source metadata field is present in the item,
-                        // add it to valid config.
-                        validConfigurations.add(enhancer);
-                        break;
-                    }
-                }
-            });
-        logger.debug("Recovered list of config for item " + item.getID() + ": " + validConfigurations);
-        return validConfigurations;
+    @PostConstruct
+    public void init() {
+        // Build a map using the loaded enhancers for fast access.
+        for (MetadataEnhancer<Object> enhancer : enhancers) {
+            String entityType = enhancer.getSupportedEntityType();
+            String action = enhancer.getSupportedAction();
+
+            Map<String, List<MetadataEnhancer<Object>>> actionMap =
+                enhancersMap.getOrDefault(entityType, new HashMap<>());
+            List<MetadataEnhancer<Object>> enhancerList =
+                actionMap.getOrDefault(action, new ArrayList<>());
+            enhancerList.add(enhancer);
+
+            actionMap.putIfAbsent(action, enhancerList);
+            enhancersMap.putIfAbsent(entityType, actionMap);
+        }
     }
 
     /**
-     * Get all the applicable configurations for specific source && target item.
-     * To be considered applicable the following conditions must be met:
-     * - The source item has the same entity type as provided by the configuration,
-     * - The target item has the same entity type as provided by the configuration.
-     * Returns an empty list if no configuration is matching.
-     * 
-     * @param source The source item to use in order to find applicable configurations.
-     * @param target The target item to use in order to find applicable configurations.
-     * @return A list of applicable configurations, which could be empty if none found.
-     */
-    @Override
-    public List<ItemEnhancerConfiguration> getValidConfigurationsForSourceAndTarget(Item source, Item target)
-        throws WrongEntityTypeException {
-        String sourceEntityType = this.itemService.getEntityType(source);
-        if (sourceEntityType == null) {
-            throw new WrongEntityTypeException("No entity type found for given source item " + source.getID());
-        }
-        String targetEntityType = this.itemService.getEntityType(target);
-        if (targetEntityType == null) {
-            throw new WrongEntityTypeException("No entity type found for given target item " + target.getID());
-        }
-
-        // Loop over all the configurations and find valid ones.
-        List<ItemEnhancerConfiguration> validConfigurations =
-            this.enhancers.stream()
-            .filter(enhancer -> enhancer.isValidForEntityTypes(sourceEntityType, targetEntityType))
-            .collect(Collectors.toList());
-
-        return validConfigurations;
-    }
-
-    /**
-     * Given a list of applicable configurations and a source item, this method will add an entry
-     * into the database for each related target item.
-     * Target items are found by searching for items holding the corresponding authority on the
-     * configured metadata fields.
-     * 
-     * A target item is considered valid if its metadata is different from the source it is coming from.
-     * If a target item is valid, it is added in the database table 'uclouvain_item_authority_metadata_enhancement'
-     * to be processed later by a 'poller'.
+     * Given a specific item and its entity type, this method will add an entry to the database.
+     * If the item is already present in the database, the existing row will be updated.
      * 
      * @param context The current DSpace context.
-     * @param sourceItem The source item to get the correct value from.
-     * @param validConfigurations A list of all the valid configuration used to search for valid target item.
+     * @param uuid The item uuid to put in for enhancement.
+     * @param entityType The entity type of the item to add for enhancement.
      */
     @Override
-    public void addRelatedItemsForEnhancement(
-        Context context, Item sourceItem, List<ItemEnhancerConfiguration> validConfigurations
-    ) {
-        UUID sourceUUID = sourceItem.getID();
-        logger.debug("Found valid item to process: " + sourceItem.getID());
-
-        for (ItemEnhancerConfiguration config : validConfigurations) {
-            try {
-                for (String mdField: config.getTargetMetadataFields()) {
-                    // !! Warning: Retrieving each time the metadata field could be damaging for
-                    // !! performance. It triggers a database call.
-                    MetadataField field = metadataFieldService.findByString(context, mdField, '.');
-                    // If field is unknown, skip it.
-                    if (field == null) {
-                        logger.warn("Could not find valid MetadataField object for configured field '" + mdField + "'");
-                        continue;
-                    }
-
-                    // Find all linked items that have a metadata with the right authority.
-                    logger.debug("Searching target item for source item " + sourceUUID);
-                    List<Item> linkedItems =
-                        uclouvainItemEnhancerDAO.getAuthorityLinkedItem(context, field, sourceUUID.toString());
-                    for (Item linkedItem: linkedItems) {
-                        if (isTargetItemValid(context, linkedItem, sourceItem, config, mdField)) {
-                            // Let's use the DAO to add entry to the database
-                            logger.info("Found valid linked target item: "
-                                + linkedItem.getID() + ", inserting in DB...");
-                            uclouvainItemEnhancerDAO.addOrUpdateItemToUpdate(
-                                context, sourceUUID, linkedItem.getID()
-                            );
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("An error occurred while posting related target item to the database.", e);
-            }
+    public void addItemForEnhancement(Context context, UUID uuid, String entityType) {
+        logger.info("Adding item to enhancement table: " + uuid);
+        try {
+            uclouvainItemEnhancerDAO.addOrUpdateItemToUpdate(context, uuid, entityType);
+        } catch (Exception e) {
+            logger.error("An error occurred while posting item to the database for enhancement.", e);
         }
-    }
-
-    /**
-     * Check if a target item should be added to the queue by checking its validity
-     * and the state of its metadata values.
-     * 
-     * @param context The current DSpace context.
-     * @param targetItem The target item to check the validity of.
-     * @param sourceItem The source item which is holding the source value.
-     * @param config The current enhancement configuration we are processing.
-     * @param targetField The current field for which we want to check the value.
-     * @return True if the target item has the right entityType and has an outdated value for a field. False otherwise.
-     */
-    private boolean isTargetItemValid(
-        Context context, Item targetItem, Item sourceItem, ItemEnhancerConfiguration config, String targetField
-    ) {
-        String targetEntityType = itemService.getEntityType(targetItem);
-        if (!config.getTargetEntityType().equals(targetEntityType)) {
-            logger.debug(
-                "Wrong entityType for target item, wanted '"
-                + config.getTargetEntityType() + "' found '"
-                + targetEntityType + "'"
-            );
-            return false;
-        }
-
-        List<String> targetValues = itemService
-            .getMetadata(targetItem, targetField, sourceItem.getID().toString())
-            .stream().map(x -> x.getValue()).collect(Collectors.toList());
-        if (targetValues == null) {
-            return false;
-        }
-
-        logger.debug("TargetValues found for field " + targetField + ": " + targetValues);
-
-        // Flag to determine if the target item has different values compared to the source.
-        boolean didMetadataChange = false;
-
-        for (String sourceMdField: config.getSourceMetadataFields()) {
-            String sourceValue =
-                itemService.getMetadataFirstValue(sourceItem, new MetadataFieldName(sourceMdField), Item.ANY);
-            logger.debug("Source value to compare: " + sourceValue);
-            if (sourceValue == null) {
-                continue;
-            }
-            // Browse each value for the target metadata field.
-            // If one value does not match the source, toggle the 'isMetadataChanged' flag.
-            for (String targetValue: targetValues) {
-                logger.debug("Checking value changes, source = " + sourceValue + ", target = " + targetValue);
-                if (!targetValue.equals(sourceValue)) {
-                    didMetadataChange = true;
-                    break;
-                }
-            }
-            // If we found any valid metadata field in the source we can exit the loop.
-            break;
-        }
-        logger.debug(
-            "Metadata " + (didMetadataChange ? "changed" : "did not change")
-            + " for item " + targetItem.getID() + " with field " + targetField
-        );
-        return didMetadataChange;
     }
 
     /**
@@ -303,6 +148,7 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
     @Override
     public Integer cleanForItem(Context context, UUID uuid) {
         try {
+            System.out.println("Cleaning all items to enhance...");
             return uclouvainItemEnhancerDAO.cleanTableEntriesForItem(context, uuid);
         } catch (Exception e) {
             logger.error("An error occurred while cleaning entries for specific UUID: " + uuid + " exception: " + e);
@@ -336,13 +182,53 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
         }
     }
 
+    /**
+     * Find any item linked to a given uuid on the specified metadata field.
+     * 
+     * @param context The current DSpace application context.
+     * @param metadataField The metadata field that has to be linked to the provided uuid.
+     * @param uuid The authority value to search for.
+     * @return Any item that has a link to the given authority on the given metadata field.
+     */
+    public List<Pair<Item, Integer>> getAuthorityLinkedItems(Context context, MetadataField metadataField, UUID uuid) {
+        try {
+            return uclouvainItemEnhancerDAO.getAuthorityLinkedItem(context, metadataField, uuid.toString());
+        } catch (SQLException e) {
+            logger.error(
+                "Could not find authority linked items for given authority %s and metadataField %s".formatted(
+                    uuid.toString(), metadataField.toString('.')
+                )
+            );
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * Retrieve a list of supported enhancers for a given entity-type and action.
+     */
+    public List<MetadataEnhancer<Object>> getEnhancers(String entityType, String action) {
+        Map<String, List<MetadataEnhancer<Object>>> actionMap
+            = enhancersMap.getOrDefault(entityType, Collections.emptyMap());
+        return actionMap.getOrDefault(action, Collections.emptyList());
+    }
+
+    /**
+     * Retrieve a list of supported enhancers for a given entity-type and actions.
+     */
+    public List<MetadataEnhancer<Object>> getEnhancers(String entityEntity, List<String> actions) {
+        return actions.stream()
+            .map(action -> getEnhancers(entityEntity, action))
+            .flatMap(list -> list.stream())
+            .distinct()
+            .toList();
+    }
 
     // GETTERS && SETTERS
-    public void setEnhancers(List<ItemEnhancerConfiguration> enhancers) {
+    public void setEnhancers(List<MetadataEnhancer<Object>> enhancers) {
         this.enhancers = enhancers;
     }
 
-    public List<ItemEnhancerConfiguration> getEnhancers() {
+    public List<MetadataEnhancer<Object>> getEnhancers() {
         return enhancers;
     }
 

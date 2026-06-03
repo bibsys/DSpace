@@ -1,0 +1,55 @@
+## Email sent to the submitter to inform that an error occurred when generating the PDF attestation email.
+## Parameters:  - {0} Date and time
+##              - {1} Item uuid
+##              - {2} Item entity-type
+##              - {3} Instance name
+##              - {4} Error stacktrace
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet':>
+    <style>
+      body {
+        font-family: 'Montserrat', arial, sans-serif;
+        font-size: 12px;
+      }
+      .timestamp {
+        text-align:right;
+      }
+      .language {
+        font-style: italic;
+        width: 100%;
+        text-align: center;
+      }
+      .metadata-table th, .metadata-table td, .metadata-table tr {
+        margin: 0;
+      }
+      .metadata-table th {
+        width: 25%;
+        min-width: 150px;
+        font-weight: bold;
+        background-color: #EEE;
+        text-align: left;
+        padding-right: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <p style="margin:20px">
+      <img src="https://uclouvain.be/sites/all/themes/ucltheme/logo.png?newdesign2018"/>
+    </p>
+    <p class="timestamp">${params[0]}</p>
+    <p>For DIAL admins,</p>
+    <p>An error occurred while enhancing an item:</p>
+    <h4>Date and time of error:</h4>
+    ${params[0]}
+    <h4>Item's UUID:</h4>
+    ${params[1]}
+    <h4>Item's entity-type:</h4>
+    ${params[2]}
+    <h4>Instance:</h4>
+    ${params[3]}
+    <h4>Error description:</h4>
+    <pre style="border:1px solid #777; background-color:#EEE">${params[4]}</pre>
+  </body>
+</html>

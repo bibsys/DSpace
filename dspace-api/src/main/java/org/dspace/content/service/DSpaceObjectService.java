@@ -187,6 +187,15 @@ public interface DSpaceObjectService<T extends DSpaceObject> {
      */
     public List<MetadataValue> getMetadataByMetadataString(T dSpaceObject, String mdString);
 
+    /**
+     * Retrieve metadata field values from a given metadata string and for a given specific place.
+     * Metadata string format must be {@code <schema prefix>.<element>[.<qualifier>|.*]}
+     * @param dSpaceObject DSpaceObject
+     * @param mdString     The metadata string
+     * @param place        The specific place of the metadata
+     * @return metadata field that matches the parameters
+     */
+    public MetadataValue getMetadataByMetadataStringAndPlace(T dSpaceObject, String mdString, int place);
 
     /**
      * Get the value of a metadata field
