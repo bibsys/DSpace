@@ -12,53 +12,25 @@
     
     <!-- Authority Based Metadata enhancers -->
     <!-- 
-        This functionality is used to update configured metadata to be in sync with a source.
-        The source is another item that holds the correct value for the metadata.
+        This functionality is used to update configured relations to be in sync with a source.
+        The source is another item that holds the correct value for a set of metadata.
         For example, an author has a name (the source) and this can be also stored in a publication (the target).
         So the source is the item that olds the right data value and the target the item to update accordingly.
          
         @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
     -->
-    <bean class="org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller"/>
+    <bean class="org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller"/>
     <bean name="uclouvainItemEnhancerDAO" class="org.dspace.uclouvain.itemEnhancer.dao.UCLouvainItemEnhancerDAOImpl"/>
     <bean name="uclouvainItemEnhancerService" class="org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerServiceImpl">
         <property name="enhancers">
             <util:list>
-                <ref bean="publicationAuthorEnhancer"/>
-                <ref bean="publicationAffiliationEnhancer"/>
+                <ref bean="publicationAuthorCreateEnhancer"/>
+                <ref bean="publicationAuthorUpdateEnhancer"/>
             </util:list>
         </property>
     </bean>
 
-    <!-- Enhancers configuration -->
-    <bean name="publicationAuthorEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
-        <property name="sourceEntityType" value="Person"/>
-        <property name="sourceMetadataFields">
-            <util:list>
-                <value>dc.title</value>
-                <!-- Not really realistic, but just for test so OK -->
-                <value>person.givenName</value>
-            </util:list>
-        </property>
-        <property name="targetEntityType" value="Publication"/>
-        <property name="targetMetadataFields">
-            <util:list>
-                <value>dc.contributor.author</value>
-            </util:list>
-        </property>
-    </bean>
-    <bean name="publicationAffiliationEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration">
-        <property name="sourceEntityType" value="Person"/>
-        <property name="sourceMetadataFields">
-            <util:list>
-                <value>person.affiliation.name</value>
-            </util:list>
-        </property>
-        <property name="targetEntityType" value="Publication"/>
-        <property name="targetMetadataFields">
-            <util:list>
-                <value>oairecerif.author.affiliation</value>
-            </util:list>
-        </property>
-    </bean>
+    <!-- Enhancers -->
+    <bean name="publicationAuthorCreateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Profile2PublicationAuthorCreateEnhancer" />
+    <bean name="publicationAuthorUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Profile2PublicationAuthorUpdateEnhancer" />
 </beans>

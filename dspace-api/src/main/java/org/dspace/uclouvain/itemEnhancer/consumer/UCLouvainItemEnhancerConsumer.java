@@ -9,7 +9,6 @@ package org.dspace.uclouvain.itemEnhancer.consumer;
 
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,7 +22,6 @@ import org.dspace.event.Consumer;
 import org.dspace.event.Event;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
-import org.dspace.uclouvain.itemEnhancer.enhancers.ItemEnhancerConfiguration;
 
 /**
  * Main consumer for the item enhancer functionality.
@@ -39,10 +37,8 @@ public class UCLouvainItemEnhancerConsumer implements Consumer {
     private Set<UUID> itemsToProcess = new HashSet<>();
     private Logger logger = LogManager.getLogger(UCLouvainItemEnhancerConsumer.class);
 
-
-    ItemService itemService;
-
-    UCLouvainItemEnhancerService uclouvainItemEnhancerService;
+    private ItemService itemService;
+    private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
 
     /**
      * Initialize the required services when the consumer is instantiated.
@@ -54,7 +50,7 @@ public class UCLouvainItemEnhancerConsumer implements Consumer {
     }
 
     /**
-     * For each event being catch, get the corresponding item and stores its uuid in the set.
+     * For each event being caught, get the corresponding item and stores its uuid in the set.
      * 
      * @param context The current DSpace context.
      * @param event The fired event that may be processed by the consumer.
@@ -72,11 +68,9 @@ public class UCLouvainItemEnhancerConsumer implements Consumer {
     }
 
     /**
-     * Loop over the 'itemsToProcess', check for each item if it can be processed using the service.
-     * If an item can be processed, then we need to trigger a post in the table using the service.
+     * Loop over the 'itemsToProcess', for each trigger a post in the table using the service.
      * 
-     * @param context The current context.
-     * @throws Exception
+     * @param context The current DSpace application context.
      */
     @Override
     public void end(Context context) throws Exception {
@@ -89,12 +83,12 @@ public class UCLouvainItemEnhancerConsumer implements Consumer {
                     logger.warn("Could not retrieve item from previously stored uuid: " + uuid);
                     continue;
                 }
-                // Get valid configurations for the item.
-                List<ItemEnhancerConfiguration> validConfigs =
-                    uclouvainItemEnhancerService.getValidConfigurationsForItem(item);
-                if (validConfigs != null && !validConfigs.isEmpty()) {
-                    uclouvainItemEnhancerService.addRelatedItemsForEnhancement(context, item, validConfigs);
+                // Get the entity-type of the item and add it for enhancement.
+                String entityType = itemService.getEntityTypeOptimized(item);
+                if (entityType == null) {
+                    continue;
                 }
+                uclouvainItemEnhancerService.addItemForEnhancement(context, item.getID(), entityType);
             } catch (SQLException e) {
                 logger.warn("An error occurred while retrieving an item via uuid in the consumer", e);
             }

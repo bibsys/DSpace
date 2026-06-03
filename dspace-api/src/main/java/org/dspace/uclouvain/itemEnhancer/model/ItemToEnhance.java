@@ -9,20 +9,23 @@ package org.dspace.uclouvain.itemEnhancer.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import org.dspace.content.Item;
 
 /**
  * Representation of an update request stored in the 'uclouvain_item_authority_metadata_enhancement' table.
+ * The table contains 3 columns:
+ * - The item_uuid, which is the item being updated.
+ * - The entity_type, which is the so called 'entity-type' of the item.
+ * - The date_queued, which is giving a hint about when the item was queued.
+ * 
+ * This table is used as a queue for items that need to be updated using the custom enhancement system.
  * 
  * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
@@ -30,42 +33,35 @@ import org.dspace.content.Item;
 @Table(name = "uclouvain_item_authority_metadata_enhancement")
 public class ItemToEnhance implements Serializable {
     @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "source_uuid",
-        insertable = true, updatable = false, nullable = false, referencedColumnName = "uuid"
-    )
-    private Item sourceItem;
+    @Column(name = "item_uuid", unique = true, nullable = false, insertable = true, updatable = false)
+    private UUID itemUUID;
 
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "target_uuid",
-        insertable = true, updatable = false, nullable = false, referencedColumnName = "uuid"
-    )
-    private Item targetItem;
+    @Column(name = "entity_type", insertable = true, updatable = false, nullable = false)
+    private String entityType;
 
-    @Column(name = "date_queued", insertable = true, updatable = true)
+    @Column(name = "date_queued", insertable = true, updatable = true, nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateQueued = new Date();
 
     public boolean equals(ItemToEnhance ite) {
-        return sourceItem == ite.getSourceItem() && targetItem == ite.getTargetItem();
+        return itemUUID == ite.getItemUUID();
     }
 
     // GETTERS && SETTERS
-    public Item getSourceItem() {
-        return sourceItem;
+    public UUID getItemUUID() {
+        return itemUUID;
     }
 
-    public void setSourceItem(Item source_uuid) {
-        this.sourceItem = source_uuid;
+    public void setItemUUID(UUID itemUUID) {
+        this.itemUUID = itemUUID;
     }
 
-    public Item getTargetItem() {
-        return targetItem;
+    public String getEntityType() {
+        return entityType;
     }
 
-    public void setTargetItem(Item targetItem) {
-        this.targetItem = targetItem;
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
     }
 
     public Date getDateQueued() {

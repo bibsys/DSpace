@@ -13,7 +13,7 @@ import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.export.services.UCLouvainExportService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
-import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
+import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.JournalService;
@@ -39,7 +39,7 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Autowired
     private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
     @Autowired
-    private UCLouvainItemEnhancerUpdatePoller uclouvainItemEnhancerUpdatePoller;
+    private UCLouvainItemEnhancerPoller uclouvainItemEnhancerPoller;
     @Autowired
     private CommentService commentService;
     @Autowired
@@ -76,8 +76,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
         return uclouvainItemEnhancerService;
     }
     @Override
-    public UCLouvainItemEnhancerUpdatePoller getItemEnhancerUpdatePoller() {
-        return uclouvainItemEnhancerUpdatePoller;
+    public UCLouvainItemEnhancerPoller getItemEnhancerUpdatePoller() {
+        return uclouvainItemEnhancerPoller;
     }
     @Override
     public CommentService getCommentService() {
