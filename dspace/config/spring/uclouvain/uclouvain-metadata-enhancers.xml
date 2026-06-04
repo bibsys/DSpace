@@ -26,6 +26,13 @@
             <util:list>
                 <ref bean="publicationAuthorCreateEnhancer"/>
                 <ref bean="publicationAuthorUpdateEnhancer"/>
+                <ref bean="publicationAdvisorUpdateEnhancer"/>
+                <ref bean="publicationInstitutionUpdateEnhancer"/>
+                <ref bean="publicationDepartmentUpdateEnhancer"/>
+                <ref bean="publicationJournalUpdateEnhancer"/>
+                <ref bean="personInstitutionUpdateEnhancer"/>
+                <ref bean="personDepartmentUpdateEnhancer"/>
+                <ref bean="affiliationParentUpdateEnhancer"/>
             </util:list>
         </property>
     </bean>
@@ -33,4 +40,11 @@
     <!-- Enhancers -->
     <bean name="publicationAuthorCreateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Profile2PublicationAuthorCreateEnhancer" />
     <bean name="publicationAuthorUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Profile2PublicationAuthorUpdateEnhancer" />
+    <bean name="publicationAdvisorUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Profile2PublicationAdvisorUpdateEnhancer" />
+    <bean name="publicationInstitutionUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.OrgUnit2PublicationInstitutionUpdateEnhancer" />
+    <bean name="publicationDepartmentUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.OrgUnit2PublicationDepartmentUpdateEnhancer" />
+    <bean name="publicationJournalUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Journal2PublicationJournalUpdateEnhancer" />
+    <bean name="personInstitutionUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.OrgUnit2PersonInstitutionUpdateEnhancer" />
+    <bean name="personDepartmentUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.OrgUnit2PersonDepartmentUpdateEnhancer" />
+    <bean name="affiliationParentUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.OrgUnit2OrgUnitParentUpdateEnhancer" />
 </beans>
