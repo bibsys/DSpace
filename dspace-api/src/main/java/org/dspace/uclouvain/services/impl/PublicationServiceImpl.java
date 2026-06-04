@@ -11,6 +11,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.dspace.content.authority.Choices.CF_UNSET;
+import static org.dspace.core.CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -69,8 +70,9 @@ public class PublicationServiceImpl implements PublicationService {
     UCLouvainProfileService uclouvainProfileService;
 
     // PUBLIC METHODS ==================================================================================================
-    public PublicationAuthor setAuthor(Context context, Publication publication, PublicationAuthor author)
-            throws PublicationSetAuthorException {
+    public PublicationAuthor setAuthor(
+        Context context, Publication publication, PublicationAuthor author, boolean override
+    ) throws PublicationSetAuthorException {
         Item item = publication.getItem();
         try {
             String authority = (author.getAuthority() != null)
@@ -79,19 +81,35 @@ public class PublicationServiceImpl implements PublicationService {
             int confidence = isNotEmpty(authority) ? CF_ACCEPTED : CF_UNSET;
             int place = author.getPlace();
 
-            MetadataSetter setter = (field, value, auth, conf) ->
-                    itemService.setMetadataInPlace(context, item, field, null, value, auth, place, conf);
+            MetadataSetter setter = (field, value, auth, conf) -> {
+                // Don't set metadata if override is turned off and if:
+                //  - The item has already a metadata for the given place and field AND:
+                //      -> The value of this metadata is not equal to the value of the new metadata.
+                //      -> The value of this metadata is not equal to a placeholder.
+                String currentValue = itemService.getMetadata(item, field, place);
+                if (
+                    currentValue != null
+                        && !Objects.equals(currentValue, value)
+                        && !Objects.equals(currentValue, PLACEHOLDER_PARENT_METADATA_VALUE)
+                        && !override
+                ) {
+                    return;
+                }
+                if (StringUtils.isBlank(value)) {
+                    itemService.setMetadataInPlace(
+                        context, item, field, null, PLACEHOLDER_PARENT_METADATA_VALUE, null, place, CF_UNSET);
+                } else {
+                    itemService.setMetadataInPlace(
+                        context, item, field, null, value, auth, place, conf);
+                }
+            };
 
             setter.set(Publication.AUTHOR_NAME_FIELD, author.getName(), authority, confidence);
             setter.set(Publication.AUTHOR_EMAIL_FIELD, author.getEmail(), authority, confidence);
             setter.set(Publication.AUTHOR_FGS_FIELD, author.getFgs(), authority, confidence);
             setter.set(Publication.AUTHOR_ROLE_FIELD, author.getRole(), null, CF_UNSET);
-            if (author.getOrcidID() != null) {
-                setter.set(Publication.AUTHOR_ORCID_FIELD, author.getOrcidID(), authority, confidence);
-            }
-            if (author.getInstitution() != null) {
-                setter.set(Publication.AUTHOR_INSTITUTION_FIELD, author.getInstitution(), null, confidence);
-            }
+            setter.set(Publication.AUTHOR_ORCID_FIELD, author.getOrcidID(), authority, confidence);
+            setter.set(Publication.AUTHOR_INSTITUTION_FIELD, author.getInstitution(), null, confidence);
             return author;
         } catch (Exception e) {
             throw new PublicationSetAuthorException(item, author);

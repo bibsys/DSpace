@@ -59,35 +59,35 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.emailOfficial.field",
+            ResearcherProfile.OFFICIAL_EMAIL_FIELD,
             "authors_email",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.OrcidID.field",
+            ResearcherProfile.ORCID_FIELD,
             "authors_identifier_orcid",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.institutionalID.field",
+            ResearcherProfile.FGS_FIELD,
             "authors_identifier_fgs",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.institutionName.field",
+            ResearcherProfile.INSTITUTION_FIELD,
             "authors_institution_code",
             true
         );
         fillMetadata(
             extras,
             item,
-            "uclouvain.global.metadata.person.entityName.field",
+            ResearcherProfile.DEPARTMENT_FIELD,
             "authors_entity_name",
             false
         );
@@ -120,18 +120,17 @@ public class PublicationAuthorAuthority extends PublicationAuthority {
      *   Using this trick, the frontend form could be empty from a potential previous encoded value
      * @param extras the map to fill if any value is found
      * @param item the item to search for
-     * @param configKey the configuration key containing the mdString where to search the metadata value
+     * @param mdString the configuration key containing the mdString where to search the metadata value
      * @param mapKey the map key in which to store the metadata value (if any metadata value is found)
      * @param authorityLinked if this key must be linked to the item by authority
      */
     protected void fillMetadata(
         Map<String, String> extras,
         Item item,
-        String configKey,
+        String mdString,
         String mapKey,
         boolean authorityLinked
     ) {
-        String mdString = configurationService.getProperty(configKey);
         if (mdString == null) {
             return;
         }

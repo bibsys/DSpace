@@ -64,7 +64,12 @@ public class SolrServicePublicationIndexingPlugin
     @SuppressWarnings("rawtypes")
     public void additionalIndex(Context context, IndexableObject dso, SolrInputDocument document) {
         try {
-            Publication publication = PublicationFactory.build(getItem(dso));
+            Item item = getItem(dso);
+            // NOTE: This check avoids a warning in the logs.
+            if (item == null) {
+                return;
+            }
+            Publication publication = PublicationFactory.build(item);
             addFWBValidationKeys(context, publication.getItem(), document);
             addFNRSValidationKeys(publication.getItem(), document);
             addAncestorEntities(publication, document);
