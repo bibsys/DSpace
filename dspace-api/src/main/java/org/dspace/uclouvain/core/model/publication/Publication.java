@@ -83,8 +83,17 @@ public class Publication extends ItemModel implements FWBValidation {
         getField("authorFgs", "authors.identifier.fgs");
     public static final String AUTHOR_ETAL_FIELD =
         getField("additionalAuthors", "dc.contributor.etal");
+
+    public static final String ADVISOR_NAME_FIELD =
+        getField("advisorName", "dc.contributor.advisor");
     public static final String ADVISOR_EMAIL_FIELD =
         getField("advisorEmail", "advisors.email");
+    public static final String ADVISOR_ORCID_FIELD =
+        getField("advisorOrcid", "advisors.identifier.orcid");
+    public static final String ADVISOR_FGS_FIELD =
+        getField("advisorFgs", "advisors.identifier.fgs");
+    public static final String ADVISOR_INSTITUTION_FIELD =
+        getField("advisorInstitution", "advisors.institution.code");
 
     public static final String ENTITY_DEPARTMENT_FIELD =
         getField("entityDepartmentName", "oairecerif.affiliation.orgunitDepartment");
