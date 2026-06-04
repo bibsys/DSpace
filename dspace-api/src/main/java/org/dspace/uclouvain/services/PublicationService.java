@@ -39,11 +39,12 @@ public interface PublicationService {
      * @param role        The role of the author in the publication
      * @param authority   The UUID of the profile item
      * @param place       The place pf the author in the author list
+     * @param override    If set to true, override the existing metadata from the publication.
      * @return the corresponding publication author
      * @throws PublicationSetAuthorException if any error occurred while persisting information in publication.
      */
     default PublicationAuthor setAuthor(Context context, Publication publication, String name, String email,
-            String orcid, String fgs, String institution, String role, UUID authority, Integer place)
+            String orcid, String fgs, String institution, String role, UUID authority, Integer place, boolean override)
             throws PublicationSetAuthorException {
         PublicationAuthor author = new PublicationAuthor()
             .setName(name)
@@ -54,7 +55,7 @@ public interface PublicationService {
             .setInstitution(institution)
             .setAuthority(authority)
             .setPlace(place);
-        this.setAuthor(context, publication, author);
+        this.setAuthor(context, publication, author, override);
         return author;
     }
 
@@ -64,10 +65,11 @@ public interface PublicationService {
      * @param context     The current DSpace context
      * @param publication The publication to set an author for
      * @param author      The author to persist
+     * @param override    If set to true, override the existing metadata from the publication.
      * @return the corresponding publication author
      * @throws PublicationSetAuthorException if any error occurred while persisting information in publication.
      */
-    PublicationAuthor setAuthor(Context context, Publication publication, PublicationAuthor author)
+    PublicationAuthor setAuthor(Context context, Publication publication, PublicationAuthor author, boolean override)
         throws PublicationSetAuthorException;
 
     /**

@@ -25,7 +25,13 @@
         <property name="enhancers">
             <util:list>
                 <!-- Put enhancers to test here -->
+                <ref bean="publicationAuthorCreateEnhancer"/>
+                <ref bean="publicationAuthorUpdateEnhancer"/>
             </util:list>
         </property>
     </bean>
+
+    <!-- Enhancers -->
+    <bean name="publicationAuthorCreateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Profile2PublicationAuthorCreateEnhancer" />
+    <bean name="publicationAuthorUpdateEnhancer" class="org.dspace.uclouvain.itemEnhancer.enhancers.Profile2PublicationAuthorUpdateEnhancer" />
 </beans>
