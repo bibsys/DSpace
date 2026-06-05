@@ -72,6 +72,11 @@
         <property name="dspaceRunnableClass" value="org.dspace.content.integration.crosswalks.script.BulkItemExportCli"/>
     </bean>
 
+    <bean id="publication-export" class="org.dspace.uclouvain.export.script.PublicationExportCliScriptConfiguration">
+        <property name="description" value="Perform an export on publications based on the given export type"/>
+        <property name="dspaceRunnableClass" value="org.dspace.uclouvain.export.script.PublicationExportCli"/>
+    </bean>
+
     <bean id="collection-export" class="org.dspace.app.bulkedit.CollectionExportCliScriptConfiguration">
         <property name="description" value="Perform the export of all the archived items of the given collection in xls format"/>
         <property name="dspaceRunnableClass" value="org.dspace.app.bulkedit.CollectionExportCli"/>
