@@ -33,6 +33,7 @@ import org.dspace.app.util.SubmissionStepConfig;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
+import org.dspace.content.authority.Choices;
 import org.dspace.content.dto.MetadataValueDTO;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
@@ -41,6 +42,8 @@ import org.dspace.external.model.ExternalDataObject;
 import org.dspace.importer.external.datamodel.ImportRecord;
 import org.dspace.importer.external.metadatamapping.MetadatumDTO;
 import org.dspace.importer.external.service.ImportService;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.submit.listener.MetadataListener;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.utils.DSpace;
@@ -69,6 +72,10 @@ public class ExtractMetadataStep implements ListenerProcessingStep, UploadableSt
     private ItemService itemService = ContentServiceFactory.getInstance().getItemService();
     private ImportService importService = new DSpace().getSingletonService(ImportService.class);
     private MetadataListener listener = new DSpace().getSingletonService(MetadataListener.class);
+    private ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
+
+    List<String> disableAuthorityFields = List.of(configService
+            .getArrayProperty("external.disabled-authority.fields", new String[] {}));
 
     // List of fields that can be overridden by external import.
     // For these fields we will use SET action instead of ADD.
@@ -201,9 +208,15 @@ public class ExtractMetadataStep implements ListenerProcessingStep, UploadableSt
                         joiner.add(metadataValue.getQualifier());
                     }
                     if (!alreadyFilledMetadata.contains(joiner.toString())) {
-                        itemService.addMetadata(context, item, metadataValue.getSchema(),
-                            metadataValue.getElement(), metadataValue.getQualifier(), null,
-                            metadataValue.getValue());
+                        if (disableAuthorityFields.contains(joiner.toString())) {
+                            itemService.addMetadata(context, item, metadataValue.getSchema(),
+                                    metadataValue.getElement(), metadataValue.getQualifier(), null,
+                                    metadataValue.getValue(), null, Choices.CF_UNSET);
+                        } else {
+                            itemService.addMetadata(context, item, metadataValue.getSchema(),
+                                    metadataValue.getElement(), metadataValue.getQualifier(), null,
+                                    metadataValue.getValue());
+                        }
                     }
                 }
             }
