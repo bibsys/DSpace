@@ -1,0 +1,67 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.dspace.uclouvain.services;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.UUID;
+
+import org.dspace.content.Item;
+import org.dspace.core.Context;
+import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
+
+/**
+ * Contract to respect for any classes that will deal with {@link ItemSnapshot} management
+ *
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
+ */
+public interface ItemSnapshotService {
+
+    /**
+     * Allow to load and get a stored {@link ItemSnapshot}
+     * @param context the application context
+     * @param id the item ID for which the snapshot must be found
+     * @param deserialize is the snapshot content should be deserialized? Using this option we can retrieve all
+     *                    snapshots into {@see ItemSnapshot#getElements()}.
+     *                    Default value is `true` if not specified
+     * @return the desired snapshot. Could be null if no snapshot can be loaded
+     * @throws SQLException if any database exception occurred
+     * @throws Exception if any other error occurred (parsing content, ...)
+     */
+    ItemSnapshot get(Context context, UUID id, boolean deserialize) throws Exception;
+    ItemSnapshot get(Context context, UUID id) throws Exception;
+
+    /**
+     * Allow to take an instant snapshot for an item.
+     * Pay attention: The snapshot doesn't yet persist into database at this point ! You need explicitly to
+     *                {@see ItemSnapshotService#store()} it to persist into DB.
+     * @param context the application context
+     * @param id the item for which the snapshot must be done
+     * @return the desired snapshot
+     * @throws SQLException if any database exception occurred
+     */
+    ItemSnapshot takeSnapshot(Context context, UUID id) throws SQLException;
+    ItemSnapshot takeSnapshot(Context context, Item item) throws SQLException;
+
+    // TODO
+    List<?> compareSnapshot(ItemSnapshot snapshot1, ItemSnapshot snapshot2);
+
+    // TODO
+    List<?> detectChanges(Context context, UUID id) throws SQLException;
+    List<?> detectChanges(Context context, Item item) throws SQLException;
+
+    /**
+     * Store and persist a snapshot into the database. If a previous snapshot already exists for the same item it will
+     * be replaced.
+     * @param context the application context
+     * @param snapshot the snapshot to store
+     * @throws SQLException if any database exception occurred
+     * @throws Exception if any other error occurred (serialize, ...)
+     */
+    void store(Context context, ItemSnapshot snapshot) throws Exception;
+}
