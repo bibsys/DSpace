@@ -16,6 +16,7 @@ import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerUpdatePoller;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.services.DirectLinkService;
+import org.dspace.uclouvain.services.ItemSnapshotService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.OrgUnitService;
 import org.dspace.uclouvain.services.PublicationService;
@@ -62,6 +63,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private CleanMetadataService cleanMetadataService;
     @Autowired
     private UCLouvainExportService exportService;
+    @Autowired
+    private ItemSnapshotService snapshotService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -122,5 +125,9 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     @Override
     public UCLouvainExportService getExportService() {
         return exportService;
+    }
+    @Override
+    public ItemSnapshotService getSnapshotService() {
+        return snapshotService;
     }
 }
