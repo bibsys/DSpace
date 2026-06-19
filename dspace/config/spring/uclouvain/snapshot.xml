@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+           http://www.springframework.org/schema/util
+           http://www.springframework.org/schema/util/spring-util.xsd">
+
+  <!-- DAO ========================================================================================================= -->
+  <bean class="org.dspace.uclouvain.content.dao.impl.ItemSnapshotDAOImpl"/>
+
+  <!-- SERVICES ==================================================================================================== -->
+  <bean id="uclouvainItemSnapshotService" class="org.dspace.uclouvain.services.impl.ItemSnapshotServiceImpl"/>
+
+  <!-- SNAPSHOT ELEMENT FACTORY ==================================================================================== -->
+  <bean class="org.dspace.uclouvain.content.snapshot.ItemSnapshotContentSerializer"/>
+  <bean id="uclouvainSnapshotFactory" class="org.dspace.uclouvain.content.snapshot.element.SnapshotElementFactory">
+    <constructor-arg name="scanPackages">
+      <util:list>
+        <value>org.dspace.uclouvain.content</value>
+      </util:list>
+    </constructor-arg>
+  </bean>
+</beans>
