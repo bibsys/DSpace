@@ -130,5 +130,6 @@
         <!-- UCLouvain additions -->
         <mapping class="org.dspace.uclouvain.content.Comment" />
         <mapping class="org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance"/>
+        <mapping class="org.dspace.uclouvain.content.snapshot.ItemSnapshot"/>
     </session-factory>
 </hibernate-configuration>
