@@ -36,8 +36,8 @@ public class ESBClientImpl implements ESBClient {
     private static Logger logger = LogManager.getLogger(ESBClientImpl.class);
 
     private GenericHttpClient httpClient;
-    private final String DIGIT_PATH = "/digit/v1.0";
-    private final String EMPLOYEE_PATH = "/employees/v1.0";
+    private final String DIGIT_PATH = "/digit/v1";
+    private final String EMPLOYEE_PATH = "/employees/v1";
 
     // ---------- DIGIT ENDPOINTS ----------
     /**
