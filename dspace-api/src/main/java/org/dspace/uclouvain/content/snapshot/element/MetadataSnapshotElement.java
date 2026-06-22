@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.content.snapshot.element;
 
+import java.util.Objects;
+
 import org.dspace.uclouvain.content.snapshot.SnapshotElementType;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
@@ -40,6 +42,13 @@ public class MetadataSnapshotElement extends SnapshotElement {
     protected String buildPath() {
         Assert.isTrue(attributes.containsKey("path"), "'path' is a required attribute");
         return this.attributes.get("path");
+    }
+
+    @Override
+    public boolean isLogicallyEqualTo(SnapshotElement element) {
+        return element != null
+            && Objects.equals(path, element.getPath())
+            && Objects.equals(getValue(), ((MetadataSnapshotElement) element).getValue());
     }
 
     @Override
