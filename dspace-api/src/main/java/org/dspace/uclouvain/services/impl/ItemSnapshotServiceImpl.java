@@ -11,11 +11,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.Logger;
 import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Bitstream;
@@ -31,6 +32,7 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.content.dao.ItemSnapshotDAO;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshotContentSerializer;
+import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
 import org.dspace.uclouvain.content.snapshot.element.FileSnapshotElement;
 import org.dspace.uclouvain.content.snapshot.element.MetadataSnapshotElement;
 import org.dspace.uclouvain.content.snapshot.element.SnapshotElement;
@@ -110,12 +112,50 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     }
 
     @Override
-    public List<?> compareSnapshot(ItemSnapshot snapshot1, ItemSnapshot snapshot2) {
-        throw new NotImplementedException();
+    public ItemSnapshotDiff compareSnapshot(ItemSnapshot snapshot1, ItemSnapshot snapshot2)
+        throws IllegalArgumentException {
+        if (snapshot1 == null || snapshot2 == null) {
+            throw new IllegalArgumentException("Snapshot cannot be null");
+        }
+        // DEV NOTE: We use `getItem().getID()` instead of `getId()` because the snapshot could be not yet persisted
+        if (!Objects.equals(snapshot1.getItem().getID(), snapshot2.getItem().getID())) {
+            throw new IllegalArgumentException(String.format(
+                    "We can only compare snapshots for the same related item :: %s<>%s",
+                    snapshot1.getId(), snapshot2.getId()
+            ));
+        }
+        ItemSnapshotDiff diff = new ItemSnapshotDiff(snapshot1.getItem());
+
+        // For better performance, we will index the second snapshot using a single key (path + class)
+        Map<String, SnapshotElement> mapSnapshot2 = snapshot2
+            .getSnapshotElements().stream()
+            .collect(Collectors.toMap(
+                this::getSnapshotElementKey,
+                element -> element,
+                (existing, replacement) -> existing // For potential doubles...
+            ));
+        // Loop on snapshot1 elements to find update/remove elements
+        //   If current read element key isn't present into mapSnapshot2: This is a "remove"
+        //   If element path exists in both snapshots, but aren't equals: This is an "update"
+        for (SnapshotElement element1 : snapshot1.getSnapshotElements()) {
+            String key = getSnapshotElementKey(element1);
+            SnapshotElement element2 = mapSnapshot2.remove(key);
+            if (element2 == null || !element1.equals(element2)) {
+                diff.addChange(element1, element2);
+            }
+        }
+        // At the end, elements not removed from the constructed map and "added" element
+        for (SnapshotElement element : mapSnapshot2.values()) {
+            diff.addChange(null, element);
+        }
+        return diff;
+    }
+    private String getSnapshotElementKey(SnapshotElement snapshotElement) {
+        return snapshotElement.getPath() + "__" + snapshotElement.getClass().getName();
     }
 
     @Override
-    public List<?> detectChanges(Context context, UUID id) throws SQLException {
+    public ItemSnapshotDiff detectChanges(Context context, UUID id) throws Exception {
         Item item = itemService.find(context, id);
         if (item == null) {
             throw new IllegalArgumentException("Item#" + id + " doesn't exist");
@@ -123,8 +163,12 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         return this.detectChanges(context, item);
     }
     @Override
-    public List<?> detectChanges(Context context, Item item) throws SQLException {
-        throw new NotImplementedException();
+    public ItemSnapshotDiff detectChanges(Context context, Item item) throws Exception {
+        ItemSnapshot snapshot1 = get(context, item.getID());
+        if (snapshot1 == null) {
+            throw new IllegalArgumentException("Unable to retrieve snapshot for Item#" + item.getID());
+        }
+        return compareSnapshot(snapshot1, takeSnapshot(context, item));
     }
 
     @Override

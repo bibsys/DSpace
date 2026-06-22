@@ -70,7 +70,7 @@ public class UCLouvainSnapshotFactoryTest extends AbstractUnitTest {
 
         assertNotNull(parsedElement);
         assertTrue(parsedElement instanceof FileSnapshotElement);
-        assertEquals(fName, parsedElement.getPath());
+        assertEquals(id.toString(), parsedElement.getPath());
         assertEquals(id, ((FileSnapshotElement) parsedElement).getUUID());
         assertEquals(fName, ((FileSnapshotElement) parsedElement).getFilename());
         assertEquals(fChecksum, ((FileSnapshotElement) parsedElement).getChecksum());
