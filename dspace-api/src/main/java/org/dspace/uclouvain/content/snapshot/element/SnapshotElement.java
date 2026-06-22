@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.content.snapshot.element;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -52,6 +53,28 @@ public abstract class SnapshotElement {
             .mapToObj(i -> (Attr) attributes.item(i))
             .collect(Collectors.toMap(Attr::getName, Attr::getValue));
     }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        return isLogicallyEqualTo((SnapshotElement) o);
+    }
+    @Override
+    public final int hashCode() {
+        return Objects.hash(path, attributes);
+    }
+
+    /**
+     * Detect if an element is logically similar to this element.
+     * @param element the element to compare
+     * @return true if the element is the same, false otherwise
+     */
+    public abstract boolean isLogicallyEqualTo(SnapshotElement element);
 
     // GETTER & SETTER =================================================================================================
     public String getPath() {

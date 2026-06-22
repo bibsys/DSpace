@@ -8,12 +8,12 @@
 package org.dspace.uclouvain.content.snapshot.element;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.dspace.uclouvain.content.snapshot.SnapshotElementType;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
-
 
 /**
  * This class represent a snapshot about a bitstream.
@@ -43,8 +43,19 @@ public class FileSnapshotElement extends SnapshotElement {
 
     @Override
     protected String buildPath() {
-        Assert.isTrue(attributes.containsKey("name"), "'name' is a required attribute");
-        return getFilename();
+        Assert.isTrue(attributes.containsKey("uuid"), "'name' is a required attribute");
+        return getUUID().toString();
+    }
+
+    public boolean isLogicallyEqualTo(SnapshotElement element) {
+        if (element == null || !Objects.equals(this.getPath(), element.getPath())) {
+            return false;
+        }
+        FileSnapshotElement fileElement = (FileSnapshotElement) element;
+        return Objects.equals(getUUID(), fileElement.getUUID())
+            && Objects.equals(getFilename(), fileElement.getFilename())
+            && Objects.equals(getChecksum(), fileElement.getChecksum())
+            && Objects.equals(getAccess(), fileElement.getAccess());
     }
 
     @Override
