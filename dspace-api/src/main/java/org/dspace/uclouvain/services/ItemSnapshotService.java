@@ -8,12 +8,12 @@
 package org.dspace.uclouvain.services;
 
 import java.sql.SQLException;
-import java.util.List;
 import java.util.UUID;
 
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
+import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
 
 /**
  * Contract to respect for any classes that will deal with {@link ItemSnapshot} management
@@ -48,12 +48,27 @@ public interface ItemSnapshotService {
     ItemSnapshot takeSnapshot(Context context, UUID id) throws SQLException;
     ItemSnapshot takeSnapshot(Context context, Item item) throws SQLException;
 
-    // TODO
-    List<?> compareSnapshot(ItemSnapshot snapshot1, ItemSnapshot snapshot2);
+    /**
+     * Allow to found changes between two snapshot of the same item
+     * @param snapshot1 the original snapshot to compare
+     * @param snapshot2 the most recent snapshot to compare
+     * @return the diff between both snapshot
+     * @throws IllegalArgumentException if snapshots parameters are not valid
+     */
+    ItemSnapshotDiff compareSnapshot(ItemSnapshot snapshot1, ItemSnapshot snapshot2) throws IllegalArgumentException;
 
-    // TODO
-    List<?> detectChanges(Context context, UUID id) throws SQLException;
-    List<?> detectChanges(Context context, Item item) throws SQLException;
+    /**
+     * Allow to detect changes about an item.
+     * To detect any changes, an item snapshot should already exist for the corresponding item.
+     * !! Detecting changes doesn't mean that detected changes will be stored into database.
+     * @param context the application context
+     * @param id the item UUID to analyze
+     * @return the diff changes detected from the last snapshot
+     * @throws SQLException if any database exception occurred
+     * @throws IllegalArgumentException if no ItemSnapshot already persisted into database for this item
+     */
+    ItemSnapshotDiff detectChanges(Context context, UUID id) throws Exception;
+    ItemSnapshotDiff detectChanges(Context context, Item item) throws Exception;
 
     /**
      * Store and persist a snapshot into the database. If a previous snapshot already exists for the same item it will
