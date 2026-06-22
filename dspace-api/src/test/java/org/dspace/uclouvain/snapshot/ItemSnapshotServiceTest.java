@@ -10,8 +10,10 @@ package org.dspace.uclouvain.snapshot;
 import static org.apache.commons.codec.CharEncoding.UTF_8;
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.dspace.AbstractIntegrationTestWithDatabase;
 import org.dspace.builder.BitstreamBuilder;
@@ -21,7 +23,10 @@ import org.dspace.builder.ItemBuilder;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.ItemService;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
+import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
 import org.dspace.uclouvain.content.snapshot.element.FileSnapshotElement;
 import org.dspace.uclouvain.content.snapshot.element.MetadataSnapshotElement;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
@@ -32,6 +37,7 @@ import org.junit.Test;
 
 public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase {
 
+    private final ItemService itemService = ContentServiceFactory.getInstance().getItemService();
     private ItemSnapshotService snapshotService;
     private Collection collection;
 
@@ -54,6 +60,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
     public void testItemSnapshot1() throws Exception {
         String pub1Author1 = "Author#1";
         String pub1Author2 = "Author#2";
+        String pub1Author3 = "Author#3";
         String pub1Title = "Publication#1 : Title";
         String pub1Subject1 = "keyword#A1";
         String pub1Abstract = "Lorem ipsum abstract publication#1";
@@ -103,7 +110,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         MetadataSnapshotElement sEl1 = (MetadataSnapshotElement)snapshot.getSnapshotElement("dc.contributor.author[1]");
         assertEquals(pub1Author2, sEl1.getValue());
 
-        FileSnapshotElement sEl2 = (FileSnapshotElement)snapshot.getSnapshotElement(pub1Bitstream1Name);
+        FileSnapshotElement sEl2 = (FileSnapshotElement)snapshot.getSnapshotElement(bitstream.getID().toString());
         assertEquals(UCLouvainAccessStatusHelper.OPEN_ACCESS, sEl2.getAccess());
 
         // Store the snapshot into the database, and get it from database.
@@ -120,6 +127,33 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         snapshot = snapshotService.get(context, item1.getID());
         assertNotNull(snapshot);
         assertEquals(5, snapshot.getSnapshotElements().size());
+
+        // Now, add a new irrelevant metadata into the item.
+        // Store/persist this change into the database and take a new snapshot for this item
+        // Ask service to detect changes --> No changes should be detected between both item snapshots
+        context.turnOffAuthorisationSystem();
+        item1 = context.reloadEntity(item1);
+        itemService.addMetadata(context, item1, "fedora", "pid", null, null, "legacyFedoraPid");
+        itemService.update(context, item1);
+        context.restoreAuthSystemState();
+        context.commit();
+        item1 = context.reloadEntity(item1);
+        assertTrue(itemService.hasMetadata(item1, "fedora", "pid", null));
+
+        ItemSnapshot snapshot2 = snapshotService.takeSnapshot(context, item1);
+        ItemSnapshotDiff snapshotDiff = snapshotService.compareSnapshot(snapshot, snapshot2);
+        assertFalse(snapshotDiff.hasChanges());
+
+        context.turnOffAuthorisationSystem();
+        itemService.addMetadata(context, item1, "dc", "contributor", "author", null, pub1Author3);
+        itemService.update(context, item1);
+        context.restoreAuthSystemState();
+        context.commit();
+        item1 = context.reloadEntity(item1);
+        snapshotDiff = snapshotService.detectChanges(context, item1);
+        assertTrue(snapshotDiff.hasChanges());
+        assertEquals(1, snapshotDiff.getChanges().size());
+        assertNotNull(snapshotDiff.getChange("dc.contributor.author[2]"));
     }
 
 }
