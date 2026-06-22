@@ -92,7 +92,12 @@
         <property name="httpClient">
             <bean class="org.dspace.uclouvain.core.GenericHttpClient">
                 <property name="baseUrl" value="${uclouvain.esb.base_url}"/>
-                <property name="token" value="${uclouvain.esb.secret}"/>
+                <property name="oauthUrl" value="${uclouvain.esb.oauth_url}"/>
+                <!-- We don't use a raw token, we generate one when needed -->
+                <!-- <property name="token" value="${uclouvain.esb.secret}"/> -->
+                <property name="oauthEnabled" value="true"/>
+                <property name="oauthKey" value="${uclouvain.esb.consumer.key}"/>
+                <property name="oauthSecret" value="${uclouvain.esb.consumer.secret}"/>
             </bean>
         </property>
     </bean>
