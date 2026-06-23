@@ -34,7 +34,7 @@
     <bean id="uclouvainAuthorityClient" class="org.dspace.uclouvain.external.dilbert.client.DilbertClient" >
         <!-- Custom HttpClient -->
         <property name="httpClient">
-          <bean class="org.dspace.uclouvain.core.GenericHttpClient">
+            <bean class="org.dspace.uclouvain.core.GenericHttpClient">
                 <property name="baseUrl" value="${uclouvain.main_author_query.url}"/>
             </bean>
         </property>
@@ -49,8 +49,13 @@
         <!-- Custom HttpClient -->
         <property name="httpClient">
             <bean class="org.dspace.uclouvain.core.GenericHttpClient">
-                <property name="baseUrl" value="${uclouvain.osis.base_url}"/>
-                <property name="token" value="${uclouvain.osis.secret}"/>
+                <property name="baseUrl" value="${uclouvain.esb.base_url}"/>
+                <property name="oauthUrl" value="${uclouvain.esb.oauth_url}"/>
+                <!-- Disable secret since we use oAuth instead -->
+                <!-- <property name="token" value="${uclouvain.esb.secret}"/> -->
+                <property name="oauthEnabled" value="true"/>
+                <property name="oauthKey" value="${uclouvain.esb.consumer.key}"/>
+                <property name="oauthSecret" value="${uclouvain.esb.consumer.secret}"/>
             </bean>
         </property>
     </bean>
