@@ -39,7 +39,7 @@ public class OSISClientImpl implements OSISClient {
     @Override
     public OSISStudentDegree[] getOSISStudentDegreeByFGS(String fgs) {
         int currentYear = new DateUtils().getCurrentAcademicYear();
-        String url = "/students/v0.0/" + fgs + "/inscriptions/" + currentYear;
+        String url = "/students/v0/" + fgs + "/inscriptions/" + currentYear;
         OSISStudentDegree[] student = {};
         try {
             HttpResponse<String> response = this.httpClient.get(url);
