@@ -14,6 +14,7 @@ import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
 import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
+import org.dspace.uclouvain.content.snapshot.diff.formats.OutputFormat;
 
 /**
  * Contract to respect for any classes that will deal with {@link ItemSnapshot} management
@@ -69,6 +70,14 @@ public interface ItemSnapshotService {
      */
     ItemSnapshotDiff detectChanges(Context context, UUID id) throws Exception;
     ItemSnapshotDiff detectChanges(Context context, Item item) throws Exception;
+
+    /**
+     * This method extract as a formatted string all changes stored into a ItemSnapshotDiff
+     * @param changes the diff changes detected about an item
+     * @param format the rendered output format
+     * @return all changes formatted as desired format
+     */
+    String explainChanges(ItemSnapshotDiff changes, OutputFormat format);
 
     /**
      * Store and persist a snapshot into the database. If a previous snapshot already exists for the same item it will
