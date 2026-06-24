@@ -17,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.apicatalog.jsonld.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Bitstream;
@@ -33,6 +34,8 @@ import org.dspace.uclouvain.content.dao.ItemSnapshotDAO;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshotContentSerializer;
 import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
+import org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainerFactory;
+import org.dspace.uclouvain.content.snapshot.diff.formats.OutputFormat;
 import org.dspace.uclouvain.content.snapshot.element.FileSnapshotElement;
 import org.dspace.uclouvain.content.snapshot.element.MetadataSnapshotElement;
 import org.dspace.uclouvain.content.snapshot.element.SnapshotElement;
@@ -59,7 +62,7 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     @Autowired
     private ItemSnapshotContentSerializer snapshotSerializer;
     @Autowired
-    private ItemSnapshotContentSerializer itemSnapshotSerializer;
+    private DiffExplainerFactory diffExplainerFactory;
 
     private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
     private final List<String> trackedMetadata = Stream
@@ -81,7 +84,7 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
             }
             if (deserialize) {
                 try {
-                    itemSnapshotSerializer.deserialize(snapshot);
+                    snapshotSerializer.deserialize(snapshot);
                 } catch (Exception e) {
                     throw new RuntimeException("Unable to deserialize ItemSnapshot#" + id, e);
                 }
@@ -172,6 +175,15 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     }
 
     @Override
+    public String explainChanges(ItemSnapshotDiff changes, OutputFormat format) {
+        return changes.getChanges().stream()
+            .map(change -> diffExplainerFactory.explain(change.getLeft(), change.getRight(), format))
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.joining());
+    }
+
+
+    @Override
     public void store(Context context, ItemSnapshot snapshot) throws Exception {
         if (snapshot.getItem() == null) {
             throw new IllegalArgumentException("Snapshot must be related to an item");
@@ -180,13 +192,16 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         // Persist changes into database
         //    If the database doesn't yet store a snapshot for the related item, just "create" the snapshot
         //    If the database already stored a snapshot, we need to retrieve it, update it and "save" it
+        if (snapshot.getId() == null) {
+            snapshot.setId(snapshot.getItem().getID());
+        }
         ItemSnapshot existingSnapshot = itemSnapshotDAO.findByID(context, ItemSnapshot.class, snapshot.getId());
         if (existingSnapshot == null) {
             snapshot.setContent(snapshotSerializer.serialize(snapshot));
             itemSnapshotDAO.create(context, snapshot);
         } else {
-            existingSnapshot.setTimestamp(snapshot.getTimestamp());
             existingSnapshot.setContent(snapshotSerializer.serialize(snapshot));
+            existingSnapshot.setTimestamp(snapshot.getTimestamp());
             itemSnapshotDAO.save(context, existingSnapshot);
         }
 
