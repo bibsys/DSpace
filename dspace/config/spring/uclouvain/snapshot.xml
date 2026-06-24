@@ -13,8 +13,25 @@
   <!-- SERVICES ==================================================================================================== -->
   <bean id="uclouvainItemSnapshotService" class="org.dspace.uclouvain.services.impl.ItemSnapshotServiceImpl"/>
 
-  <!-- SNAPSHOT ELEMENT FACTORY ==================================================================================== -->
+  <!-- UTILITIES =================================================================================================== -->
   <bean class="org.dspace.uclouvain.content.snapshot.ItemSnapshotContentSerializer"/>
+
+  <!-- FACTORIES =================================================================================================== -->
+  <bean id="uclouvainDiffExplainerFactory" class="org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainerFactory">
+    <constructor-arg name="formatters">
+      <util:list>
+        <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.FileRawDiffFormatter"/>
+        <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.MetadataRawDiffFormatter"/>
+      </util:list>
+    </constructor-arg>
+    <constructor-arg name="explainers">
+      <util:list value-type="java.lang.Class">
+        <value>org.dspace.uclouvain.content.snapshot.diff.explainer.FileDiffExplainer</value>
+        <value>org.dspace.uclouvain.content.snapshot.diff.explainer.MetadataDiffExplainer</value>
+      </util:list>
+    </constructor-arg>
+  </bean>
+
   <bean id="uclouvainSnapshotFactory" class="org.dspace.uclouvain.content.snapshot.element.SnapshotElementFactory">
     <constructor-arg name="scanPackages">
       <util:list>

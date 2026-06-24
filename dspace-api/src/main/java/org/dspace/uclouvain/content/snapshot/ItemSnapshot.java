@@ -69,6 +69,9 @@ public class ItemSnapshot {
     public UUID getId() {
         return id;
     }
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public Date getTimestamp() {
         return timestamp;
