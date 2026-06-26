@@ -2322,7 +2322,7 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunit</dc-qualifier>
-          <label>Affiliation Institution</label>
+          <label>Institution</label>
           <style>col-3</style>
           <input-type>institution-affiliation-select</input-type>
           <hint>Enter the name of the institution of the affiliation</hint>
@@ -2332,7 +2332,7 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>orgunitDepartment</dc-qualifier>
-          <label>Affiliation Department</label>
+          <label>Department</label>
           <style>col-9</style>
           <input-type>department-affiliation-select</input-type>
           <hint>Enter the entity name of the affiliation</hint>
