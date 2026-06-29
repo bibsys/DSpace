@@ -16,24 +16,26 @@ import org.dspace.uclouvain.content.snapshot.diff.DiffReport;
 import org.dspace.uclouvain.content.snapshot.diff.explainer.MetadataDiffExplainer;
 
 /**
- * This class allows to format changes between two snapshot of the same metadata as RAW/TEXT.
+ * This class allows to format changes between two snapshot of the same metadata as HTML.
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-@DiffFormatterTypeFor(clazz = MetadataDiffExplainer.class, format = OutputFormat.RAW)
-public class MetadataRawDiffFormatter extends RawDiffFormatter<MetadataDiffExplainer> {
+@DiffFormatterTypeFor(clazz = MetadataDiffExplainer.class, format = OutputFormat.HTML)
+public class MetadataHTMLDiffFormatter extends HTMLDiffFormatter<MetadataDiffExplainer> {
 
     @Override
     public String format(MetadataDiffExplainer explainer) {
-        StringJoiner joiner = new StringJoiner(" ... ");
+        StringJoiner joiner = new StringJoiner(" &mldr; "); // this is the html entity for "..."
         for (DiffReport.DiffBlock block : explainer.getDiff().blocks()) {
             StringBuilder bs = new StringBuilder();
             for (DiffReport.DiffSegment segment : block.segments()) {
                 switch (segment.type()) {
                     case CONTEXT -> bs.append(segment.text());
-                    case DELETED -> bs.append(" [[- %s]] ".formatted(segment.text()));
-                    case INSERTED -> bs.append(" [[+ %s]] ".formatted(segment.text()));
-                    case UPDATED -> bs.append(" [[~ %s -> %s]] ".formatted(segment.text(), segment.revisedText()));
+                    case DELETED -> bs.append(" <span class=\"diff-remove\">%s</span> ".formatted(segment.text()));
+                    case INSERTED -> bs.append("  <span class=\"diff-add\">%s</span> ".formatted(segment.text()));
+                    case UPDATED -> bs
+                        .append(" <span class=\"diff-remove\">%s</div><div class=\"diff-add\">%s</span> "
+                        .formatted(segment.text(), segment.revisedText()));
                     default -> throw new IllegalStateException("Unexpected type: " + segment.type());
                 }
             }
