@@ -41,6 +41,7 @@ public class MetadataRawDiffFormatter extends RawDiffFormatter<MetadataDiffExpla
         }
         return Stream.of(getPrefix(explainer), joiner.toString(), getSuffix(explainer))
             .filter(StringUtils::isNoneBlank)
-            .collect(Collectors.joining());
+            .collect(Collectors.joining())
+            .trim();
     }
 }
