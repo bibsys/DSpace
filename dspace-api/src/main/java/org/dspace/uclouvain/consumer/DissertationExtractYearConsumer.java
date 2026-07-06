@@ -52,12 +52,14 @@ public class DissertationExtractYearConsumer implements Consumer {
     }
 
     private boolean areDetailsValid(Event event) {
-        return event.getDetail() == null && event.getDetailsMetadata(".").stream()
+        return event.getDetail() == null || event.getDetailsMetadata(".").stream()
             .anyMatch(detail -> detail.equals(Publication.DEFENSE_DATE_FIELD));
     }
 
     @Override
     public void end(Context context) throws Exception {
+        context.turnOffAuthorisationSystem();
+        boolean updateNeeded = false;
         for (UUID itemId: idsToProcess) {
             try {
                 Item item = itemService.find(context, itemId);
@@ -80,6 +82,8 @@ public class DissertationExtractYearConsumer implements Consumer {
                             null,
                             String.valueOf(defenseYear)
                         );
+                        itemService.update(context, item);
+                        updateNeeded = true;
                     }
                 } else if (issueYear != -1) { // Clear issue year
                     itemService.clearMetadata(
@@ -90,6 +94,8 @@ public class DissertationExtractYearConsumer implements Consumer {
                         dateIssuedField.qualifier,
                         null
                     );
+                    itemService.update(context, item);
+                    updateNeeded = true;
                 }
             } catch (Exception e) {
                 logger.error("Could not extract defense date year for item with id: [{}]", itemId, e);
@@ -97,6 +103,10 @@ public class DissertationExtractYearConsumer implements Consumer {
         }
         // At the end of process, clear the set.
         idsToProcess.clear();
+        if (updateNeeded) {
+            context.commit();
+        }
+        context.restoreAuthSystemState();
     }
 
     @Override
