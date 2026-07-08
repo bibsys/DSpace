@@ -28,9 +28,7 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.services.ConfigurationService;
-import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
-import org.dspace.uclouvain.core.model.publication.Publication;
-import org.dspace.uclouvain.core.model.publication.PublicationFactory;
+import org.dspace.uclouvain.core.utils.PublicationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -86,7 +84,7 @@ public class RequestCopyFeature implements AuthorizationFeature {
         //   * Check this specific bitstream is not authorized to be read.
         if (object instanceof ItemRest itemRest) {
             Item item = itemService.find(context, UUID.fromString(itemRest.getId()));
-            if (!item.isArchived() || !existsPersistentRecipient(item)) {
+            if (!item.isArchived() || !PublicationUtils.existsPersistentRecipient(item)) {
                 return false;
             }
             return itemService
@@ -97,7 +95,8 @@ public class RequestCopyFeature implements AuthorizationFeature {
         } else if (object instanceof BitstreamRest bitstreamRest) {
             Bitstream bitstream = bitstreamService.find(context, UUID.fromString(bitstreamRest.getId()));
             DSpaceObject parentObject = bitstreamService.getParentObject(context, bitstream);
-            if (parentObject instanceof Item item && item.isArchived() && existsPersistentRecipient(item)) {
+            if (parentObject instanceof Item item && item.isArchived()
+                    && PublicationUtils.existsPersistentRecipient(item)) {
                 return !authorizeService.authorizeActionBoolean(context, bitstream, Constants.READ);
             }
         }
@@ -108,16 +107,6 @@ public class RequestCopyFeature implements AuthorizationFeature {
         try {
             return authorizeService.authorizeActionBoolean(context, bitstream, authorization);
         } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    private boolean existsPersistentRecipient(Item item) {
-        try {
-            Publication publication = PublicationFactory.build(item);
-            return !publication.getAuthorsEmails(true, true).isEmpty();
-        } catch (InvalidModelEntityTypeException imete) {
-            log.warn("Cannot convert Item#{} to Publication :: ", item.getID(), imete);
             return false;
         }
     }
