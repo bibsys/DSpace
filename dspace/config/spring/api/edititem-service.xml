@@ -74,6 +74,20 @@
                             </property>
                             <property name="submissionDefinition" value="person-edit" />
                         </bean>
+                        <bean class="org.dspace.content.edit.EditItemMode">
+                            <property name="name" value="PROFILE_MANAGER" />
+                            <property name="security">
+                                <value type="org.dspace.content.security.CrisSecurity">
+                                    GROUP
+                                </value>
+                            </property>
+                             <property name="groups">
+                                <list>
+                                    <value>Manager</value>
+                                </list>
+                            </property>
+                            <property name="submissionDefinition" value="person-edit" />
+                        </bean>
                     </list>
                 </entry>
                 <entry key="equipment">
