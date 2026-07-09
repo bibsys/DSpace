@@ -1362,10 +1362,10 @@
           <dc-schema>publication</dc-schema>
           <dc-element>speech</dc-element>
           <dc-qualifier>status</dc-qualifier>
-          <label>Speech status</label>
+          <label>Published in</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <input-type value-pairs-name="publication_speech_status">dropdown</input-type>
-          <hint>Select in the list the publication status of the document.</hint>
+          <hint>Specify here if your conference speech is published, in a book or a serial</hint>
           <required>You must select a value</required>
           <settings>
             <setting name="useDefault">true</setting>
