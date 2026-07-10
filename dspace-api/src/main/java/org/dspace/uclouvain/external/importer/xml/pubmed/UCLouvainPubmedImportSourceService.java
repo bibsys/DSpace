@@ -200,6 +200,8 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
         List<MetadataValueDTO> mdValues = new ArrayList<>();
         addMetadata(mdValues, Publication.TITLE_FIELD,
             getFirstText(root, "//ArticleTitle"), null, CF_UNSET, false);
+        addMetadata(mdValues, Publication.DOI_IDENTIFIER_FIELD,
+            extractDOI(root), null, CF_UNSET, false);
         addMetadata(mdValues, Publication.ABSTRACT_FIELD,
             parseAbstract(buildXpath("//Abstract").evaluateFirst(root), "\n"), null, CF_UNSET, false);
         addMetadata(mdValues, Publication.DATE_ISSUED_FIELD,
@@ -366,6 +368,14 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
         }
         // fallback
         return pagination.getChildTextTrim("MedlinePgn");
+    }
+
+    private String extractDOI(Element root) {
+        String doi = getFirstText(root, "//ELocationID[@EIdType='doi']");
+        if (doi == null) {
+            doi = getFirstText(root, "//ArticleIdList//ArticleId [@IdType='doi']");
+        }
+        return doi;
     }
 
     // GETTERS AND SETTERS
