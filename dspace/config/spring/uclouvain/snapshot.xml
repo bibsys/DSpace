@@ -15,6 +15,7 @@
 
   <!-- UTILITIES =================================================================================================== -->
   <bean class="org.dspace.uclouvain.content.snapshot.ItemSnapshotContentSerializer"/>
+  <bean class="org.dspace.uclouvain.content.snapshot.tasks.SnapshotDetectingChangesTask"/>
 
   <!-- FACTORIES =================================================================================================== -->
   <bean id="uclouvainDiffExplainerFactory" class="org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainerFactory">

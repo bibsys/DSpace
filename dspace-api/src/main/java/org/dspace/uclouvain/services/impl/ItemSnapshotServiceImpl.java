@@ -7,10 +7,15 @@
  */
 package org.dspace.uclouvain.services.impl;
 
+import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
@@ -18,6 +23,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.apicatalog.jsonld.StringUtils;
+import jakarta.mail.MessagingException;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.logging.log4j.Logger;
 import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Bitstream;
@@ -27,7 +34,10 @@ import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.core.Email;
+import org.dspace.core.I18nUtil;
 import org.dspace.core.LogHelper;
+import org.dspace.eperson.EPerson;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.content.dao.ItemSnapshotDAO;
@@ -39,6 +49,13 @@ import org.dspace.uclouvain.content.snapshot.diff.formats.OutputFormat;
 import org.dspace.uclouvain.content.snapshot.element.FileSnapshotElement;
 import org.dspace.uclouvain.content.snapshot.element.MetadataSnapshotElement;
 import org.dspace.uclouvain.content.snapshot.element.SnapshotElement;
+import org.dspace.uclouvain.core.NotificationType;
+import org.dspace.uclouvain.core.mails.Recipient;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
+import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
+import org.dspace.uclouvain.core.model.publication.PublicationFactory;
+import org.dspace.uclouvain.exceptions.SendEmailException;
 import org.dspace.uclouvain.services.ItemSnapshotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,6 +112,11 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     @Override
     public ItemSnapshot get(Context context, UUID id) throws SQLException {
         return get(context, id, true);
+    }
+
+    @Override
+    public List<UUID> findItemsToSnapshot(Context context, Date from, int limit) throws SQLException {
+        return itemSnapshotDAO.findItemsToSnapshot(context, from, limit);
     }
 
     @Override
@@ -177,6 +199,7 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     @Override
     public String explainChanges(ItemSnapshotDiff changes, OutputFormat format) {
         return changes.getChanges().stream()
+            .sorted(Comparator.comparing(ItemSnapshotDiff::getChangeSortKey))
             .map(change -> diffExplainerFactory.explain(change.getLeft(), change.getRight(), format))
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.joining());
@@ -197,14 +220,41 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         }
         ItemSnapshot existingSnapshot = itemSnapshotDAO.findByID(context, ItemSnapshot.class, snapshot.getId());
         if (existingSnapshot == null) {
+            log.info("Store new snapshot for Item#{}", snapshot.getItem().getID());
             snapshot.setContent(snapshotSerializer.serialize(snapshot));
+            snapshot.setTimestamp(snapshot.getItem().getLastModified());
             itemSnapshotDAO.create(context, snapshot);
         } else {
+            log.info("Update snapshot for Item#{}", snapshot.getItem().getID());
             existingSnapshot.setContent(snapshotSerializer.serialize(snapshot));
-            existingSnapshot.setTimestamp(snapshot.getTimestamp());
+            existingSnapshot.setTimestamp(snapshot.getItem().getLastModified());
             itemSnapshotDAO.save(context, existingSnapshot);
         }
 
+    }
+
+    @Override
+    public List<Recipient> getNotifyRecipients(Context context, ItemSnapshotDiff diff, NotificationType method) {
+        if (diff == null || diff.getItem() == null) {
+            return List.of();
+        }
+        return Stream.concat(
+            getPublicationAuthorRecipients(diff, method),
+            getSubmitterRecipient(diff, method)
+        ).toList();
+    }
+
+    @Override
+    public void notifyRecipient(Recipient recipient, List<ItemSnapshotDiff> changes, NotificationType method)
+        throws Exception {
+        // TODO :: implements other notification method
+        switch (method) {
+            case EMAIL:
+                notifyRecipientByEmail(recipient, changes);
+                break;
+            default:
+                throw new NotImplementedException(method + " is not supported");
+        }
     }
 
     // PRIVATE METHODS =================================================================================================
@@ -247,5 +297,91 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
             }
         }
         return elements;
+    }
+
+    /**
+     * Get all authors recipients for a publication related to a specific notification method
+     * @param diff the publications changes to analyze (to get related Publication(item))
+     * @param method the notification method (email, phone, telepathy, ...)
+     * @return the list of recipient to notify
+     */
+    private Stream<Recipient> getPublicationAuthorRecipients(ItemSnapshotDiff diff, NotificationType method) {
+        try {
+            Publication publication = PublicationFactory.build(diff.getItem());
+            // Return list of authors with emails. Priority is given to "private email" if available
+            return publication.getAuthors()
+                .stream()
+                .map(a -> {
+                    String contactValue = resolveContactValue(a, method);
+                    return contactValue != null ? new Recipient(a.getName(), Map.of(method, contactValue)) : null;
+                })
+                .filter(r -> r != null && StringUtils.isNotBlank(r.get(method)));
+        } catch (InvalidModelEntityTypeException e) {
+            return Stream.empty();
+        }
+    }
+    private String resolveContactValue(PublicationAuthor author, NotificationType method) {
+        // TODO :: add other communication method retrieval if necessary
+        return switch (method) {
+            case EMAIL -> StringUtils.isNotBlank(author.getPrivateEmail())
+                ? author.getPrivateEmail()
+                : author.getEmail(); // Can return null if both are null/blank
+            default -> throw new UnsupportedOperationException("unsupported method: " + method);
+        };
+    }
+
+    /**
+     * Get submitter recipient for a publication related to a specific notification method
+     * @param diff the publications changes to analyze (to get related Publication(item))
+     * @param method the notification method (email, phone, telepathy, ...)
+     * @return the submitter recipient (as stream for easy manipulation)
+     */
+    private Stream<Recipient> getSubmitterRecipient(ItemSnapshotDiff diff, NotificationType method) {
+        EPerson submitter = diff.getItem().getSubmitter();
+        if (submitter == null) {
+            return Stream.empty();
+        }
+        // TODO :: add other communication method retrieval if necessary
+        return switch (method) {
+            case EMAIL -> Stream.of(new Recipient(
+                submitter.getName(),
+                Map.of(NotificationType.EMAIL, submitter.getEmail())
+            ));
+            default -> throw new UnsupportedOperationException("unsupported method: " + method);
+        };
+    }
+
+    /**
+     * Notify a recipient of changes on its publication by email. Changes will use HTML format to be included into email
+     * @param recipient the recipient to notify
+     * @param changes all diff changes to notify
+     */
+    private void notifyRecipientByEmail(Recipient recipient, List<ItemSnapshotDiff> changes)
+        throws SendEmailException {
+        try {
+            Map<Item, String> explanations = changes.stream().collect(Collectors.toMap(
+                ItemSnapshotDiff::getItem,
+                change -> explainChanges(change, OutputFormat.HTML)
+            ));
+            Email email = Email.getEmail(I18nUtil.getEmailFilename(Locale.getDefault(), "notify_changes"));
+            email.setSubject(getLocalizedProperty("item-snapshot.email-notification.subject", "Changes detected"));
+            email.setReplyTo(configService.getProperty("uclouvain.default.mail.reply-to", "noreply@dspace.org"));
+            email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
+            email.addArgument(recipient);
+            email.addArgument(explanations);
+            email.addRecipient(recipient.get(NotificationType.EMAIL));
+            for (String addr : configService.getArrayProperty("item-snapshot.email-notification.cc-addresses")) {
+                email.addCcAddress(addr);
+            }
+            email.send();
+        } catch (IOException | MessagingException e) {
+            throw new SendEmailException("Failed to call .send() on the generated email.", e);
+        }
+    }
+    private String getLocalizedProperty(String key, String defaultValue) {
+        String localizedKey = key + "." + Locale.getDefault().getLanguage();
+        return configService.hasProperty(localizedKey)
+            ? configService.getProperty(localizedKey)
+            : configService.getProperty(key, defaultValue);
     }
 }
