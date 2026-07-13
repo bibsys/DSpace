@@ -15,14 +15,6 @@
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='title']/doc:element/doc:field[@name='value']">
 				<dc:title><xsl:value-of select="." /></dc:title>
 			</xsl:for-each>
-			<!-- dc.title.* -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='title']/doc:element/doc:element/doc:field[@name='value']">
-				<dc:title><xsl:value-of select="." /></dc:title>
-			</xsl:for-each>
-			<!-- dc.creator -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='creator']/doc:element/doc:field[@name='value']">
-				<dc:creator><xsl:value-of select="." /></dc:creator>
-			</xsl:for-each>
 			<!-- dc.contributor.author -->
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element[@name='author']/doc:element/doc:field[@name='value']">
 				<dc:creator><xsl:value-of select="." /></dc:creator>
@@ -31,24 +23,12 @@
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element[@name!='author']/doc:element/doc:field[@name='value']">
 				<dc:contributor><xsl:value-of select="." /></dc:contributor>
 			</xsl:for-each>
-			<!-- dc.contributor -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element/doc:field[@name='value']">
-				<dc:contributor><xsl:value-of select="." /></dc:contributor>
-			</xsl:for-each>
 			<!-- dc.subject -->
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='subject']/doc:element/doc:field[@name='value']">
 				<dc:subject><xsl:value-of select="." /></dc:subject>
 			</xsl:for-each>
-			<!-- dc.subject.* -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='subject']/doc:element/doc:element/doc:field[@name='value']">
-				<dc:subject><xsl:value-of select="." /></dc:subject>
-			</xsl:for-each>
 			<!-- dc.description -->
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='description']/doc:element/doc:field[@name='value']">
-				<dc:description><xsl:value-of select="." /></dc:description>
-			</xsl:for-each>
-			<!-- dc.description.* (not provenance)-->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='description']/doc:element[@name!='provenance']/doc:element/doc:field[@name='value']">
 				<dc:description><xsl:value-of select="." /></dc:description>
 			</xsl:for-each>
 			<!-- dc.date.issued -->
@@ -75,53 +55,13 @@
 			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='language']/doc:element/doc:element/doc:field[@name='value']">
 				<dc:language><xsl:value-of select="." /></dc:language>
 			</xsl:for-each>
-			<!-- dc.relation -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element/doc:field[@name='value']">
-				<dc:relation><xsl:value-of select="." /></dc:relation>
-			</xsl:for-each>
-			<!-- dc.relation.* -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element/doc:element/doc:field[@name='value']">
-				<dc:relation><xsl:value-of select="." /></dc:relation>
-			</xsl:for-each>
 			<!-- dc.rights -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dcterms']/doc:element[@name='rights']/doc:element/doc:field[@name='value']">
-				<dc:rights><xsl:value-of select="." /></dc:rights>
-			</xsl:for-each>
+      <xsl:if test="count(doc:metadata/doc:element[@name='bundles']/doc:element[@name='bundle']/doc:field[@name='name'][text()='ORIGINAL']/../doc:element[@name='bitstreams']/doc:element[@name='bitstream']) > 0">
+        <dc:rights><xsl:value-of select="doc:metadata/doc:element[@name='others']/doc:element[@name='accesscondition']/doc:field[@name='euTermURI']"/></dc:rights>
+      </xsl:if>
 			<!-- dc.format -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='format']/doc:element/doc:field[@name='value']">
-				<dc:format><xsl:value-of select="." /></dc:format>
-			</xsl:for-each>
-			<!-- dc.format.* -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='format']/doc:element/doc:element/doc:field[@name='value']">
-				<dc:format><xsl:value-of select="." /></dc:format>
-			</xsl:for-each>
-			<!-- ? -->
 			<xsl:for-each select="doc:metadata/doc:element[@name='bundles']/doc:element[@name='bundle']/doc:field[@name='name'][text()='ORIGINAL']/../doc:element[@name='bitstreams']/doc:element[@name='bitstream']/doc:field[@name='format']">
 				<dc:format><xsl:value-of select="." /></dc:format>
-			</xsl:for-each>
-			<!-- dc.coverage -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='coverage']/doc:element/doc:field[@name='value']">
-				<dc:coverage><xsl:value-of select="." /></dc:coverage>
-			</xsl:for-each>
-			<!-- dc.coverage.* -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='coverage']/doc:element/doc:element/doc:field[@name='value']">
-				<dc:coverage><xsl:value-of select="." /></dc:coverage>
-			</xsl:for-each>
-			<!-- dc.publisher -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='publisher']/doc:element/doc:field[@name='value']">
-				<dc:publisher><xsl:value-of select="." /></dc:publisher>
-			</xsl:for-each>
-			<!-- dc.publisher.* -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='publisher']/doc:element/doc:element/doc:field[@name='value']">
-				<dc:publisher><xsl:value-of select="." /></dc:publisher>
-			</xsl:for-each>
-			<!-- dc.source -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='source']/doc:element/doc:field[@name='value']">
-				<dc:source><xsl:value-of select="." /></dc:source>
-			</xsl:for-each>
-			<!-- dc.source.* -->
-			<xsl:for-each select="doc:metadata/doc:element[@name='dc']/doc:element[@name='source']/doc:element/doc:element/doc:field[@name='value']">
-				<dc:source><xsl:value-of select="." /></dc:source>
 			</xsl:for-each>
 		</oai_dc:dc>
 	</xsl:template>
