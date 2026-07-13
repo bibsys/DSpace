@@ -8,6 +8,8 @@
 package org.dspace.uclouvain.services;
 
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.dspace.content.Item;
@@ -15,6 +17,8 @@ import org.dspace.core.Context;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
 import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
 import org.dspace.uclouvain.content.snapshot.diff.formats.OutputFormat;
+import org.dspace.uclouvain.core.NotificationType;
+import org.dspace.uclouvain.core.mails.Recipient;
 
 /**
  * Contract to respect for any classes that will deal with {@link ItemSnapshot} management
@@ -36,6 +40,17 @@ public interface ItemSnapshotService {
      */
     ItemSnapshot get(Context context, UUID id, boolean deserialize) throws Exception;
     ItemSnapshot get(Context context, UUID id) throws Exception;
+
+    /**
+     * Search about items UUID that need to be snapshotted.
+     * @param context the application context
+     * @param from the lower boundary timestamp limit; items updated after this timestamp could be returned if not
+     *             specified, the last stored snapshot will be used
+     * @param limit the maximum number of item to return (use -1 to unlimited)
+     * @return the list of item UUID to should be snapshotted and updated into the database
+     * @throws SQLException if any other error occurred
+     */
+    List<UUID> findItemsToSnapshot(Context context, Date from, int limit) throws SQLException;
 
     /**
      * Allow to take an instant snapshot for an item.
@@ -88,4 +103,21 @@ public interface ItemSnapshotService {
      * @throws Exception if any other error occurred (serialize, ...)
      */
     void store(Context context, ItemSnapshot snapshot) throws Exception;
+
+    /**
+     * Get all recipients to notify snapshot changes.
+     * Recipients are determine by item related to a {@link ItemSnapshotDiff}
+     * @param context the application context
+     * @param diff the snapshot diff to analyze
+     * @return the list of recipients to notify
+     */
+    List<Recipient> getNotifyRecipients(Context context, ItemSnapshotDiff diff, NotificationType method);
+
+    /**
+     * Notify a recipient for detected changes
+     * @param recipient the recipient to notify
+     * @param changes all diff changes to notify to the recipient
+     * @param method the method to notify
+     */
+    void notifyRecipient(Recipient recipient, List<ItemSnapshotDiff> changes, NotificationType method) throws Exception;
 }

@@ -47,6 +47,19 @@ public class ItemSnapshotDiff {
         this.changes = new HashMap<>();
     }
 
+    // STATIC METHOD ===================================================================================================
+
+    /**
+     * Allow to compute a key to sort a change
+     * @param change the change to analyze
+     * @return a key to use to compare this change to other changes (using a classic Comparator)
+     */
+    public static String getChangeSortKey(Pair<SnapshotElement, SnapshotElement> change) {
+        SnapshotElement testedElt = (change.getLeft() != null) ? change.getLeft() : change.getRight();
+        return testedElt.getClass() + testedElt.getPath();
+    }
+
+
     // CLASS METHODS ===================================================================================================
     public boolean hasChanges() {
         return !changes.isEmpty();
