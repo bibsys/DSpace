@@ -11,6 +11,7 @@
     <xsl:param name="highlightText"/>
     <xsl:param name="documentTitle" select="'Liste des publications'"/>
     <xsl:param name="documentSubtitle"/>
+    <xsl:param name="showWarning" select="'true'"/>
 
     <xsl:param name="fontFamily" />
     <xsl:param name="fontSize" select="'10pt'"/>
@@ -109,6 +110,9 @@
                                         <fo:block font-size="{$smFontSize}">
                                             <xsl:value-of select="$currentDate"/>
                                         </fo:block>
+                                        <fo:block font-size="8pt">
+                                            Export non conforme au format officiel FNRS
+                                        </fo:block>
                                     </fo:table-cell>
                                     <fo:table-cell text-align="right">
                                         <fo:block font-size="{$smFontSize}">
@@ -132,6 +136,20 @@
                           <fo:block font-size="{$fontSize}" color="$secondaryColor">
                             <xsl:value-of select="$documentSubtitle"/>
                           </fo:block>
+                        </xsl:if>
+                        <xsl:if test="$showWarning='true'">
+                            <fo:block
+                                margin-top="8mm"
+                                margin-bottom="8mm"
+                                padding="4mm"
+                                border="1pt solid #cc0000"
+                                background-color="#fff4f4"
+                                color="#cc0000"
+                                font-weight="bold"
+                                text-align="center">
+                                Cet export est non compatible FNRS et destiné uniquement à la consultation. Par conséquent, il ne peut pas être utilisé pour une soumission FNRS.
+                                Veuillez utiliser l'export bibliographique sur votre page "Mon dashboard" pour un export compatible FNRS.
+                            </fo:block>
                         </xsl:if>
                     </fo:block>
 					<xsl:for-each select="Publication[generate-id()=generate-id(key('categorySection', normalize-space(Category))[1])]">
