@@ -79,6 +79,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
         itemCrosswalk.addTransformerParameter("documentTitle", FWB_DOCUMENT_TITLE.formatted(author.getName()));
         itemCrosswalk.addTransformerParameter("documentSubtitle", FWB_DOCUMENT_SUBTITLE);
+        itemCrosswalk.addTransformerParameter("showWarning", "false");
         return new TempFileExportResult(
             context,
             itemCrosswalk,
@@ -100,6 +101,7 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
         itemCrosswalk.addTransformerParameter("documentTitle", FNRS_DOCUMENT_TITLE.formatted(author.getName()));
         itemCrosswalk.addTransformerParameter("documentSubtitle", FNRS_DOCUMENT_SUBTITLE);
+        itemCrosswalk.addTransformerParameter("showWarning", "false");
         return new TempFileExportResult(
             context,
             itemCrosswalk,
