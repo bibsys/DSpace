@@ -175,6 +175,21 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </Appender>
+
+        <!-- A9 is for ItemSnapshot processes -->
+        <Appender name='A9' filePattern="${log.dir}/snapshots.log%d{yyyy-MM-dd}" type="RollingFile" fileName="${log.dir}/snapshots.log">
+          <Layout type='PatternLayout' pattern='%d %-5p -- %-50.50c{1.} :: %m%n'/>
+          <policies>
+            <policy type='TimeBasedTriggeringPolicy'>yyyy-MM-dd</policy>
+          </policies>
+          <DefaultRolloverStrategy>
+            <Delete basePath='${log.dir}'>
+              <IfFileName glob='snapshots.log-*'/>
+              <IfAccumulatedFileCount exceeds='${logging.server.retention-accumulated-to-keep}'/>
+            </Delete>
+          </DefaultRolloverStrategy>
+        </Appender>
+
         <Sentry name='Sentry' dsn='${sys:SENTRY_DSN}' minimumBreadcrumbLevel='INFO' minimumEventLevel='ERROR'/>
         <Appender name='Console' type='Console'>
             <Layout type='PatternLayout' pattern='%d %-5p %c @ %m%n'/>
@@ -232,6 +247,14 @@
                 level="${loglevel.dspace.authentication}"
                 additivity="false">
             <AppenderRef ref="A8"/>
+        </Logger>
+
+        <!-- ItemSnapshots -->
+        <Logger name="org.dspace.uclouvain.services.impl.ItemSnapshotServiceImpl" level="${loglevel.dspace}" additivity="false">
+          <AppenderRef ref="A9"/>
+        </Logger>
+        <Logger name="org.dspace.uclouvain.content.snapshot" level="${loglevel.dspace}" additivity="false">
+          <AppenderRef ref="A9"/>
         </Logger>
 
         <!--
