@@ -102,11 +102,12 @@ public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement
         // 3. Determining capture zones (word intervals in the original text) and merge overlapping or adjacent areas
         List<int[]> zones = new ArrayList<>();
         for (AbstractDelta<String> delta : deltas) {
-            int startIdx = Math.max(0, delta.getSource().getPosition() - CONTEXT_SIZE);
+            int pos = delta.getSource().getPosition();
+            int startIdx = Math.max(0, pos - CONTEXT_SIZE);
             // The end of the zone encompasses the delta and the surrounding area beyond
             int endIdx = Math.min(
                 origWords.size(),
-                delta.getSource().getPosition() + delta.getSource().getLines().size() + CONTEXT_SIZE
+                pos + delta.getSource().getLines().size() + CONTEXT_SIZE
             );
             zones.add(new int[]{startIdx, endIdx});
         }
@@ -126,7 +127,7 @@ public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement
                 AbstractDelta<String> delta = deltas.get(currentDeltaIdx);
                 int deltaPos = delta.getSource().getPosition();
                 int deltaSize = delta.getSource().getLines().size();
-                if (deltaPos >= zoneEnd) {
+                if (deltaPos > zoneEnd) {
                     break;
                 }
                 // unchanged text before delta (Context)
