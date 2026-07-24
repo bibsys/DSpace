@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 import com.apicatalog.jsonld.StringUtils;
 import jakarta.mail.MessagingException;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.tuple.Triple;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.logging.log4j.Logger;
 import org.dspace.access.status.service.AccessStatusService;
 import org.dspace.content.Bitstream;
@@ -38,8 +40,11 @@ import org.dspace.core.Email;
 import org.dspace.core.I18nUtil;
 import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
+import org.dspace.profile.ResearcherProfile;
+import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.citations.UCLouvainCitationsService;
 import org.dspace.uclouvain.content.dao.ItemSnapshotDAO;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshot;
 import org.dspace.uclouvain.content.snapshot.ItemSnapshotContentSerializer;
@@ -80,6 +85,10 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     private ItemSnapshotContentSerializer snapshotSerializer;
     @Autowired
     private DiffExplainerFactory diffExplainerFactory;
+    @Autowired
+    private ResearcherProfileService researcherProfileService;
+    @Autowired
+    private UCLouvainCitationsService citationService;
 
     private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
     private final List<String> trackedMetadata = Stream
@@ -197,10 +206,11 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     }
 
     @Override
-    public String explainChanges(ItemSnapshotDiff changes, OutputFormat format) {
+    public String explainChanges(ItemSnapshotDiff changes, OutputFormat format, Locale locale) {
+        Locale finalLocale = (locale != null) ? locale : Locale.getDefault();
         return changes.getChanges().stream()
             .sorted(Comparator.comparing(ItemSnapshotDiff::getChangeSortKey))
-            .map(change -> diffExplainerFactory.explain(change.getLeft(), change.getRight(), format))
+            .map(change -> diffExplainerFactory.explain(change.getLeft(), change.getRight(), format, finalLocale))
             .filter(StringUtils::isNotBlank)
             .collect(Collectors.joining());
     }
@@ -245,12 +255,16 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     }
 
     @Override
-    public void notifyRecipient(Recipient recipient, List<ItemSnapshotDiff> changes, NotificationType method)
-        throws Exception {
+    public void notifyRecipient(
+        Context context,
+        Recipient recipient,
+        List<ItemSnapshotDiff> changes,
+        NotificationType method
+    ) throws Exception {
         // TODO :: implements other notification method
         switch (method) {
             case EMAIL:
-                notifyRecipientByEmail(recipient, changes);
+                notifyRecipientByEmail(context, recipient, changes);
                 break;
             default:
                 throw new NotImplementedException(method + " is not supported");
@@ -323,9 +337,13 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     private String resolveContactValue(PublicationAuthor author, NotificationType method) {
         // TODO :: add other communication method retrieval if necessary
         return switch (method) {
-            case EMAIL -> StringUtils.isNotBlank(author.getPrivateEmail())
-                ? author.getPrivateEmail()
-                : author.getEmail(); // Can return null if both are null/blank
+            case EMAIL -> {
+                String email = StringUtils.isNotBlank(author.getPrivateEmail())
+                    ? author.getPrivateEmail()
+                    : author.getEmail();
+                EmailValidator validator = EmailValidator.getInstance();
+                yield (email != null && validator.isValid(email)) ? email : null;
+            }
             default -> throw new UnsupportedOperationException("unsupported method: " + method);
         };
     }
@@ -353,18 +371,23 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
 
     /**
      * Notify a recipient of changes on its publication by email. Changes will use HTML format to be included into email
+     * @param context the application context
      * @param recipient the recipient to notify
      * @param changes all diff changes to notify
      */
-    private void notifyRecipientByEmail(Recipient recipient, List<ItemSnapshotDiff> changes)
+    private void notifyRecipientByEmail(Context context, Recipient recipient, List<ItemSnapshotDiff> changes)
         throws SendEmailException {
         try {
-            Map<Item, String> explanations = changes.stream().collect(Collectors.toMap(
-                ItemSnapshotDiff::getItem,
-                change -> explainChanges(change, OutputFormat.HTML)
-            ));
-            Email email = Email.getEmail(I18nUtil.getEmailFilename(Locale.getDefault(), "notify_changes"));
-            email.setSubject(getLocalizedProperty("item-snapshot.email-notification.subject", "Changes detected"));
+            Locale locale = getLocaleForRecipient(context, recipient);
+            List<Triple<Item, String, String>> explanations = changes.stream()
+                .map(change -> Triple.of(
+                    change.getItem(),
+                    citationService.getCitationForItemByCrosswalk(context, change.getItem(), "publication-uclouvain"),
+                    explainChanges(change, OutputFormat.EMAIL_HTML, locale)
+                ))
+                .toList();
+            Email email = Email.getEmail(I18nUtil.getEmailFilename(locale, "notify_changes"));
+            email.setSubject(I18nUtil.getMessage("snapshot.email.subject", locale));
             email.setReplyTo(configService.getProperty("uclouvain.default.mail.reply-to", "noreply@dspace.org"));
             email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
             email.addArgument(recipient);
@@ -378,10 +401,31 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
             throw new SendEmailException("Failed to call .send() on the generated email.", e);
         }
     }
-    private String getLocalizedProperty(String key, String defaultValue) {
-        String localizedKey = key + "." + Locale.getDefault().getLanguage();
-        return configService.hasProperty(localizedKey)
-            ? configService.getProperty(localizedKey)
-            : configService.getProperty(key, defaultValue);
+
+    private Locale getLocaleForRecipient(Context context, Recipient recipient) {
+        Locale defaultLocale = Locale.getDefault();
+        if (recipient == null) {
+            return defaultLocale;
+        }
+        String email = recipient.get(NotificationType.EMAIL);
+        if (email == null || email.isBlank()) {
+            return defaultLocale;
+        }
+        Map<String, String> identifiers = Map.of(
+            "person.email", email,
+            "person.email.official", email
+        );
+        try {
+            ResearcherProfile profile = researcherProfileService.findFirstByIdentifiers(context, identifiers);
+            if (profile != null) {
+                return profile.getCommunicationLanguage()
+                    .filter(lang -> !lang.isBlank())
+                    .map(Locale::forLanguageTag)
+                    .orElse(defaultLocale);
+            }
+        } catch (Exception e) {
+            log.warn("Error getting recipient locale for email: {}", email, e);
+        }
+        return defaultLocale;
     }
 }

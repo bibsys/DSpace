@@ -317,6 +317,16 @@
       </row>
       <row>
         <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>preferred-communication-language</dc-element>
+          <label>Preferred communication language</label>
+          <input-type value-pairs-name="communication_languages">dropdown</input-type>
+          <hint>Select the preferred communication language to use to be contacted</hint>
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
           <dc-schema>person</dc-schema>
           <dc-element>affiliation</dc-element>
           <dc-qualifier>institution</dc-qualifier>
@@ -633,6 +643,16 @@
           <label>Email secondaire</label>
           <input-type>onebox</input-type>
           <hint>Utilisez ce champ si vous désirez être contacté à une adresse email. Ceci peut être utile si votre adresse email officiel n'est plus valide</hint>
+          <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>crisrp</dc-schema>
+          <dc-element>preferred-communication-language</dc-element>
+          <label>Preferred communication language</label>
+          <input-type value-pairs-name="communication_languages">dropdown</input-type>
+          <hint>Select the preferred communication language to use to be contacted</hint>
           <required />
         </field>
       </row>
@@ -2632,6 +2652,16 @@
       <pair>
         <displayed-value>Numéro de priorité</displayed-value>
         <stored-value>priorityNumber</stored-value>
+      </pair>
+    </value-pairs>
+    <value-pairs value-pairs-name="communication_languages" dc-term="communication_languages">
+      <pair>
+        <displayed-value>English</displayed-value>
+        <stored-value>en</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>French</displayed-value>
+        <stored-value>fr</stored-value>
       </pair>
     </value-pairs>
     <value-pairs value-pairs-name="common_iso_languages" dc-term="common_iso_languages">
