@@ -9,6 +9,7 @@ package org.dspace.uclouvain.content.snapshot.diff.formats;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,28 +33,31 @@ public class FileHTMLDiffFormatter extends HTMLDiffFormatter<FileDiffExplainer> 
     }
 
     @Override
-    public String format(FileDiffExplainer explainer) {
+    public String format(FileDiffExplainer explainer, Locale locale) {
         String diffReport = switch (explainer.getType()) {
             case ItemSnapshotDiff.ADD -> formatAddOperation(explainer);
             case ItemSnapshotDiff.REMOVE -> formatRemoveOperation(explainer);
             case ItemSnapshotDiff.UPDATE -> formatUpdateOperation(explainer);
             default -> throw new IllegalStateException("Unexpected type: " + explainer.getType());
         };
-        return Stream.of(getPrefix(explainer), diffReport, getSuffix(explainer))
+        return Stream.of(getPrefix(explainer, locale), diffReport, getSuffix(explainer, locale))
             .filter(StringUtils::isNoneBlank)
             .collect(Collectors.joining());
     }
 
+    // TODO :: Localized ....
     private String formatAddOperation(FileDiffExplainer explainer) {
         return "<span class=\"diff-add\">New file [%s] added to the publication. Access is [%s]</span>"
             .formatted(explainer.getRevised().getFilename(), explainer.getRevised().getAccess());
     }
 
+    // TODO :: Localized ....
     private String formatRemoveOperation(FileDiffExplainer explainer) {
         return "<span class=\"diff-remove\">The file [%s] has been removed from the publication. Access was [%s]</span>"
             .formatted(explainer.getOriginal().getFilename(), explainer.getOriginal().getAccess());
     }
 
+    // TODO :: Localized ....
     private String formatUpdateOperation(FileDiffExplainer explainer) {
         List<String> parts = new ArrayList<>();
         if (explainer.isFilenameChanges()) {

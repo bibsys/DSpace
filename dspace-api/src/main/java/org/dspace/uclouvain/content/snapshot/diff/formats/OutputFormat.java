@@ -13,5 +13,7 @@ package org.dspace.uclouvain.content.snapshot.diff.formats;
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public enum OutputFormat {
-    RAW, HTML
+    RAW,
+    HTML,
+    EMAIL_HTML
 }

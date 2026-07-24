@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.content.snapshot.diff.formats;
 
+import java.util.Locale;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -24,7 +25,7 @@ import org.dspace.uclouvain.content.snapshot.diff.explainer.MetadataDiffExplaine
 public class MetadataHTMLDiffFormatter extends HTMLDiffFormatter<MetadataDiffExplainer> {
 
     @Override
-    public String format(MetadataDiffExplainer explainer) {
+    public String format(MetadataDiffExplainer explainer, Locale locale) {
         StringJoiner joiner = new StringJoiner(" &mldr; "); // this is the html entity for "..."
         for (DiffReport.DiffBlock block : explainer.getDiff().blocks()) {
             StringBuilder bs = new StringBuilder();
@@ -45,7 +46,7 @@ public class MetadataHTMLDiffFormatter extends HTMLDiffFormatter<MetadataDiffExp
             }
             joiner.add(bs.toString());
         }
-        return Stream.of(getPrefix(explainer), joiner.toString(), getSuffix(explainer))
+        return Stream.of(getPrefix(explainer, locale), joiner.toString(), getSuffix(explainer, locale))
             .filter(StringUtils::isNoneBlank)
             .collect(Collectors.joining())
             .trim();

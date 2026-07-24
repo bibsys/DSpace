@@ -10,6 +10,7 @@ package org.dspace.uclouvain.content.snapshot.diff.explainer;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.dspace.uclouvain.content.snapshot.diff.formats.DiffFormatter;
@@ -48,11 +49,12 @@ public class DiffExplainerFactory {
      * @param original the original snapshot to analyze
      * @param revised the revised snapshot version to analyze
      * @param format the format to use to render changes
+     * @param locale the language ti used to render changes
      * @return the string representation of changes
      * @throws IllegalArgumentException if no explainer could be found for these SnapshotElement
      * @throws UnsupportedOperationException if format isn't supported for these SnapshotElement
      */
-    public String explain(SnapshotElement original, SnapshotElement revised, OutputFormat format) {
+    public String explain(SnapshotElement original, SnapshotElement revised, OutputFormat format, Locale locale) {
         // 1. Create an instance of the correct explainer (based on SnapshotElement)
         DiffExplainer<?> explainer = getExplainerInstance(original, revised);
         // 2. Find the correct formatter based on format and explainer
@@ -62,7 +64,7 @@ public class DiffExplainerFactory {
                 DiffFormatterTypeFor anno = f.getClass().getAnnotation(DiffFormatterTypeFor.class);
                 return anno.format() == format && anno.clazz().isInstance(explainer);
             })
-            .map(f -> ((DiffFormatter<DiffExplainer<?>>) f).format(explainer))
+            .map(f -> ((DiffFormatter<DiffExplainer<?>>) f).format(explainer, locale))
             .findFirst()
             .orElseThrow(() -> new UnsupportedOperationException(
                     "No formatter found for %s with format %s".formatted(explainer.getClass().getSimpleName(), format)

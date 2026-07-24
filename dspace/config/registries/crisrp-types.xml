@@ -113,4 +113,11 @@
         <qualifier></qualifier>
         <scope_note></scope_note>
     </dc-type>
+
+    <dc-type>
+      <schema>crisrp</schema>
+      <element>preferred-communication-language</element>
+      <qualifier></qualifier>
+      <scope_note>Which language to use to communicate with this researcher</scope_note>
+    </dc-type>
 </dspace-dc-types>
