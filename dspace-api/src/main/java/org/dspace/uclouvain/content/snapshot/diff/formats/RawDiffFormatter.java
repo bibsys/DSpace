@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.content.snapshot.diff.formats;
 
+import java.util.Locale;
+
 import org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainer;
 
 /**
@@ -20,12 +22,12 @@ import org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainer;
 public abstract class RawDiffFormatter<E extends DiffExplainer<?>> implements DiffFormatter<E> {
 
     @Override
-    public String getPrefix(E explainer) {
+    public String getPrefix(E explainer, Locale locale) {
         return "%s ::".formatted(explainer.getPath());
     }
 
     @Override
-    public String getSuffix(E explainer) {
+    public String getSuffix(E explainer, Locale locale) {
         return "\n";
     }
 }

@@ -31,7 +31,8 @@ import org.dspace.uclouvain.content.snapshot.element.MetadataSnapshotElement;
 @DiffExplainerFor(MetadataSnapshotElement.class)
 public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement> {
 
-    private static final int CONTEXT_SIZE = 5;
+    private static final int CONTEXT_SIZE = 7;
+    private static final int MIN_WORDS_LIMIT = 50;
 
     public MetadataDiffExplainer(MetadataSnapshotElement original, MetadataSnapshotElement revised)
         throws IllegalArgumentException {
@@ -85,7 +86,7 @@ public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement
      * @return the diff report that can be formatted
      */
     private DiffReport getUpdateReport() {
-        // 1. Tokenize by words (splitting on spaceS)
+        // 1. Tokenize by words (splitting on spaces)
         List<String> origWords = Arrays.asList(getOriginal().getValue().split("\\s+"));
         List<String> revWords = Arrays.asList(getRevised().getValue().split("\\s+"));
 
@@ -93,25 +94,31 @@ public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement
         Patch<String> patch = DiffUtils.diff(origWords, revWords);
         List<AbstractDelta<String>> deltas = patch.getDeltas();
         // DEV NOTE ::
-        //   it should never happen because we already checked that original/revised values has been modify...
+        //   it should never happen because we already checked that original/revised values has been modified...
         //   just to be "java safe"
         if (deltas.isEmpty()) {
             return new DiffReport(Collections.emptyList());
         }
 
-        // 3. Determining capture zones (word intervals in the original text) and merge overlapping or adjacent areas
-        List<int[]> zones = new ArrayList<>();
-        for (AbstractDelta<String> delta : deltas) {
-            int pos = delta.getSource().getPosition();
-            int startIdx = Math.max(0, pos - CONTEXT_SIZE);
-            // The end of the zone encompasses the delta and the surrounding area beyond
-            int endIdx = Math.min(
-                origWords.size(),
-                pos + delta.getSource().getLines().size() + CONTEXT_SIZE
-            );
-            zones.add(new int[]{startIdx, endIdx});
+        // 3. Determining capture zones
+        List<int[]> mergedZones;
+        if (origWords.size() <= MIN_WORDS_LIMIT) {
+            // If 50 words or fewer, cover the entire text in a single block without context truncation
+            mergedZones = List.of(new int[]{0, origWords.size()});
+        } else {
+            List<int[]> zones = new ArrayList<>();
+            for (AbstractDelta<String> delta : deltas) {
+                int pos = delta.getSource().getPosition();
+                int startIdx = Math.max(0, pos - CONTEXT_SIZE);
+                // The end of the zone encompasses the delta and the surrounding area beyond
+                int endIdx = Math.min(
+                    origWords.size(),
+                    pos + delta.getSource().getLines().size() + CONTEXT_SIZE
+                );
+                zones.add(new int[]{startIdx, endIdx});
+            }
+            mergedZones = mergeZones(zones);
         }
-        List<int[]> mergedZones = mergeZones(zones);
 
         // 4. Build {@link DiffReport.DiffBlock} list
         List<DiffReport.DiffBlock> blocks = new ArrayList<>();
@@ -136,11 +143,11 @@ public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement
                     segments.add(new DiffReport.DiffSegment(DiffReport.DiffSegment.Type.CONTEXT, contextText));
                 }
                 // changes management
-                if (delta.getType() == DeltaType.CHANGE ) {
+                if (delta.getType() == DeltaType.CHANGE) {
                     String oText = String.join(" ", delta.getSource().getLines());
                     String rText = String.join(" ", delta.getTarget().getLines());
                     segments.add(new DiffReport.DiffSegment(DiffReport.DiffSegment.Type.UPDATED, oText, rText));
-                } else if (delta.getType() == DeltaType.DELETE ) {
+                } else if (delta.getType() == DeltaType.DELETE) {
                     String text = String.join(" ", delta.getSource().getLines());
                     segments.add(new DiffReport.DiffSegment(DiffReport.DiffSegment.Type.DELETED, text));
                 } else if (delta.getType() == DeltaType.INSERT) {
@@ -158,7 +165,6 @@ public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement
             blocks.add(new DiffReport.DiffBlock(segments));
         }
         return new DiffReport(blocks);
-
     }
 
     /**

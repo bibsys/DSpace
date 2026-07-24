@@ -9,6 +9,7 @@ package org.dspace.uclouvain.content.snapshot.diff.formats;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,24 +26,25 @@ import org.dspace.uclouvain.content.snapshot.diff.explainer.FileDiffExplainer;
 public class FileRawDiffFormatter extends RawDiffFormatter<FileDiffExplainer> {
 
     @Override
-    public String getPrefix(FileDiffExplainer explainer) {
+    public String getPrefix(FileDiffExplainer explainer, Locale locale) {
         // No need to include a not human understandable UUID into the rendered message
         return null;
     }
 
     @Override
-    public String format(FileDiffExplainer explainer) {
+    public String format(FileDiffExplainer explainer, Locale locale) {
         String diffReport = switch (explainer.getType()) {
             case ItemSnapshotDiff.ADD -> formatAddOperation(explainer);
             case ItemSnapshotDiff.REMOVE -> formatRemoveOperation(explainer);
             case ItemSnapshotDiff.UPDATE -> formatUpdateOperation(explainer);
             default -> throw new IllegalStateException("Unexpected type: " + explainer.getType());
         };
-        return Stream.of(getPrefix(explainer), diffReport, getSuffix(explainer))
+        return Stream.of(getPrefix(explainer, locale), diffReport, getSuffix(explainer, locale))
             .filter(StringUtils::isNoneBlank)
             .collect(Collectors.joining());
     }
 
+    // TODO :: localized ....
     private String formatAddOperation(FileDiffExplainer explainer) {
         return "New file [%s] is added to the publication. Access is [%s]".formatted(
             explainer.getRevised().getFilename(),
@@ -50,6 +52,7 @@ public class FileRawDiffFormatter extends RawDiffFormatter<FileDiffExplainer> {
         );
     }
 
+    // TODO :: localized ....
     private String formatRemoveOperation(FileDiffExplainer explainer) {
         return "The file [%s] has been removed from the publication. Access was [%s]".formatted(
             explainer.getOriginal().getFilename(),
@@ -57,6 +60,7 @@ public class FileRawDiffFormatter extends RawDiffFormatter<FileDiffExplainer> {
         );
     }
 
+    // TODO :: localized ....
     private String formatUpdateOperation(FileDiffExplainer explainer) {
         List<String> parts = new ArrayList<>();
         if (explainer.isFilenameChanges()) {
