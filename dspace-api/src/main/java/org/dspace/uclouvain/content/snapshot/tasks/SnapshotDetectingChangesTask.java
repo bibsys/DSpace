@@ -152,7 +152,7 @@ public class SnapshotDetectingChangesTask {
                 String contact = entry.getKey().recipient().get(notifyBy);
                 try {
                     logger.info("\t\t* Notify {} for {} changes.", contact, entry.getValue().size());
-                    snapshotService.notifyRecipient(entry.getKey().recipient(), entry.getValue(), notifyBy);
+                    snapshotService.notifyRecipient(context, entry.getKey().recipient(), entry.getValue(), notifyBy);
                 } catch (Exception e) {
                     logger.error("\tUnable to notify recipient {} for changes ::", contact, e);
                 }

@@ -201,7 +201,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         assertTrue(snapshotDiff.hasChanges());
         assertEquals(1, snapshotDiff.getChanges().size());
         assertNotNull(snapshotDiff.getChange("dc.contributor.author[2]"));
-        String explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW);
+        String explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW, null);
         assertThat(explanations, allOf(containsString("[[+"), containsString(pub1Author3)));
         snapshotService.store(context, snapshotService.takeSnapshot(context, item1.getID()));
 
@@ -217,7 +217,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         assertTrue(snapshotDiff.hasChanges());
         assertEquals(1, snapshotDiff.getChanges().size());
         assertNotNull(snapshotDiff.getChange("dc.contributor.author[2]"));
-        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW);
+        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW, null);
         assertThat(explanations, allOf(
             containsString("[[~"),
             containsString(pub1Author3),
@@ -257,7 +257,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         assertTrue(snapshotDiff.hasChanges());
         assertEquals(1, snapshotDiff.getChanges().size());
         assertNotNull(snapshotDiff.getChange("dc.contributor.author[2]"));
-        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW);
+        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW, null);
         // Build regexp to match correct explanation
         String newPattern = Pattern.quote("[[+ %s]]".formatted(newWords));
         String updatePattern = Pattern.quote("[[~ ") + ".*" + Pattern.quote(" -> %s]]".formatted(updatedWords));
@@ -276,7 +276,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         snapshotDiff = snapshotService.detectChanges(context, item1.getID());
         assertTrue(snapshotDiff.hasChanges());
         assertEquals(1, snapshotDiff.getChanges().size());
-        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW);
+        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW, null);
         assertThat(explanations, containsString("dc.contributor.author[2] :: [[-"));
         snapshotService.store(context, snapshotService.takeSnapshot(context, item1));
 
@@ -298,7 +298,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         snapshotDiff = snapshotService.detectChanges(context, item1.getID());
         assertTrue(snapshotDiff.hasChanges());
         assertEquals(1, snapshotDiff.getChanges().size());
-        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW);
+        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW, null);
         String expectedMessage = "The file [%s] has been updated :: filename [%s --> %s]".formatted(
             pub1Bitstream1NameModified,
             pub1Bitstream1Name,
@@ -315,7 +315,7 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         snapshotDiff = snapshotService.detectChanges(context, item1.getID());
         assertTrue(snapshotDiff.hasChanges());
         assertEquals(1, snapshotDiff.getChanges().size());
-        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW);
+        explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW, null);
         expectedMessage = "The file [%s] has been removed from the publication.".formatted(pub1Bitstream1NameModified);
         System.out.println("Expected    :: " + expectedMessage);
         System.out.println("Explanation :: " + explanations);
