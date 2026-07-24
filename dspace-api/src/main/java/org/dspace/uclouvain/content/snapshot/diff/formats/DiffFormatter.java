@@ -7,6 +7,8 @@
  */
 package org.dspace.uclouvain.content.snapshot.diff.formats;
 
+import java.util.Locale;
+
 import org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainer;
 
 /**
@@ -16,7 +18,7 @@ import org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainer;
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public interface DiffFormatter<E extends DiffExplainer<?>> {
-    String getPrefix(E explainer);
-    String getSuffix(E explainer);
-    String format(E explainer);
+    String getPrefix(E explainer, Locale locale);
+    String getSuffix(E explainer, Locale locale);
+    String format(E explainer, Locale locale);
 }
