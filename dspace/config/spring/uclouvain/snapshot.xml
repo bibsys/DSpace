@@ -22,8 +22,10 @@
     <constructor-arg name="formatters">
       <util:list>
         <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.FileHTMLDiffFormatter"/>
+        <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.FileHTMLEmailDiffFormatter"/>
         <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.FileRawDiffFormatter"/>
         <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.MetadataHTMLDiffFormatter"/>
+        <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.MetadataHTMLEmailDiffFormatter"/>
         <bean class="org.dspace.uclouvain.content.snapshot.diff.formats.MetadataRawDiffFormatter"/>
       </util:list>
     </constructor-arg>

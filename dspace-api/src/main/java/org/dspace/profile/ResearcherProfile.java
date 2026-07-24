@@ -41,6 +41,7 @@ public class ResearcherProfile {
     public static final String ORCID_FIELD = "person.identifier.orcid";
     public static final String INSTITUTION_FIELD = "person.affiliation.institution";
     public static final String DEPARTMENT_FIELD = "person.affiliation.department";
+    public static final String COMMUNICATION_LANGUAGE_FIELD = "crisrp.preferred-communication-language";
 
     // Use these solr fields for exact search in Solr.
     public static final String EMAIL_MATCH_FIELD = "privateEmail_keyword";
@@ -122,6 +123,11 @@ public class ResearcherProfile {
 
     public Optional<String> getInstitution() {
         return getMetadataValue(item, INSTITUTION_FIELD)
+            .map(MetadataValue::getValue);
+    }
+
+    public Optional<String> getCommunicationLanguage() {
+        return getMetadataValue(item, COMMUNICATION_LANGUAGE_FIELD)
             .map(MetadataValue::getValue);
     }
 
