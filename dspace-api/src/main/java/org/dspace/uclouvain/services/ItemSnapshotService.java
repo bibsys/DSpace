@@ -10,6 +10,7 @@ package org.dspace.uclouvain.services;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.dspace.content.Item;
@@ -90,9 +91,10 @@ public interface ItemSnapshotService {
      * This method extract as a formatted string all changes stored into a ItemSnapshotDiff
      * @param changes the diff changes detected about an item
      * @param format the rendered output format
+     * @param locale the language to use to render the changes. If null, the default system language will be used
      * @return all changes formatted as desired format
      */
-    String explainChanges(ItemSnapshotDiff changes, OutputFormat format);
+    String explainChanges(ItemSnapshotDiff changes, OutputFormat format, Locale locale);
 
     /**
      * Store and persist a snapshot into the database. If a previous snapshot already exists for the same item it will
@@ -115,9 +117,11 @@ public interface ItemSnapshotService {
 
     /**
      * Notify a recipient for detected changes
+     * @param context the application context
      * @param recipient the recipient to notify
      * @param changes all diff changes to notify to the recipient
      * @param method the method to notify
      */
-    void notifyRecipient(Recipient recipient, List<ItemSnapshotDiff> changes, NotificationType method) throws Exception;
+    void notifyRecipient(Context context, Recipient recipient, List<ItemSnapshotDiff> changes, NotificationType method)
+        throws Exception;
 }
