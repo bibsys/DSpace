@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
@@ -54,6 +55,17 @@ public class StreamDisseminationCrosswalkDelegator extends SelfNamedPlugin
         } else {
             return null;
         }
+    }
+
+    @Override
+    public String getFileName(String crosswalkName, Map<String, String> attributes) {
+        // Delegate filename generation to the actual wrapped crosswalk implementation.
+        // This allows configured export filename templates to be resolved at the crosswalk level.
+        StreamDisseminationCrosswalk crosswalk = getStreamDisseminationCrosswalk();
+        if (crosswalk instanceof FileNameDisseminator) {
+            return ((FileNameDisseminator) crosswalk).getFileName(crosswalkName, attributes);
+        }
+        return null;
     }
 
     @Override

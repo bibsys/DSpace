@@ -8,6 +8,8 @@
 package org.dspace.uclouvain.export.services;
 
 import java.text.ParseException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +79,12 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
         itemCrosswalk.addTransformerParameter("documentTitle", FWB_DOCUMENT_TITLE.formatted(author.getName()));
         itemCrosswalk.addTransformerParameter("documentSubtitle", FWB_DOCUMENT_SUBTITLE);
-        return new TempFileExportResult(context, itemCrosswalk, publications);
+        return new TempFileExportResult(
+            context,
+            itemCrosswalk,
+            publications,
+            itemCrosswalk.getFileName(FWB_CROSSWALK_KEY, buildFileNameAttributes(author))
+        );
     }
 
     @Override
@@ -93,7 +100,12 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
         itemCrosswalk.addTransformerParameter("highlightText", author.getName());
         itemCrosswalk.addTransformerParameter("documentTitle", FNRS_DOCUMENT_TITLE.formatted(author.getName()));
         itemCrosswalk.addTransformerParameter("documentSubtitle", FNRS_DOCUMENT_SUBTITLE);
-        return new TempFileExportResult(context, itemCrosswalk, publications);
+        return new TempFileExportResult(
+            context,
+            itemCrosswalk,
+            publications,
+            itemCrosswalk.getFileName(FNRS_CROSSWALK_KEY, buildFileNameAttributes(author))
+        );
     }
 
     // CUSTOM EXPORT ===================================================================================================
@@ -116,7 +128,12 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
             .findPublications(context, solrQuery, filters, sort, direction)
             .map(Publication::getItem)
             .iterator();
-        return new TempFileExportResult(context, itemCrosswalk, publications);
+        return new TempFileExportResult(
+            context,
+            itemCrosswalk,
+            publications,
+            itemCrosswalk.getFileName(crosswalkName, Collections.emptyMap())
+        );
     }
     private String buildSearchQuery(List<Pair<String, String>> parts, QueryOperator operator) {
         String joiner = " %s ".formatted(operator.toString().toUpperCase());
@@ -145,7 +162,12 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
             .findByAuthors(context, authorIdentifiers, filters, sort, direction)
             .map(Publication::getItem)
             .iterator();
-        return new TempFileExportResult(context, itemCrosswalk, publications);
+        return new TempFileExportResult(
+            context,
+            itemCrosswalk,
+            publications,
+            itemCrosswalk.getFileName(crosswalk, Collections.emptyMap())
+        );
     }
 
     /** Allow to export publication related to given affiliation names */
@@ -163,7 +185,12 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
             .findByAffiliationNames(context, affiliationNames, filters, sort, direction)
             .map(Publication::getItem)
             .iterator();
-        return new TempFileExportResult(context, itemCrosswalk, publications);
+        return new TempFileExportResult(
+            context,
+            itemCrosswalk,
+            publications,
+            itemCrosswalk.getFileName(crosswalk, Collections.emptyMap())
+        );
     }
 
     /** Allow to export publication related to given affiliation uuids */
@@ -182,7 +209,12 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
             .findByAffiliationUUIDs(context, affiliationUUIDs, includeDescendant, filters, sort, direction)
             .map(Publication::getItem)
             .iterator();
-        return new TempFileExportResult(context, itemCrosswalk, publications);
+        return new TempFileExportResult(
+            context,
+            itemCrosswalk,
+            publications,
+            itemCrosswalk.getFileName(crosswalk, Collections.emptyMap())
+        );
     }
 
     @Override
@@ -200,7 +232,12 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
             .findByFunding(context, organization, program, filters, sort, direction)
             .map(Publication::getItem)
             .iterator();
-        return new TempFileExportResult(context, itemCrosswalk, publications);
+        return new TempFileExportResult(
+            context,
+            itemCrosswalk,
+            publications,
+            itemCrosswalk.getFileName(crosswalk, Collections.emptyMap())
+        );
     };
 
     // PRIVATE METHODS -------------------------------------------------------------------------------------------------
@@ -272,6 +309,16 @@ public class UCLouvainExportServiceImpl implements UCLouvainExportService {
                 return false;
             }
         }).map(Publication::getItem).iterator();
+    }
+
+    private Map<String, String> buildFileNameAttributes(
+        Item author
+    ) {
+        Map<String, String> attributes = new HashMap<>();
+        if (author != null) {
+            attributes.put("authorName", author.getName());
+        }
+        return attributes;
     }
 
     /**

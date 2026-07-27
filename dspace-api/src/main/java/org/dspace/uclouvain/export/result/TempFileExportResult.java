@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.atlas.RuntimeIOException;
 import org.dspace.content.Item;
 import org.dspace.content.crosswalk.CrosswalkException;
@@ -44,6 +45,12 @@ public class TempFileExportResult implements ExportResult {
     public TempFileExportResult(
         Context context, ItemExportCrosswalk crosswalk, Iterator<Item> items
     ) throws CrosswalkException {
+        this(context, crosswalk, items, crosswalk.getFileName());
+    }
+
+    public TempFileExportResult(
+        Context context, ItemExportCrosswalk crosswalk, Iterator<Item> items, String fileName
+    ) throws CrosswalkException {
         try {
             // DEV_NOTE: ThreadLocalRandom can be used to retrieve a thread safe random number.
             Path tempFile = Files.createTempFile(
@@ -51,7 +58,7 @@ public class TempFileExportResult implements ExportResult {
             );
             this.filePath = tempFile;
             this.mimeType = crosswalk.getMIMEType();
-            this.fileName = crosswalk.getFileName();
+            this.fileName = StringUtils.isNotBlank(fileName) ? fileName : crosswalk.getFileName();
             try (OutputStream output = Files.newOutputStream(tempFile)) {
                 crosswalk.disseminate(context, items, output);
             }

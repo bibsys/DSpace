@@ -76,6 +76,19 @@
       </map>
     </constructor-arg>
   </bean>
+  <bean id="exportFileNameFactory" class="org.dspace.uclouvain.export.name.ExportFileNameFactoryImpl" >
+    <property name="defaultFileNameGenerator" ref="exportFileNameDefaultGenerator"/>
+    <property name="fileNameGenerators">
+      <map>
+        <entry key="publication-fnrs-pdf" value-ref="exportFileNameAuthorGenerator"/>
+        <entry key="publication-fwb-pdf" value-ref="exportFileNameAuthorGenerator"/>
+      </map>
+    </property>
+  </bean>
+  <!-- This default export file name generator adds only the date in the filename -->
+  <bean id="exportFileNameDefaultGenerator" class="org.dspace.uclouvain.export.name.DateExportFileNameGenerator"/>
+  <!-- This export file name generator adds the author name (and the date) in the filename -->
+  <bean id="exportFileNameAuthorGenerator" class="org.dspace.uclouvain.export.name.AuthorExportFileNameGenerator"/>
   <!-- UCLouvain ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
   <bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkUCLouvainCustom">
     <property name="style" value="crosswalks/csl/uclouvain.csl"/>
