@@ -25,8 +25,20 @@
     </dc-type>
     <dc-type>
         <schema>dc</schema>
-        <element>audience</element>
-        <scope_note>Target audience for an item</scope_note>
+        <element>identifier</element>
+        <qualifier>legacyUri</qualifier>
+        <scope_note>To store original handle uri</scope_note>
+    </dc-type>
+    <!-- AUTHORS SCHEMA -->
+    <dc-schema>
+        <name>authors</name>
+        <namespace>https://uclouvain.be/ontology/authors</namespace>
+    </dc-schema>
+    <dc-type>
+        <schema>authors</schema>
+        <element>email</element>
+        <qualifier>official</qualifier>
+        <scope_note>Author official email</scope_note>
     </dc-type>
     <!-- PUBLICATION SCHEMA -->
     <dc-schema>
@@ -48,20 +60,8 @@
     <dc-type>
         <schema>lom</schema>
         <element>educational</element>
-        <qualifier>language</qualifier>
-        <scope_note>Educational language</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>lom</schema>
-        <element>educational</element>
         <qualifier>typicalAgeRange</qualifier>
         <scope_note>The typical expected age range</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>lom</schema>
-        <element>educational</element>
-        <qualifier>typicalLearningTime</qualifier>
-        <scope_note>The typical learning time of a course</scope_note>
     </dc-type>
     <!-- TAG SCHEMA -->
     <dc-schema>
