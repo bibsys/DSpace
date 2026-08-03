@@ -18,14 +18,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.Bitstream;
 import org.dspace.content.Item;
-import org.dspace.content.service.BitstreamService;
 import org.dspace.core.Context;
-import org.dspace.eperson.Group;
-import org.dspace.eperson.service.GroupService;
 import org.dspace.uclouvain.content.service.CommentService;
-import org.dspace.uclouvain.core.mails.ThesisChangeRequestEmail;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
 import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
@@ -33,53 +28,39 @@ import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Custom review action for master theses.
- * This Action contains three outputs: 'Accepted', 'Accepted without diffusion' and 'Rejected'.
- * In the case 'Accepted', we continue the workflow;
- * In the case 'Accepted without diffusion', same as 'Accepted' but we restrict bitstream && add a message to the
- * metadata;
- * In the case 'Rejected', we change the state of the workflow item to 'Withdrawn' && we add it to archive;
- *
+ * Custom edit action for master theses.
+ * This action only has one output of 'approve' and does not allow to reject the item.
+ * The user can also edit the item metadata before approving it.
+ * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
- * @version $Revision$
  */
-public class UCLouvainThesisReviewAction extends UCLouvainThesisAction {
+public class UCLouvainThesisEditAction extends UCLouvainThesisAction {
     private static final String SUBMITTER_IS_DELETED_PAGE = "submitter_deleted";
-    private static final String SUBMIT_APPROVE = "submit_confirm_approve";
-    private static final String SUBMIT_APPROVE_WITHOUT_DIFFUSION = "submit_approve_no_diffusion";
     private static final String SUBMIT_WITHDRAW_REJECT = "submit_withdraw_reject";
-    private static final String RETURN_TO_SUBMITTER = "submit_return_to_submitter";
+    private static final String RETURN_TO_MANAGER = "submit_return_to_manager";
 
-    @Autowired
-    private GroupService groupService;
-    @Autowired
-    private BitstreamService bitstreamService;
     @Autowired
     private CommentService commentService;
 
-    private Logger logger = LogManager.getLogger(UCLouvainThesisReviewAction.class);
+    private Logger logger = LogManager.getLogger(UCLouvainThesisEditAction.class);
 
     /**
      * Method executed to map each option to a specific action.
-     * The option is extracted form the incoming request by splitting the submit button name.
+     * DEV_NOTE: The option is extracted from the incoming request by splitting the submit button name.
      */
     @Override
     public ActionResult execute(Context c, XmlWorkflowItem wfi, Step step, HttpServletRequest request)
         throws SQLException, AuthorizeException, IOException {
-        // In any case, remove the potential request field.
-        clearRequestField(c, wfi);
         if (super.isOptionInParam(request)) {
             switch (Util.getSubmitButton(request, SUBMIT_CANCEL)) {
                 case SUBMIT_APPROVE:
                     return processAccept(c, wfi);
-                case SUBMIT_APPROVE_WITHOUT_DIFFUSION:
-                    return processAcceptWithoutDiffusion(c, wfi);
                 case SUBMIT_WITHDRAW_REJECT:
                     return processRejectPage(c, wfi, request);
                 case SUBMITTER_IS_DELETED_PAGE:
                     return processSubmitterIsDeletedPage(c, wfi, request);
-                case RETURN_TO_SUBMITTER:
-                    return processReturnToSubmitter(c, wfi, request);
+                case RETURN_TO_MANAGER:
+                    return processReturnToManager(c, wfi, request);
                 default:
                     return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
             }
@@ -94,49 +75,17 @@ public class UCLouvainThesisReviewAction extends UCLouvainThesisAction {
     @Override
     public List<String> getOptions() {
         List<String> options = new ArrayList<>();
+        // In this case approve means "enter archive"
         options.add(SUBMIT_APPROVE);
-        options.add(SUBMIT_APPROVE_WITHOUT_DIFFUSION);
+        // Reject the submission, sets it to withdrawn.
         options.add(SUBMIT_WITHDRAW_REJECT);
-        options.add(RETURN_TO_SUBMITTER);
+        // Return the item to the previous workflow step.
+        options.add(RETURN_TO_MANAGER);
+        // Return to pool for re-assignment to another editor.
         options.add(RETURN_TO_POOL);
         // Edit item button
         options.add(ProcessingAction.SUBMIT_EDIT_METADATA);
         return options;
-    }
-
-    public ActionResult processAccept(Context ctx, XmlWorkflowItem wfi)
-            throws SQLException, AuthorizeException {
-        Item currentItem = wfi.getItem();
-        addValidationDate(ctx, currentItem);
-        return super.processAccept(ctx, wfi);
-    }
-
-    /**
-     * Process result when option 'SUBMIT_APPROVE_WITHOUT_DIFFUSION' is selected.
-     * - First delete all bitstream restrictions and add only administrator access.
-     * - Add a new tag to keep a trace of the operation in the 'dc.description.X' metadata field.
-     * @param ctx the application context
-     * @param wfi the workflow item to manage
-     * @return the action to perform to continue item life cycle
-     */
-    public ActionResult processAcceptWithoutDiffusion(Context ctx, XmlWorkflowItem wfi)
-            throws SQLException, AuthorizeException {
-        // When a manager chooses to approve a publication without any diffusion, we need:
-        //   1) Change bitstreams access restriction: force "admin only" restriction for all bitstreams from ORIGINAL
-        //      bundle
-        //   2) add the "dc.date.validated" metadata
-        //   3) add the "dc.description.provenance" to store item history
-        Item currentItem = wfi.getItem();
-        Group adminGroup = groupService.findByName(ctx, "Administrator");
-        if (adminGroup != null) {
-            for (Bitstream bitstream: bitstreamService.getBitstreamByBundleName(currentItem, "ORIGINAL")) {
-                this.restrictBitstream(ctx, bitstream, adminGroup);
-            }
-        }
-        addValidationDate(ctx, currentItem);
-        addProvenance(ctx, currentItem,
-                "Approved with no diffusion for entry into archive by user: '" + ctx.getCurrentUser().getEmail() + "'");
-        return new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
     }
 
     /**
@@ -156,7 +105,7 @@ public class UCLouvainThesisReviewAction extends UCLouvainThesisAction {
             throws SQLException, AuthorizeException {
         Item item = wfi.getItem();
         addValidationDate(context, item);
-        addProvenance(context, item, "Rejected for entry into archive and placed into withdrawn state by manager: '" +
+        addProvenance(context, item, "Rejected for entry into archive and placed into withdrawn state by librarian: '" +
                 context.getCurrentUser().getEmail() + "'");
         context.turnOffAuthorisationSystem();
         // Archive the item, then instantly withdraw it
@@ -167,45 +116,47 @@ public class UCLouvainThesisReviewAction extends UCLouvainThesisAction {
     }
 
     /**
-     * Process the action 'RETURN_TO_SUBMITTER' which can be performed by a manager and will:
-     *  1) Send the item back to the submitter for modifications.
-     *  2) Add a message (given by the manager) into a metadata field of the item.
-     *  3) The message will then be used to inform the submitter of the necessary changes.
+     * Process the action 'RETURN_TO_MANAGER' which can be performed by a manager and will:
+     *  1) Send the item back to the manager for modifications.
+     *  2) Add a message (given by the librarian) into a metadata field of the item.
+     *  3) The message will then be used to inform the manager of the necessary changes.
      *
      * @param context The current DSpace context.
      * @param wfi The workflow item that is being operated.
      * @param request The current request object.
      * @return An ActionResult object which represents the output of the action.
      */
-    public ActionResult processReturnToSubmitter(Context context, XmlWorkflowItem wfi, HttpServletRequest request) {
+    public ActionResult processReturnToManager(Context context, XmlWorkflowItem wfi, HttpServletRequest request) {
         try {
             context.turnOffAuthorisationSystem();
+
             // Get the mandatory reason from the request object
             String reason = request.getParameter("reason");
             if (StringUtils.isEmpty(reason)) {
                 return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
             }
 
-            // Send the item back to submission state.
-            xmlWorkflowService.sendWorkflowItemBackSubmission(
-                    context,
-                    wfi,
-                    context.getCurrentUser(),
-                    "",
-                    "Send back to submitter for modifications"
+            // Send the item back to manager for additional validation.
+            xmlWorkflowService.sendWorkflowItemToPreviousStep(
+                context,
+                wfi,
+                context.getCurrentUser(),
+                "",
+                reason
             );
 
             // Encode the reason in the metadata field & store this reason as a new comment related to the item.
             Item item = wfi.getItem();
             if (item != null) {
                 itemService.setMetadataSingleValue(context, item, activeRF, null, reason);
-                String commentContent = "Send back to submitter for modifications :: " + reason;
+                String commentContent = "Send back to manager for modifications :: " + reason;
                 commentService.create(context, item, context.getCurrentUser(), commentContent);
-                // Send email to submitter to notify for the change request.
-                new ThesisChangeRequestEmail(context, item).sendEmail();
+                // Send email to manager to notify for the change request.
+                // TODO: What to do here ????
+                // new ThesisChangeRequestEmail(context, item).sendEmail();
             }
             context.restoreAuthSystemState();
-            return new ActionResult(ActionResult.TYPE.TYPE_SUBMISSION_PAGE);
+            return new ActionResult(ActionResult.TYPE.TYPE_PAGE);
         } catch (Exception e) {
             logger.error("Error while returning the item to the submitter: " + e.getMessage(), e);
             return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
