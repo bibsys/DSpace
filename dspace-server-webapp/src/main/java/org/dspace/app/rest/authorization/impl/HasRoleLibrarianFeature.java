@@ -1,0 +1,77 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
+package org.dspace.app.rest.authorization.impl;
+
+import java.sql.SQLException;
+
+import org.dspace.app.rest.authorization.AuthorizationFeature;
+import org.dspace.app.rest.authorization.AuthorizationFeatureDocumentation;
+import org.dspace.app.rest.model.BaseObjectRest;
+import org.dspace.app.rest.model.EPersonRest;
+import org.dspace.app.rest.utils.Utils;
+import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
+import org.dspace.eperson.service.GroupService;
+import org.dspace.services.ConfigurationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+/**
+ * Simple custom feature to determine if a user has the `librarian` role.
+ * 
+ * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ */
+@Component
+@AuthorizationFeatureDocumentation(
+    name = HasRoleLibrarianFeature.NAME,
+    description = "Allow to determine if the current logged used has the `librarian` role"
+)
+public class HasRoleLibrarianFeature implements AuthorizationFeature {
+
+    public static final String NAME = "hasRoleLibrarian";
+
+    @Autowired
+    private Utils utils;
+    @Autowired
+    private GroupService groupService;
+    @Autowired
+    private ConfigurationService configService;
+
+    /**
+     * This method checks if a user belongs to `librarian` groups
+     * @param context The current DSpace context.
+     * @param user The user to check
+     * @return True if the user could be considerate as a librarian
+     */
+    @Override
+    public boolean isAuthorized(Context context, BaseObjectRest user) throws SQLException {
+        if (!(user instanceof EPersonRest)) {
+            return false;
+        }
+        EPerson ePerson = (EPerson) utils.getDSpaceAPIObjectFromRest(context, user);
+        String[] librarianRoles = configService.getArrayProperty("uclouvain.feature.roles.librarian", new String[0]);
+        for (String role: librarianRoles) {
+            if (groupService.isMember(context, ePerson, role)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * This method lists the supported types for this feature.
+     * In our case, it is only the ePerson type.
+     */
+    @Override
+    public String[] getSupportedTypes() {
+        return new String[] {
+            EPersonRest.CATEGORY + "." + EPersonRest.NAME
+        };
+    }
+
+}

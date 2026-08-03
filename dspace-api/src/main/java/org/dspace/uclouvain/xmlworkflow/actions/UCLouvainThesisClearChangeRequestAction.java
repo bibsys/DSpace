@@ -42,7 +42,7 @@ public class UCLouvainThesisClearChangeRequestAction extends ProcessingAction {
     public void activate(Context context, XmlWorkflowItem wfItem) {}
 
     @Override
-    public ActionResult execute(Context context,  XmlWorkflowItem wfi, Step step, HttpServletRequest request) {
+    public ActionResult execute(Context context, XmlWorkflowItem wfi, Step step, HttpServletRequest request) {
         Item item = wfi.getItem();
         try {
             // Retrieve the value of the active request field

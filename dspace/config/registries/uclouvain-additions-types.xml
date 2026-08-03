@@ -206,4 +206,11 @@
         <element>contentmodels</element>
         <scope_note>FedoraCommons object content model</scope_note>
     </dc-type>
+    <!-- Workflow schema -->
+    <dc-type>
+        <schema>workflow</schema>
+        <element>step</element>
+        <qualifier>previous</qualifier>
+        <scope_note>Store the previous workflow step id</scope_note>
+    </dc-type>
 </dspace-dc-types>

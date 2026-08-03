@@ -8,6 +8,7 @@
     <bean id="sendemailattestationactionAPI" class="org.dspace.uclouvain.pdfAttestationGenerator.xmlworkflow.actions.SendEmailAttestationAction" scope="prototype" />
     <bean id="createbitstreamaccesscommentactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.CreateBitstreamAccessCommentAction" scope="prototype" />
     <bean id="uclouvainthesisreviewactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.UCLouvainThesisReviewAction" scope="prototype"/>
+    <bean id="uclouvainthesiseditactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.UCLouvainThesisEditAction" scope="prototype"/>
     <bean id="clearchangerequestactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.UCLouvainThesisClearChangeRequestAction" scope="prototype"/>
     <bean id="reviewactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.ReviewAction" scope="prototype"/>
     <bean id="editactionAPI" class="org.dspace.xmlworkflow.state.actions.processingaction.AcceptEditRejectAction" scope="prototype"/>
@@ -46,6 +47,12 @@
     <bean id="uclouvainthesisreviewaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
         <constructor-arg type="java.lang.String" value="uclouvainthesisreviewaction"/>
         <property name="processingAction" ref="uclouvainthesisreviewactionAPI"/>
+        <property name="requiresUI" value="true"/>
+    </bean>
+
+    <bean id="uclouvainthesiseditaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
+        <constructor-arg type="java.lang.String" value="uclouvainthesiseditaction"/>
+        <property name="processingAction" ref="uclouvainthesiseditactionAPI"/>
         <property name="requiresUI" value="true"/>
     </bean>
 

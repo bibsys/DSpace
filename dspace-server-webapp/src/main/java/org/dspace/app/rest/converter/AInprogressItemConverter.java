@@ -135,16 +135,19 @@ public abstract class AInprogressItemConverter<T extends InProgressSubmission,
     }
 
     private SubmissionConfig getSubmissionConfig(Item item, Collection collection) {
-        if (isCorrectionItem(item)) {
-            return submissionConfigService.getCorrectionSubmissionConfigByCollection(collection);
-        } else {
-            return submissionConfigService.getSubmissionConfigByCollection(collection);
+        Context context = ContextUtil.obtainCurrentRequestContext();
+        // Try to get a specific workflow submission form for this item, if it is a workflow item.
+        SubmissionConfig workflowSubmission =
+            submissionConfigService.getSubmissionConfigForWorkflowItem(context, item, collection);
+        if (workflowSubmission != null) {
+            return workflowSubmission;
         }
+        return isCorrectionItem(context, item)
+            ? submissionConfigService.getCorrectionSubmissionConfigByCollection(collection)
+            : submissionConfigService.getSubmissionConfigByCollection(collection);
     }
 
-    private boolean isCorrectionItem(Item item) {
-        Request currentRequest = requestService.getCurrentRequest();
-        Context context = ContextUtil.obtainContext(currentRequest.getServletRequest());
+    private boolean isCorrectionItem(Context context, Item item) {
         try {
             return itemCorrectionService.checkIfIsCorrectionItem(context, item);
         } catch (Exception ex) {
