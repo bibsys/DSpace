@@ -14,6 +14,7 @@ import org.dspace.app.util.SubmissionConfig;
 import org.dspace.app.util.SubmissionConfigReaderException;
 import org.dspace.app.util.SubmissionStepConfig;
 import org.dspace.content.Collection;
+import org.dspace.content.Item;
 import org.dspace.core.Context;
 
 /**
@@ -37,6 +38,8 @@ public interface SubmissionConfigService {
     public SubmissionConfig getSubmissionConfigByCollection(Collection collection);
 
     public SubmissionConfig getSubmissionConfigByName(String submitName);
+
+    public SubmissionConfig getSubmissionConfigForWorkflowItem(Context context, Item item, Collection collection);
 
     public SubmissionStepConfig getStepConfig(String stepID)
         throws SubmissionConfigReaderException;
