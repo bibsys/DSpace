@@ -101,6 +101,19 @@ public interface WorkflowService<T extends WorkflowItem> {
                                                         String rejection_message)
         throws SQLException, AuthorizeException, IOException;
 
+    /** 
+     * Sends a workflow item back to the previous step.
+     * 
+     * @param context The current DSpace application context.
+     * @param wfi The workflow item to send back.
+     * @param user The user sending the workflow item back.
+     * @param provenance The provenance message to add to the item.
+     * @param rejection_message The rejection message to add to the item (given by the user).
+    */
+    public void sendWorkflowItemToPreviousStep(
+        Context context, XmlWorkflowItem wfi, EPerson user, String provenance, String rejection_message
+    ) throws SQLException, AuthorizeException, IOException;
+
     public void restartWorkflow(Context context, XmlWorkflowItem wi, EPerson decliner, String provenance)
         throws SQLException, AuthorizeException, IOException, WorkflowException;
 
