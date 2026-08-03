@@ -13,6 +13,12 @@
             "groups": [
                 "manager"
             ]
+        }, {
+            "mode": "role",
+            "type": "editor",
+            "groups": [
+                "librarian"
+            ]
         }]
     }, {
         "collection_name": "Master thesis - Cataretro",
