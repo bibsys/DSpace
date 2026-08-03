@@ -60,9 +60,11 @@ import org.dspace.event.Event;
 import org.dspace.handle.service.HandleService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.EventService;
+import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.usage.UsageWorkflowEvent;
 import org.dspace.workflow.WorkflowException;
 import org.dspace.xmlworkflow.factory.XmlWorkflowFactory;
+import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
 import org.dspace.xmlworkflow.service.XmlWorkflowService;
 import org.dspace.xmlworkflow.state.Step;
@@ -97,6 +99,8 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
     protected Map<UUID, Boolean> noEMail = new HashMap<>();
 
     private final Logger log = org.apache.logging.log4j.LogManager.getLogger(XmlWorkflowServiceImpl.class);
+
+    private final MetadataField WORKFLOW_PREV_STEP = new MetadataField("workflow.step.previous");
 
     @Autowired(required = true)
     protected AuthorizeService authorizeService;
@@ -507,6 +511,14 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
                     // step at all
                     nextStep = workflow.getNextStep(c, wfi, currentStep, currentOutcome.getResult());
                     c.turnOffAuthorisationSystem();
+                    if (nextStep != null) {
+                        // Set the previous step in the metadata of the item so we can come back to it if necessary.
+                        itemService.setMetadataSingleValue(
+                            c, wfi.getItem(),
+                            WORKFLOW_PREV_STEP.schema, WORKFLOW_PREV_STEP.element, WORKFLOW_PREV_STEP.qualifier,
+                            null, currentStep.getId()
+                        );
+                    }
                     nextActionConfig = processNextStep(c, user, workflow, currentOutcome, wfi, nextStep);
                     //If we require a user interface return null so that the user is redirected to the "submissions
                     // page"
@@ -532,6 +544,14 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
 
 
                         nextStep = workflow.getNextStep(c, wfi, currentStep, currentOutcome.getResult());
+                        if (nextStep != null) {
+                            // Set the previous step in the metadata of the item so we can come back to it if necessary.
+                            itemService.setMetadataSingleValue(
+                                c, wfi.getItem(),
+                                WORKFLOW_PREV_STEP.schema, WORKFLOW_PREV_STEP.element, WORKFLOW_PREV_STEP.qualifier,
+                                null, currentStep.getId()
+                            );
+                        }
 
                         nextActionConfig = processNextStep(c, user, workflow, currentOutcome, wfi, nextStep);
                         //If we require a user interface return null so that the user is redirected to the
@@ -1102,7 +1122,7 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         String usersName = getEPersonName(e);
 
         // Here's what happened
-        String provDescription = provenance + " Rejected by " + usersName + ", reason: "
+        String provDescription = provenance + " Sent back to submitter by " + usersName + ", reason: "
             + rejection_message + " on " + now + " (GMT) ";
 
         // Add to item as a DC field
@@ -1134,6 +1154,57 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
 
         context.restoreAuthSystemState();
         return wsi;
+    }
+
+    @Override
+    public void sendWorkflowItemToPreviousStep(
+        Context context, XmlWorkflowItem wfi, EPerson user, String provenance, String rejection_message
+    ) throws SQLException, AuthorizeException, IOException, WorkflowException {
+        context.turnOffAuthorisationSystem();
+
+        // Find previous workflow step from the metadata that was stored previously.
+        String previousID = itemService.getMetadataFirstValue(wfi.getItem(),
+            WORKFLOW_PREV_STEP.schema, WORKFLOW_PREV_STEP.element, WORKFLOW_PREV_STEP.qualifier, null);
+        if (previousID == null) {
+            throw new WorkflowException(
+                "Could not send back workflow item " + wfi.getID() + " to previous step because metadata was empty");
+        }
+        Step previousStep = XmlWorkflowServiceFactory.getInstance().getWorkflowFactory().getStepByName(previousID);
+        Workflow workflow = previousStep.getWorkflow();
+        ActionResult actionResult = new ActionResult(ActionResult.TYPE.TYPE_OUTCOME, ActionResult.OUTCOME_COMPLETE);
+
+        try {
+            // Delete the previous claim task
+            ClaimedTask ct = claimedTaskService.findByWorkflowIdAndEPerson(context, wfi, user);
+            if (ct != null) {
+                deleteClaimedTask(context, wfi, ct);
+            }
+            // All entries in 'cwf_in_progress_user': avoids keeping claimed logic for a deleted claimed task.
+            workflowRequirementsService.clearInProgressUsers(context, wfi);
+            // Remove all available tasks for the workflow item to avoid having 2 pooltasks for the same workflow item.
+            deleteAllTasks(context, wfi);
+
+            // Make sure the workflow re-enters the desired step. Here we enter the previous step.
+            processNextStep(context, user, workflow, actionResult, wfi, previousStep);
+            log.info(LogHelper.getHeader(context, "send_workflow_item_to_previous_step", ";workflow_item_id="
+                + wfi.getID() + ";item_id=" + wfi.getItem().getID()
+                + ";collection_id=" + wfi.getCollection().getID() + ";eperson_id="
+                + user.getID()));
+
+            // Add provenance for history.
+            String provDescription = provenance + " Sent back to manager by " + getEPersonName(user) + ", reason: "
+                + rejection_message + " on " + DCDate.getCurrent().toString() + " (GMT) ";
+            itemService.addMetadata(context, wfi.getItem(), "dc",
+                "description", "provenance", "en", provDescription);
+
+        } catch (WorkflowException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("Could not send the workflow item :: " + wfi.getID() + " back to the previous step", e);
+            throw new WorkflowException("Could not send back workflow item " + wfi.getID() + " to its previous step");
+        } finally {
+            context.restoreAuthSystemState();
+        }
     }
 
     @Override

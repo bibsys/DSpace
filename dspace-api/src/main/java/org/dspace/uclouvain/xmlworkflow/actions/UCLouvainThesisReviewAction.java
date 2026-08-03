@@ -18,31 +18,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.authorize.ResourcePolicy;
-import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Bitstream;
-import org.dspace.content.DCDate;
 import org.dspace.content.Item;
-import org.dspace.content.MetadataSchemaEnum;
 import org.dspace.content.service.BitstreamService;
-import org.dspace.content.service.InstallItemService;
-import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.service.GroupService;
-import org.dspace.services.ConfigurationService;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.mails.ThesisChangeRequestEmail;
-import org.dspace.uclouvain.core.model.MetadataField;
-import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
-import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
 import org.dspace.xmlworkflow.state.Step;
 import org.dspace.xmlworkflow.state.actions.ActionResult;
 import org.dspace.xmlworkflow.state.actions.processingaction.ProcessingAction;
-import org.dspace.xmlworkflow.state.actions.processingaction.ReviewAction;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
-import org.dspace.xmlworkflow.storedcomponents.service.WorkflowItemRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -56,26 +43,13 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  * @version $Revision$
  */
-public class UCLouvainThesisReviewAction extends ReviewAction {
-
-    private final ConfigurationService configService = DSpaceServicesFactory.getInstance().getConfigurationService();
-
+public class UCLouvainThesisReviewAction extends UCLouvainThesisAction {
     private static final String SUBMITTER_IS_DELETED_PAGE = "submitter_deleted";
     private static final String SUBMIT_APPROVE = "submit_confirm_approve";
     private static final String SUBMIT_APPROVE_WITHOUT_DIFFUSION = "submit_approve_no_diffusion";
     private static final String SUBMIT_WITHDRAW_REJECT = "submit_withdraw_reject";
     private static final String RETURN_TO_SUBMITTER = "submit_return_to_submitter";
 
-    // Active Request Field
-    private MetadataField activeRF = new MetadataField(configService.getProperty(
-            "uclouvain.global.metadata.activerequestchange.field"));
-
-    @Autowired
-    protected WorkflowItemRoleService workflowItemRoleService;
-    @Autowired
-    protected InstallItemService installItemService;
-    @Autowired
-    private AuthorizeService authorizeService;
     @Autowired
     private GroupService groupService;
     @Autowired
@@ -92,6 +66,8 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     @Override
     public ActionResult execute(Context c, XmlWorkflowItem wfi, Step step, HttpServletRequest request)
         throws SQLException, AuthorizeException, IOException {
+        // In any case, remove the potential request field.
+        clearRequestField(c, wfi);
         if (super.isOptionInParam(request)) {
             switch (Util.getSubmitButton(request, SUBMIT_CANCEL)) {
                 case SUBMIT_APPROVE:
@@ -180,7 +156,7 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             throws SQLException, AuthorizeException {
         Item item = wfi.getItem();
         addValidationDate(context, item);
-        addProvenance(context, item, "Rejected for entry into archive and placed into withdrawn state by user: '" +
+        addProvenance(context, item, "Rejected for entry into archive and placed into withdrawn state by manager: '" +
                 context.getCurrentUser().getEmail() + "'");
         context.turnOffAuthorisationSystem();
         // Archive the item, then instantly withdraw it
@@ -204,6 +180,12 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
     public ActionResult processReturnToSubmitter(Context context, XmlWorkflowItem wfi, HttpServletRequest request) {
         try {
             context.turnOffAuthorisationSystem();
+            // Get the mandatory reason from the request object
+            String reason = request.getParameter("reason");
+            if (StringUtils.isEmpty(reason)) {
+                return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
+            }
+
             // Send the item back to submission state.
             xmlWorkflowService.sendWorkflowItemBackSubmission(
                     context,
@@ -212,11 +194,7 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
                     "",
                     "Send back to submitter for modifications"
             );
-            // Get the mandatory reason from the request object
-            String reason = request.getParameter("reason");
-            if (StringUtils.isEmpty(reason)) {
-                return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
-            }
+
             // Encode the reason in the metadata field & store this reason as a new comment related to the item.
             Item item = wfi.getItem();
             if (item != null) {
@@ -232,85 +210,5 @@ public class UCLouvainThesisReviewAction extends ReviewAction {
             logger.error("Error while returning the item to the submitter: " + e.getMessage(), e);
             return new ActionResult(ActionResult.TYPE.TYPE_CANCEL);
         }
-    }
-
-    /**
-     * Used to archive an item and remove all metadata related to the workflow.
-     *
-     * @param context the current application context.
-     * @param wfi the workflow item to archive.
-     * @throws SQLException if any database exception occurred
-     * @throws AuthorizeException if any authorization occurred
-     */
-    private void archive(Context context, XmlWorkflowItem wfi) throws SQLException, AuthorizeException {
-        Item item = wfi.getItem();
-        workflowItemRoleService.deleteForWorkflowItem(context, wfi);
-        installItemService.installItem(context, wfi);
-        itemService.clearMetadata(
-            context, item, WorkflowRequirementsService.WORKFLOW_SCHEMA,
-            Item.ANY, Item.ANY, Item.ANY
-        );
-        itemService.update(context, item);
-    }
-
-    /**
-     * Take a bitstream and restricts the access to the administrator group only.
-     *
-     * @param context The current DSpace context.
-     * @param bitstream The bitstream to restrict.
-     * @param adminGroup: The administrator group to grant read rights to.
-     * @throws SQLException if any database exception occurred
-     * @throws AuthorizeException if any authorization occurred
-     */
-    private void restrictBitstream(Context context, Bitstream bitstream, Group adminGroup)
-            throws SQLException, AuthorizeException {
-        authorizeService.removeAllPolicies(context, bitstream);
-        authorizeService.createResourcePolicy(
-                context,
-                bitstream,
-                adminGroup,
-                null,
-                Constants.READ,
-                ResourcePolicy.TYPE_CUSTOM,
-                UCLouvainAccessStatusHelper.ADMINISTRATOR,
-                null, null, null
-        );
-    }
-
-    /**
-     * Add provenance information to the item using a custom message.
-     *
-     * @param context The current DSpace context.
-     * @param item The item to which the provenance information will be added to.
-     * @param message The custom message to be added to the provenance information.
-     * @throws SQLException if any database exception occurred
-     * @throws AuthorizeException if any authorization occurred
-     */
-    private void addProvenance(Context context, Item item, String message) throws SQLException, AuthorizeException {
-        String now = DCDate.getCurrent().toString();
-        String userName = xmlWorkflowService
-                .getEPersonName(context.getCurrentUser());
-        String provDescription = getProvenanceStartId() + " " + message + " " + userName + " on " + now + " (GMT) ";
-        context.turnOffAuthorisationSystem();
-        itemService.addMetadata(
-            context,
-            item,
-            MetadataSchemaEnum.DC.getName(),
-            "description", "provenance", "en",
-            provDescription
-        );
-        itemService.update(context, item);
-        context.restoreAuthSystemState();
-    }
-
-    private void addValidationDate(Context context, Item item) throws SQLException, AuthorizeException {
-        context.turnOffAuthorisationSystem();
-        itemService.setMetadataSingleValue(
-                context, item,
-                MetadataSchemaEnum.DC.getName(), "date", "validated", null,
-                DCDate.getCurrent().toString()
-        );
-        itemService.update(context, item);
-        context.restoreAuthSystemState();
     }
 }
