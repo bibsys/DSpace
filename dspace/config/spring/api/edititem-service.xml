@@ -202,7 +202,8 @@
                             </property>
                             <property name="submissionDefinition" value="master-thesis-edit" />
                         </bean>
-                        <bean class="org.dspace.content.edit.EditItemMode">
+                        <!-- Disable librarian edit, replaced by workflow edit -->
+                        <!-- <bean class="org.dspace.content.edit.EditItemMode">
                             <property name="name" value="LIBRARIAN" />
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
@@ -215,7 +216,7 @@
                                 </list>
                             </property>
                             <property name="submissionDefinition" value="master-thesis-edit-librarian" />
-                        </bean>
+                        </bean> -->
                     </list>
                 </entry>
                 <entry key="masterthesis.master-thesis-cataretro">
