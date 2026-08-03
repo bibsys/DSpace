@@ -43,6 +43,7 @@
                 <ref bean="createBitstreamAccessCommentStep"/>
                 <ref bean="generatepdfattestationstep" />
                 <ref bean="uclouvainthesisreviewstep"/>
+                <ref bean="uclouvainthesiseditstep"/>
             </util:list>
         </property>
     </bean>
@@ -173,10 +174,26 @@
     <bean name="uclouvainthesisreviewstep" class="org.dspace.xmlworkflow.state.Step">
         <property name="userSelectionMethod" ref="claimaction"/>
         <property name="role" ref="reviewer"/>
+        <property name="outcomes">
+            <util:map>
+                <entry key="#{ T(org.dspace.xmlworkflow.state.actions.ActionResult).OUTCOME_COMPLETE}"
+                       value-ref="uclouvainthesiseditstep"/>
+            </util:map>
+        </property>
         <property name="actions">
             <util:list>
                 <ref bean="uclouvainthesisreviewaction"/>
             </util:list>
+        </property>
+    </bean>
+
+    <bean name="uclouvainthesiseditstep" class="org.dspace.xmlworkflow.state.Step">
+        <property name="userSelectionMethod" ref="claimaction"/>
+        <property name="role" ref="editor"/>
+        <property name="actions">
+            <list>
+                <ref bean="uclouvainthesiseditaction"/>
+            </list>
         </property>
     </bean>
 
