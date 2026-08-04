@@ -15,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.uclouvain.core.GenericHttpClient;
 import org.dspace.uclouvain.core.GenericResponse;
-import org.dspace.uclouvain.core.utils.DateUtils;
 import org.dspace.uclouvain.external.osis.configuration.OSISConfiguration;
 import org.dspace.uclouvain.external.osis.model.OSISStudentDegree;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +33,12 @@ public class OSISClientImpl implements OSISClient {
      * Retrieve student's degree information from his fgs identifier
      * 
      * @param fgs The fgs identifier of the student
+     * @param year The academic year for which to retrieve degree information
      * @return An array of object representing student's degree information
      */
     @Override
-    public OSISStudentDegree[] getOSISStudentDegreeByFGS(String fgs) {
-        int currentYear = new DateUtils().getCurrentAcademicYear();
-        String url = "/students/v0/" + fgs + "/inscriptions/" + currentYear;
+    public OSISStudentDegree[] getOSISStudentDegreeByFGS(String fgs, int year) {
+        String url = "/students/v0/" + fgs + "/inscriptions/" + year;
         OSISStudentDegree[] student = {};
         try {
             HttpResponse<String> response = this.httpClient.get(url);
