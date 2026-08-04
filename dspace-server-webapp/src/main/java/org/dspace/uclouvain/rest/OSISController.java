@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.MetadataSelectFieldValuesGenerator;
+import org.dspace.uclouvain.core.utils.DateUtils;
 import org.dspace.uclouvain.external.osis.client.OSISClientImpl;
 import org.dspace.uclouvain.external.osis.model.OSISStudentDegree;
 import org.springframework.beans.BeanUtils;
@@ -48,6 +49,7 @@ public class OSISController {
             .getProperty("uclouvain.global.metadata.degreecode.field", "masterthesis.degree.code");
 
     private final Logger logger = LogManager.getLogger(OSISController.class);
+    private final DateUtils dateUtils = new DateUtils();
 
     /** 
      * When calling /api/uclouvain/osis/student/{fgs}/info/degree with a given FGS,
@@ -59,7 +61,8 @@ public class OSISController {
     @RequestMapping(method = RequestMethod.GET, value = "/student/{fgs}/info/degree")
     public List<HashMap<String, String>> getStudentDegreeCodesByFGS(@PathVariable String fgs) {
         List<HashMap<String, String>> returnValueArray  = new ArrayList<>();
-        OSISStudentDegree[] osisStudentDegreeResponse = osisClient.getOSISStudentDegreeByFGS(fgs);
+        OSISStudentDegree[] osisStudentDegreeResponse =
+            osisClient.getOSISStudentDegreeByFGS(fgs, dateUtils.getCurrentAcademicYear());
         for (OSISStudentDegree degree: osisStudentDegreeResponse) {
             HashMap<String, String> returnValueMap = new HashMap<>();
             returnValueMap.put("fgs", fgs);
@@ -97,21 +100,55 @@ public class OSISController {
         // Initialize the response object.
         MetadataSelectFieldValuesGenerator selectFieldValues =
                 new MetadataSelectFieldValuesGenerator("data-" + DEGREE_CODE_FIELD);
-
-        for (String fgs_id: fgs) {
-            // For each sgs, find the related degrees.
-            Arrays.stream(osisClient.getOSISStudentDegreeByFGS(fgs_id))
-                .filter(degree -> isDegreeValid(degree) && evaluateFilters(degree, filters))
+        int currentYear = dateUtils.getCurrentAcademicYear();
+        for (String fgsId : fgs) {
+            // For each FGS, fetch and add the related valid degrees.
+            Arrays.stream(getOSISStudentDegrees(fgsId, currentYear, filters, 1))
                 .forEach(degree -> {
                     String degreeCode = degree.getSigleOffreCompletN();
                     String degreeLabel = degree.getIntitOffreComplet();
-                    String displayed = String.join(
-                        DEGREE_PART_SEPARATOR, Arrays.asList(degreeCode, degreeLabel)
-                    );
+                    String displayed = degreeCode + DEGREE_PART_SEPARATOR + degreeLabel;
                     selectFieldValues.addMetadataContentElementOption(degreeCode, displayed);
                 });
         }
         return ResponseEntity.ok(selectFieldValues.generateResponse());
+    }
+
+    /**
+     * Get student degrees for a given FGS identifier.
+     * While there are no result for the academic year, try to call again with an older year
+     * if the maxYear is not at zero.
+     *
+     * @param fgs         the FGS identifier
+     * @param currentYear the current academic year
+     * @param filters     the filter map to evaluate against
+     * @param maxYearIter the maximum number of iteration (years) we can go back in time
+     * @return array of OSISStudentDegree (may contain entries that still need per-degree validation)
+     */
+    private OSISStudentDegree[] getOSISStudentDegrees(
+        String fgs, int currentYear, Map<String, String> filters, int maxYearIter
+    ) {
+        // Call the OSIS API to get the degree information for the given FGS and current academic year.
+        OSISStudentDegree[] degrees = filterDegrees(osisClient.getOSISStudentDegreeByFGS(fgs, currentYear), filters);
+        // Check if any degree in the response is both valid and matches the filters.
+        // If not recursively call the method with the previous year.
+        return (degrees.length > 0 || maxYearIter <= 0)
+            ? degrees
+            : getOSISStudentDegrees(fgs, currentYear - 1, filters, maxYearIter - 1);
+    }
+
+    /**
+     * Filter the given array of OSISStudentDegree objects based on their validity and the provided filters.
+     * A degree is considered valid if it has no errors and contains the required fields.
+     * 
+     * @param degrees The array of OSISStudentDegree objects to filter.
+     * @param filters The map of filters to apply.
+     * @return The filtered array of OSISStudentDegree objects.
+     */
+    private OSISStudentDegree[] filterDegrees(OSISStudentDegree[] degrees, Map<String, String> filters) {
+        return Arrays.stream(degrees)
+            .filter(degree -> isDegreeValid(degree) && evaluateFilters(degree, filters))
+            .toArray(OSISStudentDegree[]::new);
     }
 
     /**
