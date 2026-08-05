@@ -1,0 +1,15 @@
+# EditorConfig -- https://editorconfig.org
+# Honoured out of the box by IntelliJ IDEA, VS Code and Eclipse.
+
+# Java properties files are UTF-8 in this repository.
+#
+# WHY THIS FILE EXISTS :: IntelliJ has a setting dedicated to properties files ("Default encoding for
+# properties files"), historically defaulting to ISO-8859-1, and it takes precedence over the per-directory
+# charset configured for the module. Without the declaration below, a perfectly valid UTF-8
+# `Messages_fr.properties` is displayed -- and re-saved -- as mojibake.
+#
+# Mixing encodings inside one file is NOT harmless: `PropertyResourceBundle` reads a bundle as UTF-8 and
+# falls back to ISO-8859-1 for the WHOLE file as soon as one byte is not valid UTF-8. A single legacy
+# accent is therefore enough to corrupt every correctly encoded one around it.
+[*.properties]
+charset = utf-8
