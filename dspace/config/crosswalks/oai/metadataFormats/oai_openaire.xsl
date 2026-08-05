@@ -476,16 +476,19 @@
 
   <!-- dc:publisher ========================================================================================= [DONE] -->
   <xsl:template match="doc:element[@name='publication']/doc:element[@name='editor']/doc:element[@name='name']" mode="dc">
-    <xsl:variable name="name" select="normalize-space(doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="location" select="normalize-space(//doc:element[@name='publication']/doc:element[@name='editor']/doc:element[@name='location']/doc:element/doc:field[@name='value'])"/>
-    <xsl:if test="my:isNotEmpty($name)">
-      <dc:publisher>
-        <xsl:value-of select="$name"/>
-        <xsl:if test="my:isNotEmpty($location)">
-          <xsl:text> (</xsl:text><xsl:value-of select="$location"/><xsl:text>)</xsl:text>
-        </xsl:if>
-      </dc:publisher>
-    </xsl:if>
+    <xsl:for-each select="doc:element/doc:field[@name='value']">
+      <xsl:variable name="pos" select="position()"/>
+      <xsl:variable name="name" select="normalize-space(.)"/>
+      <xsl:variable name="location" select="normalize-space(//doc:element[@name='publication']/doc:element[@name='editor']/doc:element[@name='location']/doc:element/doc:field[@name='value'][$pos])"/>
+      <xsl:if test="my:isNotEmpty($name)">
+        <dc:publisher>
+          <xsl:value-of select="$name"/>
+          <xsl:if test="my:isNotEmpty($location)">
+            <xsl:text> (</xsl:text><xsl:value-of select="$location"/><xsl:text>)</xsl:text>
+          </xsl:if>
+        </dc:publisher>
+      </xsl:if>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- dc:language ========================================================================================== [DONE] -->
