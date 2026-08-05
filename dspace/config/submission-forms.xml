@@ -119,6 +119,20 @@
           <visibility>workflow</visibility>
         </field>
       </row>
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
+          <dc-element>anonymize</dc-element>
+          <repeatable>false</repeatable>
+          <label>Anonymize</label>
+          <input-type>checkbox</input-type>
+          <hint>Anonymize author's name</hint>
+          <visibility>submission</visibility>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row> 
     </form>
     <form name="master-thesis-dc-contributor-advisor">
       <row>
