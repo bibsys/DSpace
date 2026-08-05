@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +60,7 @@ public class SnapshotDetectingChangesTask {
                 this.notifyBy = NotificationType.valueOf(notifyByConfig);
             } catch (IllegalArgumentException e) {
                 logger.warn("Invalid notify-by config property: {}", notifyByConfig);
+                throw new IllegalArgumentException("Invalid notify-by config property: " + notifyByConfig);
             }
         }
 
@@ -111,54 +113,113 @@ public class SnapshotDetectingChangesTask {
                 // newly fresh snapshot into database; no need to detect changes and/or notify any recipients
                 if (storedSnapshot == null) {
                     logger.info("\tNewly fresh snapshot for item#{} detected.", itemID);
-                    snapshotService.store(context, snapshot);
-                    context.commit();
+                    storeSnapshot(context, snapshot);
                     continue;
                 }
                 // If a snapshot already exists into database for this item, try to detect any changes.
                 // If some changes are detected, we would (maybe) notify recipients related to this item.
-                // In all cases, the snapshot must be updated into database
                 ItemSnapshotDiff diff = snapshotService.compareSnapshot(storedSnapshot, snapshot);
-                if (diff == null) {
-                    logger.warn("\tUnable to get snapshotDiff for item#{} ! --> NULL.", itemID);
-                    continue;
+                boolean hasChanges = diff.hasChanges();
+                if (hasChanges) {
+                    logger.info("\t{} snapshot changes detected for item#{}", diff.getChanges().size(), itemID);
+                } else {
+                    logger.info("\tNo snapshot changes detected for item#{}.", itemID);
+                }
+                // DEV NOTE ::
+                //   recipients are collected BEFORE the snapshot gets stored, and inside a dedicated try/catch.
+                //   Notification is best effort: a failure here must neither prevent the reference snapshot from being
+                //   refreshed, nor abort the remaining items.
+                if (hasChanges && shouldNotify) {
+                    try {
+                        collectRecipients(context, diff, notifyBy, dataToNotify);
+                    } catch (Exception e) {
+                        logger.error("\tUnable to collect notification recipients for item#{}", itemID, e);
+                    }
                 }
                 // Always store the updated snapshot to update timestamps, even if no changes are detected
-                snapshotService.store(context, snapshot);
-                if (!diff.hasChanges()) {
-                    logger.info("\tNo snapshot changes detected for item#{}.", itemID);
-                    continue;
-                }
-                logger.info("\t{} snapshot changes detected for item#{}", diff.getChanges().size(), itemID);
-                if (shouldNotify) {
-                    snapshotService.getNotifyRecipients(context, diff, notifyBy).stream()
-                        .filter(recipient -> StringUtils.isNotBlank(recipient.get(notifyBy)))
-                        .forEach(recipient -> {
-                            logger.debug("\t\t* notify change to \"{}\".", recipient.get(notifyBy));
-                            NotificationTarget target = new NotificationTarget(recipient, notifyBy);
-                            dataToNotify.computeIfAbsent(target, k -> new ArrayList<>()).add(diff);
-                        });
-                }
-                context.commit();
+                storeSnapshot(context, snapshot);
             } catch (Exception e) {
                 logger.error("Unable to perform snapshot comparison for item#%s".formatted(itemID), e);
             }
         }
         // If we detect some changes and these changes should be notified, delegate notification process to
         // dedicated service.
-        if (shouldNotify && !dataToNotify.isEmpty()) {
-            logger.info("\tNotifying {} recipients for changes ::", dataToNotify.size());
-            for (Map.Entry<NotificationTarget, List<ItemSnapshotDiff>> entry : dataToNotify.entrySet()) {
-                String contact = entry.getKey().recipient().get(notifyBy);
-                try {
-                    logger.info("\t\t* Notify {} for {} changes.", contact, entry.getValue().size());
-                    snapshotService.notifyRecipient(context, entry.getKey().recipient(), entry.getValue(), notifyBy);
-                } catch (Exception e) {
-                    logger.error("\tUnable to notify recipient {} for changes ::", contact, e);
-                }
+        notifyTargets(context, dataToNotify, notifyBy);
+    }
+
+    // PRIVATE METHODS =================================================================================================
+    /**
+     * Persist a snapshot and acknowledge it right away.
+     * DEV NOTE :: The commit is deliberately glued to the store, with nothing in between that could throw.
+     *             Refreshing the reference snapshot is unconditional (a detected state must never be replayed forever),
+     *             while notifying recipients is best effort.
+     *
+     * @param context the application context
+     * @param snapshot the snapshot to persist
+     */
+    private void storeSnapshot(Context context, ItemSnapshot snapshot) throws Exception {
+        snapshotService.store(context, snapshot);
+        context.commit();
+    }
+
+    /**
+     * Collect every recipient to warn about an item changes, and index them by communication channel.
+     *
+     * @param context the application context
+     * @param diff the detected changes
+     * @param notifyBy the notification method to use
+     * @param dataToNotify the accumulator to feed
+     */
+    private void collectRecipients(
+        Context context,
+        ItemSnapshotDiff diff,
+        NotificationType notifyBy,
+        Map<NotificationTarget, List<ItemSnapshotDiff>> dataToNotify
+    ) {
+        snapshotService.getNotifyRecipients(context, diff, notifyBy).stream()
+            .filter(recipient -> StringUtils.isNotBlank(recipient.get(notifyBy)))
+            .forEach(recipient -> {
+                logger.debug("\t\t* notify change to \"{}\".", recipient.get(notifyBy));
+                NotificationTarget target = new NotificationTarget(recipient, notifyBy);
+                dataToNotify.computeIfAbsent(target, k -> new ArrayList<>()).add(diff);
+            });
+    }
+
+    /**
+     * Send one grouped communication per recipient box. A failure concerns only the current recipient: the others are
+     * still notified, and the already committed snapshots are left untouched.
+     *
+     * @param context the application context
+     * @param dataToNotify the changes to communicate, indexed by recipient box
+     * @param notifyBy the notification method to use
+     */
+    private void notifyTargets(
+        Context context,
+        Map<NotificationTarget, List<ItemSnapshotDiff>> dataToNotify,
+        NotificationType notifyBy
+    ) {
+        if (notifyBy == null || dataToNotify.isEmpty()) {
+            return;
+        }
+        logger.info("\tNotifying {} recipients for changes ::", dataToNotify.size());
+        for (Map.Entry<NotificationTarget, List<ItemSnapshotDiff>> entry : dataToNotify.entrySet()) {
+            String contact = entry.getKey().recipient().get(notifyBy);
+            try {
+                logger.info("\t\t* Notify {} for {} changes.", contact, entry.getValue().size());
+                snapshotService.notifyRecipient(context, entry.getKey().recipient(), entry.getValue(), notifyBy);
+            } catch (Exception e) {
+                // DEV NOTE :: the reference snapshots are already committed, so this communication is definitively
+                //             lost. Log which items it covered, so it can be replayed by hand through `SnapshotCLI`.
+                logger.error("\tUnable to notify recipient {} for changes on item(s) [{}] ::",
+                    contact, describeItems(entry.getValue()), e);
             }
         }
     }
 
-
+    /** Build a human-readable list of the items covered by a set of changes, to be used into logs */
+    private String describeItems(List<ItemSnapshotDiff> changes) {
+        return changes.stream()
+            .map(change -> change.getItemId().toString())
+            .collect(Collectors.joining(", "));
+    }
 }

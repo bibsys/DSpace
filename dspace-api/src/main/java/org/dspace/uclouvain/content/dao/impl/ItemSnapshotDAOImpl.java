@@ -12,7 +12,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import org.dspace.content.Item;
 import org.dspace.core.AbstractHibernateDAO;
@@ -37,49 +36,35 @@ public class ItemSnapshotDAOImpl extends AbstractHibernateDAO<ItemSnapshot> impl
 
     /**
      * Search about items UUID that need to be snapshotted.
+     * DEV NOTE :: The staleness of an item MUST be evaluated against **its own** snapshot timestamp, never against a
+     *             global boundary shared by all items. Using a global boundary (for example the most recent timestamp
+     *             found into the `uclouvain_item_snapshot` table) silently hides every item modified before that
+     *             boundary but after its own snapshot, and those changes would never be detected again.
      *
      * @param context the application context
-     * @param from the lower boundary timestamp limit; items updated after this timestamp could be returned if not
-     *             specified, the last stored snapshot will be used
+     * @param from an optional additional lower boundary; when specified, only items modified after this timestamp are
+     *             returned. When null, every item whose snapshot is missing or outdated is eligible.
      * @param limit the maximum number of item to return (use -1 to unlimited)
      * @return the list of item UUID to should be snapshotted and updated into the database
      * @throws SQLException if any database errors occurred.
      */
     @Override
     public List<UUID> findItemsToSnapshot(Context context, Date from, int limit) throws SQLException {
-        if (from == null) {
-            from = getLatestStoredSnapshotTimestamp(context);
-        }
         String queryString = """
             SELECT i.id FROM Item i
             LEFT JOIN ItemSnapshot s ON i.id = s.id
-            WHERE (i.lastModified > :fromDate OR s.id IS NULL)
-              AND i.inArchive = true
-            ORDER BY i.lastModified ASC""";
+            WHERE i.inArchive = true
+              AND (s.id IS NULL OR i.lastModified > s.timestamp)
+            """
+            + ((from != null) ? "  AND i.lastModified > :fromDate\n" : "")
+            + "ORDER BY i.lastModified ASC";
         TypedQuery<UUID> query = getHibernateSession(context).createQuery(queryString, UUID.class);
-        query.setParameter("fromDate", from);
+        if (from != null) {
+            query.setParameter("fromDate", from);
+        }
         if (limit != -1) {
             query.setMaxResults(limit);
         }
         return query.getResultList();
-    }
-
-
-    /**
-     * Find the last stored snapshot timestamp from the database
-     * @param context the application context
-     * @return the last stored snapshot timestamp
-     * @throws SQLException if any database errors occurred
-     */
-    private Date getLatestStoredSnapshotTimestamp(Context context) throws SQLException {
-        try {
-            Date maxTimestamp = getHibernateSession(context)
-                .createQuery("SELECT MAX(i.timestamp) FROM ItemSnapshot i", Date.class)
-                .getSingleResult();
-            // If the table is empty, MAX() returns a row with a null value instead of throwing an exception
-            return (maxTimestamp != null) ? maxTimestamp : new Date(0);
-        } catch (NoResultException e) {
-            return new Date(0);
-        }
     }
 }

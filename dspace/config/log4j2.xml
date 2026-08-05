@@ -144,7 +144,7 @@
 
         <!-- A7 is for the custom metadata enhancer -->
         <Appender name='A7'
-                filePattern="${log.dir}/item-enhancer.log%d{yyyy-MM-dd}"
+                filePattern="${log.dir}/item-enhancer.log-%d{yyyy-MM-dd}"
                 type='RollingFile'
                 fileName='${log.dir}/item-enhancer.log'>
             <Layout type='PatternLayout' pattern='%d %-5p -- %c :: %m%n'/>
@@ -161,7 +161,7 @@
 
         <!-- A8 is for authentication process -->
         <Appender name='A8'
-                  filePattern="${log.dir}/authentication.log%d{yyyy-MM-dd}"
+                  filePattern="${log.dir}/authentication.log-%d{yyyy-MM-dd}"
                   type='RollingFile'
                   fileName='${log.dir}/authentication.log'>
             <Layout type='PatternLayout' pattern='%d %-5p -- %c :: %m%n'/>
@@ -177,7 +177,10 @@
         </Appender>
 
         <!-- A9 is for ItemSnapshot processes -->
-        <Appender name='A9' filePattern="${log.dir}/snapshots.log%d{yyyy-MM-dd}" type="RollingFile" fileName="${log.dir}/snapshots.log">
+        <Appender name='A9'
+                  filePattern="${log.dir}/snapshots.log-%d{yyyy-MM-dd}"
+                  type="RollingFile"
+                  fileName="${log.dir}/snapshots.log">
           <Layout type='PatternLayout' pattern='%d %-5p -- %-50.50c{1.} :: %m%n'/>
           <policies>
             <policy type='TimeBasedTriggeringPolicy'>yyyy-MM-dd</policy>

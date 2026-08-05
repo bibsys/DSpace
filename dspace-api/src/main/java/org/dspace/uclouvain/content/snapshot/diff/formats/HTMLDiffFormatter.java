@@ -9,6 +9,7 @@ package org.dspace.uclouvain.content.snapshot.diff.formats;
 
 import java.util.Locale;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.dspace.uclouvain.content.snapshot.diff.explainer.DiffExplainer;
 
 /**
@@ -31,7 +32,7 @@ public abstract class HTMLDiffFormatter<E extends DiffExplainer<?>> implements D
         """.formatted(getOperationTypeLabel(explainer), getSectionLabel(explainer));
     }
     protected String getSectionLabel(E explainer) {
-        return explainer.getPath();
+        return StringEscapeUtils.escapeHtml4(explainer.getPath());
     }
 
     protected String getOperationTypeLabel(E explainer) {
