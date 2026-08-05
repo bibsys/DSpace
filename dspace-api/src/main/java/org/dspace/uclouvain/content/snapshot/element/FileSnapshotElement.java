@@ -34,9 +34,9 @@ public class FileSnapshotElement extends SnapshotElement {
     public FileSnapshotElement(UUID id, String name, String checksum, String access) {
         attributes = Map.of(
             "uuid", id.toString(),
-            "name", name,
-            "checksum", checksum,
-            "access", access
+            "name", Objects.toString(name, ""),
+            "checksum", Objects.toString(checksum, ""),
+            "access", Objects.toString(access, "")
         );
         this.path = buildPath();
     }

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dspace.core.I18nUtil;
 import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
 import org.dspace.uclouvain.content.snapshot.diff.explainer.FileDiffExplainer;
@@ -45,8 +46,8 @@ public class FileHTMLEmailDiffFormatter extends HTMLDiffFormatter<FileDiffExplai
             ? explainer.getRevised().getFilename()
             : explainer.getOriginal().getFilename();
         String labelMessage = I18nUtil.getMessage("snapshot.email.file.label", locale).formatted(
-            filename,
-            I18nUtil.getMessage(LOCALE_OPERATION_PREFIX + explainer.getType())
+            StringEscapeUtils.escapeHtml4(filename),
+            I18nUtil.getMessage(LOCALE_OPERATION_PREFIX + explainer.getType(), locale)
         );
 
         return """
@@ -74,7 +75,7 @@ public class FileHTMLEmailDiffFormatter extends HTMLDiffFormatter<FileDiffExplai
             default -> throw new IllegalStateException("Unexpected type: " + explainer.getType());
         };
         return Stream.of(getPrefix(explainer, locale), diffReport, getSuffix(explainer, locale))
-            .filter(StringUtils::isNoneBlank)
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.joining());
     }
 
@@ -109,9 +110,9 @@ public class FileHTMLEmailDiffFormatter extends HTMLDiffFormatter<FileDiffExplai
         List<String> parts = new ArrayList<>();
         if (explainer.isFilenameChanges()) {
             parts.add(I18nUtil.getMessage("snapshot.email.file.filename-change", locale).formatted(
-                explainer.getOriginal().getFilename(),
-                explainer.getRevised().getFilename())
-            );
+                StringEscapeUtils.escapeHtml4(explainer.getOriginal().getFilename()),
+                StringEscapeUtils.escapeHtml4(explainer.getRevised().getFilename())
+            ));
         }
         if (explainer.isAccessChanges()) {
             String oldAccess = I18nUtil.getMessage(LOCALE_ACCESS_PREFIX + explainer.getOriginal().getAccess(), locale);

@@ -41,10 +41,13 @@ public interface ItemSnapshotDAO extends GenericDAO<ItemSnapshot> {
 
     /**
      * Search about items UUID that need to be snapshotted.
+     * An item is eligible when it is archived and either has no stored snapshot yet,
+     * or has been modified after the timestamp of its own stored snapshot.
      *
      * @param context the application context
-     * @param from the lower boundary timestamp limit; items updated after this timestamp could be returned if not
-     *             specified, the last stored snapshot will be used
+     * @param from an optional additional lower boundary; when specified, only items modified after this timestamp are
+     *             returned.
+     *             When null, every item whose snapshot is missing or outdated is eligible.
      * @param limit the maximum number of item to return (use -1 to unlimited)
      * @return the list of item UUID to should be snapshotted and updated into the database
      * @throws SQLException if any database errors occurred.

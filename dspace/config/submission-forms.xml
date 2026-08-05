@@ -322,7 +322,6 @@
           <label>Preferred communication language</label>
           <input-type value-pairs-name="communication_languages">dropdown</input-type>
           <hint>Select the preferred communication language to use to be contacted</hint>
-          <required />
         </field>
       </row>
       <row>
@@ -653,7 +652,6 @@
           <label>Preferred communication language</label>
           <input-type value-pairs-name="communication_languages">dropdown</input-type>
           <hint>Select the preferred communication language to use to be contacted</hint>
-          <required />
         </field>
       </row>
       <row>
