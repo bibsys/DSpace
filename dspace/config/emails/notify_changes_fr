@@ -49,7 +49,7 @@
                 </td>
                 <td style="background-color: #DDDDDD; text-align: right; width: 90px; padding: 8px; vertical-align: top; border-right: 1px solid #CCCCCC; border-bottom: 1px solid #CCCCCC; font-weight: bold; font-size: 12px; text-transform: uppercase;">
                   Publication<br/>
-                  (<a href="https://hdl.handle.net/${item.getHandle()}" style="color: #0056b3; text-decoration: underline;">lien</a>)
+                  (<a href="${config.get('handle.canonical.prefix')}${item.getHandle()}" style="color: #0056b3; text-decoration: underline;">lien</a>)
                 </td>
                 <td style="padding: 8px; vertical-align: top; border-bottom: 1px solid #CCCCCC; font-size: 12px;">
                   <div style="font-weight: bold; margin-bottom: 4px;">
@@ -59,7 +59,9 @@
                       ${name}
                     #end
                   </div>
-                  <div style="color: #666666; font-size: 11px;">${citation}</div>
+                  #if($citation && $citation != "")
+                    <div style="color: #666666; font-size: 11px;">${citation}</div>
+                  #end
                 </td>
               </tr>
               <tr>

@@ -262,13 +262,11 @@ public class I18nUtil {
         if (locale == null) {
             locale = getDefaultLocale();
         }
-        /* ResourceBundle.Control control =
+        ResourceBundle.Control control =
             ResourceBundle.Control.getNoFallbackControl(
                 ResourceBundle.Control.FORMAT_DEFAULT);
 
-        ResourceBundle messages = ResourceBundle.getBundle("Messages", locale, control); */
-        // We want to use fallback if one key is missing from localized resource
-        ResourceBundle messages = ResourceBundle.getBundle("Messages", locale);
+        ResourceBundle messages = ResourceBundle.getBundle("Messages", locale, control);
         try {
             String message = messages.getString(key.trim());
             return message;

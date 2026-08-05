@@ -40,7 +40,7 @@ public class FileRawDiffFormatter extends RawDiffFormatter<FileDiffExplainer> {
             default -> throw new IllegalStateException("Unexpected type: " + explainer.getType());
         };
         return Stream.of(getPrefix(explainer, locale), diffReport, getSuffix(explainer, locale))
-            .filter(StringUtils::isNoneBlank)
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.joining());
     }
 

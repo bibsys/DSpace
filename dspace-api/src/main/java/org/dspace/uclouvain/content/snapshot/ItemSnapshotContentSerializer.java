@@ -10,6 +10,7 @@ package org.dspace.uclouvain.content.snapshot;
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,9 +65,13 @@ public class ItemSnapshotContentSerializer implements Serializable {
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 
         // Root element
+        //   The handle is purely informational (it is never read back by `deserialize`) and an item still into
+        //   workflow doesn't have one yet, so only write the attribute when it is known.
         Element root = document.createElement("ItemSnapshot");
         root.setAttribute("uuid", snapshot.getItem().getID().toString());
-        root.setAttribute("handle", snapshot.getItem().getHandle());
+        if (StringUtils.isNotBlank(snapshot.getItem().getHandle())) {
+            root.setAttribute("handle", snapshot.getItem().getHandle());
+        }
         document.appendChild(root);
 
         // 1. Process Metadata Fields
@@ -110,7 +115,8 @@ public class ItemSnapshotContentSerializer implements Serializable {
 
     /**
      * This method transform the database stored {@link ItemSnapshot} content into a list of {@link SnapshotElement}
-     * Deserialized SnapshotElement are returned AND are stored into `snapshot` parameter object
+     * Deserialized SnapshotElement are returned AND are stored into `snapshot` parameter object, REPLACING any
+     * element it was already holding. Calling this method twice on the same snapshot is therefore harmless.
      * @param snapshot the snapshot to analyze
      * @return the list of deserialize snapshot elements
      */
@@ -130,10 +136,12 @@ public class ItemSnapshotContentSerializer implements Serializable {
         XPathExpression expr = xpath.compile("//*[local-name()='MetadataField' or local-name()='File']");
 
         NodeList nodes = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
+        List<SnapshotElement> elements = new ArrayList<>();
         for (int i = 0; i < nodes.getLength(); i++) {
-            snapshot.addSnapshotElement(elementFactory.parse((Element) nodes.item(i)));
+            elements.add(elementFactory.parse((Element) nodes.item(i)));
         }
-        return snapshot.getSnapshotElements();
+        snapshot.setSnapshotElements(elements);
+        return elements;
     }
 
 }

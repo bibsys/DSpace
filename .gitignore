@@ -19,6 +19,10 @@ tags
 .idea/
 overlays/
 
+## Ignore IA instructions and settings.
+CLAUDE.md
+.claude/
+
 ## Ignore project files created by NetBeans
 nbproject/
 build/
