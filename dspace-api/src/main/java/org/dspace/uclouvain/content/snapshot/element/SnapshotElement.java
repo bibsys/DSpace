@@ -64,9 +64,17 @@ public abstract class SnapshotElement {
         }
         return isLogicallyEqualTo((SnapshotElement) o);
     }
+    /**
+     * DEV NOTE :: hashed on the path ALONE, deliberately.
+     *   `equals` delegates to {@link #isLogicallyEqualTo}, which compares the path and the meaningful values -- never
+     *   the raw `attributes` map. Hashing that map broke the equals/hashCode contract: the very same element carries
+     *   `attributes` when it comes from the stored XML but not when it was just built in memory, so two elements that
+     *   `equals` each other produced different hash codes. Path only is enough (equal elements always share it) and
+     *   discriminating enough, since a path identifies one metadata occurrence or one bitstream.
+     */
     @Override
     public final int hashCode() {
-        return Objects.hash(path, attributes);
+        return Objects.hashCode(path);
     }
 
     /**
@@ -75,6 +83,19 @@ public abstract class SnapshotElement {
      * @return true if the element is the same, false otherwise
      */
     public abstract boolean isLogicallyEqualTo(SnapshotElement element);
+
+    /**
+     * The key uniquely identifying this element inside a snapshot.
+     * DEV NOTE ::
+     *   The path alone is NOT enough: nothing forbids a metadata occurrence and a bitstream from sharing one.
+     *   This is the single definition of that key -- both the snapshot comparison and the diff index must use it,
+     *   otherwise two elements would be paired on one side and collide on the other.
+     *
+     * @return the key identifying this element among the elements of a same snapshot
+     */
+    public final String getKey() {
+        return getClass().getName() + "::" + path;
+    }
 
     // GETTER & SETTER =================================================================================================
     public String getPath() {

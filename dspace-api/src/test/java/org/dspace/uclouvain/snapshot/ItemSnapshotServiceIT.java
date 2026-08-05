@@ -50,7 +50,7 @@ import org.dspace.uclouvain.services.ItemSnapshotService;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase {
+public class ItemSnapshotServiceIT extends AbstractIntegrationTestWithDatabase {
 
     private final ItemService itemService = ContentServiceFactory.getInstance().getItemService();
     private final BitstreamService bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
@@ -317,8 +317,6 @@ public class ItemSnapshotServiceTest extends AbstractIntegrationTestWithDatabase
         assertEquals(1, snapshotDiff.getChanges().size());
         explanations = snapshotService.explainChanges(snapshotDiff, OutputFormat.RAW, null);
         expectedMessage = "The file [%s] has been removed from the publication.".formatted(pub1Bitstream1NameModified);
-        System.out.println("Expected    :: " + expectedMessage);
-        System.out.println("Explanation :: " + explanations);
         assertThat(explanations, containsString(expectedMessage));
 
         // Detect changes on item2.

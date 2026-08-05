@@ -1,0 +1,48 @@
+--
+-- The contents of this file are subject to the license and copyright
+-- detailed in the LICENSE and NOTICE files at the root of the source
+-- tree and available online at
+--
+-- http://www.dspace.org/license/
+--
+
+-----------------------------------------------------------------------------------
+-- MAKE uclouvain_item_snapshot.timestamp BEHAVE LIKE item.last_modified
+-----------------------------------------------------------------------------------
+-- The snapshot timestamp must always mirror `item.last_modified` of the item state the snapshot
+-- captures, because staleness is evaluated by comparing both columns per item
+-- (see ItemSnapshotDAOImpl#findItemsToSnapshot). Two things prevented that.
+--
+-- 1. DROP DEFAULT
+--    A `DEFAULT NOW()` silently replaced the value by the insertion time whenever the column was
+--    omitted from the INSERT, which made the very first snapshot of an item carry a meaningless
+--    timestamp. The value is now always supplied by the application layer.
+--
+-- 2. TYPE ... WITH TIME ZONE
+--    `item.last_modified` is a TIMESTAMP WITH TIME ZONE while this column was created without one,
+--    so PostgreSQL had to coerce the naive value using the *session* TimeZone on every comparison:
+--    any divergence between the database and the JVM time zones silently shifted the whole change
+--    detection by that offset.
+--    Measured on PostgreSQL 17, with item and snapshot one hour apart:
+--        before -> session UTC says "changed", session America/New_York says "unchanged" (the
+--                  change is silently LOST)
+--        after  -> every session zone says "changed"
+--
+-- PRECONDITION :: the type conversion interprets the existing naive values with the session TimeZone
+--         in force while it runs, so that session MUST use the same time zone as the JVM that wrote
+--         them -- otherwise every stored instant is shifted by the difference. Both containers run in
+--         UTC by default (`SHOW TimeZone` reports Etc/UTC on dspace-postgres, and the Dockerfile sets
+--         no TZ), so nothing special is needed unless a deployment overrode it. Relying on the session
+--         zone rather than forcing one is deliberate: it preserves the exact meaning the values
+--         already had, instead of betting on the JVM zone.
+--
+-- NOTE :: the H2 counterpart only carries the DROP DEFAULT. In the H2 schema `item.last_modified` is
+--         a plain TIMESTAMP too, so both sides already agree there and no migration of the whole
+--         repository uses TIMESTAMP WITH TIME ZONE.
+--
+-- NOTE :: the type change rewrites the table under an ACCESS EXCLUSIVE lock (one row per item), so it
+--         should be run outside of the snapshot cron window.
+-----------------------------------------------------------------------------------
+
+ALTER TABLE uclouvain_item_snapshot ALTER COLUMN timestamp DROP DEFAULT;
+ALTER TABLE uclouvain_item_snapshot ALTER COLUMN timestamp TYPE TIMESTAMP WITH TIME ZONE;

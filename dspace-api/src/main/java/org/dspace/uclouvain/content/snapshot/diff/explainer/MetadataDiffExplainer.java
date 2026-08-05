@@ -169,23 +169,31 @@ public class MetadataDiffExplainer extends DiffExplainer<MetadataSnapshotElement
 
     /**
      * Analyze a list of zones to determine if some of them should be merges because they overlapped/adjacent.
+     * DEV NOTE ::
+     *   The returned zones are copies, and the given list is left untouched.
+     *   Sorting the caller's list and widening its arrays in place used to make this method quietly destructive for
+     *   its argument.
+     *
      * @param zones the list of zones to analyze
      * @return the final list of zones to create a {@link DiffReport}
      */
     private List<int[]> mergeZones(List<int[]> zones) {
         if (zones.isEmpty()) {
-            return zones;
+            return List.of();
         }
-        zones.sort(Comparator.comparingInt(a -> a[0]));
+        List<int[]> sortedZones = new ArrayList<>(zones);
+        sortedZones.sort(Comparator.comparingInt(zone -> zone[0]));
+
         List<int[]> merged = new ArrayList<>();
-        int[] current = zones.get(0);
+        int[] current = sortedZones.get(0).clone();
         merged.add(current);
-        for (int[] next : zones) {
+        // Start at the second zone: the first one is already the zone being built
+        for (int[] next : sortedZones.subList(1, sortedZones.size())) {
             // If the start of the next zone intersects or touches the end of the current zone
             if (next[0] <= current[1]) {
                 current[1] = Math.max(current[1], next[1]); // Fusion !!!
             } else {
-                current = next;
+                current = next.clone();
                 merged.add(current);
             }
         }

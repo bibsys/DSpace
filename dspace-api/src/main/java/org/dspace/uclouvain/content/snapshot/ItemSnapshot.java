@@ -25,8 +25,8 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import org.dspace.content.Item;
+import org.dspace.core.ReloadableEntity;
 import org.dspace.uclouvain.content.snapshot.element.SnapshotElement;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -41,15 +41,22 @@ import org.hibernate.annotations.OnDeleteAction;
  */
 @Entity
 @Table(name = "uclouvain_item_snapshot")
-public class ItemSnapshot {
+public class ItemSnapshot implements ReloadableEntity<UUID> {
 
     @Id
     @Column(name = "uuid", unique = true, nullable = false, updatable = false)
     private UUID id;
 
-    @Column(name = "timestamp", nullable = false, insertable = false)
+    /**
+     * The `last modified` date of the item state captured by this snapshot; it is NEVER the moment the row was
+     * written. This column must stay insertable: it is what {@link ItemSnapshot} staleness is evaluated against, and
+     * letting the database default it to the insertion time would make the first snapshot of an item meaningless.
+     * It must also keep the very same type as {@link Item}'s `last_modified`, since staleness is evaluated by
+     * comparing both columns in SQL: a naive timestamp facing a zoned one would be coerced using the database session
+     * time zone, shifting the whole detection whenever that zone differs from the JVM one.
+     */
+    @Column(name = "timestamp", nullable = false, columnDefinition = "timestamp with time zone")
     @Temporal(TemporalType.TIMESTAMP)
-    @ColumnDefault("NOW()")
     private Date timestamp;
 
     @Column(name = "content", nullable = false, columnDefinition = "TEXT")
@@ -66,10 +73,11 @@ public class ItemSnapshot {
     private List<SnapshotElement> snapshotElements = new ArrayList<>();
 
     // GETTER & SETTER =================================================================================================
-    public UUID getId() {
+    @Override
+    public UUID getID() {
         return id;
     }
-    public void setId(UUID id) {
+    public void setID(UUID id) {
         this.id = id;
     }
 
