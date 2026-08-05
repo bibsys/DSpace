@@ -19,6 +19,17 @@
       <row>
         <field>
           <dc-schema>authors</dc-schema>
+          <dc-element>anonymize</dc-element>
+          <repeatable>false</repeatable>
+          <label>Anonymize this author</label>
+          <input-type>checkbox</input-type>
+          <hint>Check this box to display 'Anonymous' instead of this name in the published thesis details.</hint>
+          <visibility>submission</visibility>
+        </field>
+      </row> 
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
           <dc-element>email</dc-element>
           <dc-qualifier>official</dc-qualifier>
           <repeatable>false</repeatable>

@@ -49,6 +49,12 @@
     </dc-schema>
     <dc-type>
         <schema>authors</schema>
+        <element>anonymize</element>
+        <qualifier />
+        <scope_note>Whether the author information should be anonymized</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
         <element>email</element>
         <qualifier />
         <scope_note>Author email</scope_note>
