@@ -22,9 +22,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.apicatalog.jsonld.StringUtils;
 import jakarta.mail.MessagingException;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.logging.log4j.Logger;
@@ -140,7 +140,8 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     public ItemSnapshot takeSnapshot(Context context, Item item) throws SQLException {
         ItemSnapshot snapshot = new ItemSnapshot();
         snapshot.setItem(item);
-        snapshot.setTimestamp(new Date());
+        // DEV NOTE :: the timestamp mirrors the captured item state, NOT the moment the snapshot was taken.
+        snapshot.setTimestamp(item.getLastModified());
         snapshot.setSnapshotElements(this.buildSnapshotElements(context, item));
         return snapshot;
     }
@@ -154,8 +155,8 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         // DEV NOTE: We use `getItem().getID()` instead of `getId()` because the snapshot could be not yet persisted
         if (!Objects.equals(snapshot1.getItem().getID(), snapshot2.getItem().getID())) {
             throw new IllegalArgumentException(String.format(
-                    "We can only compare snapshots for the same related item :: %s<>%s",
-                    snapshot1.getId(), snapshot2.getId()
+                "We can only compare snapshots for the same related item :: %s<>%s",
+                snapshot1.getID(), snapshot2.getID()
             ));
         }
         ItemSnapshotDiff diff = new ItemSnapshotDiff(snapshot1.getItem());
@@ -164,7 +165,7 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         Map<String, SnapshotElement> mapSnapshot2 = snapshot2
             .getSnapshotElements().stream()
             .collect(Collectors.toMap(
-                this::getSnapshotElementKey,
+                SnapshotElement::getKey,
                 element -> element,
                 (existing, replacement) -> existing // For potential doubles...
             ));
@@ -172,7 +173,7 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         //   If current read element key isn't present into mapSnapshot2: This is a "remove"
         //   If element path exists in both snapshots, but aren't equals: This is an "update"
         for (SnapshotElement element1 : snapshot1.getSnapshotElements()) {
-            String key = getSnapshotElementKey(element1);
+            String key = element1.getKey();
             SnapshotElement element2 = mapSnapshot2.remove(key);
             if (element2 == null || !element1.equals(element2)) {
                 diff.addChange(element1, element2);
@@ -183,9 +184,6 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
             diff.addChange(null, element);
         }
         return diff;
-    }
-    private String getSnapshotElementKey(SnapshotElement snapshotElement) {
-        return snapshotElement.getPath() + "__" + snapshotElement.getClass().getName();
     }
 
     @Override
@@ -225,10 +223,10 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         // Persist changes into database
         //    If the database doesn't yet store a snapshot for the related item, just "create" the snapshot
         //    If the database already stored a snapshot, we need to retrieve it, update it and "save" it
-        if (snapshot.getId() == null) {
-            snapshot.setId(snapshot.getItem().getID());
+        if (snapshot.getID() == null) {
+            snapshot.setID(snapshot.getItem().getID());
         }
-        ItemSnapshot existingSnapshot = itemSnapshotDAO.findByID(context, ItemSnapshot.class, snapshot.getId());
+        ItemSnapshot existingSnapshot = itemSnapshotDAO.findByID(context, ItemSnapshot.class, snapshot.getID());
         if (existingSnapshot == null) {
             log.info("Store new snapshot for Item#{}", snapshot.getItem().getID());
             snapshot.setContent(snapshotSerializer.serialize(snapshot));
@@ -245,13 +243,15 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
 
     @Override
     public List<Recipient> getNotifyRecipients(Context context, ItemSnapshotDiff diff, NotificationType method) {
-        if (diff == null || diff.getItem() == null) {
+        Item item = (diff != null) ? findItem(context, diff) : null;
+        if (item == null) {
             return List.of();
         }
-        return Stream.concat(
-            getPublicationAuthorRecipients(diff, method),
-            getSubmitterRecipient(diff, method)
+        List<Recipient> recipients = Stream.concat(
+            getPublicationAuthorRecipients(item, method),
+            getSubmitterRecipient(item, method)
         ).toList();
+        return Recipient.deduplicateByChannels(recipients);
     }
 
     @Override
@@ -314,14 +314,29 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
     }
 
     /**
+     * Resolve the item a diff relates to, from the current context.
+     * @param context the application context
+     * @param diff the changes to analyze
+     * @return the related item, or null if it doesn't exist anymore
+     */
+    private Item findItem(Context context, ItemSnapshotDiff diff) {
+        try {
+            return itemService.find(context, diff.getItemId());
+        } catch (SQLException e) {
+            log.error("Unable to retrieve Item#{} related to detected changes", diff.getItemId(), e);
+            return null;
+        }
+    }
+
+    /**
      * Get all authors recipients for a publication related to a specific notification method
-     * @param diff the publications changes to analyze (to get related Publication(item))
+     * @param item the changed publication
      * @param method the notification method (email, phone, telepathy, ...)
      * @return the list of recipient to notify
      */
-    private Stream<Recipient> getPublicationAuthorRecipients(ItemSnapshotDiff diff, NotificationType method) {
+    private Stream<Recipient> getPublicationAuthorRecipients(Item item, NotificationType method) {
         try {
-            Publication publication = PublicationFactory.build(diff.getItem());
+            Publication publication = PublicationFactory.build(item);
             // Return list of authors with emails. Priority is given to "private email" if available
             return publication.getAuthors()
                 .stream()
@@ -350,23 +365,24 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
 
     /**
      * Get submitter recipient for a publication related to a specific notification method
-     * @param diff the publications changes to analyze (to get related Publication(item))
+     * @param item the changed publication
      * @param method the notification method (email, phone, telepathy, ...)
      * @return the submitter recipient (as stream for easy manipulation)
      */
-    private Stream<Recipient> getSubmitterRecipient(ItemSnapshotDiff diff, NotificationType method) {
-        EPerson submitter = diff.getItem().getSubmitter();
+    private Stream<Recipient> getSubmitterRecipient(Item item, NotificationType method) {
+        EPerson submitter = item.getSubmitter();
         if (submitter == null) {
             return Stream.empty();
         }
+        if (method == NotificationType.EMAIL) {
+            String email = submitter.getEmail();
+            EmailValidator validator = EmailValidator.getInstance();
+            return (StringUtils.isNotBlank(email) && validator.isValid(email))
+                ? Stream.of(new Recipient(submitter.getName(), Map.of(method, email)))
+                : Stream.empty();
+        }
         // TODO :: add other communication method retrieval if necessary
-        return switch (method) {
-            case EMAIL -> Stream.of(new Recipient(
-                submitter.getName(),
-                Map.of(NotificationType.EMAIL, submitter.getEmail())
-            ));
-            default -> throw new UnsupportedOperationException("unsupported method: " + method);
-        };
+        throw new UnsupportedOperationException("unsupported method: " + method);
     }
 
     /**
@@ -379,20 +395,47 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
         throws SendEmailException {
         try {
             Locale locale = getLocaleForRecipient(context, recipient);
-            List<Triple<Item, String, String>> explanations = changes.stream()
-                .map(change -> Triple.of(
-                    change.getItem(),
-                    citationService.getCitationForItemByCrosswalk(context, change.getItem(), "publication-uclouvain"),
-                    explainChanges(change, OutputFormat.EMAIL_HTML, locale)
-                ))
-                .toList();
+            String contact = recipient.get(NotificationType.EMAIL);
+            // DEV NOTE ::
+            //   Each publication block is built in isolation, on purpose.
+            //   Explaining a change can fail for a single item (unknown citation crosswalk, missing i18n key,
+            //   unexpected metadata value, ...) and that must NOT discard the whole notification: the recipient would
+            //   then also lose the changes detected on all its other publications.
+            List<Triple<Item, String, String>> explanations = new ArrayList<>();
+            for (ItemSnapshotDiff change : changes) {
+                try {
+                    Item item = findItem(context, change);
+                    if (item == null) {
+                        log.warn("Item#{} no longer exists: skipped from the notification sent to {}",
+                            change.getItemId(), contact);
+                        continue;
+                    }
+                    String citation = citationService.getCitationForItemByCrosswalk(
+                        context,
+                        item,
+                        "publication-uclouvain"
+                    );
+                    explanations.add(Triple.of(
+                        item,
+                        StringUtils.defaultString(citation),
+                        explainChanges(change, OutputFormat.EMAIL_HTML, locale)
+                    ));
+                } catch (Exception e) {
+                    log.error("Unable to explain changes of Item#{}: skipped from the notification sent to {}",
+                        change.getItemId(), contact, e);
+                }
+            }
+            if (explanations.isEmpty()) {
+                log.warn("No explainable change left for {}: no notification sent.", contact);
+                return;
+            }
             Email email = Email.getEmail(I18nUtil.getEmailFilename(locale, "notify_changes"));
             email.setSubject(I18nUtil.getMessage("snapshot.email.subject", locale));
             email.setReplyTo(configService.getProperty("uclouvain.default.mail.reply-to", "noreply@dspace.org"));
             email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
             email.addArgument(recipient);
             email.addArgument(explanations);
-            email.addRecipient(recipient.get(NotificationType.EMAIL));
+            email.addRecipient(contact);
             for (String addr : configService.getArrayProperty("item-snapshot.email-notification.cc-addresses")) {
                 email.addCcAddress(addr);
             }
@@ -412,8 +455,8 @@ public class ItemSnapshotServiceImpl implements ItemSnapshotService {
             return defaultLocale;
         }
         Map<String, String> identifiers = Map.of(
-            "person.email", email,
-            "person.email.official", email
+            ResearcherProfile.EMAIL_MATCH_FIELD, email,
+            ResearcherProfile.OFFICIAL_EMAIL_MATCH_FIELD, email
         );
         try {
             ResearcherProfile profile = researcherProfileService.findFirstByIdentifiers(context, identifiers);

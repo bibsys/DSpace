@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dspace.core.I18nUtil;
 import org.dspace.uclouvain.content.snapshot.diff.DiffReport;
 import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
@@ -38,14 +39,15 @@ public class MetadataHTMLEmailDiffFormatter extends HTMLDiffFormatter<MetadataDi
     @Override
     public String getPrefix(MetadataDiffExplainer explainer, Locale locale) {
         Matcher matcher = METADATA_INDEX_PATTERN.matcher(explainer.getPath());
-        String metadataPath = (matcher.find()) ? matcher.group(1) : explainer.getPath();
-        int metadataPosition = (matcher.find()) ? Integer.parseInt(matcher.group(2)) : 0;
+        boolean matches = matcher.find();
+        String metadataPath = (matches) ? matcher.group(1) : explainer.getPath();
+        int metadataPosition = (matches) ? Integer.parseInt(matcher.group(2)) : 0;
         metadataPath = metadataPath.replaceAll("\\.", "-");
 
         String labelMessage = I18nUtil.getMessage("snapshot.email.metadata.label", locale).formatted(
             I18nUtil.getMessage(LOCALE_METADATA_PREFIX + metadataPath, locale),
             metadataPosition + 1,
-            I18nUtil.getMessage(LOCALE_OPERATION_PREFIX + explainer.getType())
+            I18nUtil.getMessage(LOCALE_OPERATION_PREFIX + explainer.getType(), locale)
         );
 
         return """
@@ -73,7 +75,7 @@ public class MetadataHTMLEmailDiffFormatter extends HTMLDiffFormatter<MetadataDi
             default -> throw new IllegalStateException("Unexpected value: " + explainer.getType());
         };
         return Stream.of(getPrefix(explainer, locale), diffReport, getSuffix(explainer, locale))
-            .filter(StringUtils::isNoneBlank)
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.joining());
     }
 
@@ -86,7 +88,7 @@ public class MetadataHTMLEmailDiffFormatter extends HTMLDiffFormatter<MetadataDi
               <span class="diff-remove line-through">%s</span>
             </td>
           </tr>
-        """.formatted(explainer.getOriginal().getValue());
+        """.formatted(StringEscapeUtils.escapeHtml4(explainer.getOriginal().getValue()));
     }
 
     private String formatAdd(MetadataDiffExplainer explainer, Locale locale) {
@@ -97,7 +99,7 @@ public class MetadataHTMLEmailDiffFormatter extends HTMLDiffFormatter<MetadataDi
               <span class="diff-add">%s</span>
             </td>
           </tr>
-        """.formatted(explainer.getRevised().getValue());
+        """.formatted(StringEscapeUtils.escapeHtml4(explainer.getRevised().getValue()));
     }
 
     private String formatUpdate(MetadataDiffExplainer explainer, Locale locale) {
@@ -116,7 +118,7 @@ public class MetadataHTMLEmailDiffFormatter extends HTMLDiffFormatter<MetadataDi
     private String getOldString(MetadataDiffExplainer explainer) {
         // DEV NOTES :: For old string, we need to display any blocks as they were before changes. So we skip "INSERTED"
         // segments, and all other ones are displayed without any highlights
-        StringJoiner joiner = new StringJoiner(" &mldr; "); // this is the html entity for "...";
+        StringJoiner joiner = new StringJoiner(" … ");
         for (DiffReport.DiffBlock block : explainer.getDiff().blocks()) {
             StringBuilder bs = new StringBuilder();
             for (DiffReport.DiffSegment segment : block.segments()) {
@@ -130,26 +132,29 @@ public class MetadataHTMLEmailDiffFormatter extends HTMLDiffFormatter<MetadataDi
                 joiner.add(blockText);
             }
         }
-        return joiner.toString().trim();
+        return StringEscapeUtils.escapeHtml4(joiner.toString().trim());
     }
 
     private String getNewString(MetadataDiffExplainer explainer) {
-        StringJoiner joiner = new StringJoiner(" &mldr; "); // this is the html entity for "..."
+        StringJoiner joiner = new StringJoiner(" … ");
         for (DiffReport.DiffBlock block : explainer.getDiff().blocks()) {
             StringBuilder bs = new StringBuilder();
             for (DiffReport.DiffSegment segment : block.segments()) {
                 switch (segment.type()) {
-                    case CONTEXT -> bs.append(segment.text());
+                    case CONTEXT -> bs.append(StringEscapeUtils.escapeHtml4(segment.text()));
                     case DELETED -> bs
                             .append(" <span class=\"diff-remove line-through\">%s</span> "
-                            .formatted(segment.text()));
+                            .formatted(StringEscapeUtils.escapeHtml4(segment.text())));
                     case INSERTED -> bs
                             .append("  <span class=\"diff-add\">%s</span> "
-                            .formatted(segment.text()));
+                            .formatted(StringEscapeUtils.escapeHtml4(segment.text())));
                     case UPDATED -> bs
                             .append(
                                 " <span class=\"diff-remove line-through\">%s</span><span class=\"diff-add\">%s</span> "
-                                .formatted(segment.text(), segment.revisedText())
+                                .formatted(
+                                    StringEscapeUtils.escapeHtml4(segment.text()),
+                                    StringEscapeUtils.escapeHtml4(segment.revisedText())
+                                )
                             );
                     default -> { }
                 }

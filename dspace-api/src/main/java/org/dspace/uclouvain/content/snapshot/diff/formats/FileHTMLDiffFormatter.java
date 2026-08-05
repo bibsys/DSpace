@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.dspace.uclouvain.content.snapshot.diff.ItemSnapshotDiff;
 import org.dspace.uclouvain.content.snapshot.diff.explainer.FileDiffExplainer;
 
@@ -28,8 +29,8 @@ public class FileHTMLDiffFormatter extends HTMLDiffFormatter<FileDiffExplainer> 
     @Override
     protected String getSectionLabel(FileDiffExplainer explainer) {
         return (explainer.getRevised() != null)
-            ? explainer.getRevised().getFilename()
-            : explainer.getOriginal().getFilename();
+            ? StringEscapeUtils.escapeHtml4(explainer.getRevised().getFilename())
+            : StringEscapeUtils.escapeHtml4(explainer.getOriginal().getFilename());
     }
 
     @Override
@@ -41,20 +42,26 @@ public class FileHTMLDiffFormatter extends HTMLDiffFormatter<FileDiffExplainer> 
             default -> throw new IllegalStateException("Unexpected type: " + explainer.getType());
         };
         return Stream.of(getPrefix(explainer, locale), diffReport, getSuffix(explainer, locale))
-            .filter(StringUtils::isNoneBlank)
+            .filter(StringUtils::isNotBlank)
             .collect(Collectors.joining());
     }
 
     // TODO :: Localized ....
     private String formatAddOperation(FileDiffExplainer explainer) {
         return "<span class=\"diff-add\">New file [%s] added to the publication. Access is [%s]</span>"
-            .formatted(explainer.getRevised().getFilename(), explainer.getRevised().getAccess());
+            .formatted(
+                StringEscapeUtils.escapeHtml4(explainer.getRevised().getFilename()),
+                StringEscapeUtils.escapeHtml4(explainer.getRevised().getAccess())
+            );
     }
 
     // TODO :: Localized ....
     private String formatRemoveOperation(FileDiffExplainer explainer) {
         return "<span class=\"diff-remove\">The file [%s] has been removed from the publication. Access was [%s]</span>"
-            .formatted(explainer.getOriginal().getFilename(), explainer.getOriginal().getAccess());
+            .formatted(
+                StringEscapeUtils.escapeHtml4(explainer.getOriginal().getFilename()),
+                StringEscapeUtils.escapeHtml4(explainer.getOriginal().getAccess())
+            );
     }
 
     // TODO :: Localized ....
@@ -62,15 +69,15 @@ public class FileHTMLDiffFormatter extends HTMLDiffFormatter<FileDiffExplainer> 
         List<String> parts = new ArrayList<>();
         if (explainer.isFilenameChanges()) {
             parts.add("filename [%s --> %s]".formatted(
-                explainer.getOriginal().getFilename(),
-                explainer.getRevised().getFilename())
-            );
+                StringEscapeUtils.escapeHtml4(explainer.getOriginal().getFilename()),
+                StringEscapeUtils.escapeHtml4(explainer.getRevised().getFilename())
+            ));
         }
         if (explainer.isAccessChanges()) {
             parts.add("access [%s --> %s]".formatted(
-                explainer.getOriginal().getAccess(),
-                explainer.getRevised().getAccess())
-            );
+                StringEscapeUtils.escapeHtml4(explainer.getOriginal().getAccess()),
+                StringEscapeUtils.escapeHtml4(explainer.getRevised().getAccess())
+            ));
         }
         if (explainer.isContentChanges()) {
             parts.add("file content was updated");
@@ -78,9 +85,9 @@ public class FileHTMLDiffFormatter extends HTMLDiffFormatter<FileDiffExplainer> 
 
         return (parts.isEmpty())
             ? "<span class=\"diff-update\">The file [%s] has been updated</span>".formatted(
-                explainer.getRevised().getFilename())
+                StringEscapeUtils.escapeHtml4(explainer.getRevised().getFilename()))
             : "<span class=\"diff-update\">The file [%s] has been updated :: %s</span>".formatted(
-                explainer.getRevised().getFilename(),
+                StringEscapeUtils.escapeHtml4(explainer.getRevised().getFilename()),
                 String.join(", ", parts));
     }
 
