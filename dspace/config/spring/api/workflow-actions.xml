@@ -4,6 +4,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
+    <bean id="anonymizeauthorsactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.UCLouvainAnonymizeAuthorsAction" scope="prototype"/>
     <bean id="claimactionAPI" class="org.dspace.xmlworkflow.state.actions.userassignment.ClaimAction" scope="prototype"/>
     <bean id="sendemailattestationactionAPI" class="org.dspace.uclouvain.pdfAttestationGenerator.xmlworkflow.actions.SendEmailAttestationAction" scope="prototype" />
     <bean id="createbitstreamaccesscommentactionAPI" class="org.dspace.uclouvain.xmlworkflow.actions.CreateBitstreamAccessCommentAction" scope="prototype" />
@@ -66,6 +67,12 @@
         <constructor-arg type="java.lang.String" value="reviewaction"/>
         <property name="processingAction" ref="reviewactionAPI"/>
         <property name="requiresUI" value="true"/>
+    </bean>
+
+    <bean id="anonymizeauthorsaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
+        <constructor-arg type="java.lang.String" value="anonymizeauthorsaction"/>
+        <property name="processingAction" ref="anonymizeauthorsactionAPI"/>
+        <property name="requiresUI" value="false"/>
     </bean>
 
     <bean id="editaction" class="org.dspace.xmlworkflow.state.actions.WorkflowActionConfig" scope="prototype">
