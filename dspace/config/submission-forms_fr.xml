@@ -19,6 +19,20 @@
       <row>
         <field>
           <dc-schema>authors</dc-schema>
+          <dc-element>anonymize</dc-element>
+          <repeatable>false</repeatable>
+          <label>Anonymiser cet·te auteur·rice</label>
+          <input-type>checkbox</input-type>
+          <hint>Cocher cette case pour remplacer le nom d’auteur par le terme «Anonyme» dans la notice publique du mémoire.</hint>
+          <visibility>submission</visibility>
+          <settings>
+            <setting name="showFieldLabel">false</setting>
+          </settings>
+        </field>
+      </row> 
+      <row>
+        <field>
+          <dc-schema>authors</dc-schema>
           <dc-element>email</dc-element>
           <dc-qualifier>official</dc-qualifier>
           <repeatable>false</repeatable>
