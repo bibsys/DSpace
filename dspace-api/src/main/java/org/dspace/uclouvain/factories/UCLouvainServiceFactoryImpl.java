@@ -12,6 +12,7 @@ import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
+import org.dspace.uclouvain.services.DegreeService;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.FacultyManagerService;
 import org.dspace.uclouvain.services.MasterThesisService;
@@ -46,6 +47,8 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
     private MasterThesisService masterThesisService;
     @Autowired(required = true)
     private UCLouvainCitationsService uclouvainCitationsService;
+    @Autowired
+    private DegreeService degreeService;
 
     @Override
     public UCLouvainResourcePolicyService getResourcePolicyService() {
@@ -88,4 +91,7 @@ public class UCLouvainServiceFactoryImpl extends UCLouvainServiceFactory {
         return uclouvainCitationsService;
     }
 
+    public DegreeService getDegreeService() {
+        return degreeService;
+    }
 }
