@@ -321,6 +321,56 @@
         </field>
       </row>
     </form>
+    <form name="master-thesis-cataretro-masterthesis-degree-label">
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>label</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Degree label</label>
+          <input-type>onebox</input-type>
+          <hint>Enter a degree label related to this master thesis.</hint>
+          <required>You must enter a degree label.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Degree code</label>
+          <input-type>onebox</input-type>
+          <hint>Enter a degree code related to this master thesis.</hint>
+          <required>You must enter a degree code.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>rootdegree</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Root degree code</label>
+          <input-type>onebox</input-type>
+          <hint>Enter a root degree code related to this master thesis.</hint>
+          <required>You must enter a root degree code.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>rootdegree</dc-element>
+          <dc-qualifier>label</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Root degree label</label>
+          <input-type>onebox</input-type>
+          <hint>Enter a root degree label related to this master thesis.</hint>
+          <required>You must enter a root degree label.</required>
+        </field>
+      </row>
+    </form>
     <form name="master-thesis-cataretro">
       <row>
         <field>
@@ -424,8 +474,8 @@
           <dc-element>degree</dc-element>
           <dc-qualifier>label</dc-qualifier>
           <repeatable>true</repeatable>
-          <label>Degree label</label>
-          <input-type>onebox</input-type>
+          <label>Degree</label>
+          <input-type>group</input-type>
           <hint>Enter degree labels related to this master thesis.</hint>
         </field>
       </row>
