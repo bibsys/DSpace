@@ -13,6 +13,7 @@ import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
+import org.dspace.uclouvain.services.DegreeService;
 import org.dspace.uclouvain.services.DirectLinkService;
 import org.dspace.uclouvain.services.FacultyManagerService;
 import org.dspace.uclouvain.services.MasterThesisService;
@@ -37,6 +38,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract FacultyManagerService getFacultyManagerService();
     public abstract MasterThesisService getMasterThesisService();
     public abstract UCLouvainCitationsService getCitationsService();
+    public abstract DegreeService getDegreeService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory

@@ -320,6 +320,56 @@
         </field>
       </row>
     </form>
+    <form name="master-thesis-cataretro-masterthesis-degree-label">
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>label</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Libellé diplôme</label>
+          <input-type>onebox</input-type>
+          <hint>Entrez un libellé de diplôme lié au mémoire.</hint>
+          <required>Veuillez entrer un libellé de diplôme.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>degree</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Code diplôme</label>
+          <input-type>onebox</input-type>
+          <hint>Entrez un code de diplôme lié au mémoire.</hint>
+          <required>Veuillez entrer un code de diplôme.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>rootdegree</dc-element>
+          <dc-qualifier>code</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Code diplôme racine</label>
+          <input-type>onebox</input-type>
+          <hint>Entrez un code racine de diplôme lié au mémoire.</hint>
+          <required>Veuillez entrer un code racine de diplôme.</required>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>masterthesis</dc-schema>
+          <dc-element>rootdegree</dc-element>
+          <dc-qualifier>label</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Libellé diplôme racine</label>
+          <input-type>onebox</input-type>
+          <hint>Entrez un libellé racine de diplôme lié au mémoire.</hint>
+          <required>Veuillez entrer un libellé racine de diplôme.</required>
+        </field>
+      </row>
+    </form>
     <form name="master-thesis-cataretro">
       <row>
         <field>
@@ -424,7 +474,7 @@
           <dc-qualifier>label</dc-qualifier>
           <repeatable>true</repeatable>
           <label>Diplôme</label>
-          <input-type>onebox</input-type>
+          <input-type>group</input-type>
           <hint>Entrez le ou les noms des diplômes reliés à ce mémoire. (Exemple: "Master [120] en imagerie médicale")</hint>
         </field>
       </row>
