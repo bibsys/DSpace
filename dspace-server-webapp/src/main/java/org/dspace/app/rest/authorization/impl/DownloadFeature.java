@@ -18,7 +18,12 @@ import org.dspace.app.rest.security.DSpaceRestPermission;
 import org.dspace.app.rest.utils.Utils;
 import org.dspace.content.Bitstream;
 import org.dspace.content.DSpaceObject;
+import org.dspace.content.Item;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
+import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.core.utils.AuthorizationUtils;
+import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +32,10 @@ import org.springframework.stereotype.Component;
 /**
  * The download bitstream feature. It can be used to verify if a bitstream can be downloaded.
  * Authorization is granted if the current user has READ permissions on the given bitstream.
+ * <p>
+ * Additionally, users with the librarian role are granted download access to all archived
+ * bitstreams when the feature is enabled via {@code uclouvain.feature.librarian.bitstream.read.enabled}.
+ * </p>
  * 
  * @author Mykhaylo Boychuk (mykhaylo.boychuk at 4science.it)
  */
@@ -47,6 +56,15 @@ public class DownloadFeature implements AuthorizationFeature {
 
     @Autowired
     private Utils utils;
+
+    @Autowired
+    private ConfigurationService configurationService;
+
+    @Autowired
+    private AuthorizationUtils authorizationUtils;
+
+    @Autowired
+    private ItemUtils itemUtils;
 
     @Override
     @SuppressWarnings("rawtypes")
@@ -74,6 +92,25 @@ public class DownloadFeature implements AuthorizationFeature {
                     "ignoring extra grant given by cris",
                     e);
         }
+
+        // Check if librarian has access to download archived bitstreams
+        if (isLibrarianDownloadEnabled() && object instanceof BitstreamRest) {
+            try {
+                EPerson currentUser = context.getCurrentUser();
+                if (currentUser != null && authorizationUtils.isLibrarian(context, currentUser)) {
+                    DSpaceObject dSpaceObject = (DSpaceObject) utils.getDSpaceAPIObjectFromRest(context, object);
+                    if (dSpaceObject instanceof Bitstream bitstream) {
+                        Item item = itemUtils.getItemFromBitstream(context, bitstream);
+                        if (item != null && !ItemUtils.isWorkspace(context, item)) {
+                            return true;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.warn("We got an exception during the librarian download evaluation, safe fallback", e);
+            }
+        }
+
         return false;
     }
 
@@ -84,4 +121,13 @@ public class DownloadFeature implements AuthorizationFeature {
         };
     }
 
+    /**
+     * Check if the librarian bitstream download feature is enabled.
+     *
+     * @return true if enabled (default: false), false otherwise
+     */
+    protected boolean isLibrarianDownloadEnabled() {
+        return configurationService.getBooleanProperty(
+            "uclouvain.feature.librarian.bitstream.read.enabled", false);
+    }
 }
