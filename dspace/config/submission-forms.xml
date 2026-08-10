@@ -1269,9 +1269,6 @@
           <style>mt-2 border-top w-100 pt-2</style>
           <input-type>checkbox</input-type>
           <hint>Check this box if the document has additional authors than those mentioned above</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
         </field>
       </row>
     </form>
@@ -1490,14 +1487,11 @@
         <field>
           <dc-schema>publication</dc-schema>
           <dc-element>isAbstract</dc-element>
-          <label>Is abstract</label>
+          <label>Document is an abstract</label>
           <type-bind type-bind-field="dc.type.maintype">text::conference-speech</type-bind>
           <type-bind type-bind-field="publication.speech.status">published_in_book,published_in_serial</type-bind>
           <input-type>checkbox</input-type>
-          <hint>This document is only an abstract.</hint>
-          <settings>
-            <setting name="showFieldLabel">false</setting>
-          </settings>
+          <hint>Check this box if this document is only an abstract.</hint>
         </field>
       </row>
       <!-- Serial fields -->
