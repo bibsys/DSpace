@@ -768,4 +768,15 @@ public class Email {
         }
         return mimeType;
     }
+
+    @Override
+    public String toString() {
+        return "Template :: " + template.getName()
+            + ", Subject :: " + subject
+            + ", Recipients :: " + (recipients.isEmpty() ? "No recipient" : recipients)
+            + ", CC-Adresses :: " + (ccAddresses.isEmpty() ? "No cc-address" : ccAddresses)
+            + ", Reply-to :: " + replyTo
+            + ", Number of attachments :: " + attachments.size()
+            + ", Number of more attachments :: " + moreAttachments.size();
+    }
 }

@@ -111,6 +111,7 @@ public abstract class AbstractUCLouvainEmail implements UCLouvainEmail {
             filterRecipients(getRecipientAddresses()).forEach(email::addRecipient);
             filterRecipients(getCCAddresses()).forEach(email::addCcAddress);
             generateEmail(email, item); // build email content and build additional arguments
+            log.info("Sending email: {}", email);
             email.send();
         } catch (IOException | MessagingException e) {
             throw new SendEmailException("Failed to call .send() on the generated email.", e);

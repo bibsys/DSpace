@@ -60,6 +60,8 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
             "unknown", "Accès inconnu | Unknown access"
     );
 
+    private List<String> forcedCC;
+
     // ATTRIBUTES ======================================================================================================
     protected String authorNameField = configService.getProperty(
             "uclouvain.global.metadata.authorname.field", "dc.contributor.author");
@@ -84,6 +86,7 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
     // METHODS =========================================================================================================
     public ThesisAuthorAttestationEmail(Context context, Item item) throws EmailFailedInitException {
         super(context, item);
+        forcedCC = Arrays.asList(getConfigurationAttributes("additional-cc-addresses"));
     }
 
     public boolean isValidForItem(Context context, Item item) {
@@ -148,6 +151,7 @@ public class ThesisAuthorAttestationEmail extends GenericThesisEmail {
         if (log.isDebugEnabled()) {
             log.debug("Initial CC recipient addresses are :: " + String.join(", ", recipients));
         }
+        recipients.addAll(forcedCC);
         return recipients;
     }
 
