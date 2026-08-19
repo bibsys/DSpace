@@ -1,27 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:util="http://www.springframework.org/schema/util"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd" >
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+  <!-- STREAM DISSEMINATION CROSSWALKS CONFIGURATION -->
+  <bean class="org.dspace.content.integration.crosswalks.StreamDisseminationCrosswalkMapper">
+    <constructor-arg>
+      <map>
+        <!-- <entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex"></entry>
+				<entry key="endnote" value-ref="referCrosswalkEndnote"></entry>-->
 
-	<!-- STREAM DISSEMINATION CROSSWALKS CONFIGURATION -->
-	
-	<bean class="org.dspace.content.integration.crosswalks.StreamDisseminationCrosswalkMapper">
-		<constructor-arg>
-			<map>
-				<entry key="bibtex" value-ref="cslItemDataCrosswalkBibtex"></entry>
-				<entry key="endnote" value-ref="referCrosswalkEndnote"></entry>
-				
-				<entry key="publication-cerif-xml" value-ref="referCrosswalkPublicationCerifXml"></entry>
+				<!-- <entry key="publication-cerif-xml" value-ref="referCrosswalkPublicationCerifXml"></entry>
 				<entry key="publication-json" value-ref="cslItemDataCrosswalkJson"></entry>
-				<entry key="publication-pdf" value-ref="pdfCrosswalkPublication"></entry>
-				<entry key="publication-csv" value-ref="csvCrosswalkPublication"></entry>
-				<entry key="publication-xls" value-ref="xlsCrosswalkPublication"></entry>
-				<entry key="publication-apa" value-ref="cslItemDataCrosswalkApa"></entry>
-				<entry key="publication-chicago" value-ref="cslItemDataCrosswalkChicago"></entry>
-				<entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry>
+				<entry key="publication-pdf" value-ref="pdfCrosswalkPublication"></entry> -->
+				<entry key="master-thesis-csv" value-ref="csvCrosswalkPublication"/>
+				<entry key="master-thesis-xls" value-ref="xlsCrosswalkPublication"/>
+				<entry key="master-thesis-apa" value-ref="cslItemDataCrosswalkApa"/>
+				<entry key="master-thesis-apa-html" value-ref="cslItemDataCrosswalkApaHtml"/>
+        		<entry key="master-thesis-apa-json" value-ref="jsonPublicationCrosswalkApa"/>
+				<entry key="master-thesis-ris-single" value-ref="referCrosswalkRISSingle"/>
+				<entry key="master-thesis-ris" value-ref="referCrosswalkRISMultiple"/>
+				<!-- <entry key="publication-chicago" value-ref="cslItemDataCrosswalkChicago"></entry> -->
+				<!-- <entry key="publication-datacite-xml" value-ref="referCrosswalkPublicationDataciteXml"></entry> -->
 
-				<entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
+				<!-- <entry key="person-xml" value-ref="referCrosswalkPersonXml"></entry>
 				<entry key="person-cerif-xml" value-ref="referCrosswalkPersonCerifXml"></entry>
 				<entry key="person-json" value-ref="referCrosswalkPersonJson"></entry>
 				<entry key="person-pdf" value-ref="pdfCrosswalkPerson"></entry>
@@ -54,21 +53,21 @@
 				<entry key="funding-pdf" value-ref="pdfCrosswalkFunding"></entry>
 				<entry key="funding-csv" value-ref="csvCrosswalkFunding"></entry>
 				<entry key="funding-xls" value-ref="xlsCrosswalkFunding"></entry>
-				
+
 				<entry key="patent-cerif-xml" value-ref="referCrosswalkPatentCerifXml"></entry>
 				<entry key="patent-json" value-ref="referCrosswalkPatentJson"></entry>
 				<entry key="patent-pdf" value-ref="pdfCrosswalkPatent"></entry>
 				<entry key="patent-csv" value-ref="csvCrosswalkPatent"></entry>
 				<entry key="patent-xls" value-ref="xlsCrosswalkPatent"></entry>
                 <entry key="patent-datacite-xml" value-ref="referCrosswalkPatentDataciteXml"></entry>
-				
+
 				<entry key="product-cerif-xml" value-ref="referCrosswalkDatasetCerifXml"></entry>
                 <entry key="product-datacite-xml" value-ref="referCrosswalkDatasetDataciteXml"></entry>
-				
+
 				<entry key="event-cerif-xml" value-ref="referCrosswalkEventCerifXml"></entry>
-				
+
 				<entry key="collection-xls" value-ref="xlsCrosswalkCollection"></entry>
-                <entry key="item-zip" value-ref="zipCrosswalk"></entry>
+                <entry key="item-zip" value-ref="zipCrosswalk"></entry> -->
 			</map>
 		</constructor-arg>
 	</bean>
@@ -80,27 +79,75 @@
 		<property name="fileName" value="references.bib"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE}"/>
 	</bean>
-	
+
+    <!-- APA ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkApa">
 		<property name="style" value="crosswalks/csl/apa.csl"/>
 		<property name="mimeType" value="text/plain"/>
 		<property name="format" value="text"/>
-		<property name="fileName" value="publications.txt"/>
+		<property name="fileName" value="master-theses.txt"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+		<property name="entityType" value="MasterThesis"/>
+        <property name="exposed" value="true"/>
 	</bean>
-	
+    <bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkApaHtml">
+        <property name="style" value="crosswalks/csl/apa.csl"/>
+        <property name="mimeType" value="text/html"/>
+        <property name="format" value="html"/>
+        <property name="fileName" value="master-theses.html"/>
+        <property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="entityType" value="MasterThesis"/>
+		<property name="weight" value="10"/>
+		<property name="exposed" value="false"/>
+    </bean>
+
+	<bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="jsonPublicationCrosswalkApa">
+		<property name="templateFileName" value="crosswalks/template/uclouvain/publication-citation-json.template"/>
+		<property name="mimeType" value="application/json; charset=UTF-8"/>
+		<property name="fileName" value="master-theses.json"/>
+		<property name="entityType" value="MasterThesis"/>
+		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+		<property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-json.template"/>
+		<property name="converter" ref="jsonValueConverter"/>
+		<property name="linesPostProcessor" ref="jsonPostProcessor"/>
+		<property name="exposed" value="false"/>
+	</bean>
+
+    <!-- Chicago ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkChicago">
 		<property name="style" value="chicago-library-list.csl"/>
 		<property name="mimeType" value="text/plain"/>
 		<property name="format" value="text"/>
-		<property name="fileName" value="publications.txt"/>
+		<property name="fileName" value="master-theses.txt"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+        <property name="exposed" value="false"/>
 	</bean>
 	
 	<bean class="org.dspace.content.integration.crosswalks.CSLItemDataCrosswalk" id="cslItemDataCrosswalkJson">
 		<property name="mimeType" value="application/json; charset=UTF-8"/>
-		<property name="fileName" value="publications.json"/>
+		<property name="fileName" value="master-theses.json"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE_AND_MULTIPLE}"/>
+	</bean>
+
+	<!-- RIS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkRISSingle">
+		<property name="templateFileName" value="crosswalks/template/ris.template"/>
+		<property name="mimeType" value="application/x-research-info-systems; charset=UTF-8"/>
+		<property name="fileName" value="master-thesis.ris"/>
+		<property name="entityType" value="MasterThesis"/>
+		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).SINGLE}"/>
+		<property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-generic.template"/>
+		<property name="converter" ref="risValueConverter"/>
+		<property name="exposed" value="false"/>
+	</bean>
+	<bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkRISMultiple">
+		<property name="templateFileName" value="crosswalks/template/ris.template"/>
+		<property name="mimeType" value="application/x-research-info-systems; charset=UTF-8"/>
+		<property name="fileName" value="master-theses.ris"/>
+		<property name="entityType" value="MasterThesis"/>
+		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).MULTIPLE}"/>
+		<property name="multipleItemsTemplateFileName" value="crosswalks/template/publications-generic.template"/>
+		<property name="converter" ref="risValueConverter"/>
 	</bean>
 
 	<bean class="org.dspace.content.integration.crosswalks.ReferCrosswalk" id="referCrosswalkPersonXml">
@@ -413,16 +460,16 @@
 	
 	<bean class="org.dspace.content.integration.crosswalks.CsvCrosswalk" id="csvCrosswalkPublication">
 		<property name="templateFileName" value="crosswalks/template/publication-table.template"/>
-		<property name="fileName" value="publications.csv"/>
-		<property name="entityType" value="Publication"/>
+		<property name="fileName" value="master-theses.csv"/>
+		<property name="entityType" value="MasterThesis"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).MULTIPLE}"/>
 	</bean>
 
 	<bean class="org.dspace.content.integration.crosswalks.XlsCrosswalk" id="xlsCrosswalkPublication">
 		<property name="templateFileName" value="crosswalks/template/publication-table.template"/>
-		<property name="fileName" value="publications.xls"/>
+		<property name="fileName" value="master-theses.xls"/>
 		<property name="sheetName" value="Publications"/>
-		<property name="entityType" value="Publication"/>
+		<property name="entityType" value="MasterThesis"/>
 		<property name="crosswalkMode" value="#{T(org.dspace.content.crosswalk.CrosswalkMode).MULTIPLE}"/>
 	</bean>
 
@@ -526,6 +573,7 @@
 
     <bean class="org.dspace.content.integration.crosswalks.METSStreamDisseminationCrosswalk" id="metsCrosswalk"/>
 
+	<bean class="org.dspace.uclouvain.content.integration.crosswalks.converter.RisSanitizeConverter" id="risValueConverter"/>
 	<bean class="org.dspace.content.integration.crosswalks.converter.XmlValueConverter" id="xmlValueConverter" />
 	<bean class="org.dspace.content.integration.crosswalks.converter.JsonValueConverter" id="jsonValueConverter" />
 	
@@ -552,6 +600,7 @@
                 <entry key="metric" value-ref="virtualFieldMetric" />
                 <entry key="citations" value-ref="virtualFieldCitations" />
                 <entry key="place" value-ref="virtualFieldAtPlace" />
+				<entry key="handleLink" value-ref="virtualFieldHandleLink"/>
 			</map>
 		</constructor-arg>
 	</bean>
@@ -559,6 +608,7 @@
     <bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldToEnhancedMetadata"
         id="virtualFieldToEnhancedMetadata" />
 	<bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldId" id="virtualFieldId"/>
+	<bean class="org.dspace.uclouvain.content.integration.crosswalks.virtualfields.VirtualFieldHandleLink" id="virtualFieldHandleLink"/>
 	<bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldAuthority" id="virtualFieldAuthority"/>
 	<bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldPrimaryDOI" id="virtualFieldPrimaryDOI"/>
 	<bean class="org.dspace.content.integration.crosswalks.virtualfields.VirtualFieldAlternativeDOI" id="virtualFieldAlternativeDOI"/>

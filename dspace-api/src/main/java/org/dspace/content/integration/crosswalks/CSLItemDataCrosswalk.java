@@ -58,11 +58,27 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
 
     private String fileName;
 
+    private boolean exposed = true;
+
+    private int weight = 50;
+
     private CrosswalkMode crosswalkMode;
+
+    private String entityType = "Publication";
+
+    @Override
+    public boolean isExposed() {
+        return exposed;
+    }
+
+    @Override
+    public int getWeight() {
+        return this.weight;
+    }
 
     @Override
     public boolean canDisseminate(Context context, DSpaceObject dso) {
-        return dso.getType() == Constants.ITEM && isPublication((Item) dso);
+        return dso.getType() == Constants.ITEM && isTypeValid((Item) dso);
     }
 
     @Override
@@ -131,8 +147,8 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
         return dSpaceListItemDataProviderObjectFactory.getObject();
     }
 
-    private boolean isPublication(Item item) {
-        return "Publication".equals(itemService.getEntityType(item));
+    private boolean isTypeValid(Item item) {
+        return entityType.equals(itemService.getEntityType(item));
     }
 
     public void setMimeType(String mimeType) {
@@ -159,9 +175,21 @@ public class CSLItemDataCrosswalk implements ItemExportCrosswalk {
         return Optional.ofNullable(this.crosswalkMode).orElse(ItemExportCrosswalk.super.getCrosswalkMode());
     }
 
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
+    }
+
+    public void setWeight(int weight) {
+        this.weight = weight;
+    }
+
     @Override
     public Optional<String> getEntityType() {
-        return Optional.of("Publication");
+        return Optional.of(entityType);
+    }
+
+    public void setEntityType(String entityType) {
+        this.entityType = entityType;
     }
 
 }

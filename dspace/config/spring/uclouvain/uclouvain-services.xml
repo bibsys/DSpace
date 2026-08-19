@@ -42,6 +42,7 @@
     <bean id="uclouvainResourcePolicyService" class="org.dspace.uclouvain.services.UCLouvainResourcePolicyServiceImpl">
         <property name="resourcePolicyPriorities" ref="resourcePolicyPriorities"/>
     </bean>
+    <bean id="uclouvainCitationsService" class="org.dspace.uclouvain.citations.UCLouvainCitationsServiceImpl"/>
 
     <!-- UTILS ============================================================ -->
     <bean id="itemUtils" class="org.dspace.uclouvain.core.utils.ItemUtils" />
