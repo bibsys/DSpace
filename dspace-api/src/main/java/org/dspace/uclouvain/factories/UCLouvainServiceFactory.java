@@ -8,6 +8,7 @@
 package org.dspace.uclouvain.factories;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.uclouvain.citations.UCLouvainCitationsService;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
@@ -35,6 +36,7 @@ public abstract  class UCLouvainServiceFactory {
     public abstract MailMetadataParserService getMailMetadataParserService();
     public abstract FacultyManagerService getFacultyManagerService();
     public abstract MasterThesisService getMasterThesisService();
+    public abstract UCLouvainCitationsService getCitationsService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory
