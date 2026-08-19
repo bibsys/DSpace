@@ -28,6 +28,8 @@ public class ItemExportFormatRestConverter implements DSpaceConverter<ItemExport
         itemExportFormatRest.setMolteplicity(modelObject.getMolteplicity());
         itemExportFormatRest.setEntityType(modelObject.getEntityType());
         itemExportFormatRest.setMimeType(modelObject.getMimeType());
+        itemExportFormatRest.setExposed(modelObject.isExposed());
+        itemExportFormatRest.setWeight(modelObject.getWeight());
         return itemExportFormatRest;
     }
 

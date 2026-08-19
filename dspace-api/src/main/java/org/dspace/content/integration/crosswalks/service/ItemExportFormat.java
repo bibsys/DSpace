@@ -18,6 +18,8 @@ public class ItemExportFormat {
     private String mimeType;
     private String entityType;
     private String molteplicity;
+    private boolean exposed = true;
+    private int weight = 50;
 
     public String getId() {
         return id;
@@ -25,22 +27,39 @@ public class ItemExportFormat {
     public void setId(String id) {
         this.id = id;
     }
+
     public String getMimeType() {
         return mimeType;
     }
     public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
+
     public String getEntityType() {
         return entityType;
     }
     public void setEntityType(String entityTypeId) {
         this.entityType = entityTypeId;
     }
+
     public String getMolteplicity() {
         return molteplicity;
     }
     public void setMolteplicity(String molteplicity) {
         this.molteplicity = molteplicity;
+    }
+
+    public void setExposed(boolean exposed) {
+        this.exposed = exposed;
+    }
+    public boolean isExposed() {
+        return exposed;
+    }
+
+    public int getWeight() {
+        return weight;
+    }
+    public void setWeight(int weight) {
+        this.weight = weight;
     }
 }
