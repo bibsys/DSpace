@@ -33,6 +33,7 @@ import org.dspace.core.Context;
 import org.dspace.eperson.InvalidReCaptchaException;
 import org.dspace.orcid.exception.OrcidValidationException;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.citations.UnknownCitationFormatException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -268,6 +269,15 @@ public class DSpaceApiExceptionControllerAdvice extends ResponseEntityExceptionH
         // something. We can't do anything. To avoid excessive stack traces
         // in log, just print a simple message
         log.warn("ClientAbortException");
+    }
+
+    @ExceptionHandler(UnknownCitationFormatException.class)
+    protected void handleUnknownCitationFormatException(
+        HttpServletRequest request,
+        HttpServletResponse response,
+        UnknownCitationFormatException ex
+    ) throws IOException {
+        sendErrorResponse(request, response, ex, ex.getLocalizedMessage(), HttpStatus.BAD_REQUEST.value());
     }
 
     @ExceptionHandler(Exception.class)

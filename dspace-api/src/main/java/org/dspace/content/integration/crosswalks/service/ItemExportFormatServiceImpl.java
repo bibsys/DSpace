@@ -88,6 +88,8 @@ public class ItemExportFormatServiceImpl implements ItemExportFormatService {
         itemExportFormatRest.setMolteplicity(sdc.getCrosswalkMode().name());
         sdc.getEntityType().ifPresent(itemExportFormatRest::setEntityType);
         itemExportFormatRest.setMimeType(sdc.getMIMEType());
+        itemExportFormatRest.setExposed(sdc.isExposed());
+        itemExportFormatRest.setWeight(sdc.getWeight());
         return itemExportFormatRest;
     }
 
