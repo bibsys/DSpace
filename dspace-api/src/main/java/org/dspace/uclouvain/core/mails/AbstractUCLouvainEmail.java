@@ -101,16 +101,29 @@ public abstract class AbstractUCLouvainEmail implements UCLouvainEmail {
     public void sendEmail() throws EmailGenerationException, SendEmailException {
         if (!isValidForItem(context, item)) {
             throw new EmailGenerationException(
-                "Item [" + item.getID() + "] is not processable by email class " + this.getClass()
+                "Item [" + item.getID() + "] is not processable by email class " + getClass()
             );
         }
+
+        List<String> recipients = filterRecipients(getRecipientAddresses()).toList();
+        List<String> ccRecipients = filterRecipients(getCCAddresses()).toList();
+
+        if (recipients.isEmpty()) {
+            log.warn("Not recipient found for item [{}], canceling email delivery for {}.",
+                item.getID(), getClass().getSimpleName());
+            return;
+        }
+
         try {
             Email email = Email.getEmail(getTemplatePath());
             email.setSubject(buildMailSubject());
             email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
-            filterRecipients(getRecipientAddresses()).forEach(email::addRecipient);
-            filterRecipients(getCCAddresses()).forEach(email::addCcAddress);
+
+            recipients.forEach(email::addRecipient);
+            ccRecipients.forEach(email::addCcAddress);
+
             generateEmail(email, item); // build email content and build additional arguments
+            log.info("Sending email: {}", email);
             email.send();
         } catch (IOException | MessagingException e) {
             throw new SendEmailException("Failed to call .send() on the generated email.", e);
