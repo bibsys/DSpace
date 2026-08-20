@@ -8,8 +8,6 @@
 package org.dspace.uclouvain.core.mails;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,6 +25,7 @@ import org.dspace.core.Email;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.mails.metadataParser.MailMetadataParserService;
+import org.dspace.uclouvain.core.utils.DateUtils;
 import org.dspace.uclouvain.core.utils.MetadataUtils;
 import org.dspace.uclouvain.exceptions.EmailFailedInitException;
 import org.dspace.uclouvain.exceptions.EmailGenerationException;
@@ -117,7 +116,7 @@ public abstract class AbstractUCLouvainEmail implements UCLouvainEmail {
         try {
             Email email = Email.getEmail(getTemplatePath());
             email.setSubject(buildMailSubject());
-            email.addArgument(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy - HH:mm:ss")));
+            email.addArgument(DateUtils.getLocaleDateString("dd/MM/yyyy - HH:mm:ss"));
 
             recipients.forEach(email::addRecipient);
             ccRecipients.forEach(email::addCcAddress);
