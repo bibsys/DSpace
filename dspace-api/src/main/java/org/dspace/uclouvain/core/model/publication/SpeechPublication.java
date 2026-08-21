@@ -57,8 +57,13 @@ public class SpeechPublication extends Publication {
     }
 
     public boolean isPublished() {
-        return itemService.hasMetadata(item, JOURNAL_TITLE_FIELD)
-            || itemService.hasMetadata(item, HOST_DOCUMENT_TITLE_FIELD);
+        if (publishedInSerial()) {
+            return itemService.hasMetadata(item, JOURNAL_TITLE_FIELD);
+        }
+        if (publishedInBook()) {
+            return itemService.hasMetadata(item, HOST_DOCUMENT_TITLE_FIELD);
+        }
+        return false;
     }
 
     public boolean publishedInSerial() {
@@ -83,7 +88,7 @@ public class SpeechPublication extends Publication {
         if (pubDate == null) {
             return VALIDATION_FAILURE_NO_DATE;
         }
-        if (isPublished() && pubDate.getYear() >= DECREE_YEAR) {
+        if (publishedInSerial() && pubDate.getYear() >= DECREE_YEAR) {
             try {
                 return (itemService.hasUploadedFiles(item))
                     ? validateFWBFileAccess(context)
