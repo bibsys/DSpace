@@ -74,8 +74,9 @@ public class AttestationAuthorizationService {
         if (currentUser == null) {
             return false;
         }
-        return (this.authorizeService.isAdmin(context, dsItem))
+        return authorizeService.isAdmin(context, dsItem)
             || (dsItem.getSubmitter() == currentUser)
-            || (this.authUtils.isManagerOfItem(context, dsItem, currentUser));
+            || authUtils.isManagerOfItem(context, dsItem, currentUser)
+            || authUtils.isLibrarian(context, currentUser);
     }
 }
