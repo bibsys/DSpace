@@ -43,28 +43,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A command-line tool to link versions.
- *
- * USAGE:
- *   dspace dsrun org.dspace.uclouvain.administer.ImportVersioning -f [path_file]
- *
- * ARGUMENTS:
- *   -f:       Path to JSON file.
- *
- * @author Ayoub Chaalane <ayoub.chaalane@uclouvain.be>
- * @version $Revision$
+ * A command-line tool to link versions in DSpace 8.x without creating duplicates or breaking history.
  */
 public class ImportVersioning extends AbstractCLICommand {
 
-    // CLASS CONSTANTS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     private static final Logger logger = LoggerFactory.getLogger(ImportVersioning.class);
-    /** CLI available options */
+
     private static final Option OPT_PERSON = Option.builder("e")
             .longOpt("eperson")
             .hasArg(true)
             .desc("email address of eperson doing importing")
             .required(true)
             .build();
+
     private static final Option OPT_FILE = Option.builder("f")
             .longOpt("file")
             .hasArg(true)
@@ -72,8 +63,8 @@ public class ImportVersioning extends AbstractCLICommand {
             .required(true)
             .build();
 
-     // CLASS ATTRIBUTES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static final String USAGE_DESCRIPTION = "A command-line tool for importing versioning";
+
     private ItemService itemService = ContentServiceFactory.getInstance().getItemService();
     private VersioningService versioningService = VersionServiceFactory.getInstance().getVersionService();
     private VersionHistoryService vsHistoryService = VersionServiceFactory.getInstance().getVersionHistoryService();
@@ -95,73 +86,120 @@ public class ImportVersioning extends AbstractCLICommand {
         context.turnOffAuthorisationSystem();
 
         EPerson ePerson = Optional.ofNullable(epersonService.findByEmail(context, epersonEmail))
-            .orElseThrow(() -> new UserNotFoundException("Not found User : " + epersonEmail));
+            .orElseThrow(() -> new UserNotFoundException("User not found: " + epersonEmail));
         context.setCurrentUser(ePerson);
-        JsonNode root = new ObjectMapper().readTree(new FileInputStream(new File(fileString)));
 
+        JsonNode root = new ObjectMapper().readTree(new FileInputStream(new File(fileString)));
         logger.info("Starting version linking from JSON File: " + fileString);
 
         Map<String, List<JsonNode>> grouped = groupByRequestedUuid(root);
 
-        for (String requestedUuid : grouped.keySet()) {
-            logger.info("Processing item: " + requestedUuid);
-            Item item = findItemByIdentifierOer(context, requestedUuid);
-            if (item == null) {
-                logger.error("Item not found in DSpace: " + requestedUuid);
+        int groupIndex = 0;
+        for (Map.Entry<String, List<JsonNode>> entry : grouped.entrySet()) {
+            groupIndex++;
+            String requestedUuid = entry.getKey();
+            List<JsonNode> versions = entry.getValue();
+
+            logger.info("Processing parent item group with requested_uuid: " + requestedUuid);
+
+            Item parentItem = findItemByIdentifierOer(context, requestedUuid);
+            if (parentItem == null) {
+                logger.error("Parent Item not found in DSpace for legacyOER: " + requestedUuid);
                 continue;
             }
 
-            VersionHistory vh = vsHistoryService.findByItem(context, item);
-            if (vh == null) {
-                vh = vsHistoryService.create(context);
-                logger.info("Created new VersionHistory for item " + requestedUuid);
-            }
-
-            List<JsonNode> versions = grouped.get(requestedUuid);
             versions.sort(Comparator.comparingInt(v -> v.get("version_number").asInt()));
+            VersionHistory vh = vsHistoryService.findByItem(context, parentItem);
+
+            if (vh == null) {
+                for (JsonNode vNode : versions) {
+                    String childUuid = vNode.get("item_id").asText();
+                    Item childCandidate = findItemByIdentifierOer(context, childUuid);
+                    if (childCandidate != null) {
+                        vh = vsHistoryService.findByItem(context, childCandidate);
+                        if (vh != null) {
+                            break;
+                        }
+                    }
+                }
+
+                if (vh == null) {
+                    vh = vsHistoryService.create(context);
+                    logger.info("Created new VersionHistory (ID: " + vh.getID()
+                        + ") for requested_uuid: " + requestedUuid);
+                }
+            }
 
             for (JsonNode node : versions) {
                 int versionNumber = node.get("version_number").asInt();
                 String versionDateString = node.get("version_date").asText();
-                String summary = node.get("version_summary").asText();
+                String summary = node.has("version_summary") ? node.get("version_summary").asText() : "";
                 String itemUUID = node.get("item_id").asText();
                 boolean inArchive = node.get("in_archive").asBoolean();
                 boolean discoverable = node.get("discoverable").asBoolean();
 
                 Item itemChild = findItemByIdentifierOer(context, itemUUID);
                 if (itemChild == null) {
-                    logger.error("Item not found in DSpace: " + itemUUID);
-                    continue;
-                }
-
-                logger.info("Linking version " + versionNumber + " for item " + itemUUID);
-
-                Version v = versioningService.getVersion(context, itemChild);
-                if (v != null) {
+                    logger.error("Child Item not found for legacyOER: " + itemUUID);
                     continue;
                 }
 
                 Date versionDate = new DCDate(versionDateString).toDate();
-                v = versioningService.createNewVersion(context, vh, itemChild, summary, versionDate, versionNumber);
+                Version currentVersion = versioningService.getVersion(context, itemChild);
+
+                if (currentVersion == null) {
+                    versioningService.createNewVersion(context, vh, itemChild, summary, versionDate, versionNumber);
+                } else {
+                    VersionHistory oldVh = currentVersion.getVersionHistory();
+
+                    if (oldVh == null || !oldVh.getID().equals(vh.getID())) {
+                        if (oldVh != null) {
+                            vsHistoryService.remove(oldVh, currentVersion);
+                            try {
+                                vsHistoryService.delete(context, oldVh);
+                            } catch (Exception e) {
+                                logger.error("Failed to delete VersionHistory ID: " + oldVh.getID(), e);
+                            }
+                        }
+
+                        currentVersion.setVersionHistory(vh);
+                        currentVersion.setSummary(summary);
+                        currentVersion.setVersionDate(versionDate);
+                        currentVersion.setVersionNumber(versionNumber);
+                        versioningService.update(context, currentVersion);
+                    } else {
+                        currentVersion.setSummary(summary);
+                        currentVersion.setVersionDate(versionDate);
+                        currentVersion.setVersionNumber(versionNumber);
+                        versioningService.update(context, currentVersion);
+                    }
+                }
 
                 itemChild.setArchived(inArchive);
                 itemChild.setDiscoverable(discoverable);
                 itemService.update(context, itemChild);
+                logger.info("Successfully attached item " + itemUUID
+                    + " as Version " + versionNumber + " in VH " + vh.getID());
+            }
 
-                logger.info("Linked version " + versionNumber + " to item " + requestedUuid);
+            try {
+                context.commit();
+            } catch (Exception e) {
+                context.rollback();
+                logger.error("Error committing versioning transaction for group " + requestedUuid, e);
             }
         }
 
         context.complete();
         context.restoreAuthSystemState();
-        logger.info("Version linking completed.");
+        logger.info("ImportVersioning completed.");
     }
 
     private Item findItemByIdentifierOer(
         Context context, String uuid
     ) throws SQLException, IOException, AuthorizeException {
         Iterator<Item> it =
-            itemService.findByMetadataField(context, "dc", "identifier", "legacyOER", uuid);
+            itemService.findUnfilteredByMetadataField(context, "dc", "identifier", "legacyOER", uuid);
         if (!it.hasNext()) {
             return null;
         }
