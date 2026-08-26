@@ -246,6 +246,7 @@ public class RabbitMQPackager extends AbstractCLICommand {
                 DSpaceObject ingestedObject = null;
                 PackageParameters pkgParams = new PackageParameters();
                 pkgParams.setWorkflowEnabled(false);
+                pkgParams.addProperty("ignoreHandle", "false");
                 if (objectToReplace != null) {
                     logger.info("\tObject already exists ? [TRUE] --> [" + Constants.typeText[objectToReplace.getType()]
                             + "#" + objectToReplace.getID() + "]");

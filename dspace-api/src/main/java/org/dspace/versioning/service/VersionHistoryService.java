@@ -9,6 +9,7 @@ package org.dspace.versioning.service;
 
 import java.sql.SQLException;
 
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
 import org.dspace.service.DSpaceCRUDService;
@@ -66,6 +67,9 @@ public interface VersionHistoryService extends DSpaceCRUDService<VersionHistory>
         throws SQLException;
 
     public void remove(VersionHistory versionHistory, Version version);
+
+    public void delete(Context context, VersionHistory versionHistory)
+        throws SQLException, AuthorizeException;
 
     /**
      * This method has a scope to verify if the logged user has permission
