@@ -65,4 +65,14 @@
         <property name="filter" ref="funding-has-at-least-one-investigator-or-one-lead-organization_filter"/>
     </bean>
     
+    <!-- CUSTOM UCLOUVAIN VALIDATORS -->
+    <bean name="masterThesisAuthorDegreeValidator" class="org.dspace.uclouvain.validation.MasterThesisAuthorDegreeValidator">
+        <property name="name" value="submission-form"/>
+        <property name="targetedSubmissionSteps">
+            <list>
+                <value>master-thesis</value>
+                <value>master-thesis-cataretro</value>
+            </list>
+        </property>
+    </bean>
 </beans>

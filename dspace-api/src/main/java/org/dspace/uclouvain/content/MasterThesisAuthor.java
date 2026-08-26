@@ -17,6 +17,7 @@ public class MasterThesisAuthor {
     public String email;
     public List<MasterThesisAuthorIdentifier> identifiers = new ArrayList<>();
     public String institution;
+    public int place;
 
     public void addIdentifier(String id_type, String value) {
         identifiers.stream().filter(id -> id.type.equalsIgnoreCase(id_type)).findFirst().ifPresent(identifiers::remove);
