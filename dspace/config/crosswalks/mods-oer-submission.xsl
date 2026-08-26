@@ -82,14 +82,6 @@
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
-    <!-- Audience -> dc.audience ============================================ -->
-    <xsl:template match="/mods:mods/mods:targetAudience">
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">dc</xsl:attribute>
-            <xsl:attribute name="element">audience</xsl:attribute>
-            <xsl:value-of select="normalize-space(.)"/>
-        </xsl:element>
-    </xsl:template>
     <!-- ABSTRACT -> dc.description.abstract ========================== -->
     <xsl:template match="/mods:mods/mods:abstract">
         <xsl:element name="dim:field">
@@ -118,10 +110,19 @@
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
+    <!-- Publisher ====================================================== -->
+    <xsl:template match="/mods:mods/mods:originInfo/mods:publisher">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">publisher</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
     <!-- IDENTIFIER =================================================== -->
     <!--   * Manage `oer` identifier -->
     <!--   * Manage `issn` identifier -->
     <!--   * Manage `isbn` identifier -->
+    <!--   * Manage `uri` identifier -->
     <!--   * Manage `other` identifier :: legacy application identifier (virtua, RERO) -->
    <xsl:template match="/mods:mods/mods:identifier[@type='legacyOER']">
         <xsl:element name="dim:field">
@@ -144,6 +145,14 @@
             <xsl:attribute name="mdschema">dc</xsl:attribute>
             <xsl:attribute name="element">identifier</xsl:attribute>
             <xsl:attribute name="qualifier">isbn</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
+    <xsl:template match="/mods:mods/mods:identifier[@type='legacyUri']">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">identifier</xsl:attribute>
+            <xsl:attribute name="qualifier">legacyUri</xsl:attribute>
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
@@ -206,28 +215,21 @@
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
+    <!-- COMMUNITY =================================================== -->
+    <xsl:template match="/mods:mods/mods:note[@type='parentCommunityName']">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">publication</xsl:attribute>
+            <xsl:attribute name="element">collection</xsl:attribute>
+            <xsl:attribute name="qualifier">community</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+    </xsl:template>
     <!-- LOM ====================================================== -->
     <xsl:template match="/mods:mods/mods:note[@type='typicalAgeRange']">
         <xsl:element name="dim:field">
             <xsl:attribute name="mdschema">lom</xsl:attribute>
             <xsl:attribute name="element">educational</xsl:attribute>
             <xsl:attribute name="qualifier">typicalAgeRange</xsl:attribute>
-            <xsl:value-of select="normalize-space(.)"/>
-        </xsl:element>
-    </xsl:template>
-    <xsl:template match="/mods:mods/mods:note[@type='typicalLearningTime']">
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">lom</xsl:attribute>
-            <xsl:attribute name="element">educational</xsl:attribute>
-            <xsl:attribute name="qualifier">typicalLearningTime</xsl:attribute>
-            <xsl:value-of select="normalize-space(.)"/>
-        </xsl:element>
-    </xsl:template>
-    <xsl:template match="/mods:mods/mods:note[@type='language']">
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">lom</xsl:attribute>
-            <xsl:attribute name="element">educational</xsl:attribute>
-            <xsl:attribute name="qualifier">language</xsl:attribute>
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>

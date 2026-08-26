@@ -25,8 +25,15 @@
     </dc-type>
     <dc-type>
         <schema>dc</schema>
-        <element>audience</element>
-        <scope_note>Target audience for an item</scope_note>
+        <element>identifier</element>
+        <qualifier>legacyUri</qualifier>
+        <scope_note>To store original handle uri</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>authors</schema>
+        <element>email</element>
+        <qualifier>official</qualifier>
+        <scope_note>Author official email</scope_note>
     </dc-type>
     <!-- PUBLICATION SCHEMA -->
     <dc-schema>
@@ -40,6 +47,13 @@
         <qualifier>name</qualifier>
         <scope_note>To specify the collection name to which the publication belongs</scope_note>
     </dc-type>
+    <!-- COMMUNITY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <dc-type>
+        <schema>publication</schema>
+        <element>collection</element>
+        <qualifier>community</qualifier>
+        <scope_note>To specify the community name to which the publication belongs</scope_note>
+    </dc-type>
     <!-- LOM SCHEMA -->
     <dc-schema>
         <name>lom</name>
@@ -48,20 +62,8 @@
     <dc-type>
         <schema>lom</schema>
         <element>educational</element>
-        <qualifier>language</qualifier>
-        <scope_note>Educational language</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>lom</schema>
-        <element>educational</element>
         <qualifier>typicalAgeRange</qualifier>
         <scope_note>The typical expected age range</scope_note>
-    </dc-type>
-    <dc-type>
-        <schema>lom</schema>
-        <element>educational</element>
-        <qualifier>typicalLearningTime</qualifier>
-        <scope_note>The typical learning time of a course</scope_note>
     </dc-type>
     <!-- TAG SCHEMA -->
     <dc-schema>
