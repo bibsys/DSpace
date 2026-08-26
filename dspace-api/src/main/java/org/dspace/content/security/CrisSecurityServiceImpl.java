@@ -87,12 +87,50 @@ public class CrisSecurityServiceImpl implements CrisSecurityService {
                 return user != null && user.equals(item.getSubmitter());
             case SUBMITTER_GROUP:
                 return isUserInSubmitterGroup(context, item, user);
+            case PUBLICATION_EDIT:
+                return isValidForPublicationEdit(context, user, item, accessMode);
             case ALL:
                 return true;
             case NONE:
             default:
                 return false;
         }
+    }
+
+    private boolean isValidForPublicationEdit(Context context, EPerson user, Item item, AccessItemMode accessMode)
+            throws SQLException {
+        // 1. Check user
+        if (user == null) {
+            return false;
+        }
+        // 2. Check basic permissions
+        if (authorizeService.isAdmin(context, user)
+                || hasAccessByGroup(context, user, accessMode.getGroups())
+                || hasAccessByCustomPolicy(context, item, user, accessMode)) {
+            return true;
+        }
+        // 3. Check if user is the submitter
+        if (user.equals(item.getSubmitter())) {
+            return true;
+        }
+        // 4. Check if the current user's email matches any official author email in the item
+        String userEmail = user.getEmail();
+        if (userEmail != null && item != null) {
+            List<MetadataValue> metadataValues = itemService.getMetadata(
+                item,
+                "authors",
+                "email",
+                "official",
+                Item.ANY
+            );
+
+            return metadataValues.stream()
+                .map(MetadataValue::getValue)
+                .filter(email -> email != null)
+                .anyMatch(email -> email.trim().equalsIgnoreCase(userEmail));
+        }
+
+        return false;
     }
 
     private boolean isOwner(EPerson eperson, Item item) {
