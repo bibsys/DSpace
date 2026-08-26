@@ -24,6 +24,7 @@ public enum CrisSecurity {
     SUBMITTER,
     SUBMITTER_GROUP,
     GROUP,
+    PUBLICATION_EDIT,
     ALL;
 
 }
