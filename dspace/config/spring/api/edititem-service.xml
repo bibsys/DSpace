@@ -12,11 +12,12 @@
             <map>
                 <entry key="publication">
                     <list>
+                        <!-- Custom mode to allow edit on publication for either admin, manager, author or submitter -->
                         <bean class="org.dspace.content.edit.EditItemMode">
-                            <property name="name" value="FULL" />
+                            <property name="name" value="PUBLICATION_EDIT"/>
                             <property name="security">
                                 <value type="org.dspace.content.security.CrisSecurity">
-                                    ITEM_ADMIN
+                                    PUBLICATION_EDIT
                                 </value>
                             </property>
                             <property name="submissionDefinition" value="publication-edit" />
