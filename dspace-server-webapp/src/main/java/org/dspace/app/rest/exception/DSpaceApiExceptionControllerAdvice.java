@@ -33,6 +33,7 @@ import org.dspace.core.Context;
 import org.dspace.eperson.InvalidReCaptchaException;
 import org.dspace.orcid.exception.OrcidValidationException;
 import org.dspace.services.ConfigurationService;
+import org.dspace.workflow.WorkflowStartVetoException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -283,6 +284,12 @@ public class DSpaceApiExceptionControllerAdvice extends ResponseEntityExceptionH
         }
         sendErrorResponse(request, response, ex, "An exception has occurred", returnCode);
 
+    }
+
+    @ExceptionHandler(WorkflowStartVetoException.class)
+    protected void handleWorkflowStartException(HttpServletRequest request, HttpServletResponse response, Exception ex)
+        throws IOException {
+        sendErrorResponse(request, response, ex, ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY.value());
     }
 
     /**

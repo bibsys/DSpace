@@ -63,6 +63,8 @@ import org.dspace.services.EventService;
 import org.dspace.uclouvain.core.model.MetadataField;
 import org.dspace.usage.UsageWorkflowEvent;
 import org.dspace.workflow.WorkflowException;
+import org.dspace.workflow.WorkflowStartGuard;
+import org.dspace.workflow.WorkflowStartVetoException;
 import org.dspace.xmlworkflow.factory.XmlWorkflowFactory;
 import org.dspace.xmlworkflow.factory.XmlWorkflowServiceFactory;
 import org.dspace.xmlworkflow.service.WorkflowRequirementsService;
@@ -142,6 +144,8 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
     protected XmlWorkflowCuratorService xmlWorkflowCuratorService;
     @Autowired(required = true)
     protected EventService eventService;
+    @Autowired(required = false)
+    protected List<WorkflowStartGuard> startGuards = Collections.emptyList();
 
     protected XmlWorkflowServiceImpl() {
 
@@ -215,6 +219,8 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
     public XmlWorkflowItem start(Context context, WorkspaceItem wsi)
         throws SQLException, AuthorizeException, IOException, WorkflowException {
         try {
+            checkStartGuards(context, wsi);
+
             Item myitem = wsi.getItem();
             Collection collection = wsi.getCollection();
             Workflow wf = xmlWorkflowFactory.getWorkflow(collection);
@@ -290,6 +296,29 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
         noEMail.put(wsi.getItem().getID(), Boolean.TRUE);
 
         return start(context, wsi);
+    }
+
+    /**
+     * Ask every guard whether the given workspace item may enter the workflow. A veto is raised
+     * before anything is created or deleted, so the workspace item is left untouched.
+     * A deposit made through {@link #startWithoutNotify(Context, WorkspaceItem)} skips the guards
+     * protecting a notification: no notification will be sent, so there is nothing left for those
+     * guards to protect. The other guards always run.
+     *
+     * @param context the current DSpace context
+     * @param wsi     the workspace item about to enter the workflow
+     * @throws WorkflowStartVetoException if a guard refuses the deposit
+     */
+    protected void checkStartGuards(Context context, WorkspaceItem wsi) {
+        for (WorkflowStartGuard guard : startGuards) {
+            // Only check guards that:
+            //   * isn't related to send any notification
+            //   * or the current workspace doesn't need to send any notification by specific workspace config
+            boolean guardEnabled = !guard.isGuardForNotification() || !noEMail.containsKey(wsi.getItem().getID());
+            if (guardEnabled) {
+                guard.check(context, wsi);
+            }
+        }
     }
 
     @Override
