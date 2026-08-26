@@ -10,6 +10,7 @@ package org.dspace.content.security;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -87,12 +88,39 @@ public class CrisSecurityServiceImpl implements CrisSecurityService {
                 return user != null && user.equals(item.getSubmitter());
             case SUBMITTER_GROUP:
                 return isUserInSubmitterGroup(context, item, user);
+            case PUBLICATION_EDIT:
+                return isValidForPublicationEdit(context, user, item, accessMode);
             case ALL:
                 return true;
             case NONE:
             default:
                 return false;
         }
+    }
+
+    private boolean isValidForPublicationEdit(Context context, EPerson user, Item item, AccessItemMode accessMode)
+            throws SQLException {
+        // User has to be non-null and:
+        // - either an admin
+        // - or has access to the item through a group
+        // - or has access to the item through a custom policy
+        // - or is the submitter of the item
+        // - or is an author of the publication
+        return user != null && (authorizeService.isAdmin(context, user)
+            || hasAccessByGroup(context, user, accessMode.getGroups())
+            || hasAccessByCustomPolicy(context, item, user, accessMode)
+            || user.equals(item.getSubmitter())
+            || isAuthorOfPublication(user, item));
+    }
+
+    private boolean isAuthorOfPublication(EPerson user, Item item) {
+        String userEmail = user.getEmail();
+        return userEmail != null
+            && item != null
+            && itemService.getMetadata(item, "authors", "email", "official", Item.ANY).stream()
+                .map(MetadataValue::getValue)
+                .filter(Objects::nonNull)
+                .anyMatch(email -> email.trim().equalsIgnoreCase(userEmail));
     }
 
     private boolean isOwner(EPerson eperson, Item item) {
