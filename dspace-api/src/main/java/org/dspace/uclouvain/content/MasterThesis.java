@@ -40,6 +40,10 @@ public class MasterThesis {
     private final String authorFgsMdField = configService.getProperty(FIELD_PREFIX + "id_fgs.field");
     private final String authorNomaMdField = configService.getProperty(FIELD_PREFIX + "id_noma.field");
 
+    private final String degreeCodeMdField = configService.getProperty(FIELD_PREFIX + "degreecode.field");
+    private final String degreeLabelMdField = configService.getProperty(FIELD_PREFIX + "degreelabel.field");
+    private final String rootDegreeCodeMdField = configService.getProperty(FIELD_PREFIX + "rootdegreecode.field");
+    private final String rootDegreeLabelMdField = configService.getProperty(FIELD_PREFIX + "rootdegreelabel.field");
 
     public MasterThesis(Item item) {
         this.item = item;
@@ -61,8 +65,21 @@ public class MasterThesis {
             .collect(Collectors.toList());
     }
 
+    public List<MasterThesisDegree> getDegrees() {
+        if (degreeCodeMdField == null) {
+            log.warn("Unable to determine `degree` metadata field");
+            return Collections.emptyList();
+        }
+        return item.getMetadata()
+            .stream()
+            .filter(m -> m.getMetadataField().toString('.').equals(degreeCodeMdField))
+            .map(this::buildDegree)
+            .collect(Collectors.toList());
+    }
+
     private MasterThesisAuthor buildAuthor(MetadataValue mdValue) {
         MasterThesisAuthor author = new MasterThesisAuthor();
+        author.place = mdValue.getPlace();
         author.name = mdValue.getValue();
         author.email = getMetadataValue(authorEmailMdField, mdValue.getPlace());
         author.institution = getMetadataValue(authorInstitutionMdField, mdValue.getPlace());
@@ -75,6 +92,17 @@ public class MasterThesis {
             author.addIdentifier("noma", tmpIdentifier);
         }
         return author;
+    }
+
+    private MasterThesisDegree buildDegree(MetadataValue mdValue) {
+        MasterThesisDegree degree = new MasterThesisDegree();
+        degree.degreeCode = mdValue.getValue();
+        degree.place = mdValue.getPlace();
+
+        degree.degreeLabel = getMetadataValue(degreeLabelMdField, mdValue.getPlace());
+        degree.rootDegreeCode = getMetadataValue(rootDegreeCodeMdField, mdValue.getPlace());
+        degree.rootDegreeLabel = getMetadataValue(rootDegreeLabelMdField, mdValue.getPlace());
+        return degree;
     }
 
     /**
