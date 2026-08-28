@@ -22,6 +22,10 @@
           and $value != $emptyValue
           and not(matches(normalize-space($value), '^(n/?a|not specified|no[tn] applicable)$', 'i'))"/>
     </xsl:function>
+    <xsl:function name="my:firstValue" as="xs:string">
+      <xsl:param name="values" as="item()*"/>
+      <xsl:sequence select="((for $value in $values return normalize-space($value))[. != ''], '')[1]"/>
+    </xsl:function>
 
     <!-- ROOT DOCUMENT ============================================================================================= -->
     <xsl:template match="/">
@@ -43,7 +47,7 @@
             <xsl:apply-templates select="doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='dataset']"/>
             <xsl:apply-templates select="doc:metadata/doc:element[@name='oairecerif']/doc:element[@name='affiliation']/doc:element[@name='orgunit']/doc:element/doc:field[@name='value']"/>
             <!-- FUNDING ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-            <xsl:apply-templates select="doc:metadata/doc:element[@name='funding']/doc:element[@name='organisation']/doc:element/doc:field[@name='value']"/>
+            <xsl:apply-templates select="doc:metadata/doc:element[@name='funding']/doc:element[@name='organization']/doc:element/doc:field[@name='value']"/>
             <!-- ACCESS CONDITIONS ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
             <xsl:apply-templates select="doc:metadata/doc:element[@name='dcterms']/doc:element[@name='accessRights']"/>
 
@@ -126,29 +130,34 @@
 	</xsl:template>
 
     <!-- AUTHORS SPECIFIC TEMPLATES ================================================================================ -->
+    <!-- Role/affiliation/ORCID lookups are parallel arrays correlated by position with the
+         author/advisor values; indexing the captured node-set ($institutions[$pos]) uses the
+         global position, matching apply-templates order even across language wrappers. -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element[@name='author']/doc:element/doc:field[@name='value']">
         <xsl:variable name="pos" select="position()"/>
-        <xsl:variable name="role" select="//doc:metadata/doc:element[@name='authors']/doc:element[@name='role']/doc:element/doc:field[@name='value'][$pos]" />
-        <xsl:variable name="institution" select="//doc:metadata/doc:element[@name='authors']/doc:element[@name='institution']/doc:element[@name='code']/doc:element/doc:field[@name='value'][$pos]" />
-        <xsl:variable name="orcidID" select="//doc:metadata/doc:element[@name='authors']/doc:element[@name='identifier']/doc:element[@name='orcid']/doc:element/doc:field[@name='value'][$pos]" />
+        <xsl:variable name="roles" select="//doc:metadata/doc:element[@name='authors']/doc:element[@name='role']/doc:element/doc:field[@name='value']" />
+        <xsl:variable name="institutions" select="//doc:metadata/doc:element[@name='authors']/doc:element[@name='institution']/doc:element[@name='code']/doc:element/doc:field[@name='value']" />
+        <xsl:variable name="orcidIDs" select="//doc:metadata/doc:element[@name='authors']/doc:element[@name='identifier']/doc:element[@name='orcid']/doc:element/doc:field[@name='value']" />
         <mods:name>
             <mods:namePart><xsl:value-of select="." /></mods:namePart>
             <xsl:call-template name="author-affiliation">
-                <xsl:with-param name="name" select="$institution"/>
+                <xsl:with-param name="name" select="normalize-space($institutions[$pos])"/>
             </xsl:call-template>
             <xsl:call-template name="author-identifier">
-                <xsl:with-param name="identifier" select="$orcidID"/>
+                <xsl:with-param name="identifier" select="normalize-space($orcidIDs[$pos])"/>
                 <xsl:with-param name="type" select="'orcid'"/>
             </xsl:call-template>
             <xsl:call-template name="author-role">
-                <xsl:with-param name="name" select="$role"/>
+                <xsl:with-param name="name" select="normalize-space($roles[$pos])"/>
             </xsl:call-template>
         </mods:name>
     </xsl:template>
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element[@name='advisor']/doc:element/doc:field[@name='value']">
         <xsl:variable name="pos" select="position()"/>
-        <xsl:variable name="institution" select="//doc:metadata/doc:element[@name='advisors']/doc:element[@name='institution']/doc:element[@name='code']/doc:element/doc:field[@name='value'][$pos]"/>
-        <xsl:variable name="orcidID" select="//doc:metadata/doc:element[@name='advisors']/doc:element[@name='identifier']/doc:element[@name='orcid']/doc:element/doc:field[@name='value'][$pos]"/>
+        <xsl:variable name="institutions" select="//doc:metadata/doc:element[@name='advisors']/doc:element[@name='institution']/doc:element[@name='code']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="orcidIDs" select="//doc:metadata/doc:element[@name='advisors']/doc:element[@name='identifier']/doc:element[@name='orcid']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="institution" select="normalize-space($institutions[$pos])"/>
+        <xsl:variable name="orcidID" select="normalize-space($orcidIDs[$pos])"/>
         <mods:name>
             <mods:namePart><xsl:value-of select="." /></mods:namePart>
             <xsl:call-template name="author-affiliation">
@@ -159,7 +168,7 @@
                 <xsl:with-param name="type" select="'orcid'"/>
             </xsl:call-template>
             <mods:role>
-                <mods:roleTerm type="text" authroity="marcrelator">degree supervisor</mods:roleTerm>
+                <mods:roleTerm type="text" authority="marcrelator">degree supervisor</mods:roleTerm>
                 <mods:roleTerm type="code" authority="marcrelator">dgs</mods:roleTerm>
                 <mods:roleTerm valueURI="http://id.loc.gov/vocabulary/relators/dgs"/>
             </mods:role>
@@ -194,43 +203,43 @@
                 <xsl:choose>
                     <!-- author, co-author -->
                     <xsl:when test="$name='author' or $name='co_first_author' or $name='co_last_author'">
-                        <mods:roleTerm type="text" authroity="marcrelator">author</mods:roleTerm>
+                        <mods:roleTerm type="text" authority="marcrelator">author</mods:roleTerm>
                         <mods:roleTerm type="code" authority="marcrelator">aut</mods:roleTerm>
                         <mods:roleTerm valueURI="http://id.loc.gov/vocabulary/relators/aut"/>
                     </xsl:when>
                     <!-- collaborator -->
                     <xsl:when test="$name='collaborator'">
-                        <mods:roleTerm type="text" authroity="marcrelator">contributor</mods:roleTerm>
+                        <mods:roleTerm type="text" authority="marcrelator">contributor</mods:roleTerm>
                         <mods:roleTerm type="code" authority="marcrelator">ctb</mods:roleTerm>
                         <mods:roleTerm valueURI="http://id.loc.gov/vocabulary/relators/ctb"/>
                     </xsl:when>
                     <!-- scientific director/editor -->
                     <xsl:when test="$name='scientific_director_editor'">
-                        <mods:roleTerm type="text" authroity="marcrelator">editorial director</mods:roleTerm>
+                        <mods:roleTerm type="text" authority="marcrelator">editorial director</mods:roleTerm>
                         <mods:roleTerm type="code" authority="marcrelator">edd</mods:roleTerm>
                         <mods:roleTerm valueURI="http://id.loc.gov/vocabulary/relators/edd"/>
                     </xsl:when>
                     <!-- translator -->
                     <xsl:when test="$name='translator'">
-                        <mods:roleTerm type="text" authroity="marcrelator">translator</mods:roleTerm>
+                        <mods:roleTerm type="text" authority="marcrelator">translator</mods:roleTerm>
                         <mods:roleTerm type="code" authority="marcrelator">trl</mods:roleTerm>
                         <mods:roleTerm valueURI="http://id.loc.gov/vocabulary/relators/trl"/>
                     </xsl:when>
                     <!-- writer of preface -->
                     <xsl:when test="$name='preface_writer'">
-                        <mods:roleTerm type="text" authroity="marcrelator">writer of preface</mods:roleTerm>
+                        <mods:roleTerm type="text" authority="marcrelator">writer of preface</mods:roleTerm>
                         <mods:roleTerm type="code" authority="marcrelator">wpr</mods:roleTerm>
                         <mods:roleTerm valueURI="http://id.loc.gov/vocabulary/relators/wpr"/>
                     </xsl:when>
                     <!-- inventor -->
                     <xsl:when test="$name='inventor'">
-                        <mods:roleTerm type="text" authroity="marcrelator">inventor</mods:roleTerm>
+                        <mods:roleTerm type="text" authority="marcrelator">inventor</mods:roleTerm>
                         <mods:roleTerm type="code" authority="marcrelator">inv</mods:roleTerm>
                         <mods:roleTerm valueURI="http://id.loc.gov/vocabulary/relators/inv"/>
                     </xsl:when>
                     <!-- other case ? -->
                     <xsl:otherwise>
-                        <mods:roleTerm type="text"><xsl:value-of select="."/></mods:roleTerm>
+                        <mods:roleTerm type="text"><xsl:value-of select="$name"/></mods:roleTerm>
                     </xsl:otherwise>
                 </xsl:choose>
             </mods:role>
@@ -263,8 +272,9 @@
     <!-- AFFILIATIONS ============================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='oairecerif']/doc:element[@name='affiliation']/doc:element[@name='orgunit']/doc:element/doc:field[@name='value']">
         <xsl:variable name="pos" select="position()"/>
-        <xsl:variable name="entityName" select="//doc:metadata/doc:element[@name='oairecerif']/doc:element[@name='affiliation']/doc:element[@name='orgunitDepartment']/doc:element/doc:field[@name='value'][$pos]"/>
-        <xsl:if test="my:isNotEmpty(text())">
+        <xsl:variable name="departments" select="//doc:metadata/doc:element[@name='oairecerif']/doc:element[@name='affiliation']/doc:element[@name='orgunitDepartment']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="entityName" select="normalize-space($departments[$pos])"/>
+        <xsl:if test="my:isNotEmpty(normalize-space(.))">
             <mods:relatedItem otherType="affiliation">
                 <mods:name type="corporate">
                     <mods:namePart><xsl:value-of select="text()"/></mods:namePart>
@@ -276,26 +286,32 @@
         </xsl:if>
     </xsl:template>
     <!-- ORIGIN INFO (issued date, publisher name & location, edition statement) =================================== -->
+    <!-- Callers pass raw node-sets; the params are reduced to their first non-empty value here,
+         at the single constraint point, so no caller can feed a multi-value field into a crash. -->
     <xsl:template name="originInfo">
         <xsl:param name="date"/>
         <xsl:param name="editorName"/>
         <xsl:param name="editorLocation"/>
         <xsl:param name="editionStatement"/>
-        <xsl:if test="my:isNotEmpty($date) or my:isNotEmpty($editorName) or my:isNotEmpty($editorLocation) or my:isNotEmpty($editionStatement)">
+        <xsl:variable name="dateValue" select="my:firstValue($date)"/>
+        <xsl:variable name="editorNameValue" select="my:firstValue($editorName)"/>
+        <xsl:variable name="editorLocationValue" select="my:firstValue($editorLocation)"/>
+        <xsl:variable name="editionStatementValue" select="my:firstValue($editionStatement)"/>
+        <xsl:if test="my:isNotEmpty($dateValue) or my:isNotEmpty($editorNameValue) or my:isNotEmpty($editorLocationValue) or my:isNotEmpty($editionStatementValue)">
             <mods:originInfo>
-                <xsl:if test="my:isNotEmpty($date)">
-                    <mods:dateIssued encoding="iso8601"><xsl:value-of select="$date"/></mods:dateIssued>
+                <xsl:if test="my:isNotEmpty($dateValue)">
+                    <mods:dateIssued encoding="iso8601"><xsl:value-of select="$dateValue"/></mods:dateIssued>
                 </xsl:if>
-                <xsl:if test="my:isNotEmpty($editorName)">
-                    <mods:publisher><xsl:value-of select="$editorName"/></mods:publisher>
+                <xsl:if test="my:isNotEmpty($editorNameValue)">
+                    <mods:publisher><xsl:value-of select="$editorNameValue"/></mods:publisher>
                 </xsl:if>
-                <xsl:if test="my:isNotEmpty($editorLocation)">
+                <xsl:if test="my:isNotEmpty($editorLocationValue)">
                     <mods:place>
-                        <mods:placeTerm type="text"><xsl:value-of select="$editorLocation"/></mods:placeTerm>
+                        <mods:placeTerm type="text"><xsl:value-of select="$editorLocationValue"/></mods:placeTerm>
                     </mods:place>
                 </xsl:if>
-                <xsl:if test="my:isNotEmpty($editionStatement)">
-                    <mods:edition><xsl:value-of select="$editionStatement"/></mods:edition>
+                <xsl:if test="my:isNotEmpty($editionStatementValue)">
+                    <mods:edition><xsl:value-of select="$editionStatementValue"/></mods:edition>
                 </xsl:if>
             </mods:originInfo>
         </xsl:if>
@@ -316,11 +332,14 @@
         </xsl:choose>
     </xsl:template>
     <!-- FUNDING =================================================================================================== -->
-    <xsl:template match="doc:metadata/doc:element[@name='funding']/doc:element[@name='organisation']/doc:element/doc:field[@name='value']">
+    <xsl:template match="doc:metadata/doc:element[@name='funding']/doc:element[@name='organization']/doc:element/doc:field[@name='value']">
         <xsl:variable name="pos" select="position()"/>
-        <xsl:variable name="program" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='program']/doc:element/doc:field[@name='value'][$pos]"/>
-        <xsl:variable name="project" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='project']/doc:element/doc:field[@name='value'][$pos]"/>
-        <xsl:variable name="grantID" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='number']/doc:element/doc:field[@name='value'][$pos]"/>
+        <xsl:variable name="programs" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='program']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="projects" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='project']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="grantIDs" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='number']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="program" select="normalize-space($programs[$pos])"/>
+        <xsl:variable name="project" select="normalize-space($projects[$pos])"/>
+        <xsl:variable name="grantID" select="normalize-space($grantIDs[$pos])"/>
         <mods:note type="funding">
             <xsl:text>This work was supported by </xsl:text><xsl:value-of select="text()"/>
             <xsl:if test="my:isNotEmpty($program) or my:isNotEmpty($project)">
@@ -346,17 +365,21 @@
     </xsl:template>
     <!-- PUBLICATION TITLE ========================================================================================= -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='title']">
-        <mods:titleInfo>
-            <mods:title><xsl:value-of select="doc:element/doc:field[@name='value']" /></mods:title>
-        </mods:titleInfo>
+        <xsl:for-each select="doc:element/doc:field[@name='value']">
+            <mods:titleInfo>
+                <mods:title><xsl:value-of select="." /></mods:title>
+            </mods:titleInfo>
+        </xsl:for-each>
     </xsl:template>
     <!-- ABSTRACT ================================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='description']/doc:element[@name='abstract']">
-        <mods:abstract><xsl:value-of select="doc:element/doc:field[@name='value']" /></mods:abstract>
+        <xsl:for-each select="doc:element/doc:field[@name='value']">
+            <mods:abstract><xsl:value-of select="." /></mods:abstract>
+        </xsl:for-each>
     </xsl:template>
     <!-- LANGUAGE ================================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='language']/doc:element[@name='iso']">
-        <xsl:variable name="value" select="doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="value" select="my:firstValue(doc:element/doc:field[@name='value'])"/>
         <mods:language>
             <mods:languageTerm type="code" authority="iso639-2b"><xsl:value-of select="$value" /></mods:languageTerm>
             <xsl:choose>
@@ -378,66 +401,76 @@
     <!-- DATES ===================================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='date']/doc:element[@name='available']">
         <mods:extension>
-            <mods:dateAvailable encoding="iso8601"><xsl:value-of select="doc:element/doc:field[@name='value']/text()"/></mods:dateAvailable>
+            <mods:dateAvailable encoding="iso8601"><xsl:value-of select="my:firstValue(doc:element/doc:field[@name='value'])"/></mods:dateAvailable>
         </mods:extension>
     </xsl:template>
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='date']/doc:element[@name='accessioned']">
         <mods:extension>
-            <mods:dateAccessioned encoding="iso8601"><xsl:value-of select="doc:element/doc:field[@name='value']/text()"/></mods:dateAccessioned>
+            <mods:dateAccessioned encoding="iso8601"><xsl:value-of select="my:firstValue(doc:element/doc:field[@name='value'])"/></mods:dateAccessioned>
         </mods:extension>
     </xsl:template>
     <!-- IDENTIFIERS =============================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='identifier']/doc:element">
         <xsl:variable name="type" select="@name"/>
-        <xsl:variable name="value" select="doc:element/doc:field[@name='value']"/>
-        <xsl:choose>
-            <xsl:when test="$type='doi'">
-                <mods:identifier type="doi">doi:<xsl:value-of select="$value"/></mods:identifier>
-            </xsl:when>
-            <xsl:when test="$type='hdl'">
-                <mods:identifier type="hdl">hdl:<xsl:value-of select="$value"/></mods:identifier>
-            </xsl:when>
-            <xsl:when test="$type='uri' and contains($value, 'handle.net/')">
-                <mods:identifier type="hdl">hdl:<xsl:value-of select="substring-after($value, 'handle.net/')"/></mods:identifier>
-                <mods:identifier type="uri"><xsl:value-of select="$value"/></mods:identifier>
-            </xsl:when>
-            <xsl:otherwise>
-                <mods:identifier>
-                    <xsl:if test="my:isNotEmpty($type)">
-                        <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
-                    </xsl:if>
-                    <xsl:value-of select="$value"/>
-                </mods:identifier>
-            </xsl:otherwise>
-        </xsl:choose>
+        <xsl:for-each select="doc:element/doc:field[@name='value']">
+            <xsl:variable name="value" select="normalize-space(.)"/>
+            <xsl:choose>
+                <xsl:when test="$type='doi'">
+                    <mods:identifier type="doi">doi:<xsl:value-of select="$value"/></mods:identifier>
+                </xsl:when>
+                <xsl:when test="$type='hdl'">
+                    <mods:identifier type="hdl">hdl:<xsl:value-of select="$value"/></mods:identifier>
+                </xsl:when>
+                <xsl:when test="$type='uri' and contains($value, 'handle.net/')">
+                    <mods:identifier type="hdl">hdl:<xsl:value-of select="substring-after($value, 'handle.net/')"/></mods:identifier>
+                    <mods:identifier type="uri"><xsl:value-of select="$value"/></mods:identifier>
+                </xsl:when>
+                <xsl:otherwise>
+                    <mods:identifier>
+                        <xsl:if test="my:isNotEmpty($type)">
+                            <xsl:attribute name="type"><xsl:value-of select="$type"/></xsl:attribute>
+                        </xsl:if>
+                        <xsl:value-of select="$value"/>
+                    </mods:identifier>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
     </xsl:template>
     <!-- TOPIC ===================================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='subject']/doc:element/doc:field[@name='value']">
-        <mods:subject>
-            <mods:topic><xsl:value-of select="text()"/></mods:topic>
-        </mods:subject>
+        <xsl:if test="my:isNotEmpty(normalize-space(.))">
+            <mods:subject>
+                <mods:topic><xsl:value-of select="normalize-space(.)"/></mods:topic>
+            </mods:subject>
+        </xsl:if>
     </xsl:template>
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='subject']/doc:element/doc:element/doc:field[@name='value']">
-        <mods:subject>
-            <xsl:attribute name="authority"><xsl:value-of select="../../@name"/></xsl:attribute>
-            <mods:topic><xsl:value-of select="text()"/></mods:topic>
-        </mods:subject>
+        <xsl:if test="my:isNotEmpty(normalize-space(.))">
+            <mods:subject>
+                <xsl:attribute name="authority"><xsl:value-of select="../../@name"/></xsl:attribute>
+                <mods:topic><xsl:value-of select="normalize-space(.)"/></mods:topic>
+            </mods:subject>
+        </xsl:if>
     </xsl:template>
     <!-- RELATIONS ================================================================================================= -->
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='dataset']">
-        <mods:location><mods:url note="dataset"><xsl:value-of select="doc:element/doc:field[@name='value']/text()"/></mods:url></mods:location>
+        <xsl:for-each select="doc:element/doc:field[@name='value']">
+            <mods:location><mods:url note="dataset"><xsl:value-of select="normalize-space(.)"/></mods:url></mods:location>
+        </xsl:for-each>
     </xsl:template>
     <xsl:template match="doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='url']">
-        <mods:location><mods:url access="object in context"><xsl:value-of select="doc:element/doc:field[@name='value']/text()"/></mods:url></mods:location>
+        <xsl:for-each select="doc:element/doc:field[@name='value']">
+            <mods:location><mods:url access="object in context"><xsl:value-of select="normalize-space(.)"/></mods:url></mods:location>
+        </xsl:for-each>
     </xsl:template>
     <!-- PUBLICATION STATUS ======================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='publication']/doc:element[@name='publicationStatus']">
-        <mods:accessCondition type="publicationStatus"><xsl:value-of select="doc:element/doc:field[@name='value']/text()"/></mods:accessCondition>
+        <mods:accessCondition type="publicationStatus"><xsl:value-of select="my:firstValue(doc:element/doc:field[@name='value'])"/></mods:accessCondition>
     </xsl:template>
     <!-- NUMBER OF PAGES =========================================================================================== -->
     <xsl:template match="doc:metadata/doc:element[@name='publication']/doc:element[@name='numberOfPages']">
         <mods:physicalDescription>
-            <mods:extent unit="pages"><xsl:value-of select="doc:element/doc:field[@name='value']/text()"/></mods:extent>
+            <mods:extent unit="pages"><xsl:value-of select="my:firstValue(doc:element/doc:field[@name='value'])"/></mods:extent>
         </mods:physicalDescription>
     </xsl:template>
     <!-- PEER-REVIEWED ============================================================================================= -->
@@ -449,9 +482,9 @@
     </xsl:template>
     <!-- COLLECTION ================================================================================================ -->
     <xsl:template name="collectionHost">
-        <xl:variable name="name" select="doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='name']/doc:element/doc:field[@name='value']"/>
-        <xl:variable name="number" select="doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='number']/doc:element/doc:field[@name='value']"/>
-        <xl:variable name="issn" select="doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='issn']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="name" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='name']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="number" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='number']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="issn" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='collection']/doc:element[@name='issn']/doc:element/doc:field[@name='value'])"/>
         <xsl:if test="my:isNotEmpty($name)">
             <mods:relatedItem otherType="collection">
                 <mods:titleInfo>
@@ -468,11 +501,11 @@
     </xsl:template>
     <!-- HOST DOCUMENT ============================================================================================= -->
     <xsl:template name="hostDocument">
-        <xsl:variable name="title" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='title']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="authors" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='type']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="type" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='authors']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="pagination" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='pages']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="isbn" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='isbn']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="title" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='title']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="authors" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='authors']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="type" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='type']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="pagination" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='pages']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="isbn" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='isbn']/doc:element/doc:field[@name='value'])"/>
         <xsl:variable name="peerReviewed" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='peerReviewed']/doc:element/doc:field[@name='value']"/>
         <xsl:if test="my:isNotEmpty($title)">
             <mods:relatedItem type="host" otherType="parentDocument">
@@ -509,13 +542,13 @@
         </xsl:if>
     </xsl:template>
     <xsl:template name="serialHostDocument">
-        <xsl:variable name="journalTitle" select="//doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='journal']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="issn" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issn']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="eissn" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='eissn']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="volume" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='volume']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="issue" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issue']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="pages" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='pages']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="date" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='dateIssued']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="journalTitle" select="my:firstValue(//doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='journal']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="issn" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issn']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="eissn" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='eissn']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="volume" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='volume']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="issue" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issue']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="pages" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='pages']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="date" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='dateIssued']/doc:element/doc:field[@name='value'])"/>
         <xsl:if test="my:isNotEmpty($journalTitle)">
             <mods:relatedItem type="host" otherType="parentDocument">
                 <mods:genre authority="coar" valueURI="http://purl.org/coar/resource_type/c_0640">journal</mods:genre>
@@ -559,8 +592,8 @@
     </xsl:template>
     <!-- REPORT REFERENCE ========================================================================================== -->
     <xsl:template name="reportReference">
-        <xsl:variable name="orgName" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='report']/doc:element[@name='organisation']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="period" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='report']/doc:element[@name='period']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="orgName" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='report']/doc:element[@name='organization']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="period" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='report']/doc:element[@name='period']/doc:element/doc:field[@name='value'])"/>
         <xsl:if test="my:isNotEmpty($orgName)">
             <mods:relatedItem otherType="report reference">
                 <mods:name type="corporate">
@@ -586,10 +619,10 @@
     </xsl:template>
     <!-- CONFERENCE DATA =========================================================================================== -->
     <xsl:template name="conferenceData">
-        <xsl:variable name="name" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='name']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="location" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='location']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="start" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='startDate']/doc:element/doc:field[@name='value']"/>
-        <xsl:variable name="end" select="//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='endDate']/doc:element/doc:field[@name='value']"/>
+        <xsl:variable name="name" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='name']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="location" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='location']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="start" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='startDate']/doc:element/doc:field[@name='value'])"/>
+        <xsl:variable name="end" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='endDate']/doc:element/doc:field[@name='value'])"/>
         <xsl:if test="my:isNotEmpty($name)">
             <mods:relatedItem type="host" otherType="conference">
                 <mods:titleInfo>
