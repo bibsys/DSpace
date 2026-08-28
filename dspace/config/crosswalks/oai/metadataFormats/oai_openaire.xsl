@@ -24,6 +24,10 @@
         and $value != $emptyValue
         and not(matches(normalize-space($value), '^(n/?a|not specified|no[tn] applicable)$', 'i'))"/>
   </xsl:function>
+  <xsl:function name="my:firstValue" as="xs:string">
+    <xsl:param name="values" as="item()*"/>
+    <xsl:sequence select="((for $value in $values return normalize-space($value))[. != ''], '')[1]"/>
+  </xsl:function>
 
   <!-- ROOT ======================================================================================================== -->
   <xsl:template match="/">
@@ -41,10 +45,17 @@
       <!-- datacite:title -->
       <xsl:apply-templates select="doc:metadata/doc:element[@name='dc']/doc:element[@name='title']" mode="datacite"/>
       <!-- datacite:creator & contributors -->
-      <xsl:apply-templates select="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element[@name='author' or @name='advisor']" mode="datacite"/>
-      <datacite:contributors>
-        <xsl:apply-templates select="//doc:metadata/doc:element[@name='repository']" mode="contributor"/>
-      </datacite:contributors>
+      <xsl:variable name="creatorElements" select="doc:metadata/doc:element[@name='dc']/doc:element[@name='contributor']/doc:element[@name='author' or @name='advisor']"/>
+      <xsl:if test="$creatorElements">
+        <datacite:creators>
+          <xsl:apply-templates select="$creatorElements" mode="datacite"/>
+        </datacite:creators>
+      </xsl:if>
+      <xsl:if test="doc:metadata/doc:element[@name='repository']">
+        <datacite:contributors>
+          <xsl:apply-templates select="doc:metadata/doc:element[@name='repository']" mode="contributor"/>
+        </datacite:contributors>
+      </xsl:if>
       <!-- oaire:fundingRefence -->
       <xsl:apply-templates select="doc:metadata/doc:element[@name='funding']/doc:element[@name='organization']" mode="oaire"/>
       <!-- datacite:dates & embargo -->
@@ -92,46 +103,45 @@
 
   <!-- oaire:resourceType =================================================================================== [DONE] -->
   <xsl:template match="doc:element[@name='dc']/doc:element[@name='type']" mode="oaire">
-    <xsl:variable name="mainyype" select="doc:element[@name='maintype']/doc:element/doc:field[@name='value']"/>
-    <xsl:variable name="subtype" select="doc:element[@name='subtype']/doc:element/doc:field[@name='value']"/>
+    <xsl:variable name="maintype" select="doc:element[@name='maintype']/doc:element/doc:field[@name='value']"/>
     <oaire:resourceType>
       <xsl:choose>
-        <xsl:when test="$mainyype='text::book'">
+        <xsl:when test="$maintype='text::book'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_2f33</xsl:attribute>
           <xsl:text>book</xsl:text>
         </xsl:when>
-        <xsl:when test="$mainyype='text::book-part'">
+        <xsl:when test="$maintype='text::book-part'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_3248</xsl:attribute>
           <xsl:text>book part</xsl:text>
         </xsl:when>
-        <xsl:when test="$mainyype='text::conference-speech'">
+        <xsl:when test="$maintype='text::conference-speech'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_5794</xsl:attribute>
           <xsl:text>conference paper</xsl:text>
         </xsl:when>
-        <xsl:when test="$mainyype='text::journal-article'">
+        <xsl:when test="$maintype='text::journal-article'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_6501</xsl:attribute>
           <xsl:text>journal article</xsl:text>
         </xsl:when>
-        <xsl:when test="$mainyype='text::report'">
+        <xsl:when test="$maintype='text::report'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_93fc</xsl:attribute>
           <xsl:text>report</xsl:text>
         </xsl:when>
-        <xsl:when test="$mainyype='text::working-paper'">
+        <xsl:when test="$maintype='text::working-paper'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_8042</xsl:attribute>
           <xsl:text>working paper</xsl:text>
         </xsl:when>
-        <xsl:when test="$mainyype='text::patent'">
+        <xsl:when test="$maintype='text::patent'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_15cd</xsl:attribute>
           <xsl:text>patent</xsl:text>
         </xsl:when>
-        <xsl:when test="$mainyype='text::thesis'">
+        <xsl:when test="$maintype='text::thesis'">
           <xsl:attribute name="resourceTypeGeneral">literature</xsl:attribute>
           <xsl:attribute name="uri">http://purl.org/coar/resource_type/c_db06</xsl:attribute>
           <xsl:text>doctoral thesis</xsl:text>
@@ -177,15 +187,23 @@
   </xsl:template>
 
   <!-- datacite.creators ==================================================================================== [DONE] -->
+  <!-- Affiliations and ORCID iDs live in the "authors"/"advisors" metadata groups, parallel arrays
+       correlated by position with the dc.contributor.author/advisor values. Indexing captured
+       node-sets ($institutions[$pos]) uses the global position, matching the for-each order even
+       when values are spread over several language wrappers. -->
   <xsl:template match="doc:element[@name='dc']/doc:element[@name='contributor']/doc:element[@name='author' or @name='advisor']" mode="datacite">
-    <datacite:creators>
-      <!-- datacite.creator -->
-      <xsl:for-each select="./doc:element/doc:field[@name='value']">
-        <xsl:variable name="pos" select="position()"/>
-        <xsl:variable name="institution" select="normalize-space(//doc:metadata/doc:element[@name='authors']/doc:element[@name='institution']/doc:element[@name='code']/doc:element/doc:field[@name='value'][$pos])" />
-        <xsl:variable name="orcidID" select="normalize-space(//doc:metadata/doc:element[@name='authors']/doc:element[@name='identifier']/doc:element[@name='orcid']/doc:element/doc:field[@name='value'][$pos])" />
+    <xsl:variable name="group" select="concat(@name, 's')"/>
+    <xsl:variable name="institutions" select="//doc:metadata/doc:element[@name=$group]/doc:element[@name='institution']/doc:element[@name='code']/doc:element/doc:field[@name='value']"/>
+    <xsl:variable name="orcidIDs" select="//doc:metadata/doc:element[@name=$group]/doc:element[@name='identifier']/doc:element[@name='orcid']/doc:element/doc:field[@name='value']"/>
+    <!-- datacite.creator -->
+    <xsl:for-each select="./doc:element/doc:field[@name='value']">
+      <xsl:variable name="pos" select="position()"/>
+      <xsl:variable name="creatorName" select="normalize-space(.)"/>
+      <xsl:variable name="institution" select="normalize-space($institutions[$pos])"/>
+      <xsl:variable name="orcidID" select="normalize-space($orcidIDs[$pos])"/>
+      <xsl:if test="my:isNotEmpty($creatorName)">
         <datacite:creator>
-          <datacite:creatorName><xsl:value-of select="./text()"/></datacite:creatorName>
+          <datacite:creatorName><xsl:value-of select="$creatorName"/></datacite:creatorName>
           <xsl:if test="my:isNotEmpty($institution)">
             <datacite:affiliation>
               <xsl:if test="$institution='UCLouvain'">
@@ -202,8 +220,8 @@
             </datacite:nameIdentifier>
           </xsl:if>
         </datacite:creator>
-      </xsl:for-each>
-    </datacite:creators>
+      </xsl:if>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- datacite:contributors ================================================================================ [DONE] -->
@@ -224,15 +242,18 @@
 
   <!-- oaire:fundingReferences ============================================================================== [DONE] -->
   <xsl:template match="doc:element[@name='funding']/doc:element[@name='organization']" mode="oaire">
+    <xsl:variable name="programs" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='program']/doc:element/doc:field[@name='value']"/>
+    <xsl:variable name="projects" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='project']/doc:element/doc:field[@name='value']"/>
+    <xsl:variable name="grantIDs" select="//doc:metadata/doc:element[@name='funding']/doc:element[@name='number']/doc:element/doc:field[@name='value']"/>
     <oaire:fundingReferences>
       <xsl:for-each select="./doc:element/doc:field[@name='value']">
         <xsl:variable name="pos" select="position()"/>
-        <xsl:variable name="program" select="normalize-space(//doc:metadata/doc:element[@name='funding']/doc:element[@name='program']/doc:element/doc:field[@name='value'][$pos])" />
-        <xsl:variable name="project" select="normalize-space(//doc:metadata/doc:element[@name='funding']/doc:element[@name='project']/doc:element/doc:field[@name='value'][$pos])" />
-        <xsl:variable name="grantID" select="normalize-space(//doc:metadata/doc:element[@name='funding']/doc:element[@name='number']/doc:element/doc:field[@name='value'][$pos])" />
+        <xsl:variable name="program" select="normalize-space($programs[$pos])"/>
+        <xsl:variable name="project" select="normalize-space($projects[$pos])"/>
+        <xsl:variable name="grantID" select="normalize-space($grantIDs[$pos])"/>
         <oaire:fundingReference>
           <xsl:call-template name="funding_funder">
-            <xsl:with-param name="funderName" select="normalize-space(./text())"/>
+            <xsl:with-param name="funderName" select="normalize-space(.)"/>
           </xsl:call-template>
           <xsl:if test="my:isNotEmpty($program)">
             <oaire:fundingStream><xsl:value-of select="$program"/></oaire:fundingStream>
@@ -262,7 +283,7 @@
 
   <!-- datacite:identifier ================================================================================== [DONE] -->
   <xsl:template match="doc:element[@name='others']/doc:field[@name='handle']" mode="datacite">
-    <datacite:identifier identifierType="Handle">https://hdl.handle.net/<xsl:value-of select="normalize-space(./text())"/></datacite:identifier>
+    <datacite:identifier identifierType="Handle">https://hdl.handle.net/<xsl:value-of select="normalize-space(.)"/></datacite:identifier>
   </xsl:template>
 
   <!-- datacite:alternateIdentifiers ======================================================================== [DONE] -->
@@ -285,7 +306,7 @@
   <xsl:template match="doc:element[@name='doi']" mode="datacite_identifiers">
     <xsl:for-each select=".//doc:field[@name='value']">
       <xsl:call-template name="alternateIdentifierTemplate">
-        <xsl:with-param name="value" select="normalize-space(text())"/>
+        <xsl:with-param name="value" select="normalize-space(.)"/>
         <xsl:with-param name="idType" select="'DOI'"/>
       </xsl:call-template>
     </xsl:for-each>
@@ -294,7 +315,7 @@
   <xsl:template match="doc:element[@name='isbn']" mode="datacite_identifiers">
     <xsl:for-each select=".//doc:field[@name='value']">
       <xsl:call-template name="alternateIdentifierTemplate">
-        <xsl:with-param name="value" select="normalize-space(text())"/>
+        <xsl:with-param name="value" select="normalize-space(.)"/>
         <xsl:with-param name="idType" select="'ISBN'"/>
       </xsl:call-template>
     </xsl:for-each>
@@ -303,7 +324,7 @@
   <xsl:template match="doc:element[@name='pmid']" mode="datacite_identifiers">
     <xsl:for-each select=".//doc:field[@name='value']">
       <xsl:call-template name="alternateIdentifierTemplate">
-        <xsl:with-param name="value" select="normalize-space(text())"/>
+        <xsl:with-param name="value" select="normalize-space(.)"/>
         <xsl:with-param name="idType" select="'PMID'"/>
       </xsl:call-template>
     </xsl:for-each>
@@ -312,7 +333,7 @@
   <xsl:template match="doc:element[@name='arxiv']" mode="datacite_identifiers">
     <xsl:for-each select=".//doc:field[@name='value']">
       <xsl:call-template name="alternateIdentifierTemplate">
-        <xsl:with-param name="value" select="normalize-space(text())"/>
+        <xsl:with-param name="value" select="normalize-space(.)"/>
         <xsl:with-param name="idType" select="'arXiv'"/>
       </xsl:call-template>
     </xsl:for-each>
@@ -321,7 +342,7 @@
   <xsl:template match="doc:element[@name='isi']" mode="datacite_identifiers">
     <xsl:for-each select=".//doc:field[@name='value']">
       <xsl:call-template name="alternateIdentifierTemplate">
-        <xsl:with-param name="value" select="normalize-space(text())"/>
+        <xsl:with-param name="value" select="normalize-space(.)"/>
         <xsl:with-param name="idType" select="'WOS'"/>
       </xsl:call-template>
     </xsl:for-each>
@@ -337,9 +358,11 @@
   </xsl:template>
   <!-- datacite.date :: handle dc.date.issued -->
   <xsl:template match="doc:element[@name='issued']" mode="datacite_dates">
-    <xsl:variable name="dateValue" select="doc:element/doc:field[@name='value']/text()"/>
-    <datacite:date dateType="Accepted"><xsl:value-of select="$dateValue"/></datacite:date>
-    <datacite:date dateType="Issued"><xsl:value-of select="$dateValue"/></datacite:date>
+    <xsl:variable name="dateValue" select="my:firstValue(doc:element/doc:field[@name='value'])"/>
+    <xsl:if test="my:isNotEmpty($dateValue)">
+      <datacite:date dateType="Accepted"><xsl:value-of select="$dateValue"/></datacite:date>
+      <datacite:date dateType="Issued"><xsl:value-of select="$dateValue"/></datacite:date>
+    </xsl:if>
   </xsl:template>
   <!-- datacite.date :: handle dc.date.accessioned -->
   <xsl:template match="doc:element[@name='accessioned']" mode="datacite_dates"/> <!-- do nothing -->
@@ -351,10 +374,11 @@
       </xsl:call-template>
     </xsl:variable>
     <!-- only consider elements with valid date types -->
-    <xsl:if test="$dateType != ''">
+    <xsl:variable name="dateValue" select="my:firstValue(doc:element/doc:field[@name='value'])"/>
+    <xsl:if test="$dateType != '' and my:isNotEmpty($dateValue)">
       <datacite:date>
         <xsl:attribute name="dateType"><xsl:value-of select="$dateType"/></xsl:attribute>
-        <xsl:value-of select="./doc:element/doc:field[@name='value']/text()"/>
+        <xsl:value-of select="$dateValue"/>
       </datacite:date>
     </xsl:if>
   </xsl:template>
@@ -364,20 +388,20 @@
   <!--   oaire:citationConferencePlace -->
   <!--   oaire:citationConferenceDate -->
   <xsl:template match="doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='name']" mode="oaire">
-    <xsl:variable name="value" select="normalize-space(doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="value" select="my:firstValue(doc:element/doc:field[@name='value'])"/>
     <xsl:if test="my:isNotEmpty($value)">
       <oaire:citationTitle><xsl:value-of select="$value"/></oaire:citationTitle>
     </xsl:if>
   </xsl:template>
   <xsl:template match="doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='location']" mode="oaire">
-    <xsl:variable name="value" select="normalize-space(doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="value" select="my:firstValue(doc:element/doc:field[@name='value'])"/>
     <xsl:if test="my:isNotEmpty($value)">
       <oaire:citationConferencePlace><xsl:value-of select="$value"/></oaire:citationConferencePlace>
     </xsl:if>
   </xsl:template>
   <xsl:template match="doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='startDate']" mode="oaire">
-    <xsl:variable name="start" select="normalize-space(doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="end" select="normalize-space(//doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='endDate']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="start" select="my:firstValue(doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="end" select="my:firstValue(//doc:element[@name='publication']/doc:element[@name='conference']/doc:element[@name='endDate']/doc:element/doc:field[@name='value'])"/>
     <xsl:choose>
       <xsl:when test="my:isNotEmpty($start) and my:isNotEmpty($end)">
         <oaire:citationConferenceDate><xsl:value-of select="$start"/><xsl:text> - </xsl:text><xsl:value-of select="$end"/></oaire:citationConferenceDate>
@@ -396,12 +420,12 @@
   <!--   oaire:citationEndPage -->
   <!--   datacite:relatedIdentifier[ISSN|EISSN] -->
   <xsl:template name="serial_published">
-    <xsl:variable name="journalTitle" select="normalize-space(//doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='journal']/doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="journalVolume" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='volume']/doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="journalIssue" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issue']/doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="journalPages" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='pages']/doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="journalIssn" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issn']/doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="journalEissn" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='eissn']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="journalTitle" select="my:firstValue(//doc:metadata/doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='journal']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="journalVolume" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='volume']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="journalIssue" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issue']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="journalPages" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='pages']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="journalIssn" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='issn']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="journalEissn" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='serial']/doc:element[@name='eissn']/doc:element/doc:field[@name='value'])"/>
 
     <xsl:if test="my:isNotEmpty($journalTitle)">
       <oaire:citationTitle><xsl:value-of select="$journalTitle"/></oaire:citationTitle>
@@ -445,9 +469,9 @@
   <!--   oaire:citationEndPage -->
   <!--   datacite:relatedIdentifier[ISBN] -->
   <xsl:template name="book_published">
-    <xsl:variable name="hostTitle" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='title']/doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="hostPages" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='pages']/doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="hostIsbn" select="normalize-space(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='isbn']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="hostTitle" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='title']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="hostPages" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='pages']/doc:element/doc:field[@name='value'])"/>
+    <xsl:variable name="hostIsbn" select="my:firstValue(//doc:metadata/doc:element[@name='publication']/doc:element[@name='host']/doc:element[@name='isbn']/doc:element/doc:field[@name='value'])"/>
 
     <xsl:if test="my:isNotEmpty($hostTitle)">
       <oaire:citationTitle><xsl:value-of select="$hostTitle"/></oaire:citationTitle>
@@ -476,16 +500,20 @@
 
   <!-- dc:publisher ========================================================================================= [DONE] -->
   <xsl:template match="doc:element[@name='publication']/doc:element[@name='editor']/doc:element[@name='name']" mode="dc">
-    <xsl:variable name="name" select="normalize-space(doc:element/doc:field[@name='value'])"/>
-    <xsl:variable name="location" select="normalize-space(//doc:element[@name='publication']/doc:element[@name='editor']/doc:element[@name='location']/doc:element/doc:field[@name='value'])"/>
-    <xsl:if test="my:isNotEmpty($name)">
-      <dc:publisher>
-        <xsl:value-of select="$name"/>
-        <xsl:if test="my:isNotEmpty($location)">
-          <xsl:text> (</xsl:text><xsl:value-of select="$location"/><xsl:text>)</xsl:text>
-        </xsl:if>
-      </dc:publisher>
-    </xsl:if>
+    <xsl:variable name="locations" select="//doc:element[@name='publication']/doc:element[@name='editor']/doc:element[@name='location']/doc:element/doc:field[@name='value']"/>
+    <xsl:for-each select="doc:element/doc:field[@name='value']">
+      <xsl:variable name="pos" select="position()"/>
+      <xsl:variable name="name" select="normalize-space(.)"/>
+      <xsl:variable name="location" select="normalize-space($locations[$pos])"/>
+      <xsl:if test="my:isNotEmpty($name)">
+        <dc:publisher>
+          <xsl:value-of select="$name"/>
+          <xsl:if test="my:isNotEmpty($location)">
+            <xsl:text> (</xsl:text><xsl:value-of select="$location"/><xsl:text>)</xsl:text>
+          </xsl:if>
+        </dc:publisher>
+      </xsl:if>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- dc:language ========================================================================================== [DONE] -->
@@ -512,7 +540,10 @@
   </xsl:template>
   <xsl:template match="doc:element" mode="datacite_subject">
     <xsl:for-each select="./doc:field[@name='value']">
-      <datacite:subject><xsl:value-of select="normalize-space(./text())"/></datacite:subject>
+      <xsl:variable name="subject" select="normalize-space(.)"/>
+      <xsl:if test="my:isNotEmpty($subject)">
+        <datacite:subject><xsl:value-of select="$subject"/></datacite:subject>
+      </xsl:if>
     </xsl:for-each>
   </xsl:template>
 
@@ -572,10 +603,12 @@
     </xsl:for-each>
   </xsl:template>
   <xsl:template match="doc:element[@name='dc']/doc:element[@name='relation']/doc:element[@name='dataset']">
-    <oaire:file>
-      <xsl:attribute name="objectType">dataset</xsl:attribute>
-      <xsl:value-of select="./doc:element/doc:field[@name='value']"/>
-    </oaire:file>
+    <xsl:for-each select="./doc:element/doc:field[@name='value']">
+      <oaire:file>
+        <xsl:attribute name="objectType">dataset</xsl:attribute>
+        <xsl:value-of select="normalize-space(.)"/>
+      </oaire:file>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- OTHER USEFUL TEMPLATES ====================================================================================== -->
@@ -636,6 +669,7 @@
   <xsl:template match="text()|@*"/>
   <xsl:template match="text()|@*" mode="oaire"/>
   <xsl:template match="text()|@*" mode="datacite"/>
+  <xsl:template match="text()|@*" mode="dc"/>
   <xsl:template match="text()|@*" mode="entity_author"/>
   <xsl:template match="text()|@*" mode="entity_funding"/>
 
