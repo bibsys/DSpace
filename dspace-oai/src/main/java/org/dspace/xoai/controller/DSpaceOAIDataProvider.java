@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 import javax.xml.stream.XMLStreamException;
 
-import com.lyncode.xoai.dataprovider.OAIDataProvider;
 import com.lyncode.xoai.dataprovider.OAIRequestParameters;
 import com.lyncode.xoai.dataprovider.core.XOAIManager;
 import com.lyncode.xoai.dataprovider.exceptions.InvalidContextException;
@@ -31,6 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.Logger;
 import org.dspace.core.Context;
 import org.dspace.xoai.data.ResumptionCursor;
+import org.dspace.xoai.dataprovider.FaultTolerantOAIDataProvider;
 import org.dspace.xoai.services.api.cache.XOAICacheService;
 import org.dspace.xoai.services.api.config.XOAIManagerResolver;
 import org.dspace.xoai.services.api.config.XOAIManagerResolverException;
@@ -101,11 +101,15 @@ public class DSpaceOAIDataProvider {
             XOAIManager manager = xoaiManagerResolver.getManager();
 
             ResumptionCursor cursor = new ResumptionCursor();
-            OAIDataProvider dataProvider = new OAIDataProvider(manager, xoaiContext,
-                                                               identifyResolver.getIdentify(),
-                                                               setRepositoryResolver.getSetRepository(),
-                                                               itemRepositoryResolver.getItemRepository(cursor),
-                                                               new DSpaceResumptionTokenFormatter(cursor));
+            // The fault-tolerant provider serves a record whose XSL transformation fails with an error document as
+            // its metadata, instead of failing the whole response and killing the harvest (HTTP=500)
+            FaultTolerantOAIDataProvider dataProvider = new FaultTolerantOAIDataProvider(
+                manager, xoaiContext,
+                identifyResolver.getIdentify(),
+                setRepositoryResolver.getSetRepository(),
+                itemRepositoryResolver.getItemRepository(cursor),
+                new DSpaceResumptionTokenFormatter(cursor)
+            );
 
             OutputStream out = response.getOutputStream();
             OAIRequestParameters parameters = new OAIRequestParameters(buildParametersMap(request));
