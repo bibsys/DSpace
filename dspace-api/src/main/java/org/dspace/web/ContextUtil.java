@@ -69,9 +69,6 @@ public class ContextUtil {
      * @return a context object
      */
     public static Context obtainContext(HttpServletRequest request) {
-        // if (request == null) {
-        //     return null;
-        // }
         Context context = (Context) request.getAttribute(DSPACE_CONTEXT);
 
         if (context == null) {
