@@ -215,15 +215,6 @@
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
-    <!-- COMMUNITY =================================================== -->
-    <xsl:template match="/mods:mods/mods:note[@type='parentCommunityName']">
-        <xsl:element name="dim:field">
-            <xsl:attribute name="mdschema">publication</xsl:attribute>
-            <xsl:attribute name="element">collection</xsl:attribute>
-            <xsl:attribute name="qualifier">community</xsl:attribute>
-            <xsl:value-of select="normalize-space(.)"/>
-        </xsl:element>
-    </xsl:template>
     <!-- LOM ====================================================== -->
     <xsl:template match="/mods:mods/mods:note[@type='typicalAgeRange']">
         <xsl:element name="dim:field">

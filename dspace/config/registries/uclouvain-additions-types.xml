@@ -29,6 +29,11 @@
         <qualifier>legacyUri</qualifier>
         <scope_note>To store original handle uri</scope_note>
     </dc-type>
+    <!-- AUTHORS SCHEMA -->
+    <dc-schema>
+        <name>authors</name>
+        <namespace>https://uclouvain.be/ontology/authors</namespace>
+    </dc-schema>
     <dc-type>
         <schema>authors</schema>
         <element>email</element>
@@ -46,13 +51,6 @@
         <element>collection</element>
         <qualifier>name</qualifier>
         <scope_note>To specify the collection name to which the publication belongs</scope_note>
-    </dc-type>
-    <!-- COMMUNITY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-    <dc-type>
-        <schema>publication</schema>
-        <element>collection</element>
-        <qualifier>community</qualifier>
-        <scope_note>To specify the community name to which the publication belongs</scope_note>
     </dc-type>
     <!-- LOM SCHEMA -->
     <dc-schema>
