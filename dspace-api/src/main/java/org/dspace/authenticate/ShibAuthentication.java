@@ -717,7 +717,7 @@ public class ShibAuthentication implements AuthenticationMethod {
         String fname = findSingleAttribute(request, fnameHeader);
         String lname = findSingleAttribute(request, lnameHeader);
 
-        if (email == null || (fnameHeader != null && fname == null) || (lnameHeader != null && lname == null)) {
+        if (email == null || ((fnameHeader != null && fname == null) && (lnameHeader != null && lname == null))) {
             // We require that there be an email, first name, and last name. If we
             // don't have at least these three pieces of information then we fail.
             String message = "Unable to register new eperson because we are unable to find an email address along " +
