@@ -1818,11 +1818,12 @@
                     <list>
                         <ref bean="sortScore" />
                         <ref bean="sortTitleAsc" />
+                        <ref bean="sortTitleDesc" />
+                        <ref bean="sortDateIssuedAsc" />
                         <ref bean="sortDateIssuedDesc" />
-                        <ref bean="sortDateAccessionedDesc"/>
-                        <ref bean="sortViews"/>
-                        <ref bean="sortDownloads"/>
-                        <ref bean="sortCitations"/>
+                        <ref bean="sortDateAccessionedAsc" />
+                        <ref bean="sortDateAccessionedDesc" />
+                        <ref bean="sortDocumentTypeDesc" />
                     </list>
                 </property>
             </bean>
