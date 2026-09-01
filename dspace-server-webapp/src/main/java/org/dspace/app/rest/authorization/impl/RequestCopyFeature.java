@@ -8,6 +8,7 @@
 package org.dspace.app.rest.authorization.impl;
 
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,8 @@ import org.dspace.core.Context;
 import org.dspace.core.CrisConstants;
 import org.dspace.eperson.EPerson;
 import org.dspace.services.ConfigurationService;
+import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
+import org.dspace.uclouvain.services.UCLouvainResourcePolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -61,6 +64,9 @@ public class RequestCopyFeature implements AuthorizationFeature {
 
     @Autowired
     private ConfigurationService configurationService;
+
+    @Autowired
+    private UCLouvainResourcePolicyService uclouvainRPService;
 
     @Override
     public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException {
@@ -96,7 +102,11 @@ public class RequestCopyFeature implements AuthorizationFeature {
         } else if (object instanceof BitstreamRest bitstreamRest) {
             Bitstream bitstream = bitstreamService.find(context, UUID.fromString(bitstreamRest.getId()));
             DSpaceObject parentObject = bitstreamService.getParentObject(context, bitstream);
-            if (parentObject instanceof Item item && item.isArchived() && existsPersistentRecipient(item)) {
+            if (parentObject instanceof Item item
+                    && item.isArchived()
+                    && existsPersistentRecipient(item)
+                    && hasValidAccessType(context, bitstream)
+            ) {
                 return !authorizeService.authorizeActionBoolean(context, bitstream, Constants.READ);
             }
         }
@@ -111,6 +121,11 @@ public class RequestCopyFeature implements AuthorizationFeature {
         }
     }
 
+    /**
+     * Check that given item has at least one personal author email address.
+     * 
+     * @param item The item to check.
+     */
     private boolean existsPersistentRecipient(Item item) {
         String persistentEmailField = configurationService
             .getProperty("uclouvain.global.metadata.persistentauthoremail.field", "authors.email");
@@ -118,9 +133,25 @@ public class RequestCopyFeature implements AuthorizationFeature {
             .getMetadataByMetadataString(item, persistentEmailField)
             .stream()
             .map(MetadataValue::getValue)
-            .anyMatch(v -> StringUtils.isNotBlank(v) && v.equals(CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE));
+            .anyMatch(v -> StringUtils.isNotBlank(v) && !v.equals(CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE));
     }
 
+    /**
+     * Check if a bitstream has a valid access type for request copy.
+     * 
+     * @param context The current DSpace application context.
+     * @param bitstream The bitstream to evaluate.
+     * @return True if the access type of the bitstream matches the required access type for request copy.
+     */
+    private boolean hasValidAccessType(Context context, Bitstream bitstream) {
+        try {
+            return Optional.ofNullable(uclouvainRPService.getMasterPolicy(uclouvainRPService.find(context, bitstream)))
+                .map(rp -> UCLouvainAccessStatusHelper.RESTRICTED.equals(rp.getRpName()))
+                .orElse(false);
+        } catch (SQLException e) {
+            return false;
+        }
+    }
 
     @Override
     public String[] getSupportedTypes() {
