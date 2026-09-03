@@ -12,8 +12,11 @@ import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.dspace.content.authority.Choices.CF_UNSET;
 import static org.dspace.core.CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -21,13 +24,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 import org.dspace.AbstractIntegrationTestWithDatabase;
 import org.dspace.builder.CollectionBuilder;
 import org.dspace.builder.CommunityBuilder;
 import org.dspace.builder.ItemBuilder;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataFieldName;
 import org.dspace.content.MetadataValue;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.ItemService;
+import org.dspace.discovery.MockSolrSearchCore;
 import org.dspace.event.factory.EventServiceFactory;
 import org.dspace.event.service.EventService;
 import org.dspace.services.ConfigurationService;
@@ -49,6 +60,8 @@ import org.junit.Test;
 public class UCLouvainPublicationAuthorEnhancerTest extends AbstractIntegrationTestWithDatabase {
     private UCLouvainItemEnhancerService uclouvainItemEnhancerService;
     private UCLouvainItemEnhancerPoller uclouvainItemEnhancerUpdatePoller;
+    private ItemService itemService;
+    private MockSolrSearchCore mockSolrSearchCore;
 
     private Collection collection;
 
@@ -83,6 +96,9 @@ public class UCLouvainPublicationAuthorEnhancerTest extends AbstractIntegrationT
     public void setup() {
         uclouvainItemEnhancerService = UCLouvainServiceFactory.getInstance().getItemEnhancerService();
         uclouvainItemEnhancerUpdatePoller = UCLouvainServiceFactory.getInstance().getItemEnhancerUpdatePoller();
+        itemService = ContentServiceFactory.getInstance().getItemService();
+        mockSolrSearchCore = DSpaceServicesFactory.getInstance().getServiceManager()
+            .getServiceByName(null, MockSolrSearchCore.class);
 
         context.turnOffAuthorisationSystem();
         parentCommunity = CommunityBuilder.createCommunity(context)
@@ -419,6 +435,137 @@ public class UCLouvainPublicationAuthorEnhancerTest extends AbstractIntegrationT
         assertThat(mv, hasItem(with("authors.identifier.orcid", "4444-5555-6666", null, 0, CF_UNSET)));
         // The institution should not have changed since it was not linked to the authority.
         assertThat(mv, hasItem(with("authors.institution.code", "UCLouvain", null, 0, CF_UNSET)));
+    }
+
+    /**
+     * Test that enhancing a source profile re-indexes the target publications in Solr.
+     *
+     * The 'Profile2PublicationAuthorUpdateEnhancer' keeps the 'dc.contributor.author' metadata of the linked
+     * publications in sync with the 'dc.title' of the profile (the source).
+     *
+     * #1. Create a profile (source) and a publication linked to it (target).
+     * #2. Verify the publication is indexed in Solr with the initial author name.
+     * #3. Rename the profile and run the enhancer poller.
+     * #4. Verify that the publication's Solr record has been updated with the new author name.
+     *
+     * This test fails if the enhancers update the database without triggering the Solr reindexing
+     * (the 'MODIFY' / 'MODIFY_METADATA' events consumed by the 'IndexEventConsumer').
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testItemEnhancerPollerUpdateTriggersSolrReindex() throws Exception {
+        String initialName = "Gloutitout, Jean";
+        String updatedName = "Gloutitout, Jeannot";
+
+        context.turnOffAuthorisationSystem();
+        // 1. Create a base profile and a publication linked to it.
+        Item profile = ItemBuilder.createItem(context, collection)
+            .withEntityType("Person")
+            .withMetadata("dc", "title", null, initialName)
+            .withMetadata("person", "email", "official", "jean.gloutitout@test.org")
+            .withMetadata("person", "identifier", "fgs", "000001")
+            .build();
+        String profileAuthority = profile.getID().toString();
+
+        Item publication = ItemBuilder.createItem(context, collection)
+            .withEntityType("Publication")
+            .withTitle("Test publication for Solr reindexing")
+            .withAuthor(initialName, profileAuthority, CF_ACCEPTED)
+            .withMetadata("authors", "email", null, null, "jean.gloutitout@test.org", profileAuthority, CF_ACCEPTED)
+            .withMetadata("authors", "identifier", "fgs", null, "000001", profileAuthority, CF_ACCEPTED)
+            .build();
+
+        context.restoreAuthSystemState();
+        context.commit();
+
+        // 2. The publication must be indexed in Solr with the initial author name.
+        SolrDocument publicationDoc = getSolrDocument(publication);
+        assertThat(
+            "The publication should be indexed in Solr before the enhancement.",
+            publicationDoc, not(nullValue())
+        );
+        List<String> initialAuthors = (List<String>) publicationDoc.get("dc.contributor.author");
+        assertThat(initialAuthors, contains(initialName));
+
+        // The 'CREATE' events of the profile and the publication queued entries for enhancement.
+        // Clean them so that only the entry triggered by the profile update below is processed.
+        uclouvainItemEnhancerService.cleanForItem(context, profile.getID());
+        uclouvainItemEnhancerService.cleanForItem(context, publication.getID());
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(0));
+
+        // 3. Update the profile (source) and run the enhancer poller.
+        //    The poller enhances the target publication based on the updated profile
+        //    and must also reindex it in Solr.
+        // NOTE: the profile is detached after the previous commit, reload it before modifying it.
+        profile = context.reloadEntity(profile);
+        context.turnOffAuthorisationSystem();
+        itemService.setMetadataSingleValue(context, profile, "dc", "title", null, null, updatedName);
+        itemService.update(context, profile);
+        context.restoreAuthSystemState();
+        context.commit();
+
+        // Make sure the source (profile) is queued for enhancement.
+        assertThat(uclouvainItemEnhancerService.countItemsToEnhance(context), equalTo(1));
+
+        uclouvainItemEnhancerUpdatePoller.run();
+
+        // The queue entry for the source (profile) should have been consumed by the poller.
+        // NOTE: the target publication may still be in the queue, because the 'MODIFY' event
+        // fired to reindex it in Solr is also consumed by the 'UCLouvainItemEnhancerConsumer'
+        // (filter 'Item+All'), which re-queues it. That entry is processed as a no-op on the
+        // next poller cycle (no enhancer supports 'Publication' as a source, and the enhancers
+        // only re-fire events when a value still differs), so the queue converges to empty.
+        List<ItemToEnhance> remainingEntries = uclouvainItemEnhancerService.getItemsToEnhance(context);
+        assertThat(
+            "The queue entry for the source profile should have been consumed by the poller.",
+            remainingEntries.stream().map(ItemToEnhance::getItemUUID).toList(),
+            not(hasItem(profile.getID()))
+        );
+
+        // Check that the publication metadata has been updated in the database.
+        publication = context.reloadEntity(publication);
+        assertThat(
+            itemService.getMetadataFirstValue(
+                publication, new MetadataFieldName("dc.contributor.author"), Item.ANY),
+            equalTo(updatedName)
+        );
+
+        // 4. The publication's Solr record must have been re-indexed with the new author name.
+        SolrDocument updatedPublicationDoc = getSolrDocument(publication);
+        List<String> updatedAuthors = (List<String>) updatedPublicationDoc.get("dc.contributor.author");
+        assertThat(
+            "The Solr index should reflect the enhancement (reindex should have been triggered).",
+            updatedAuthors,
+            contains(updatedName)
+        );
+
+        // 5. A second poller cycle must be a no-op: the re-queued publication (if any) is
+        //    processed without modification (no enhancer supports 'Publication' as a source
+        //    and the enhancers only modify targets when a value still differs), so no new
+        //    events are fired and the queue converges to empty (no infinite re-queue loop).
+        if (!remainingEntries.isEmpty()) {
+            uclouvainItemEnhancerUpdatePoller.run();
+        }
+        assertThat(
+            "The enhancement queue must converge to empty after one extra no-op poller cycle.",
+            uclouvainItemEnhancerService.countItemsToEnhance(context),
+            equalTo(0)
+        );
+    }
+
+    /**
+     * Retrieve the Solr document of the given item from the 'search' core.
+     *
+     * @param item The item to search for in the Solr 'search' core.
+     * @return The Solr document of the item, or null if it is not indexed.
+     */
+    private SolrDocument getSolrDocument(Item item) throws Exception {
+        SolrQuery solrQuery = new SolrQuery();
+        solrQuery.setQuery("search.resourceid:" + item.getID());
+        QueryResponse queryResponse = mockSolrSearchCore.getSolr().query(solrQuery);
+        SolrDocumentList results = queryResponse.getResults();
+        return results.isEmpty() ? null : results.get(0);
     }
 
     /**
