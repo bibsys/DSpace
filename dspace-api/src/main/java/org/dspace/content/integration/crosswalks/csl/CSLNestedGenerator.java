@@ -49,7 +49,12 @@ public class CSLNestedGenerator implements CSLGenerator {
         try {
             CSL citeproc = new CSL(itemDataProvider, getStyle(style));
             citeproc.setOutputFormat(format);
-            citeproc.registerCitationItems(itemDataProvider.getIds());
+            // Render URL/DOI values as links where the output format supports it (HTML anchor tags),
+            // matching the 'linkwrap' behavior of CSLWebServiceGenerator. Text outputs are unaffected.
+            citeproc.setConvertLinks(true);
+            // 'unsorted=true': keep the caller's item order (usually a Solr sort chosen by the user)
+            // instead of re-sorting the bibliography with the CSL style own `bibliography/sort` rules.
+            citeproc.registerCitationItems(itemDataProvider.getIds(), true);
             return citeproc;
         } catch (Exception e) {
             LOGGER.warn("Something went wrong for: " + itemDataProvider.getId(), e);
