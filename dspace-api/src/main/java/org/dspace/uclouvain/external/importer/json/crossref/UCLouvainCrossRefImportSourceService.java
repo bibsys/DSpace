@@ -40,7 +40,6 @@ import org.dspace.uclouvain.core.utils.DateUtils;
 import org.dspace.uclouvain.external.importer.json.UCLouvainJSONImportSourceService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.UCLouvainProfileService;
-import org.dspace.web.ContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -63,8 +62,7 @@ public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSou
 
     @Override
     public List<MetadataValueDTO> getMetadataList(String query) {
-        Context context = ContextUtil.obtainCurrentRequestContext();
-        try {
+        try (Context context = new Context()) {
             String rawResponse = fetchData(query);
             ReadContext parsedJson = parseJsonResponse(rawResponse);
             return generateMetadataList(context, parsedJson);
