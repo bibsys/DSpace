@@ -84,9 +84,9 @@
     </command>
     <command>
         <name>embargo-lifter</name>
-        <description>Embargo manager tool used to check, list and lift embargoes</description>
+        <description>Turn expired embargoes (anonymous READ policies whose start date is reached) into open access</description>
         <step>
-            <class>org.dspace.embargo.EmbargoCLITool</class>
+            <class>org.dspace.uclouvain.administer.LiftExpiredEmbargoesCLI</class>
         </step>
     </command>
     <command>

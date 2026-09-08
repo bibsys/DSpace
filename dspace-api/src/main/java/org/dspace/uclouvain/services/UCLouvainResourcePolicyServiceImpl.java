@@ -14,12 +14,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.content.DSpaceObject;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.eperson.Group;
+import org.dspace.eperson.service.GroupService;
+import org.dspace.uclouvain.content.dao.UCLouvainResourcePolicyDAO;
 import org.dspace.uclouvain.core.model.ResourcePolicyPriority;
+import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +41,10 @@ public class UCLouvainResourcePolicyServiceImpl implements UCLouvainResourcePoli
     private ResourcePolicyService resourcePolicyService;
     @Autowired
     private ResourcePolicyPriority defaultResourcePolicyPriority;
+    @Autowired
+    private UCLouvainResourcePolicyDAO uclouvainResourcePolicyDAO;
+    @Autowired
+    private GroupService groupService;
 
     private List<ResourcePolicyPriority> resourcePolicyPriorities;
 
@@ -97,6 +106,23 @@ public class UCLouvainResourcePolicyServiceImpl implements UCLouvainResourcePoli
                 .findFirst()
                 .orElse(defaultResourcePolicyPriority)
                 .getWeight();
+    }
+
+    @Override
+    public List<ResourcePolicy> findExpiredEmbargoes(Context context) throws SQLException {
+        Group anonymous = groupService.findByName(context, Group.ANONYMOUS);
+        return uclouvainResourcePolicyDAO.findExpiredEmbargoes(context, anonymous, new Date());
+    }
+
+    @Override
+    public void liftEmbargo(Context context, ResourcePolicy policy) throws SQLException, AuthorizeException {
+        if (!UCLouvainAccessStatusHelper.EMBARGO.equals(policy.getRpName())) {
+            throw new IllegalArgumentException(
+                "Policy " + policy.getID() + " is not an embargo: " + policy.getRpName());
+        }
+        policy.setStartDate(null);
+        policy.setRpName(UCLouvainAccessStatusHelper.OPEN_ACCESS);
+        resourcePolicyService.update(context, policy);
     }
 
     // GETTER & SETTER =================================================================================================

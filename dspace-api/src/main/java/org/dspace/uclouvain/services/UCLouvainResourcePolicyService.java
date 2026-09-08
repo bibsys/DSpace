@@ -10,6 +10,7 @@ package org.dspace.uclouvain.services;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.DSpaceObject;
 import org.dspace.core.Context;
@@ -46,4 +47,27 @@ public interface UCLouvainResourcePolicyService {
      * @return the priority weight
      */
     int getPolicyWeight(String policyName);
+
+    /**
+     * Find the embargo policies whose start date is reached: they now grant anonymous READ access but are still
+     * named "embargo", so nothing has told the item that its access status changed.
+     *
+     * @param context The application context
+     * @return the expired embargo policies, oldest first
+     * @throws SQLException if database error
+     */
+    List<ResourcePolicy> findExpiredEmbargoes(Context context) throws SQLException;
+
+    /**
+     * Turn an expired embargo policy into an open access one: the start date is cleared and the policy is renamed
+     * "openaccess". Saving the policy fires a MODIFY event on the DSpace object it protects, which is what triggers
+     * the item access status recalculation and the re-indexation.
+     *
+     * @param context The application context
+     * @param policy  an embargo policy, see {@link #findExpiredEmbargoes(Context)}
+     * @throws IllegalArgumentException if the policy is not an embargo one
+     * @throws SQLException             if database error
+     * @throws AuthorizeException       if the current user cannot update the policy
+     */
+    void liftEmbargo(Context context, ResourcePolicy policy) throws SQLException, AuthorizeException;
 }

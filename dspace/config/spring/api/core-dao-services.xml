@@ -32,8 +32,10 @@
     <bean class="org.dspace.content.dao.impl.RelationshipDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.EntityTypeDAOImpl"/>
     <bean class="org.dspace.content.dao.impl.RelationshipTypeDAOImpl"/>
+    <bean class="org.dspace.uclouvain.content.dao.impl.UCLouvainResourcePolicyDAOImpl"/>
 
-    <bean class="org.dspace.content.dao.impl.ProcessDAOImpl"/>
+
+  <bean class="org.dspace.content.dao.impl.ProcessDAOImpl"/>
 
     <bean class="org.dspace.deduplication.dao.impl.DeduplicationDAOImpl"/>
     <bean class="org.dspace.alerts.dao.impl.SystemWideAlertDAOImpl"/>
