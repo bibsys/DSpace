@@ -7,6 +7,9 @@
  */
 package org.dspace.uclouvain.authorize.item;
 
+import java.sql.SQLException;
+
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
@@ -20,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * UCLouvain's authorize check for item objects.
  * 
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
 public class PublicationItemAuthorize {
 
@@ -27,21 +31,37 @@ public class PublicationItemAuthorize {
     private PublicationService publicationService;
 
     public boolean authorizeActionBoolean(Context context, Item item, int action, EPerson user) {
+        // To manage an item, user has to be either submitter, author or manager.
         switch (action) {
-            case Constants.WRITE, Constants.READ:
-                // For READ and WRITE, user has to be either submitter, author or manager.
-                return user != null && (ItemUtils.isSubmitter(context, user, item) ||
-                    isAuthor(context, item) ||
-                    AuthorizationUtils.isManager(context, user));
+            case Constants.ADD:
+            case Constants.READ:
+            case Constants.WRITE:
+            case Constants.DELETE:
+            case Constants.REMOVE:
+                return user != null && isAuthorized(context, item, user);
             default:
                 return false;
         }
     }
 
-    private boolean isAuthor(Context context, Item item) {
+    /**
+     * Authorize an action on an item: to allow a modification user should be:
+     *   - the submitter
+     *   - member of 'Manager' group
+     *   - author of the publication.
+     *
+     * @param context The current DSpace application context.
+     * @param item The item to check authorization of.
+     * @param user The user that wants to perform an action.
+     * @return True if the user is authorized, false otherwise.
+     */
+    private boolean isAuthorized(Context context, Item item, EPerson user) {
+        if (ItemUtils.isSubmitter(context, user, item) || AuthorizationUtils.isManager(context, user)) {
+            return true;
+        }
         try {
             return publicationService.isAuthorOfPublication(context, item);
-        } catch (Exception e) {
+        } catch (SQLException | AuthorizeException e) {
             return false;
         }
     }

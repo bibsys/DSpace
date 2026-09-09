@@ -5,58 +5,58 @@
  *
  * http://www.dspace.org/license/
  */
-package org.dspace.uclouvain.authorize.bundle;
+package org.dspace.uclouvain.authorize.bitstream;
 
 import java.sql.SQLException;
 
 import org.dspace.authorize.service.AuthorizeService;
-import org.dspace.content.Bundle;
+import org.dspace.content.Bitstream;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
-import org.dspace.content.service.BundleService;
+import org.dspace.content.service.BitstreamService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Bundle custom authorization override.
- * The rights a user has on an item apply to its bundles.
- * 
- * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
+ * Bitstream custom authorization override.
+ * The rights a user has on an item apply to its bitstreams.
+ *
+ * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-public class BundleAuthorize {
+public class BitstreamAuthorize {
 
     @Autowired
-    private BundleService bundleService;
+    private BitstreamService bitstreamService;
     @Autowired
     private AuthorizeService authorizeService;
 
-    public boolean authorizeActionBoolean(Context context, Bundle bundle, int action, EPerson user) {
+    public boolean authorizeActionBoolean(Context context, Bitstream bitstream, int action, EPerson user) {
+        // !!! Not READ here otherwise all resourcePolicy checks should be bypassed !!!
         switch (action) {
             case Constants.ADD:
-            case Constants.READ:
             case Constants.WRITE:
             case Constants.DELETE:
             case Constants.REMOVE:
-                return user != null && isAuthorized(context, bundle, action, user);
+                return user != null && isAuthorized(context, bitstream, action, user);
             default:
                 return false;
         }
     }
 
     /**
-     * Authorize an action on a bundle based on the permission the user has on the item.
-     * 
+     * Authorize an action on a bitstream based on the permission the user has on the owning item.
+     *
      * @param context The current DSpace application context.
-     * @param bundle The bundle to check authorization of.
+     * @param bitstream The bitstream to check authorization of.
      * @param action The action to check.
      * @param user The user that wants to perform an action.
      * @return True if the user is authorized, false otherwise.
      */
-    private boolean isAuthorized(Context context, Bundle bundle, int action, EPerson user) {
+    private boolean isAuthorized(Context context, Bitstream bitstream, int action, EPerson user) {
         try {
-            DSpaceObject parent = bundleService.getParentObject(context, bundle);
+            DSpaceObject parent = bitstreamService.getParentObject(context, bitstream);
             if (!(parent instanceof Item item)) {
                 return false;
             }
