@@ -80,6 +80,7 @@
     <bean id="publicationItemAuthorize" class="org.dspace.uclouvain.authorize.item.PublicationItemAuthorize"/>
     <bean id="epersonAuthorize" class="org.dspace.uclouvain.authorize.eperson.EPersonAuthorize"/>
     <bean id="bundleAuthorize" class="org.dspace.uclouvain.authorize.bundle.BundleAuthorize"/>
+    <bean id="bitstreamAuthorize" class="org.dspace.uclouvain.authorize.bitstream.BitstreamAuthorize"/>
 
     <bean id="publicationProfileAsyncIndexingService" class="org.dspace.uclouvain.async.PublicationProfileAsyncIndexingService"/>
 
