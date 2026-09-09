@@ -276,6 +276,9 @@ public class PublicationServiceImpl implements PublicationService {
             return false;
         }
         ResearcherProfile profile = researcherProfileService.findById(context, user.getID());
+        if (profile == null) {
+            return false;
+        }
         return publication.getAuthors().stream()
             .map(PublicationAuthor::getAuthority)
             .filter(Objects::nonNull)
