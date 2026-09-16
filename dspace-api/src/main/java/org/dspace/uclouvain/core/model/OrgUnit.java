@@ -35,6 +35,7 @@ public class OrgUnit extends ItemModel {
     public static final String TYPE_FIELD = getField("type", "dc.type");
     public static final String ACRONYM_FIELD = getField("acronym", "oairecerif.acronym");
     public static final String DISPLAY_ACRONYM_FIELD = getField("displayAcronym", "oairecerif.acronym.display");
+    public static final String ALIAS_ACRONYM_FIELD = getField("aliasAcronym", "oairecerif.acronym.alias");
     public static final String IS_SELECTABLE_FIELD = getField("isSelectable", "organization.isSelectable");
     public static final String WEIGHT_FIELD = getField("weight", "organization.weight");
     public static final String PARENT_ORGANIZATION = getField("parentOrganization", "organization.parentOrganization");
