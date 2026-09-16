@@ -73,7 +73,11 @@ public class OrgUnitServiceImpl implements OrgUnitService {
         List<String> clauses = new ArrayList<>();
         if (!StringUtils.isBlank(entityAcronym) || !StringUtils.isBlank(entityName)) {
             if (!StringUtils.isBlank(entityAcronym)) {
-                clauses.add("%s:\"%s\"".formatted(OrgUnit.ACRONYM_FIELD, entityAcronym));
+                clauses.add("(%1$s:\"%3$s\" OR %2$s:\"%3$s\")".formatted(
+                    OrgUnit.ACRONYM_FIELD,
+                    OrgUnit.ALIAS_ACRONYM_FIELD,
+                    entityAcronym
+                ));
             }
             if (!StringUtils.isBlank(entityName)) {
                 clauses.add("%s:\"%s\"".formatted(OrgUnit.TITLE_FIELD, entityName));
@@ -88,7 +92,11 @@ public class OrgUnitServiceImpl implements OrgUnitService {
             }
         } else {
             if (!StringUtils.isBlank(instAcronym)) {
-                clauses.add("%s:\"%s\"".formatted(OrgUnit.ACRONYM_FIELD, instAcronym));
+                clauses.add("(%1$s:\"%3$s\" OR %2$s:\"%3$s\")".formatted(
+                    OrgUnit.ACRONYM_FIELD,
+                    OrgUnit.ALIAS_ACRONYM_FIELD,
+                    instAcronym
+                ));
             }
             if (!StringUtils.isBlank(instName)) {
                 clauses.add("%s:\"%s\"".formatted(OrgUnit.TITLE_FIELD, instName));

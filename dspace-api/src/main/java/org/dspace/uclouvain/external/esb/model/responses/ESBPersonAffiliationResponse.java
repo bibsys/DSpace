@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class ESBPersonAffiliationResponse extends ESBPersonResponse {
-    public static final String DEPARTMENT_TYPE_DOCTORAL_SECTOR = "S";
+    public static final String DEPARTMENT_TYPE_SECTOR = "S";
     public static final String DEPARTMENT_TYPE_FACULTY = "F";
     public static final String DEPARTMENT_TYPE_INSTITUTE = "I";
     public static final String DEPARTMENT_TYPE_LOGISTIC = "L";
