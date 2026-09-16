@@ -7,9 +7,14 @@
  */
 package org.dspace.uclouvain.external.esb.client;
 
+import static org.dspace.uclouvain.external.esb.model.responses.ESBPersonAffiliationResponse.DEPARTMENT_TYPE_INSTITUTE;
+import static org.dspace.uclouvain.external.esb.model.responses.ESBPersonAffiliationResponse.DEPARTMENT_TYPE_POLE;
+import static org.dspace.uclouvain.external.esb.model.responses.ESBPersonAffiliationResponse.DEPARTMENT_TYPE_SECTOR;
+
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +43,11 @@ public class ESBClientImpl implements ESBClient {
     private GenericHttpClient httpClient;
     private final String DIGIT_PATH = "/digit/v1";
     private final String EMPLOYEE_PATH = "/employees/v1";
+    private final List<String> AFFILIATIONS_TYPE_FILTER = List.of(
+        DEPARTMENT_TYPE_SECTOR,
+        DEPARTMENT_TYPE_INSTITUTE,
+        DEPARTMENT_TYPE_POLE
+    );
 
     // ---------- DIGIT ENDPOINTS ----------
     /**
@@ -101,7 +111,10 @@ public class ESBClientImpl implements ESBClient {
         } catch (Exception e) {
             logger.error("Could not fetch affiliations of person with fgs: " + fgs, e);
         }
-        return affiliations;
+        return Arrays
+            .stream(affiliations)
+            .filter(aff -> AFFILIATIONS_TYPE_FILTER.contains(aff.getEntity().getDepartmentType()))
+            .toArray(ESBPersonAffiliationResponse[]::new);
     }
 
     /**

@@ -742,10 +742,21 @@
           <dc-schema>oairecerif</dc-schema>
           <dc-element>acronym</dc-element>
           <dc-qualifier>display</dc-qualifier>
-          <label>Acronym or short form of title to display to end-user on submission forms</label>
+          <label>Acronym submission display</label>
           <input-type>onebox</input-type>
-          <hint />
+          <hint>Acronym or short form of title to display to end-user on submission forms</hint>
           <required />
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>oairecerif</dc-schema>
+          <dc-element>acronym</dc-element>
+          <dc-qualifier>alias</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Acronym alias</label>
+          <input-type>onebox</input-type>
+          <hint>Acronym alias used only for searching usage (matching profile, ...), never display</hint>
         </field>
       </row>
       <row>
