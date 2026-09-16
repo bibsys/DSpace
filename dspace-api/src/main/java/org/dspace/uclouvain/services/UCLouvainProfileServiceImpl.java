@@ -10,6 +10,7 @@ package org.dspace.uclouvain.services;
 import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.dspace.content.authority.Choices.CF_UNSET;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -231,8 +232,12 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
         List<String> affiliations = ePersonService.getMetadata(person, "eperson", "affiliation", null, null)
             .stream()
             .map(MetadataValue::getValue)
+            .flatMap(value -> Arrays.stream(value.split(",")))// Split each metadata by comma
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .distinct()
             .collect(Collectors.toList());
-        if (affiliations != null) {
+        if (!affiliations.isEmpty()) {
             // Try to find a matching affiliation item for the affiliations stored in the person.
             OrgUnit mainAffiliation = orgUnitService.findFirstByName(context, affiliations);
             if (mainAffiliation != null) {
