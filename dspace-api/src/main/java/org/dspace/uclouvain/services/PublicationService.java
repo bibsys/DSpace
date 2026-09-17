@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -172,6 +173,38 @@ public interface PublicationService {
         UCLouvainExportService.SortOption sort,
         DiscoverQuery.SORT_ORDER sortDirection
     ) throws SearchServiceException;
+
+    /**
+     * Find the publications carrying an identifier, whatever the way it was typed (separators, prefixes, ISBN-10 vs
+     * ISBN-13, ...). The searched value is normalized with the {@code IdentifierNormalizer} configured for the field in
+     * {@code uclouvain.indexing.clean-identifiers}, and matched against the canonical forms indexed in Solr.
+     * <p>
+     *
+     * @param context       The current DSpace context
+     * @param metadataField the identifier field, e.g. {@code dc.identifier.isbn}; must be listed in
+     *                      {@code uclouvain.indexing.clean-identifiers}
+     * @param rawValue      the identifier as typed; may be null or blank, in which case nothing is found
+     * @return the matching publications, oldest accessioned first; empty if none
+     * @throws IllegalArgumentException if the field has no configured normalizer
+     * @throws SearchServiceException   if any solr exception occurred while searching
+     */
+    List<Publication> findByIdentifier(Context context, String metadataField, String rawValue)
+        throws SearchServiceException;
+
+    /**
+     * First result of {@link #findByIdentifier(Context, String, String)}: the oldest accessioned publication
+     * carrying the identifier.
+     *
+     * @param context       The current DSpace context
+     * @param metadataField the identifier field, see {@link #findByIdentifier(Context, String, String)}
+     * @param rawValue      the identifier as typed
+     * @return the publication, or empty if none carries the identifier
+     * @throws SearchServiceException if any solr exception occurred while searching
+     */
+    default Optional<Publication> findFirstByIdentifier(Context context, String metadataField, String rawValue)
+        throws SearchServiceException {
+        return findByIdentifier(context, metadataField, rawValue).stream().findFirst();
+    }
 
     /**
      * Determine if the current logged user is an author of the publication
