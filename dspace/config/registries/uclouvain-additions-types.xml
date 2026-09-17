@@ -73,6 +73,12 @@
     </dc-type>
     <dc-type>
         <schema>dc</schema>
+        <element>identifier</element>
+        <qualifier>gcoi</qualifier>
+        <scope_note>GCOI identifier (GiantChair software) used as primary identifier by PUL</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
         <element>language</element>
         <qualifier>iso-639-2</qualifier>
         <scope_note>ISO 639-2 code language</scope_note>
