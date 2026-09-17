@@ -77,6 +77,11 @@
         <property name="dspaceRunnableClass" value="org.dspace.uclouvain.export.script.PublicationExportCli"/>
     </bean>
 
+    <bean id="pul-import" class="org.dspace.uclouvain.pul.script.PulImportCliScriptConfiguration">
+        <property name="description" value="Import the PUL (Presses universitaires de Louvain) ONIX catalogue"/>
+        <property name="dspaceRunnableClass" value="org.dspace.uclouvain.pul.script.PulImportCli"/>
+    </bean>
+
     <bean id="collection-export" class="org.dspace.app.bulkedit.CollectionExportCliScriptConfiguration">
         <property name="description" value="Perform the export of all the archived items of the given collection in xls format"/>
         <property name="dspaceRunnableClass" value="org.dspace.app.bulkedit.CollectionExportCli"/>
