@@ -1,0 +1,25 @@
+## Report of one run of the `pul-import` script, sent to the administrators.
+## Parameters:  - {0} Date and time
+##              - {1} Directory read
+##              - {2} Mode: "dry run" or "import"
+##              - {3} Counters per decision
+##              - {4} One line per file
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <style>
+      body { font-family: 'Montserrat', arial, sans-serif; font-size: 12px; }
+      .timestamp { text-align: right; }
+      pre { border: 1px solid #777; background-color: #EEE; padding: 8px; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <p class="timestamp">${params[0]}</p>
+    <p>For DIAL admins,</p>
+    <p>The PUL import ran in <b>${params[2]}</b> mode on <code>${params[1]}</code>.</p>
+    <h4>Summary</h4>
+    <p>${params[3]}</p>
+    <h4>Details</h4>
+    <pre>${params[4]}</pre>
+  </body>
+</html>
