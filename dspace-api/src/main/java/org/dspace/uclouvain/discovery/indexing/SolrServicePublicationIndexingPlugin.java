@@ -11,10 +11,8 @@ import static org.dspace.uclouvain.core.utils.ItemUtils.extractItemFiles;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +37,7 @@ import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 import org.dspace.uclouvain.core.model.publication.PublicationEntity;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
-import org.dspace.uclouvain.core.utils.IdentifierNormalizer;
+import org.dspace.uclouvain.core.utils.CleanIdentifierFields;
 import org.dspace.uclouvain.validation.fnrs.FNRSValidator;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +52,6 @@ public class SolrServicePublicationIndexingPlugin extends SolrServiceUCLouvainIn
 
     private static final Logger log = LogManager.getLogger(SolrServicePublicationIndexingPlugin.class);
 
-    public static final String CLEAN_IDENTIFIERS_PROPERTY = "uclouvain.indexing.clean-identifiers";
-    public static final String CLEAN_IDENTIFIER_SUFFIX = ".clean_keyword";
-
     @Autowired
     private FNRSValidator fnrsValidator;
     @Autowired
@@ -66,22 +61,11 @@ public class SolrServicePublicationIndexingPlugin extends SolrServiceUCLouvainIn
     @Autowired
     private ConfigurationService configurationService;
 
-    private final Map<String, IdentifierNormalizer> cleanedIdentifiers = new HashMap<>();
+    private CleanIdentifierFields cleanIdentifierFields;
 
     @PostConstruct
-    private void loadCleanedIdentifiers() {
-        for (String entry : configurationService.getArrayProperty(CLEAN_IDENTIFIERS_PROPERTY, new String[0])) {
-            String[] parts = entry.split(":", 2);
-            Optional<IdentifierNormalizer> normalizer = parts.length == 2
-                ? IdentifierNormalizer.of(parts[1])
-                : Optional.empty();
-            if (normalizer.isEmpty()) {
-                log.warn("Ignoring '{}' entry [{}]: expected '<metadata field>:<one of {}>'",
-                    CLEAN_IDENTIFIERS_PROPERTY, entry, List.of(IdentifierNormalizer.values()));
-                continue;
-            }
-            cleanedIdentifiers.put(parts[0].trim(), normalizer.get());
-        }
+    private void loadCleanIdentifierFields() {
+        cleanIdentifierFields = new CleanIdentifierFields(configurationService);
     }
 
     @Override
@@ -108,20 +92,20 @@ public class SolrServicePublicationIndexingPlugin extends SolrServiceUCLouvainIn
     /**
      * Index the canonical form(s) of the configured identifier metadata, so that a search can match an
      * identifier regardless of how it was typed (separators, prefixes, ISBN-10 vs ISBN-13, ...).
-     * Each configured metadata field {@code f} is indexed into {@code f + CLEAN_IDENTIFIER_SUFFIX}.
+     * Each configured metadata field {@code f} is indexed into {@link CleanIdentifierFields#solrField(String)}.
      *
      * @param item The DSpace item to process.
      * @param document The Solr document to add the keys to.
      */
     private void addCleanedIdentifiers(Item item, SolrInputDocument document) {
-        cleanedIdentifiers.forEach((metadataField, normalizer) -> {
+        cleanIdentifierFields.asMap().forEach((metadataField, normalizer) -> {
             List<String> cleanedValues = itemService.getMetadataByMetadataString(item, metadataField).stream()
                 .map(MetadataValue::getValue)
                 .flatMap(value -> normalizer.normalize(value).stream())
                 .distinct()
                 .toList();
             if (!cleanedValues.isEmpty()) {
-                document.addField(metadataField + CLEAN_IDENTIFIER_SUFFIX, cleanedValues);
+                document.addField(CleanIdentifierFields.solrField(metadataField), cleanedValues);
             }
         });
     }
