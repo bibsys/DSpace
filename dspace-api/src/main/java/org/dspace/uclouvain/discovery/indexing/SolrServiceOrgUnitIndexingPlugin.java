@@ -7,7 +7,7 @@
  */
 package org.dspace.uclouvain.discovery.indexing;
 
-import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.dspace.content.Item;
 import org.dspace.core.Context;
-import org.dspace.discovery.IndexableObject;
-import org.dspace.discovery.SolrServiceIndexPlugin;
 import org.dspace.uclouvain.core.model.OrgUnit;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 
 /**
  * Solr indexer for `OrgUnit` special parent university keys.
@@ -25,30 +24,33 @@ import org.dspace.uclouvain.core.model.OrgUnit;
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-public class SolrServiceOrgUnitIndexingPlugin
-    extends SolrServiceUCLouvainIndexingPlugin
-    implements SolrServiceIndexPlugin {
+public class SolrServiceOrgUnitIndexingPlugin extends SolrServiceUCLouvainIndexingPlugin<OrgUnit> {
 
     private static final Logger log = LogManager.getLogger(SolrServiceOrgUnitIndexingPlugin.class);
     public static final String PARENT_UNIVERSITY_ACRONYM_KEY = "parentUniversity.acronym";
     public static final String PARENT_UNIVERSITY_NAME_KEY = "parentUniversity.name";
 
+    @Override
+    protected Optional<OrgUnit> buildModel(Item item) {
+        try {
+            return Optional.of(new OrgUnit(item));
+        } catch (InvalidModelEntityTypeException e) {
+            log.debug("Unable to parse item#{} as a `OrgUnit`", item.getID());
+            return Optional.empty();
+        }
+    }
+
     /**
      * Add parent master entity value to allow a search on these values retrieve these documents
-     * 
+     *
      * @param context The current DSpace context.
-     * @param dso The DSpace Item to process.
+     * @param orgUnit The OrgUnit to process.
      * @param document The Solr document to add the keys to.
      */
     @Override
-    @SuppressWarnings("rawtypes")
-    public void additionalIndex(Context context, IndexableObject dso, SolrInputDocument document) {
-        Item item = getItem(dso);
-        if (item == null || !Objects.equals(item.getItemService().getEntityType(item), OrgUnit.ENTITY_TYPE)) {
-            return;
-        }
+    protected void additionalIndex(Context context, OrgUnit orgUnit, SolrInputDocument document) {
         try {
-            OrgUnit parentUniversity = new OrgUnit(item).getParentUniversity();
+            OrgUnit parentUniversity = orgUnit.getParentUniversity();
             if (parentUniversity != null) {
                 String universityAcronym = parentUniversity.getAcronym();
                 String universityName = parentUniversity.getTitle();
