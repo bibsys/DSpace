@@ -2523,9 +2523,10 @@ prevent the generation of resource policy entry values with null dspace_object a
             item.setMetadataModified();
         } else {
             String[] metadataField = getMDValueByField(mdString);
+            // addMetadata(..., authority, confidence, place): a swapped order once gave new values a place of -1
             addMetadata(
                 context, item, metadataField[0], metadataField[1], metadataField[2],
-                lang, value, authority, place, confidence
+                lang, value, authority, (confidence != null) ? confidence : CF_UNSET, place
             );
         }
     }
