@@ -52,7 +52,7 @@ public class OnixSubmissionCrosswalkTest {
         transformer = TransformerFactory.newInstance().newTransformer(new StreamSource(STYLESHEET.toFile()));
     }
 
-    /** E-book: print ISBN through RelatedProduct 13, editors B01, preface A15, sub-collection level 03 ignored. */
+    /** E-book: print ISBN through RelatedProduct 13, editors B01, preface A15, level 03 ignored, EpubLicense. */
     @Test
     public void ebookWithEditorsAndSeries() throws Exception {
         Dim dim = transform("29303100021680");
@@ -79,6 +79,13 @@ public class OnixSubmissionCrosswalkTest {
         assertEquals(List.of("text::book"), dim.values("dc.type.maintype"));
         assertEquals(List.of("book"), dim.values("dc.type.subtype"));
         assertEquals(List.of("PUL"), dim.values("dcterms.source"));
+        // EpubLicense: the expression link wins over the name
+        assertEquals(List.of("https://creativecommons.org/licenses/by-nc-nd/3.0/"), dim.values("dcterms.license"));
+    }
+
+    @Test
+    public void printRecordsCarryNoLicense() throws Exception {
+        assertEquals(List.of(), transform("29303100293170").values("dcterms.license"));
     }
 
     /** TitlePrefix "L'" glued to the title, managing editor B16, page count only as ExtentType 07. */

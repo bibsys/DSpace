@@ -34,6 +34,9 @@
     PublishingDetail/CityOfPublication                                                    -> publication.editor.location
     PublishingDetail/PublishingDate[PublishingDateRole='01']/Date (YYYYMMDD -> YYYY-MM-DD) -> dc.date.issued
     DescriptiveDetail/Extent[ExtentType='00' (else '07')]/ExtentValue                     -> publication.numberOfPages
+    DescriptiveDetail/EpubLicense: EpubLicenseExpression/EpubLicenseExpressionLink, else EpubLicenseName
+                                                                                          -> dcterms.license
+        (digital products only; its mere presence makes the PDF open access, see pul-import)
     constant                                                                              -> dc.type.maintype = text::book
     constant                                                                              -> dc.type.subtype = book
     constant                                                                              -> dcterms.source = PUL
@@ -252,6 +255,27 @@
                 <xsl:with-param name="value" select="normalize-space($pages)"/>
             </xsl:call-template>
         </xsl:if>
+
+        <!-- LICENSE ================================================================================================ -->
+        <xsl:for-each select="$descriptive/EpubLicense[1]">
+            <xsl:variable name="license">
+                <xsl:choose>
+                    <xsl:when test="string(EpubLicenseExpression/EpubLicenseExpressionLink) != ''">
+                        <xsl:value-of select="EpubLicenseExpression/EpubLicenseExpressionLink[string(.) != ''][1]"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="EpubLicenseName"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <xsl:if test="string($license) != ''">
+                <xsl:call-template name="field">
+                    <xsl:with-param name="schema">dcterms</xsl:with-param>
+                    <xsl:with-param name="element">license</xsl:with-param>
+                    <xsl:with-param name="value" select="normalize-space($license)"/>
+                </xsl:call-template>
+            </xsl:if>
+        </xsl:for-each>
 
         <!-- CONSTANTS ============================================================================================== -->
         <xsl:call-template name="field">
