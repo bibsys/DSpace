@@ -80,13 +80,14 @@ public class SolrServicePublicationIndexingPlugin extends SolrServiceUCLouvainIn
 
     @Override
     protected void additionalIndex(Context context, Publication publication, SolrInputDocument document) {
+        // first: the deduplication keys must survive a failure in any of the other steps
+        addCleanedIdentifiers(publication.getItem(), document);
         addFWBValidationKeys(context, publication, document);
         addFNRSValidationKeys(publication.getItem(), document);
         addAncestorEntities(publication, document);
         authorFgsIndexing(publication, document);
         readPermissionsIndexing(context, publication, document);
         addMetricsAdditionalKeys(publication.getItem(), document);
-        addCleanedIdentifiers(publication.getItem(), document);
     }
 
     /**
