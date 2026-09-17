@@ -175,6 +175,8 @@ public class Publication extends ItemModel implements FWBValidation {
         getField("doiIdentifier", "dc.identifier.doi");
     public static final String IDENTIFIER_ISBN_FIELD =
         getField("identifierISBN", "dc.identifier.isbn");
+    public static final String IDENTIFIER_GCOI_FIELD =
+        getField("identifierGCOI", "dc.identifier.gcoi");
 
     public static final String FUNDING_ORGANIZATION_FIELD =
         getField("fundingOrganization", "funding.organization");
