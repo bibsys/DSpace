@@ -11,14 +11,17 @@ import static org.dspace.uclouvain.core.utils.ItemUtils.extractItemFiles;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,16 +30,16 @@ import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
-import org.dspace.discovery.IndexableObject;
-import org.dspace.discovery.SolrServiceIndexPlugin;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.service.EPersonService;
+import org.dspace.services.ConfigurationService;
 import org.dspace.uclouvain.core.model.OrgUnit;
 import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 import org.dspace.uclouvain.core.model.publication.PublicationEntity;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
+import org.dspace.uclouvain.core.utils.IdentifierNormalizer;
 import org.dspace.uclouvain.validation.fnrs.FNRSValidator;
 import org.dspace.util.UUIDUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +50,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
-public class SolrServicePublicationIndexingPlugin
-    extends SolrServiceUCLouvainIndexingPlugin
-    implements SolrServiceIndexPlugin {
+public class SolrServicePublicationIndexingPlugin extends SolrServiceUCLouvainIndexingPlugin<Publication> {
 
     private static final Logger log = LogManager.getLogger(SolrServicePublicationIndexingPlugin.class);
+
+    public static final String CLEAN_IDENTIFIERS_PROPERTY = "uclouvain.indexing.clean-identifiers";
+    public static final String CLEAN_IDENTIFIER_SUFFIX = ".clean_keyword";
 
     @Autowired
     private FNRSValidator fnrsValidator;
@@ -59,29 +63,75 @@ public class SolrServicePublicationIndexingPlugin
     private ItemService itemService;
     @Autowired
     private EPersonService ePersonService;
+    @Autowired
+    private ConfigurationService configurationService;
 
-    @Override
-    @SuppressWarnings("rawtypes")
-    public void additionalIndex(Context context, IndexableObject dso, SolrInputDocument document) {
-        try {
-            Item item = getItem(dso);
-            // NOTE: This check avoids a warning in the logs.
-            if (item == null) {
-                return;
+    private final Map<String, IdentifierNormalizer> cleanedIdentifiers = new HashMap<>();
+
+    @PostConstruct
+    private void loadCleanedIdentifiers() {
+        for (String entry : configurationService.getArrayProperty(CLEAN_IDENTIFIERS_PROPERTY, new String[0])) {
+            String[] parts = entry.split(":", 2);
+            Optional<IdentifierNormalizer> normalizer = parts.length == 2
+                ? IdentifierNormalizer.of(parts[1])
+                : Optional.empty();
+            if (normalizer.isEmpty()) {
+                log.warn("Ignoring '{}' entry [{}]: expected '<metadata field>:<one of {}>'",
+                    CLEAN_IDENTIFIERS_PROPERTY, entry, List.of(IdentifierNormalizer.values()));
+                continue;
             }
-            Publication publication = PublicationFactory.build(item);
-            addFWBValidationKeys(context, publication.getItem(), document);
-            addFNRSValidationKeys(publication.getItem(), document);
-            addAncestorEntities(publication, document);
-            authorFgsIndexing(publication, document);
-            readPermissionsIndexing(context, publication, document);
-            addMetricsAdditionalKeys(context, publication.getItem(), document);
-        } catch (InvalidModelEntityTypeException e) {
-            log.debug(e.getMessage());
+            cleanedIdentifiers.put(parts[0].trim(), normalizer.get());
         }
     }
 
-    private void addMetricsAdditionalKeys(Context context, Item item, SolrInputDocument document) {
+    @Override
+    protected Optional<Publication> buildModel(Item item) {
+        try {
+            return Optional.of(PublicationFactory.build(item));
+        } catch (InvalidModelEntityTypeException e) {
+            log.debug("Unable to parse item#{} as a `Publication`", item.getID());
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    protected void additionalIndex(Context context, Publication publication, SolrInputDocument document) {
+        addFWBValidationKeys(context, publication, document);
+        addFNRSValidationKeys(publication.getItem(), document);
+        addAncestorEntities(publication, document);
+        authorFgsIndexing(publication, document);
+        readPermissionsIndexing(context, publication, document);
+        addMetricsAdditionalKeys(publication.getItem(), document);
+        addCleanedIdentifiers(publication.getItem(), document);
+    }
+
+    /**
+     * Index the canonical form(s) of the configured identifier metadata, so that a search can match an
+     * identifier regardless of how it was typed (separators, prefixes, ISBN-10 vs ISBN-13, ...).
+     * Each configured metadata field {@code f} is indexed into {@code f + CLEAN_IDENTIFIER_SUFFIX}.
+     *
+     * @param item The DSpace item to process.
+     * @param document The Solr document to add the keys to.
+     */
+    private void addCleanedIdentifiers(Item item, SolrInputDocument document) {
+        cleanedIdentifiers.forEach((metadataField, normalizer) -> {
+            List<String> cleanedValues = itemService.getMetadataByMetadataString(item, metadataField).stream()
+                .map(MetadataValue::getValue)
+                .flatMap(value -> normalizer.normalize(value).stream())
+                .distinct()
+                .toList();
+            if (!cleanedValues.isEmpty()) {
+                document.addField(metadataField + CLEAN_IDENTIFIER_SUFFIX, cleanedValues);
+            }
+        });
+    }
+
+    /**
+     * Add some metrics based on publication metadata/files into Solr document to ingest
+     * @param item The item to analyze
+     * @param document The Solr document to add the keys to.
+     */
+    private void addMetricsAdditionalKeys(Item item, SolrInputDocument document) {
         document.addField(
             "attached_files_counter_i",
             extractItemFiles(item).size()
@@ -122,12 +172,11 @@ public class SolrServicePublicationIndexingPlugin
      * - 'fwbExportable_b': Is the item exportable into a FWB bibliography.
      *
      * @param context The current DSpace context.
-     * @param item    The DSpace Item to process.
+     * @param publication The publication to process.
      * @param document The Solr document to add the keys to.
      */
-    private void addFWBValidationKeys(Context context, Item item, SolrInputDocument document) {
+    private void addFWBValidationKeys(Context context, Publication publication, SolrInputDocument document) {
         try {
-            Publication publication = PublicationFactory.build(item);
             document.addField("fwbCompliant_b", publication.isFWBCompliant(context).getLeft());
             document.addField("fwbExportable_b", publication.isFWBExportable(context));
         } catch (Exception e) {
