@@ -26,15 +26,18 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.dspace.AbstractIntegrationTestWithDatabase;
+import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.builder.CollectionBuilder;
 import org.dspace.builder.CommunityBuilder;
+import org.dspace.builder.GroupBuilder;
 import org.dspace.builder.ItemBuilder;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
 import org.dspace.content.Collection;
 import org.dspace.content.Item;
+import org.dspace.content.MetadataFieldName;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamService;
@@ -402,6 +405,138 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertTrue(created.message(), created.message().contains("cover not stored: no network in tests"));
         assertTrue("no empty THUMBNAIL bundle left behind",
             created.item().getBundles(PulImporter.THUMBNAIL_BUNDLE).isEmpty());
+    }
+
+    // PDF =============================================================================================================
+
+    private File pdfNamed(String name) throws IOException {
+        File pdf = temporaryFolder.newFile(name);
+        Files.writeString(pdf.toPath(), "%PDF-1.4\n%fake content for tests\n%%EOF\n");
+        return pdf;
+    }
+
+    private Item indexedBook(String gcoi, String license) throws Exception {
+        ItemBuilder builder = ItemBuilder.createItem(context, collection).withTitle("Book " + gcoi)
+            .withMetadata("dc", "identifier", "gcoi", gcoi);
+        if (license != null) {
+            builder.withMetadata("dcterms", "license", null, license);
+        }
+        Item item = builder.build();
+        indexingService.indexContent(context, new IndexableItem(item), true);
+        indexingService.commit();
+        return item;
+    }
+
+    @Test
+    public void pdfWithoutPublicationYetIsPendingAndBadNamesAreErrors() throws Exception {
+        Outcome pending = importer.decidePdf(context, pdfNamed("29303100999999.pdf"));
+        assertEquals(Decision.PENDING, pending.decision());
+        assertTrue(pending.describe(), pending.message().contains("GCOI 29303100999999"));
+        assertTrue(pending.describe(), pending.message().contains("left for a later run"));
+
+        Outcome pendingIsbn = importer.decidePdf(context, pdfNamed("978-2-39061-999-9.pdf"));
+        assertEquals(Decision.PENDING, pendingIsbn.decision());
+        assertTrue(pendingIsbn.describe(), pendingIsbn.message().contains("ISBN 978-2-39061-999-9"));
+
+        Outcome error = importer.decidePdf(context, pdfNamed("cover-letter.pdf"));
+        assertEquals(Decision.ERROR, error.decision());
+        assertEquals(Decision.ERROR, importer.decidePdf(context, pdfNamed("12345.pdf")).decision());
+    }
+
+    @Test
+    public void pdfNamedAfterTheIsbnIsStoredUnderTheGcoi() throws Exception {
+        Item book = ItemBuilder.createItem(context, collection).withTitle("Book with both identifiers")
+            .withMetadata("dc", "identifier", "gcoi", "29303100000003")
+            .withMetadata("dc", "identifier", "isbn", "978-2-87558-999-0").build();
+        indexingService.indexContent(context, new IndexableItem(book), true);
+        indexingService.commit();
+        GroupBuilder.createGroup(context).withName("UCLouvain network").build();
+
+        Outcome decided = importer.decidePdf(context, pdfNamed("9782875589990.pdf"));
+        assertEquals(Decision.UPDATE, decided.decision());
+        assertEquals(book, decided.item());
+        assertTrue(decided.describe(), decided.message().contains("ISBN 9782875589990"));
+        assertTrue(decided.describe(), decided.message().endsWith("stored as 29303100000003.pdf"));
+        Outcome stored = importer.storePdf(context, decided);
+        context.commit();
+
+        Bundle original = stored.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0);
+        assertEquals(1, original.getBitstreams().size());
+        assertEquals("29303100000003.pdf", original.getBitstreams().get(0).getName());
+        assertEquals("9782875589990.pdf", original.getBitstreams().get(0).getSource());
+
+        // the same book delivered again under its GCOI replaces that very file
+        Outcome again = importer.storePdf(context, importer.decidePdf(context, pdfNamed("29303100000003.pdf")));
+        context.commit();
+        assertTrue(again.message(), again.message().endsWith("replaced 29303100000003.pdf (restricted)"));
+        assertEquals(1, again.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0).getBitstreams().size());
+    }
+
+    @Test
+    public void pdfOfABookWithoutGcoiKeepsItsDeliveredName() throws Exception {
+        Item book = ItemBuilder.createItem(context, collection).withTitle("Hand-made notice, ISBN only")
+            .withMetadata("dc", "identifier", "isbn", "9782875589620").build();
+        indexingService.indexContent(context, new IndexableItem(book), true);
+        indexingService.commit();
+        GroupBuilder.createGroup(context).withName("UCLouvain network").build();
+
+        Outcome stored = importer.storePdf(context, importer.decidePdf(context, pdfNamed("9782875589620.pdf")));
+        context.commit();
+
+        assertEquals("9782875589620.pdf",
+            stored.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0).getBitstreams().get(0).getName());
+    }
+
+    @Test
+    public void pdfOfALicensedBookIsOpenAccessAndPrimary() throws Exception {
+        Item book = indexedBook("29303100000001", "https://creativecommons.org/licenses/by-nc-nd/3.0/");
+
+        Outcome decided = importer.decidePdf(context, pdfNamed("29303100000001.pdf"));
+        assertEquals(Decision.UPDATE, decided.decision());
+        assertEquals(book, decided.item());
+        Outcome stored = importer.storePdf(context, decided);
+        context.commit();
+
+        assertTrue(stored.message(), stored.message().endsWith("stored 29303100000001.pdf (openaccess)"));
+        Bundle original = stored.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0);
+        assertEquals(1, original.getBitstreams().size());
+        Bitstream pdf = original.getBitstreams().get(0);
+        assertEquals("29303100000001.pdf", pdf.getName());
+        assertEquals(pdf, original.getPrimaryBitstream());
+        assertEquals("Adobe PDF", pdf.getFormat(context).getShortDescription());
+        assertEquals("https://creativecommons.org/licenses/by-nc-nd/3.0/",
+            bitstreamService.getMetadataFirstValue(pdf, new MetadataFieldName("dc.rights.license"), null));
+        List<ResourcePolicy> policies = authorizeService.getPolicies(context, pdf);
+        assertEquals(policies.toString(), 1, policies.size());
+        assertEquals("Anonymous", policies.get(0).getGroup().getName());
+        assertEquals(Constants.READ, policies.get(0).getAction());
+        assertEquals("openaccess", policies.get(0).getRpName());
+    }
+
+    @Test
+    public void pdfOfAnUnlicensedBookIsRestrictedAndReplacesTheSameName() throws Exception {
+        GroupBuilder.createGroup(context).withName("UCLouvain network").build();
+        Item book = indexedBook("29303100000002", null);
+
+        importer.storePdf(context, importer.decidePdf(context, pdfNamed("29303100000002.pdf")));
+        context.commit();
+        File newer = temporaryFolder.newFolder("newer").toPath().resolve("29303100000002.pdf").toFile();
+        Files.writeString(newer.toPath(), "%PDF-1.4\n%second delivery\n%%EOF\n");
+        Outcome again = importer.storePdf(context, importer.decidePdf(context, newer));
+        context.commit();
+
+        assertTrue(again.message(), again.message().endsWith("replaced 29303100000002.pdf (restricted)"));
+        // read the item the import worked on: `book` is stale after the commits (entities are detached on commit)
+        assertEquals(book.getID(), again.item().getID());
+        Bundle original = again.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0);
+        assertEquals(1, original.getBitstreams().size());
+        Bitstream pdf = original.getBitstreams().get(0);
+        assertEquals(pdf, original.getPrimaryBitstream());
+        assertNull(bitstreamService.getMetadataFirstValue(pdf, new MetadataFieldName("dc.rights.license"), null));
+        List<ResourcePolicy> policies = authorizeService.getPolicies(context, pdf);
+        assertEquals(policies.toString(), 1, policies.size());
+        assertEquals("UCLouvain network", policies.get(0).getGroup().getName());
+        assertEquals("restricted", policies.get(0).getRpName());
     }
 
     private List<String> values(Item item, String field) {
