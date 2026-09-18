@@ -16,7 +16,7 @@ import org.dspace.content.Item;
  *
  * @param decision what the file leads to
  * @param file     the ONIX file
- * @param record   the file once read; null when it could not be read
+ * @param record   the file once read; null for a PDF or when the file could not be read
  * @param item     the publication the decision applies to: the existing one for {@link Decision#UPDATE}, the new one
  *                 once a {@link Decision#CREATE} has been applied; null otherwise
  * @param message  how the decision was reached, what was done, or the error
@@ -28,6 +28,7 @@ public record Outcome(Decision decision, File file, OnixRecord record, Item item
         UPDATE,         // One publication carries the identifiers: it is completed.
         AMBIGUOUS,      // The GCOI and an ISBN point to different publications: nothing is done, a human must look.
         DELETED_NOTICE, // ONIX notification type 05 (removed from the catalogue): reported only, nothing is done.
+        PENDING,        // A PDF whose publication is not imported yet: left in place for a later run.
         ERROR           // The file could not be read, transformed, matched or written.
     }
 

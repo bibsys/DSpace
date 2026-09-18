@@ -48,17 +48,21 @@ import org.dspace.content.service.WorkspaceItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.services.factory.DSpaceServicesFactory;
+import org.dspace.submit.model.AccessConditionOption;
+import org.dspace.submit.model.UploadConfigurationService;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.core.utils.CleanIdentifierFields;
 import org.dspace.uclouvain.core.utils.IdentifierNormalizer;
 import org.dspace.uclouvain.pul.Outcome.Decision;
 import org.dspace.uclouvain.services.PublicationService;
+import org.dspace.utils.DSpace;
 import org.jdom2.Element;
 
 /**
  * The import of one PUL ONIX file, step by step: read it and decide ({@link #decide}), then create the publication
  * ({@link #create}) or complete the existing one ({@link #update}); both keep the ONIX file and the cover image.
+ * PDF files delivered apart are attached to their publication by {@link #decidePdf} and {@link #storePdf}.
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
@@ -70,6 +74,11 @@ public class PulImporter {
     static final String THUMBNAIL_BUNDLE = "THUMBNAIL";
     /** Marks the cover bitstreams written by this import, so that they can be refreshed. */
     static final String COVER_DESCRIPTION = "PUL cover";
+    /** Item field fed by the ONIX EpubLicense; its presence makes the PDF open access. */
+    static final String LICENSE_FIELD = "dcterms.license";
+    /** Names of the access conditions of access-conditions.xml applied to PDFs. */
+    static final String OPEN_ACCESS = "openaccess";
+    static final String RESTRICTED = "restricted";
     private static final Logger log = LogManager.getLogger(PulImporter.class);
 
     private final OnixRecordReader reader;
@@ -405,11 +414,134 @@ public class PulImporter {
         authorizeService.removeAllPolicies(context, bitstream);
     }
 
+    // PDF =============================================================================================================
+
+    /**
+     * Decide what to do with a PDF delivered by PUL, named after the GCOI (14 digits) or the ISBN (10 or 13 digits,
+     * hyphens allowed) of its book: attach it to the publication carrying that identifier, or wait for that
+     * publication to be imported. Nothing is written.
+     *
+     * @param context the DSpace context; must be allowed to see withdrawn and non-discoverable items.
+     * @param pdf     the PDF file.
+     * @return {@link Decision#UPDATE} with the item, {@link Decision#PENDING} or {@link Decision#ERROR}.
+     */
+    public Outcome decidePdf(Context context, File pdf) {
+        String stem = pdf.getName().replaceFirst("(?i)\\.pdf$", "");
+        String digits = stem.replaceAll("[^0-9Xx]", "");
+        String field;
+        if (digits.matches("\\d{14}")) {
+            field = Publication.IDENTIFIER_GCOI_FIELD;
+        } else if (digits.matches("[0-9Xx]{10}|\\d{13}")) {
+            field = Publication.IDENTIFIER_ISBN_FIELD;
+        } else {
+            return new Outcome(Decision.ERROR, pdf, null, null, "file name is neither <GCOI>.pdf nor <ISBN>.pdf");
+        }
+        String identifier = field.equals(Publication.IDENTIFIER_GCOI_FIELD) ? "GCOI " + stem : "ISBN " + stem;
+        try {
+            Optional<Publication> found = publicationService.findFirstByIdentifier(context, field, stem);
+            if (found.isEmpty()) {
+                return new Outcome(Decision.PENDING, pdf, null, null,
+                    "no publication with %s yet, left for a later run".formatted(identifier));
+            }
+            Item item = found.get().getItem();
+            boolean openAccess = !values(item, LICENSE_FIELD).isEmpty();
+            return new Outcome(Decision.UPDATE, pdf, null, item, "PDF for %s, %s, stored as %s".formatted(identifier,
+                openAccess ? OPEN_ACCESS + " (" + LICENSE_FIELD + " present)" : RESTRICTED, pdfName(item, pdf)));
+        } catch (Exception e) {
+            return new Outcome(Decision.ERROR, pdf, null, null, "lookup failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * The name a PUL file gets in DSpace: {@code <GCOI>.pdf} with the publication's first GCOI, whatever the
+     * delivered name (PUL also names files after the ISBN); the delivered name when the publication has no GCOI.
+     */
+    private String pdfName(Item item, File pdf) {
+        return values(item, Publication.IDENTIFIER_GCOI_FIELD).stream().findFirst()
+            .map(gcoi -> gcoi + ".pdf")
+            .orElse(pdf.getName());
+    }
+
+    /**
+     * Attach the PDF of a {@link #decidePdf} outcome to its publication: in the ORIGINAL bundle as
+     * {@code <GCOI>.pdf} (see {@link #pdfName}), replacing a file of that name without further ado, primary
+     * bitstream if there is none yet, with a single read policy taken
+     * from the submission access conditions: {@code openaccess} when the item carries a {@code dcterms.license},
+     * {@code restricted} (UCLouvain network) otherwise. An open access PDF also gets the license URL as its own
+     * license. The caller commits.
+     *
+     * @param context the DSpace context, in read-write mode.
+     * @param outcome an {@link Decision#UPDATE} outcome of {@link #decidePdf}.
+     * @return the outcome completed with what was done.
+     * @throws Exception if anything fails; the caller rolls back.
+     */
+    public Outcome storePdf(Context context, Outcome outcome) throws Exception {
+        if (outcome.decision() != Decision.UPDATE || outcome.item() == null) {
+            throw new IllegalArgumentException("Not a PDF to store: " + outcome.describe());
+        }
+        Item item = outcome.item();
+        File pdf = outcome.file();
+        List<String> licenses = values(item, LICENSE_FIELD);
+        boolean openAccess = !licenses.isEmpty();
+
+        List<Bundle> bundles = item.getBundles(Constants.CONTENT_BUNDLE_NAME);
+        Bundle original = bundles.isEmpty()
+            ? bundleService.create(context, item, Constants.CONTENT_BUNDLE_NAME)
+            : bundles.get(0);
+        String name = pdfName(item, pdf);
+        boolean replaced = false;
+        for (Bitstream previous : new ArrayList<>(original.getBitstreams())) {
+            if (name.equals(previous.getName())) {
+                bundleService.removeBitstream(context, original, previous);
+                replaced = true;
+            }
+        }
+        Bitstream bitstream;
+        try (InputStream content = new FileInputStream(pdf)) {
+            bitstream = bitstreamService.create(context, original, content);
+        }
+        bitstream.setName(context, name);
+        bitstream.setSource(context, pdf.getName());
+        bitstream.setFormat(context, bitstreamFormatService.guessFormat(context, bitstream));
+        if (openAccess && licenses.get(0).startsWith("http")) {
+            bitstreamService.setMetadataSingleValue(context, bitstream,
+                new MetadataFieldName(licenseField()), null, licenses.get(0));
+        }
+        bitstreamService.update(context, bitstream);
+        if (original.getPrimaryBitstream() == null) {
+            original.setPrimaryBitstreamID(bitstream);
+            bundleService.update(context, original);
+        }
+        authorizeService.removeAllPolicies(context, bitstream);
+        String access = openAccess ? OPEN_ACCESS : RESTRICTED;
+        accessCondition(access).createResourcePolicy(context, bitstream, access, null, null, null);
+        return outcome.applied(item, "%s %s (%s)".formatted(replaced ? "replaced" : "stored", name, access));
+    }
+
+    /** The bitstream license field of the repository (default {@code dc.rights.license}). */
+    private static String licenseField() {
+        return DSpaceServicesFactory.getInstance().getConfigurationService()
+            .getProperty("uclouvain.global.metadata.license.field", "dc.rights.license");
+    }
+
+    /** An access condition of the submission upload step, by name, so PDFs get the same policies as a deposit. */
+    private static AccessConditionOption accessCondition(String name) {
+        UploadConfigurationService uploads = new DSpace().getServiceManager()
+            .getServiceByName("uploadConfigurationService", UploadConfigurationService.class);
+        return uploads.getMap().values().stream()
+            .flatMap(configuration -> configuration.getOptions().stream())
+            .filter(option -> name.equals(option.getName()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalStateException("No access condition named " + name
+                + " in access-conditions.xml"));
+    }
+
     // COVER IMAGE =====================================================================================================
 
     /**
      * Keep the ONIX front cover as the item thumbnail: downloaded, scaled by DSpace's own {@link JPEGFilter}, stored
-     * in the THUMBNAIL bundle as {@code <GCOI>.pdf.jpg} (the name filter-media would give a thumbnail of the PDF,
+     * in the THUMBNAIL bundle as {@code <GCOI>.pdf.jpg}, the publication's first GCOI like the PDF itself (the name
+     * filter-media would give a thumbnail of the PDF,
      * so a later filter-media run neither duplicates nor overrides it). The source URL is kept on the bitstream: PUL
      * URLs embed a hash of the image, so an unchanged URL means an unchanged cover. A failure is reported, never
      * fatal for the record.
@@ -442,7 +574,7 @@ public class PulImporter {
             for (Bitstream previous : previousCovers) {
                 bundleService.removeBitstream(context, previous.getBundles().get(0), previous);
             }
-            cover.setName(context, record.gcoi() + ".pdf.jpg");
+            cover.setName(context, pdfName(item, record.file()) + ".jpg");
             cover.setSource(context, record.coverUrl());
             cover.setDescription(context, COVER_DESCRIPTION);
             cover.setFormat(context, bitstreamFormatService.findByShortDescription(context, "JPEG"));
