@@ -23,6 +23,9 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.text.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.dspace.app.mediafilter.JPEGFilter;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.content.Bitstream;
@@ -36,6 +39,7 @@ import org.dspace.content.WorkspaceItem;
 import org.dspace.content.crosswalk.XSLTIngestionCrosswalk;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.packager.PackageUtils;
+import org.dspace.content.service.BitstreamFormatService;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.BundleService;
 import org.dspace.content.service.InstallItemService;
@@ -54,7 +58,7 @@ import org.jdom2.Element;
 
 /**
  * The import of one PUL ONIX file, step by step: read it and decide ({@link #decide}), then create the publication
- * ({@link #create}) or complete the existing one ({@link #update}).
+ * ({@link #create}) or complete the existing one ({@link #update}); both keep the ONIX file and the cover image.
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
@@ -62,10 +66,16 @@ public class PulImporter {
 
     /** Short description of the bitstream format given to the stored ONIX file. */
     static final String ONIX_FORMAT = "XML";
+    /** Bundle DSpace reads item thumbnails from. */
+    static final String THUMBNAIL_BUNDLE = "THUMBNAIL";
+    /** Marks the cover bitstreams written by this import, so that they can be refreshed. */
+    static final String COVER_DESCRIPTION = "PUL cover";
+    private static final Logger log = LogManager.getLogger(PulImporter.class);
 
     private final OnixRecordReader reader;
     private final PublicationService publicationService;
     private final UpdatePolicy updatePolicy;
+    private final CoverFetcher coverFetcher;
     private final CleanIdentifierFields cleanIdentifierFields = new CleanIdentifierFields(
         DSpaceServicesFactory.getInstance().getConfigurationService());
     private final ItemService itemService = ContentServiceFactory.getInstance().getItemService();
@@ -74,12 +84,20 @@ public class PulImporter {
     private final InstallItemService installItemService = ContentServiceFactory.getInstance().getInstallItemService();
     private final BundleService bundleService = ContentServiceFactory.getInstance().getBundleService();
     private final BitstreamService bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
+    private final BitstreamFormatService bitstreamFormatService = ContentServiceFactory.getInstance()
+        .getBitstreamFormatService();
     private final AuthorizeService authorizeService = AuthorizeServiceFactory.getInstance().getAuthorizeService();
 
     public PulImporter(OnixRecordReader reader, PublicationService publicationService, UpdatePolicy updatePolicy) {
+        this(reader, publicationService, updatePolicy, new CoverFetcher());
+    }
+
+    public PulImporter(OnixRecordReader reader, PublicationService publicationService, UpdatePolicy updatePolicy,
+                       CoverFetcher coverFetcher) {
         this.reader = reader;
         this.publicationService = publicationService;
         this.updatePolicy = updatePolicy;
+        this.coverFetcher = coverFetcher;
     }
 
     // DECIDING ========================================================================================================
@@ -173,9 +191,10 @@ public class PulImporter {
         }
         itemService.update(context, item);
         Item installed = installItemService.installItem(context, workspaceItem);
-        // after the install, which gives every bundle the collection's default read policies
+        // after the installation, which gives every bundle the collection's default read policies
         storeOnix(context, installed, record.file());
-        return outcome.applied(installed, "created " + installed.getHandle());
+        return outcome.applied(installed, "created " + installed.getHandle() + "; " + storeCover(context, installed,
+            record));
     }
 
     // UPDATING ========================================================================================================
@@ -217,7 +236,8 @@ public class PulImporter {
             itemService.update(context, item);
         }
         storeOnix(context, item, record.file());
-        return outcome.applied(item, changes.isEmpty() ? "no metadata change" : "updated " + changes);
+        return outcome.applied(item, (changes.isEmpty() ? "no metadata change" : "updated " + changes) + "; "
+            + storeCover(context, item, record));
     }
 
     private void replace(Context context, Item item, String field, List<Element> onixValues, List<String> changes)
@@ -383,6 +403,55 @@ public class PulImporter {
         bitstreamService.update(context, bitstream);
         authorizeService.removeAllPolicies(context, bundle);
         authorizeService.removeAllPolicies(context, bitstream);
+    }
+
+    // COVER IMAGE =====================================================================================================
+
+    /**
+     * Keep the ONIX front cover as the item thumbnail: downloaded, scaled by DSpace's own {@link JPEGFilter}, stored
+     * in the THUMBNAIL bundle as {@code <GCOI>.pdf.jpg} (the name filter-media would give a thumbnail of the PDF,
+     * so a later filter-media run neither duplicates nor overrides it). The source URL is kept on the bitstream: PUL
+     * URLs embed a hash of the image, so an unchanged URL means an unchanged cover. A failure is reported, never
+     * fatal for the record.
+     *
+     * @return one clause for the report.
+     */
+    private String storeCover(Context context, Item item, OnixRecord record) {
+        if (record.coverUrl() == null) {
+            return "no cover in ONIX";
+        }
+        try {
+            List<Bundle> bundles = item.getBundles(THUMBNAIL_BUNDLE);
+            List<Bitstream> previousCovers = bundles.stream()
+                .flatMap(bundle -> bundle.getBitstreams().stream())
+                .filter(bitstream -> COVER_DESCRIPTION.equals(bitstream.getDescription()))
+                .toList();
+            if (previousCovers.stream().anyMatch(cover -> record.coverUrl().equals(cover.getSource()))) {
+                return "cover unchanged";
+            }
+            InputStream thumbnail;
+            try (InputStream image = coverFetcher.open(record.coverUrl())) {
+                thumbnail = new JPEGFilter().getDestinationStream(item, image, false);
+            }
+            // only once the image is in hand: a failed download must not leave an empty bundle behind
+            Bundle bundle = bundles.isEmpty() ? bundleService.create(context, item, THUMBNAIL_BUNDLE) : bundles.get(0);
+            Bitstream cover;
+            try (thumbnail) {
+                cover = bitstreamService.create(context, bundle, thumbnail);
+            }
+            for (Bitstream previous : previousCovers) {
+                bundleService.removeBitstream(context, previous.getBundles().get(0), previous);
+            }
+            cover.setName(context, record.gcoi() + ".pdf.jpg");
+            cover.setSource(context, record.coverUrl());
+            cover.setDescription(context, COVER_DESCRIPTION);
+            cover.setFormat(context, bitstreamFormatService.findByShortDescription(context, "JPEG"));
+            bitstreamService.update(context, cover);
+            return previousCovers.isEmpty() ? "cover stored" : "cover replaced";
+        } catch (Exception e) {
+            log.warn("Cover of {} not stored: {}", record.file().getName(), e.toString());
+            return "cover not stored: " + e.getMessage();
+        }
     }
 
     // HELPERS =========================================================================================================

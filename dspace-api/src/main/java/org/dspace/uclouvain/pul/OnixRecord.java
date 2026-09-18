@@ -26,6 +26,7 @@ import org.jdom2.Element;
  * @param dim              the {@code <dim:dim>} element ready for ingestion
  * @param unnamedContributors whether the record has a {@code Contributor/UnnamedPersons} ("et al.", "various
  *                         authors", ...): the named contributors are then not the complete list
+ * @param coverUrl         URL of the smallest front cover image ({@code SupportingResource} of type 01), null if none
  */
 public record OnixRecord(
     File file,
@@ -34,7 +35,8 @@ public record OnixRecord(
     List<String> isbns,
     String title,
     Element dim,
-    boolean unnamedContributors
+    boolean unnamedContributors, //aka "et.al"
+    String coverUrl
 ) {
 
     /** ONIX list 1: the product has been removed from the publisher's catalogue. */

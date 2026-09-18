@@ -45,6 +45,9 @@ public class OnixRecordReaderTest {
         assertEquals("03", record.notificationType());
         assertFalse(record.isDeletion());
         assertFalse(record.unnamedContributors());
+        // HIGHQ (1000 px) and THUMBNAIL (125 px) are offered: the smallest is kept
+        assertEquals("https://pul.uclouvain.be/resources/titles/29303100021680/images/"
+            + "477bdb55b231264bb53a7942fd84254d/THUMBNAIL/9782875584533.jpg", record.coverUrl());
         assertNotNull(record.dim());
         assertEquals("dim", record.dim().getName());
     }
