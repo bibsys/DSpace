@@ -42,15 +42,63 @@ import org.dspace.util.UUIDUtils;
 import org.dspace.utils.DSpace;
 
 /**
- * Import of the PUL (Presses universitaires de Louvain) book catalogue from a directory of ONIX 3.0 files.
- * <p>
- * Each {@code <GCOI>.xml} file is turned into DIM by the {@code ONIX} crosswalk and matched against the existing
- * publications (GCOI first, then ISBN). A new book is created in the configured collection; a known one is
- * completed. Handled files go to {@code done/}, failed ones to {@code errors/}; ambiguous ones stay.
- * A report is logged and, when recipients are configured, emailed.
- * <p>
- * Run daily by a cron job; requires an administrator ({@code -e}) so that withdrawn and non-discoverable
- * publications are seen too.
+ * Import of the PUL (Presses universitaires de Louvain) book catalogue into DIAL.pr.
+ *
+ * WHAT IT DOES
+ * ===============================================================
+ * 1. Reads every <GCOI>.xml ONIX 3.0 file of the ONIX directory, turns it into DIM with the ONIX crosswalk
+ *    (crosswalk.submission.ONIX.stylesheet) and looks for the publication carrying its GCOI, then its ISBNs (print
+ *    and e-book alike, compared in normalized form):
+ *      - none: a new book is created in the target collection, installed directly (no workflow);
+ *      - one: it is completed according to the pul.import.update.* lists (authors are appended by missing name,
+ *        existing ones are never touched);
+ *      - GCOI and ISBN on different publications: nothing is done, the file stays for a human;
+ *      - ONIX notification type 05 (deleted): reported only.
+ *    In both create and update cases the ONIX file is kept as an administrative bitstream (METADATA bundle) and the
+ *    front cover is downloaded from pul.uclouvain.be into the THUMBNAIL bundle as <GCOI>.pdf.jpg.
+ * 2. Then reads every PDF of the PDF directory, if one is configured, named <GCOI>.pdf or <ISBN>.pdf, and attaches
+ *    it to the publication carrying that identifier, stored as <GCOI>.pdf whatever the delivered name (ORIGINAL
+ *    bundle, replacing a file of that name): open access when the publication has
+ *    a dcterms.license (from the ONIX EpubLicense), restricted to the UCLouvain network otherwise. A PDF whose
+ *    publication is not imported yet stays in place for a later run.
+ *
+ * Each file is one transaction. Handled files are moved to done/, failed ones to errors/ (sibling sub-directories);
+ * ambiguous ONIX and pending PDFs stay. One report line per file is logged, and emailed to
+ * pul.import.report.recipients when set.
+ *
+ * USAGE
+ * ===============================================================
+ *   dspace pul-import -e <admin email> [-d <onix dir>] [-p <pdf dir>] [-c <collection>] [-n]
+ *
+ *   -e, --eperson     (CLI only, required) email of the administrator running the import. An administrator is
+ *                     required: the lookup must see withdrawn and non-discoverable publications, and the created
+ *                     items get this submitter.
+ *   -d, --dir         directory of the ONIX files; default pul.import.directory (one of the two is required).
+ *   -p, --pdf-dir     directory of the PDF files (<GCOI>.pdf or <ISBN>.pdf); default pul.import.pdf-directory;
+ *                     none = PDFs are not processed.
+ *   -c, --collection  UUID or handle of the collection receiving new books; default pul.import.collection;
+ *                     required unless --dry-run.
+ *   -n, --dry-run     read, match and report what would be done; nothing is written and no file is moved.
+ *
+ * Other settings (pul.cfg): pul.import.update.replace / merge / add-if-empty (fields completed on update),
+ * pul.import.report.recipients / subject. The ONIX and PDF directories are filled by an external process: this
+ * script never talks to the PUL FTP server.
+ *
+ * EXAMPLES
+ * ===============================================================
+ *   # daily cron job, everything from pul.cfg / local.cfg
+ *   dspace pul-import -e bibsys@uclouvain.be
+ *   # first look at a new delivery without writing anything
+ *   dspace pul-import -e bibsys@uclouvain.be -d /data/pul/onix --dry-run
+ *   # explicit directories and collection
+ *   dspace pul-import -e bibsys@uclouvain.be -d /data/pul/onix -p /data/pul/pdf -c 2078.5/Publication
+ *
+ * Also exposed through the REST scripts endpoint as pul-import (the user is then the authenticated one).
+ * Report lines look like:
+ *
+ *   CREATE   29303100050380.xml  "Mnemosyne..." -> item 613ae6f9-... [archived] -- ...; created 2078.5/5284
+ *   UPDATE   29303100293170.xml  "Crisis to Collapse" -> item 8a31eb67-... [archived] -- matched by ISBN [...]
+ *   PENDING  29303100999999.pdf -- no publication with GCOI 29303100999999 yet, left for a later run
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
@@ -58,10 +106,12 @@ public class PulImport extends DSpaceRunnable<PulImportScriptConfiguration<PulIm
 
     public static final String DIRECTORY_PROPERTY = "pul.import.directory";
     public static final String COLLECTION_PROPERTY = "pul.import.collection";
+    public static final String PDF_DIRECTORY_PROPERTY = "pul.import.pdf-directory";
     static final String DONE_DIRECTORY = "done";
     static final String ERRORS_DIRECTORY = "errors";
 
     private File directory;
+    private File pdfDirectory;
     private String collectionId;
     private boolean dryRun;
     private PulImporter importer;
@@ -77,6 +127,14 @@ public class PulImport extends DSpaceRunnable<PulImportScriptConfiguration<PulIm
         directory = new File(path);
         if (!directory.isDirectory()) {
             throw new ParseException("Not a directory: " + directory);
+        }
+        String pdfPath = StringUtils.defaultIfBlank(commandLine.getOptionValue('p'),
+            configurationService.getProperty(PDF_DIRECTORY_PROPERTY));
+        if (StringUtils.isNotBlank(pdfPath)) {
+            pdfDirectory = new File(pdfPath);
+            if (!pdfDirectory.isDirectory()) {
+                throw new ParseException("Not a directory: " + pdfDirectory);
+            }
         }
         dryRun = commandLine.hasOption('n');
         collectionId = StringUtils.defaultIfBlank(commandLine.getOptionValue('c'),
@@ -100,15 +158,24 @@ public class PulImport extends DSpaceRunnable<PulImportScriptConfiguration<PulIm
 
             Map<Decision, Integer> counters = new EnumMap<>(Decision.class);
             List<String> lines = new ArrayList<>();
-            for (File file : onixFiles()) {
+            for (File file : filesOf(directory, ".xml")) {
                 Outcome outcome = importer.decide(context, file);
                 if (!dryRun) {
                     outcome = apply(context, outcome, collection);
                     archive(outcome);
                 }
-                counters.merge(outcome.decision(), 1, Integer::sum);
-                lines.add(outcome.describe());
-                handler.logInfo(outcome.describe());
+                record(outcome, counters, lines);
+            }
+            if (pdfDirectory != null) {
+                handler.logInfo("PDF files of " + pdfDirectory);
+                for (File pdf : filesOf(pdfDirectory, ".pdf")) {
+                    Outcome outcome = importer.decidePdf(context, pdf);
+                    if (!dryRun) {
+                        outcome = applyPdf(context, outcome);
+                        archive(outcome);
+                    }
+                    record(outcome, counters, lines);
+                }
             }
             handler.logInfo("Done: " + counters);
             report(counters, lines);
@@ -134,7 +201,28 @@ public class PulImport extends DSpaceRunnable<PulImportScriptConfiguration<PulIm
         }
     }
 
-    /** Handled files leave the directory; an ambiguous one stays for a human to look at. */
+    private Outcome applyPdf(Context context, Outcome outcome) throws Exception {
+        if (outcome.decision() != Decision.UPDATE) {
+            return outcome;
+        }
+        try {
+            Outcome applied = importer.storePdf(context, outcome);
+            context.commit();
+            return applied;
+        } catch (Exception e) {
+            context.rollback();
+            handler.logError("Failed on " + outcome.file().getName(), e);
+            return outcome.failed("pdf failed: " + e.getMessage());
+        }
+    }
+
+    private void record(Outcome outcome, Map<Decision, Integer> counters, List<String> lines) {
+        counters.merge(outcome.decision(), 1, Integer::sum);
+        lines.add(outcome.describe());
+        handler.logInfo(outcome.describe());
+    }
+
+    /** Handled files leave the directory; an ambiguous ONIX or a PDF without publication yet stays. */
     private void archive(Outcome outcome) throws IOException {
         switch (outcome.decision()) {
             case CREATE, UPDATE, DELETED_NOTICE -> moveToSubdirectory(outcome.file(), DONE_DIRECTORY);
@@ -169,16 +257,18 @@ public class PulImport extends DSpaceRunnable<PulImportScriptConfiguration<PulIm
         return new DSpace().getServiceManager().getServiceByName("pul-import", PulImportScriptConfiguration.class);
     }
 
-    /** The {@code .xml} files of the directory, by name; anything else is reported and skipped. */
-    private List<File> onixFiles() {
-        File[] entries = directory.listFiles();
+    /** The files of the directory with the given extension, by name; anything else is reported and skipped. */
+    private List<File> filesOf(File dir, String extension) {
+        File[] entries = dir.listFiles();
         Arrays.sort(entries, Comparator.comparing(File::getName));
         for (File entry : entries) {
-            if (entry.isFile() && !entry.getName().endsWith(".xml")) {
-                handler.logWarning("Skipped, not an .xml file: " + entry.getName());
+            if (entry.isFile() && !entry.getName().toLowerCase().endsWith(extension)) {
+                handler.logWarning("Skipped, not a %s file: %s".formatted(extension, entry.getName()));
             }
         }
-        return Arrays.stream(entries).filter(entry -> entry.isFile() && entry.getName().endsWith(".xml")).toList();
+        return Arrays.stream(entries)
+            .filter(entry -> entry.isFile() && entry.getName().toLowerCase().endsWith(extension))
+            .toList();
     }
 
     /** The target collection, by UUID or handle. */
@@ -194,7 +284,7 @@ public class PulImport extends DSpaceRunnable<PulImportScriptConfiguration<PulIm
 
     /**
      * Give the context the user running the script. Through REST the framework provides its UUID; the command-line
-     * variant resolves the {@code -e} email instead.
+     * variant resolves the -e email instead.
      */
     protected void assignCurrentUser(Context context) throws Exception {
         UUID epersonId = getEpersonIdentifier();
