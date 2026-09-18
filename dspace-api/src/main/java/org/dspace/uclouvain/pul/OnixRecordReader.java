@@ -9,6 +9,7 @@ package org.dspace.uclouvain.pul;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import javax.xml.XMLConstants;
@@ -91,8 +92,37 @@ public class OnixRecordReader {
             values(dim, "identifier", "isbn"),
             firstValue(dim, "title", null),
             dim,
-            unnamedContributors
+            unnamedContributors,
+            coverUrl(product)
         );
+    }
+
+    /**
+     * The front cover ({@code ResourceContentType 01}) in its smallest version: PUL publishes a ~125 px wide
+     * {@code THUMBNAIL} and a ~1000 px {@code HIGHQ}; the width is feature type 03 of each version.
+     */
+    private static String coverUrl(Element product) {
+        Element collateral = product == null ? null : product.getChild("CollateralDetail");
+        if (collateral == null) {
+            return null;
+        }
+        return collateral.getChildren("SupportingResource").stream()
+            .filter(resource -> "01".equals(resource.getChildTextTrim("ResourceContentType")))
+            .flatMap(resource -> resource.getChildren("ResourceVersion").stream())
+            .filter(version -> !version.getChildTextTrim("ResourceLink").isEmpty())
+            .min(Comparator.comparingInt(OnixRecordReader::widthOf)) // keep the smallest
+            .map(version -> version.getChildTextTrim("ResourceLink"))
+            .orElse(null);
+    }
+
+    private static int widthOf(Element version) {
+        return version.getChildren("ResourceVersionFeature").stream()
+            .filter(feature -> "03".equals(feature.getChildTextTrim("ResourceVersionFeatureType")))
+            .map(feature -> feature.getChildTextTrim("FeatureValue"))
+            .filter(value -> value.matches("\\d+"))
+            .mapToInt(Integer::parseInt)
+            .findFirst()
+            .orElse(Integer.MAX_VALUE);
     }
 
     private static List<String> values(Element dim, String element, String qualifier) {

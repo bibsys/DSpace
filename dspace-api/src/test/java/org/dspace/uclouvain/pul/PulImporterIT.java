@@ -13,10 +13,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import javax.imageio.ImageIO;
 
 import org.dspace.AbstractIntegrationTestWithDatabase;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
@@ -30,6 +37,7 @@ import org.dspace.content.Collection;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.BitstreamService;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Constants;
 import org.dspace.discovery.IndexingService;
@@ -60,6 +68,27 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
     private final ItemService itemService = ContentServiceFactory.getInstance().getItemService();
     private final AuthorizeService authorizeService = AuthorizeServiceFactory.getInstance().getAuthorizeService();
 
+    private final BitstreamService bitstreamService = ContentServiceFactory.getInstance().getBitstreamService();
+
+    /** Serves a 300x450 JPEG for any URL and records the URLs asked; can be told to fail. */
+    private static class StubCoverFetcher extends CoverFetcher {
+        final List<String> requested = new ArrayList<>();
+        boolean failing;
+
+        @Override
+        public InputStream open(String url) throws IOException {
+            requested.add(url);
+            if (failing) {
+                throw new IOException("no network in tests");
+            }
+            BufferedImage image = new BufferedImage(300, 450, BufferedImage.TYPE_INT_RGB);
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            ImageIO.write(image, "jpg", bytes);
+            return new ByteArrayInputStream(bytes.toByteArray());
+        }
+    }
+
+    private final StubCoverFetcher coverFetcher = new StubCoverFetcher();
     private PulImporter importer;
     private Collection collection;
     private Item matchedByGcoi;
@@ -74,7 +103,8 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         importer = new PulImporter(
             new OnixRecordReader(DSpaceServicesFactory.getInstance().getConfigurationService()),
             UCLouvainServiceFactory.getInstance().getPublicationService(),
-            UpdatePolicy.fromConfiguration(DSpaceServicesFactory.getInstance().getConfigurationService()));
+            UpdatePolicy.fromConfiguration(DSpaceServicesFactory.getInstance().getConfigurationService()),
+            coverFetcher);
 
         context.turnOffAuthorisationSystem();
         parentCommunity = CommunityBuilder.createCommunity(context).withName("Parent Community").build();
@@ -282,7 +312,7 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         context.commit();
 
         assertEquals(item, again.item());
-        assertTrue(again.message(), again.message().endsWith("no metadata change"));
+        assertTrue(again.message(), again.message().contains("no metadata change"));
         assertEquals(metadataCount, item.getMetadata().size());
         assertEquals(1, item.getBundles(Constants.METADATA_BUNDLE_NAME).get(0).getBitstreams().size());
     }
@@ -318,6 +348,60 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertEquals(existing, item);
         assertEquals(List.of("true"), values(item, "dc.contributor.etal"));
         assertEquals(List.of(), values(item, "dc.contributor.author"));
+    }
+
+    // COVER ===========================================================================================================
+
+    @Test
+    public void coverIsDownloadedScaledAndKeptAsThumbnail() throws Exception {
+        Outcome created = importer.create(context, importer.decide(context, sample("29303100808420")), collection);
+        context.commit();
+        Item item = created.item();
+
+        assertTrue(created.message(), created.message().endsWith("cover stored"));
+        assertEquals(1, coverFetcher.requested.size());
+        assertTrue(coverFetcher.requested.get(0), coverFetcher.requested.get(0).contains("/THUMBNAIL/"));
+        List<Bundle> thumbnails = item.getBundles(PulImporter.THUMBNAIL_BUNDLE);
+        assertEquals(1, thumbnails.size());
+        assertEquals(1, thumbnails.get(0).getBitstreams().size());
+        Bitstream cover = thumbnails.get(0).getBitstreams().get(0);
+        assertEquals("29303100808420.pdf.jpg", cover.getName());
+        assertEquals(PulImporter.COVER_DESCRIPTION, cover.getDescription());
+        assertEquals(coverFetcher.requested.get(0), cover.getSource());
+        assertEquals("JPEG", cover.getFormat(context).getShortDescription());
+        BufferedImage stored = ImageIO.read(bitstreamService.retrieve(context, cover));
+        assertTrue("scaled to " + stored.getWidth() + "x" + stored.getHeight(),
+            stored.getWidth() <= 175 && stored.getHeight() <= 175);
+        // the thumbnail DSpace shows for the item is this cover
+        assertEquals(cover, itemService.getThumbnail(context, item, false).getThumb());
+    }
+
+    @Test
+    public void unchangedCoverUrlIsNotDownloadedAgain() throws Exception {
+        Item item = importer.create(context, importer.decide(context, sample("29303100808420")), collection).item();
+        context.commit();
+        indexingService.indexContent(context, new IndexableItem(item), true);
+        indexingService.commit();
+
+        Outcome again = importer.update(context, importer.decide(context, sample("29303100808420")));
+        context.commit();
+
+        assertTrue(again.message(), again.message().endsWith("cover unchanged"));
+        assertEquals(1, coverFetcher.requested.size());
+        assertEquals(1, item.getBundles(PulImporter.THUMBNAIL_BUNDLE).get(0).getBitstreams().size());
+    }
+
+    @Test
+    public void coverDownloadFailureDoesNotFailTheRecord() throws Exception {
+        coverFetcher.failing = true;
+        Outcome created = importer.create(context, importer.decide(context, sample("29303100808420")), collection);
+        context.commit();
+
+        assertEquals(Decision.CREATE, created.decision());
+        assertTrue(created.item().isArchived());
+        assertTrue(created.message(), created.message().contains("cover not stored: no network in tests"));
+        assertTrue("no empty THUMBNAIL bundle left behind",
+            created.item().getBundles(PulImporter.THUMBNAIL_BUNDLE).isEmpty());
     }
 
     private List<String> values(Item item, String field) {
