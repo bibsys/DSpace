@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.pul;
 
+import static org.dspace.content.authority.Choices.CF_UNSET;
 import static org.dspace.core.CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE;
 
 import java.io.File;
@@ -210,10 +211,12 @@ public class PulImporter {
 
     /**
      * Complete the publication an {@link Decision#UPDATE} outcome points to, following the {@link UpdatePolicy}
-     * for every field of the DIM but the authors. An ONIX contributor whose name is not yet an author of the item
+     * for every field of the DIM but the authors. The CRIS author group of the existing authors is completed with
+     * placeholders where values are missing, then an ONIX contributor whose name is not yet an author of the item
      * is appended with its role, the other fields of the author group set to the CRIS placeholder; the existing
-     * authors are never touched. {@code dc.contributor.etal} is removed once the ONIX lists named contributors only.
-     * The ONIX file replaces the previous one of the same name in the administrative bundle. The caller commits.
+     * authors' names, authorities and values are never touched. {@code dc.contributor.etal} is removed once the ONIX
+     * lists named contributors only. The ONIX file replaces the previous one of the same name in the administrative
+     * bundle. The caller commits.
      *
      * @param context the DSpace context, in read-write mode.
      * @param outcome an {@link Decision#UPDATE} outcome.
@@ -230,7 +233,7 @@ public class PulImporter {
 
         for (Map.Entry<String, List<Element>> field : dimFieldsByName(record.dim()).entrySet()) {
             String name = field.getKey();
-            if (name.equals(Publication.AUTHOR_NAME_FIELD) || name.equals(Publication.AUTHOR_ROLE_FIELD)) {
+            if (isAuthorGroupField(name)) {
                 continue;
             }
             switch (updatePolicy.behaviourFor(name)) {
@@ -240,6 +243,7 @@ public class PulImporter {
                 default -> { }
             }
         }
+        completeAuthorGroups(context, item, changes);
         addMissingAuthors(context, item, record, changes);
         if (!changes.isEmpty()) {
             itemService.update(context, item);
@@ -290,6 +294,30 @@ public class PulImporter {
         changes.add(field);
     }
 
+    /**
+     * Repair the CRIS author group of the existing authors: every place of {@code dc.contributor.author} must have a
+     * value in each of the five companion fields, the placeholder when nothing better is known. Only holes are
+     * filled; names, authorities and existing values are never touched, nothing is removed or reordered. Makes a
+     * replay heal publications imported before the group was written in full.
+     */
+    private void completeAuthorGroups(Context context, Item item, List<String> changes) throws Exception {
+        int authors = values(item, Publication.AUTHOR_NAME_FIELD).size();
+        int filled = 0;
+        for (String field : List.of(Publication.AUTHOR_EMAIL_FIELD, Publication.AUTHOR_ORCID_FIELD,
+                Publication.AUTHOR_FGS_FIELD, Publication.AUTHOR_ROLE_FIELD, Publication.AUTHOR_INSTITUTION_FIELD)) {
+            for (int place = 0; place < authors; place++) {
+                if (itemService.getMetadata(item, field, place) == null) {
+                    itemService.setMetadataInPlace(context, item, field, null, PLACEHOLDER_PARENT_METADATA_VALUE,
+                        null, place, CF_UNSET);
+                    filled++;
+                }
+            }
+        }
+        if (filled > 0) {
+            changes.add("author group completed (%d placeholder(s))".formatted(filled));
+        }
+    }
+
     private void addMissingAuthors(Context context, Item item, OnixRecord record, List<String> changes)
         throws Exception {
         List<String> onixNames = dimValues(record.dim(), Publication.AUTHOR_NAME_FIELD);
@@ -326,6 +354,16 @@ public class PulImporter {
     }
 
     // METADATA HELPERS ================================================================================================
+
+    /** The CRIS author group written as a block by the stylesheet and by {@code setAuthor}, never field by field. */
+    private static boolean isAuthorGroupField(String field) {
+        return field.equals(Publication.AUTHOR_NAME_FIELD)
+            || field.equals(Publication.AUTHOR_ROLE_FIELD)
+            || field.equals(Publication.AUTHOR_EMAIL_FIELD)
+            || field.equals(Publication.AUTHOR_ORCID_FIELD)
+            || field.equals(Publication.AUTHOR_FGS_FIELD)
+            || field.equals(Publication.AUTHOR_INSTITUTION_FIELD);
+    }
 
     private List<String> values(Item item, String field) {
         return new ArrayList<>(itemService.getMetadataByMetadataString(item, field).stream()
