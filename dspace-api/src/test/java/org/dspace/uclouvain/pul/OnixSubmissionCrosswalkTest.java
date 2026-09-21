@@ -64,6 +64,11 @@ public class OnixSubmissionCrosswalkTest {
         assertEquals(List.of("Dumont, Amandine", "Thiry, Amandine", "Rousseaux, Xavier", "Campion, Jonas",
             "Préfacier, Paul"), dim.values("dc.contributor.author"));
         assertEquals(List.of(EDITOR, EDITOR, EDITOR, EDITOR, "preface_writer"), dim.values("authors.role"));
+        // the rest of the CRIS author group, one placeholder per contributor
+        for (String field : List.of("authors.email", "authors.identifier.orcid", "authors.identifier.fgs",
+                "authors.institution.code")) {
+            assertEquals(field, Collections.nCopies(5, PLACEHOLDER), dim.values(field));
+        }
         assertEquals(List.of("fre"), dim.values("dc.language.iso"));
         assertEquals(List.of("2016-04-11"), dim.values("dc.date.issued"));
         assertEquals(List.of("232"), dim.values("publication.numberOfPages"));
@@ -79,6 +84,7 @@ public class OnixSubmissionCrosswalkTest {
         assertEquals(List.of("text::book"), dim.values("dc.type.maintype"));
         assertEquals(List.of("book"), dim.values("dc.type.subtype"));
         assertEquals(List.of("PUL"), dim.values("dcterms.source"));
+        assertEquals(List.of("published"), dim.values("publication.publicationStatus"));
         // EpubLicense: the expression link wins over the name
         assertEquals(List.of("https://creativecommons.org/licenses/by-nc-nd/3.0/"), dim.values("dcterms.license"));
     }
@@ -154,13 +160,17 @@ public class OnixSubmissionCrosswalkTest {
             Dim dim = transform(file);
             String name = file.getName();
             for (String required : List.of("dc.identifier.gcoi", "dc.identifier.isbn", "dc.title", "dc.date.issued",
-                    "dc.language.iso", "publication.editor.name", "dc.type.maintype", "dcterms.source")) {
+                    "dc.language.iso", "publication.editor.name", "dc.type.maintype", "dcterms.source",
+                    "publication.publicationStatus")) {
                 assertFalse(name + " lacks " + required, dim.values(required).isEmpty());
             }
             assertEquals(name + ": file name is the GCOI", name.replace(".xml", ""),
                 dim.values("dc.identifier.gcoi").get(0));
-            assertEquals(name + ": one role per author",
-                dim.values("dc.contributor.author").size(), dim.values("authors.role").size());
+            int authors = dim.values("dc.contributor.author").size();
+            for (String field : List.of("authors.role", "authors.email", "authors.identifier.orcid",
+                    "authors.identifier.fgs", "authors.institution.code")) {
+                assertEquals(name + ": one " + field + " per author", authors, dim.values(field).size());
+            }
             assertEquals(name + ": placeholder only for the unknown role code",
                 name.startsWith("29303100971260") ? 1 : 0,
                 Collections.frequency(dim.values("authors.role"), PLACEHOLDER));

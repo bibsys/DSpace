@@ -13,6 +13,7 @@
                 <ref bean="lease"/>
                 <ref bean="embargoed" />
                 <ref bean="administrator"/>
+                <ref bean="restricted"/>
                 <!-- <ref bean="networkAdministration"/> -->
             </list>
         </property>
@@ -39,6 +40,15 @@
         <property name="startDateLimit" value="+36MONTHS"/>
         <property name="hasEndDate" value="false"/>
     </bean>
+    <!-- UCLouvain: read access limited to the campus network; used by the PUL import for PDFs without licence
+         (see dspace/config/spring/api/access-conditions.xml) -->
+    <bean id="restricted" class="org.dspace.submit.model.AccessConditionOption">
+        <property name="groupName" value="UCLouvain network"/>
+        <property name="name" value="restricted"/>
+        <property name="hasStartDate" value="false"/>
+        <property name="hasEndDate" value="false"/>
+    </bean>
+
     <bean id="administrator" class="org.dspace.submit.model.AccessConditionOption">
         <property name="groupName" value="Administrator"/>
         <property name="name" value="administrator"/>

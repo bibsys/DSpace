@@ -12,11 +12,11 @@ import java.io.File;
 import org.dspace.content.Item;
 
 /**
- * What the import decided, then did, for one ONIX file.
+ * What the import decided, then did, for one file: an ONIX record, or a PDF or EPUB to attach.
  *
  * @param decision what the file leads to
- * @param file     the ONIX file
- * @param record   the file once read; null for a PDF or when the file could not be read
+ * @param file     the file
+ * @param record   the ONIX file once read; null for an attached file or when the file could not be read
  * @param item     the publication the decision applies to: the existing one for {@link Decision#UPDATE}, the new one
  *                 once a {@link Decision#CREATE} has been applied; null otherwise
  * @param message  how the decision was reached, what was done, or the error
@@ -28,8 +28,14 @@ public record Outcome(Decision decision, File file, OnixRecord record, Item item
         UPDATE,         // One publication carries the identifiers: it is completed.
         AMBIGUOUS,      // The GCOI and an ISBN point to different publications: nothing is done, a human must look.
         DELETED_NOTICE, // ONIX notification type 05 (removed from the catalogue): reported only, nothing is done.
-        PENDING,        // A PDF whose publication is not imported yet: left in place for a later run.
+        PENDING,        // A PDF or EPUB whose publication is not imported yet: left in place for a later run.
+        SKIPPED,        // Not a file the import handles (e.g. <GCOI>.epub.invalid): left in place, reported only.
         ERROR           // The file could not be read, transformed, matched or written.
+    }
+
+    /** A file the import does not handle. */
+    public static Outcome skipped(File file, String expected) {
+        return new Outcome(Decision.SKIPPED, file, null, null, "not a " + expected + " file");
     }
 
     public String title() {
