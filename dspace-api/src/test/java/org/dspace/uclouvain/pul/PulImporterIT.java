@@ -61,6 +61,7 @@ import org.junit.rules.TemporaryFolder;
 public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
 
     private static final Path SAMPLES = Path.of("src", "test", "data", "pul");
+    private static final String EDITOR_ROLE = "scientific_director_editor";
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -206,6 +207,11 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertEquals(2, itemService.getMetadataByMetadataString(item, "dc.identifier.isbn").size());
         assertEquals("text::book", value(item, "dc.type.maintype"));
         assertEquals("PUL", value(item, "dcterms.source"));
+        // no author in this record: the author group must be empty everywhere
+        for (String field : List.of("dc.contributor.author", "authors.role", "authors.email",
+                "authors.identifier.orcid", "authors.identifier.fgs", "authors.institution.code")) {
+            assertEquals(field, List.of(), values(item, field));
+        }
         // the ONIX descriptions were HTML
         String abstractText = value(item, "dc.description.abstract");
         assertFalse(abstractText, abstractText.contains("<"));
@@ -219,6 +225,22 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertTrue("admin only", authorizeService.getPolicies(context, onix).isEmpty());
         assertTrue("admin only", authorizeService.getPolicies(context, bundles.get(0)).isEmpty());
         assertTrue(item.getBundles("ORIGINAL").isEmpty());
+    }
+
+    @Test
+    public void createdAuthorsCarryTheWholeCrisGroupWithPlaceholders() throws Exception {
+        // sample 29303100971260: five contributors
+        Item item = importer.create(context, importer.decide(context, sample("29303100971260")), collection).item();
+        context.commit();
+
+        assertEquals(5, values(item, "dc.contributor.author").size());
+        assertEquals(List.of(EDITOR_ROLE, "collaborator", EDITOR_ROLE, "#PLACEHOLDER_PARENT_METADATA_VALUE#",
+            "author"), values(item, "authors.role"));
+        for (String field : List.of("authors.email", "authors.identifier.orcid", "authors.identifier.fgs",
+                "authors.institution.code")) {
+            assertEquals(field, java.util.Collections.nCopies(5, "#PLACEHOLDER_PARENT_METADATA_VALUE#"),
+                values(item, field));
+        }
     }
 
     @Test
@@ -334,6 +356,46 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertEquals(List.of("scientific_director_editor", "scientific_director_editor", "scientific_director_editor",
             "scientific_director_editor", "preface_writer"), values(item, "authors.role"));
         assertEquals("#PLACEHOLDER_PARENT_METADATA_VALUE#", itemService.getMetadata(item, "authors.email", 4));
+    }
+
+    @Test
+    public void updateCompletesIncompleteAuthorGroupsWithoutTouchingExistingValues() throws Exception {
+        // sample 29303100808420 names no contributor: only the repair of the existing group can change the authors
+        Item existing = ItemBuilder.createItem(context, collection).withTitle("Incomplete groups")
+            .withMetadata("dc", "identifier", "isbn", "9782874630972")
+            .withAuthor("Full, Author")
+            .withMetadata("authors", "role", null, "scientific_director_editor")
+            .withMetadata("authors", "email", null, "full@example.org")
+            .withMetadata("authors", "identifier", "orcid", "0000-0001-0000-0001")
+            .withMetadata("authors", "identifier", "fgs", "12345")
+            .withMetadata("authors", "institution", "code", "UCL")
+            .withAuthor("Bare, Author")
+            .build();
+        indexingService.indexContent(context, new IndexableItem(existing), true);
+        indexingService.commit();
+
+        Outcome updated = importer.update(context, importer.decide(context, sample("29303100808420")));
+        context.commit();
+        Item item = updated.item();
+
+        assertTrue(updated.message(), updated.message().contains("author group completed (5 placeholder(s))"));
+        assertEquals(List.of("Full, Author", "Bare, Author"), values(item, "dc.contributor.author"));
+        // the complete author keeps every value
+        assertEquals("full@example.org", itemService.getMetadata(item, "authors.email", 0));
+        assertEquals("0000-0001-0000-0001", itemService.getMetadata(item, "authors.identifier.orcid", 0));
+        assertEquals("12345", itemService.getMetadata(item, "authors.identifier.fgs", 0));
+        assertEquals("UCL", itemService.getMetadata(item, "authors.institution.code", 0));
+        assertEquals("scientific_director_editor", itemService.getMetadata(item, "authors.role", 0));
+        // the bare author gets the placeholder everywhere (the default-role consumer may turn the role into author)
+        for (String field : List.of("authors.email", "authors.identifier.orcid", "authors.identifier.fgs",
+                "authors.institution.code")) {
+            assertEquals(field, "#PLACEHOLDER_PARENT_METADATA_VALUE#", itemService.getMetadata(item, field, 1));
+        }
+        assertNotNull(itemService.getMetadata(item, "authors.role", 1));
+
+        Outcome again = importer.update(context, importer.decide(context, sample("29303100808420")));
+        context.commit();
+        assertFalse(again.message(), again.message().contains("author group completed"));
     }
 
     @Test

@@ -18,6 +18,7 @@
     DescriptiveDetail/Contributor (ordered by SequenceNumber)
         PersonNameInverted | CorporateName                                                -> dc.contributor.author
         ContributorRole (ONIX list 17, see `role` template)                               -> authors.role
+        CRIS placeholder (nothing usable in ONIX)                                         -> authors.email, authors.identifier.orcid, authors.identifier.fgs, authors.institution.code
         (contributors without a name, e.g. UnnamedPersons, are skipped)
     DescriptiveDetail/Language[LanguageRole='01']/LanguageCode (ISO 639-2, as in the form) -> dc.language.iso
     CollateralDetail/TextContent[TextType='03' and ContentAudience 00 or absent]/Text, @language -> @lang
@@ -127,7 +128,9 @@
         </xsl:for-each>
 
         <!-- CONTRIBUTORS =========================================================================================== -->
-        <!-- Two fields per contributor, always together, so that the nth author gets the nth role. -->
+        <!-- The whole CRIS author group per contributor, always together, so that the nth author gets the nth role:
+             name and role from the ONIX, the placeholder for the fields the ONIX cannot provide (email, ORCID, FGS,
+             institution), exactly as the submission form and PublicationService.setAuthor write them. -->
         <xsl:for-each select="$descriptive/Contributor[string(PersonNameInverted) != '' or string(CorporateName) != '']">
             <xsl:sort select="SequenceNumber" data-type="number"/>
             <xsl:call-template name="field">
@@ -137,12 +140,35 @@
             </xsl:call-template>
             <xsl:call-template name="field">
                 <xsl:with-param name="schema">authors</xsl:with-param>
+                <xsl:with-param name="element">email</xsl:with-param>
+                <xsl:with-param name="value" select="$PLACEHOLDER"/>
+            </xsl:call-template>
+            <xsl:call-template name="field">
+                <xsl:with-param name="schema">authors</xsl:with-param>
+                <xsl:with-param name="element">identifier</xsl:with-param>
+                <xsl:with-param name="qualifier">orcid</xsl:with-param>
+                <xsl:with-param name="value" select="$PLACEHOLDER"/>
+            </xsl:call-template>
+            <xsl:call-template name="field">
+                <xsl:with-param name="schema">authors</xsl:with-param>
+                <xsl:with-param name="element">identifier</xsl:with-param>
+                <xsl:with-param name="qualifier">fgs</xsl:with-param>
+                <xsl:with-param name="value" select="$PLACEHOLDER"/>
+            </xsl:call-template>
+            <xsl:call-template name="field">
+                <xsl:with-param name="schema">authors</xsl:with-param>
                 <xsl:with-param name="element">role</xsl:with-param>
                 <xsl:with-param name="value">
                     <xsl:call-template name="role">
                         <xsl:with-param name="code" select="normalize-space(ContributorRole)"/>
                     </xsl:call-template>
                 </xsl:with-param>
+            </xsl:call-template>
+            <xsl:call-template name="field">
+                <xsl:with-param name="schema">authors</xsl:with-param>
+                <xsl:with-param name="element">institution</xsl:with-param>
+                <xsl:with-param name="qualifier">code</xsl:with-param>
+                <xsl:with-param name="value" select="$PLACEHOLDER"/>
             </xsl:call-template>
         </xsl:for-each>
 
