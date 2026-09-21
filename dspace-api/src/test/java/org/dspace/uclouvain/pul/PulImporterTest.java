@@ -10,6 +10,7 @@ package org.dspace.uclouvain.pul;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -21,7 +22,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 /**
- * The pure helpers of the import: HTML stripping of the ONIX descriptions and the archiving of processed files.
+ * The pure helpers of the import: HTML stripping of the ONIX descriptions, the archiving of processed files and the
+ * extensions of the files to attach.
  */
 public class PulImporterTest {
 
@@ -41,6 +43,19 @@ public class PulImporterTest {
         assertEquals("Plain text, with 2 < 3 kept.", PulImporter.stripHtml("Plain text, with 2 < 3 kept."));
         assertNull(PulImporter.stripHtml(null));
         assertEquals("", PulImporter.stripHtml("<p>  </p>"));
+    }
+
+    @Test
+    public void onlyPdfAndEpubFilesAreAttachable() {
+        assertTrue(PulImporter.isAttachableFile(new File("29303100000001.pdf")));
+        assertTrue(PulImporter.isAttachableFile(new File("29303100000001.epub")));
+        assertTrue(PulImporter.isAttachableFile(new File("978-2-87558-999-0.PDF")));
+        assertFalse(PulImporter.isAttachableFile(new File("29303100000001.epub.invalid")));
+        assertFalse(PulImporter.isAttachableFile(new File("29303100000001.pdf.invalid")));
+        assertFalse(PulImporter.isAttachableFile(new File("29303100000001.xml")));
+        assertFalse(PulImporter.isAttachableFile(new File("pdf")));
+        assertEquals("not a .epub or .pdf file",
+            Outcome.skipped(new File("x.epub.invalid"), PulImporter.expectedExtensions()).message());
     }
 
     @Test

@@ -61,6 +61,7 @@ import org.junit.rules.TemporaryFolder;
 public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
 
     private static final Path SAMPLES = Path.of("src", "test", "data", "pul");
+    private static final String EDITOR_ROLE = "scientific_director_editor";
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -206,6 +207,11 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertEquals(2, itemService.getMetadataByMetadataString(item, "dc.identifier.isbn").size());
         assertEquals("text::book", value(item, "dc.type.maintype"));
         assertEquals("PUL", value(item, "dcterms.source"));
+        // no author in this record: the author group must be empty everywhere
+        for (String field : List.of("dc.contributor.author", "authors.role", "authors.email",
+                "authors.identifier.orcid", "authors.identifier.fgs", "authors.institution.code")) {
+            assertEquals(field, List.of(), values(item, field));
+        }
         // the ONIX descriptions were HTML
         String abstractText = value(item, "dc.description.abstract");
         assertFalse(abstractText, abstractText.contains("<"));
@@ -219,6 +225,22 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertTrue("admin only", authorizeService.getPolicies(context, onix).isEmpty());
         assertTrue("admin only", authorizeService.getPolicies(context, bundles.get(0)).isEmpty());
         assertTrue(item.getBundles("ORIGINAL").isEmpty());
+    }
+
+    @Test
+    public void createdAuthorsCarryTheWholeCrisGroupWithPlaceholders() throws Exception {
+        // sample 29303100971260: five contributors
+        Item item = importer.create(context, importer.decide(context, sample("29303100971260")), collection).item();
+        context.commit();
+
+        assertEquals(5, values(item, "dc.contributor.author").size());
+        assertEquals(List.of(EDITOR_ROLE, "collaborator", EDITOR_ROLE, "#PLACEHOLDER_PARENT_METADATA_VALUE#",
+            "author"), values(item, "authors.role"));
+        for (String field : List.of("authors.email", "authors.identifier.orcid", "authors.identifier.fgs",
+                "authors.institution.code")) {
+            assertEquals(field, java.util.Collections.nCopies(5, "#PLACEHOLDER_PARENT_METADATA_VALUE#"),
+                values(item, field));
+        }
     }
 
     @Test
@@ -337,6 +359,46 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
     }
 
     @Test
+    public void updateCompletesIncompleteAuthorGroupsWithoutTouchingExistingValues() throws Exception {
+        // sample 29303100808420 names no contributor: only the repair of the existing group can change the authors
+        Item existing = ItemBuilder.createItem(context, collection).withTitle("Incomplete groups")
+            .withMetadata("dc", "identifier", "isbn", "9782874630972")
+            .withAuthor("Full, Author")
+            .withMetadata("authors", "role", null, "scientific_director_editor")
+            .withMetadata("authors", "email", null, "full@example.org")
+            .withMetadata("authors", "identifier", "orcid", "0000-0001-0000-0001")
+            .withMetadata("authors", "identifier", "fgs", "12345")
+            .withMetadata("authors", "institution", "code", "UCL")
+            .withAuthor("Bare, Author")
+            .build();
+        indexingService.indexContent(context, new IndexableItem(existing), true);
+        indexingService.commit();
+
+        Outcome updated = importer.update(context, importer.decide(context, sample("29303100808420")));
+        context.commit();
+        Item item = updated.item();
+
+        assertTrue(updated.message(), updated.message().contains("author group completed (5 placeholder(s))"));
+        assertEquals(List.of("Full, Author", "Bare, Author"), values(item, "dc.contributor.author"));
+        // the complete author keeps every value
+        assertEquals("full@example.org", itemService.getMetadata(item, "authors.email", 0));
+        assertEquals("0000-0001-0000-0001", itemService.getMetadata(item, "authors.identifier.orcid", 0));
+        assertEquals("12345", itemService.getMetadata(item, "authors.identifier.fgs", 0));
+        assertEquals("UCL", itemService.getMetadata(item, "authors.institution.code", 0));
+        assertEquals("scientific_director_editor", itemService.getMetadata(item, "authors.role", 0));
+        // the bare author gets the placeholder everywhere (the default-role consumer may turn the role into author)
+        for (String field : List.of("authors.email", "authors.identifier.orcid", "authors.identifier.fgs",
+                "authors.institution.code")) {
+            assertEquals(field, "#PLACEHOLDER_PARENT_METADATA_VALUE#", itemService.getMetadata(item, field, 1));
+        }
+        assertNotNull(itemService.getMetadata(item, "authors.role", 1));
+
+        Outcome again = importer.update(context, importer.decide(context, sample("29303100808420")));
+        context.commit();
+        assertFalse(again.message(), again.message().contains("author group completed"));
+    }
+
+    @Test
     public void etAlIsKeptWhenTheOnixItselfHasUnnamedContributors() throws Exception {
         // sample 29303100808420: one UnnamedPersons contributor, nothing named
         Item existing = ItemBuilder.createItem(context, collection).withTitle("Pédagogie")
@@ -407,12 +469,18 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
             created.item().getBundles(PulImporter.THUMBNAIL_BUNDLE).isEmpty());
     }
 
-    // PDF =============================================================================================================
+    // ATTACHED FILES ==================================================================================================
 
     private File pdfNamed(String name) throws IOException {
         File pdf = temporaryFolder.newFile(name);
         Files.writeString(pdf.toPath(), "%PDF-1.4\n%fake content for tests\n%%EOF\n");
         return pdf;
+    }
+
+    private File epubNamed(String name) throws IOException {
+        File epub = temporaryFolder.newFile(name);
+        Files.writeString(epub.toPath(), "PK fake epub content for tests");
+        return epub;
     }
 
     private Item indexedBook(String gcoi, String license) throws Exception {
@@ -429,18 +497,49 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
 
     @Test
     public void pdfWithoutPublicationYetIsPendingAndBadNamesAreErrors() throws Exception {
-        Outcome pending = importer.decidePdf(context, pdfNamed("29303100999999.pdf"));
+        Outcome pending = importer.decideFile(context, pdfNamed("29303100999999.pdf"));
         assertEquals(Decision.PENDING, pending.decision());
         assertTrue(pending.describe(), pending.message().contains("GCOI 29303100999999"));
         assertTrue(pending.describe(), pending.message().contains("left for a later run"));
 
-        Outcome pendingIsbn = importer.decidePdf(context, pdfNamed("978-2-39061-999-9.pdf"));
+        Outcome pendingIsbn = importer.decideFile(context, pdfNamed("978-2-39061-999-9.pdf"));
         assertEquals(Decision.PENDING, pendingIsbn.decision());
         assertTrue(pendingIsbn.describe(), pendingIsbn.message().contains("ISBN 978-2-39061-999-9"));
 
-        Outcome error = importer.decidePdf(context, pdfNamed("cover-letter.pdf"));
+        Outcome error = importer.decideFile(context, pdfNamed("cover-letter.pdf"));
         assertEquals(Decision.ERROR, error.decision());
-        assertEquals(Decision.ERROR, importer.decidePdf(context, pdfNamed("12345.pdf")).decision());
+        assertEquals(Decision.ERROR, importer.decideFile(context, pdfNamed("12345.pdf")).decision());
+        Outcome invalid = importer.decideFile(context, epubNamed("29303100999999.epub.invalid"));
+        assertEquals(Decision.ERROR, invalid.decision());
+        assertEquals("not a .epub or .pdf file", invalid.message());
+    }
+
+    @Test
+    public void epubIsStoredNextToThePdfUnderTheGcoiWithoutPrimaryBitstream() throws Exception {
+        GroupBuilder.createGroup(context).withName("UCLouvain network").build();
+        Item book = indexedBook("29303100000004", null);
+
+        importer.storeFile(context, importer.decideFile(context, pdfNamed("29303100000004.pdf")));
+        context.commit();
+        Outcome decided = importer.decideFile(context, epubNamed("29303100000004.EPUB"));
+        assertEquals(Decision.UPDATE, decided.decision());
+        assertTrue(decided.describe(), decided.message().startsWith("EPUB for GCOI 29303100000004"));
+        assertTrue(decided.describe(), decided.message().endsWith("stored as 29303100000004.epub"));
+        Outcome stored = importer.storeFile(context, decided);
+        context.commit();
+
+        assertEquals(book.getID(), stored.item().getID());
+        assertTrue(stored.message(), stored.message().endsWith("stored 29303100000004.epub (restricted)"));
+        Bundle original = stored.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0);
+        assertEquals(List.of("29303100000004.pdf", "29303100000004.epub"),
+            original.getBitstreams().stream().map(Bitstream::getName).toList());
+        Bitstream epub = original.getBitstreams().get(1);
+        assertEquals("29303100000004.EPUB", epub.getSource());
+        assertEquals("EPUB", epub.getFormat(context).getShortDescription());
+        assertNull(original.getPrimaryBitstream());
+        List<ResourcePolicy> policies = authorizeService.getPolicies(context, epub);
+        assertEquals(policies.toString(), 1, policies.size());
+        assertEquals("restricted", policies.get(0).getRpName());
     }
 
     @Test
@@ -452,12 +551,12 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         indexingService.commit();
         GroupBuilder.createGroup(context).withName("UCLouvain network").build();
 
-        Outcome decided = importer.decidePdf(context, pdfNamed("9782875589990.pdf"));
+        Outcome decided = importer.decideFile(context, pdfNamed("9782875589990.pdf"));
         assertEquals(Decision.UPDATE, decided.decision());
         assertEquals(book, decided.item());
         assertTrue(decided.describe(), decided.message().contains("ISBN 9782875589990"));
         assertTrue(decided.describe(), decided.message().endsWith("stored as 29303100000003.pdf"));
-        Outcome stored = importer.storePdf(context, decided);
+        Outcome stored = importer.storeFile(context, decided);
         context.commit();
 
         Bundle original = stored.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0);
@@ -466,7 +565,7 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertEquals("9782875589990.pdf", original.getBitstreams().get(0).getSource());
 
         // the same book delivered again under its GCOI replaces that very file
-        Outcome again = importer.storePdf(context, importer.decidePdf(context, pdfNamed("29303100000003.pdf")));
+        Outcome again = importer.storeFile(context, importer.decideFile(context, pdfNamed("29303100000003.pdf")));
         context.commit();
         assertTrue(again.message(), again.message().endsWith("replaced 29303100000003.pdf (restricted)"));
         assertEquals(1, again.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0).getBitstreams().size());
@@ -480,7 +579,7 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         indexingService.commit();
         GroupBuilder.createGroup(context).withName("UCLouvain network").build();
 
-        Outcome stored = importer.storePdf(context, importer.decidePdf(context, pdfNamed("9782875589620.pdf")));
+        Outcome stored = importer.storeFile(context, importer.decideFile(context, pdfNamed("9782875589620.pdf")));
         context.commit();
 
         assertEquals("9782875589620.pdf",
@@ -488,13 +587,13 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
     }
 
     @Test
-    public void pdfOfALicensedBookIsOpenAccessAndPrimary() throws Exception {
+    public void pdfOfALicensedBookIsOpenAccess() throws Exception {
         Item book = indexedBook("29303100000001", "https://creativecommons.org/licenses/by-nc-nd/3.0/");
 
-        Outcome decided = importer.decidePdf(context, pdfNamed("29303100000001.pdf"));
+        Outcome decided = importer.decideFile(context, pdfNamed("29303100000001.pdf"));
         assertEquals(Decision.UPDATE, decided.decision());
         assertEquals(book, decided.item());
-        Outcome stored = importer.storePdf(context, decided);
+        Outcome stored = importer.storeFile(context, decided);
         context.commit();
 
         assertTrue(stored.message(), stored.message().endsWith("stored 29303100000001.pdf (openaccess)"));
@@ -502,7 +601,7 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         assertEquals(1, original.getBitstreams().size());
         Bitstream pdf = original.getBitstreams().get(0);
         assertEquals("29303100000001.pdf", pdf.getName());
-        assertEquals(pdf, original.getPrimaryBitstream());
+        assertNull(original.getPrimaryBitstream());
         assertEquals("Adobe PDF", pdf.getFormat(context).getShortDescription());
         assertEquals("https://creativecommons.org/licenses/by-nc-nd/3.0/",
             bitstreamService.getMetadataFirstValue(pdf, new MetadataFieldName("dc.rights.license"), null));
@@ -518,11 +617,11 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         GroupBuilder.createGroup(context).withName("UCLouvain network").build();
         Item book = indexedBook("29303100000002", null);
 
-        importer.storePdf(context, importer.decidePdf(context, pdfNamed("29303100000002.pdf")));
+        importer.storeFile(context, importer.decideFile(context, pdfNamed("29303100000002.pdf")));
         context.commit();
         File newer = temporaryFolder.newFolder("newer").toPath().resolve("29303100000002.pdf").toFile();
         Files.writeString(newer.toPath(), "%PDF-1.4\n%second delivery\n%%EOF\n");
-        Outcome again = importer.storePdf(context, importer.decidePdf(context, newer));
+        Outcome again = importer.storeFile(context, importer.decideFile(context, newer));
         context.commit();
 
         assertTrue(again.message(), again.message().endsWith("replaced 29303100000002.pdf (restricted)"));
@@ -531,7 +630,7 @@ public class PulImporterIT extends AbstractIntegrationTestWithDatabase {
         Bundle original = again.item().getBundles(Constants.CONTENT_BUNDLE_NAME).get(0);
         assertEquals(1, original.getBitstreams().size());
         Bitstream pdf = original.getBitstreams().get(0);
-        assertEquals(pdf, original.getPrimaryBitstream());
+        assertNull(original.getPrimaryBitstream());
         assertNull(bitstreamService.getMetadataFirstValue(pdf, new MetadataFieldName("dc.rights.license"), null));
         List<ResourcePolicy> policies = authorizeService.getPolicies(context, pdf);
         assertEquals(policies.toString(), 1, policies.size());

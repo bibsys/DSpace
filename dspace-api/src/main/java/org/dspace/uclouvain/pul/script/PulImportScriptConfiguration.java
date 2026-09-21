@@ -28,9 +28,9 @@ public class PulImportScriptConfiguration<T extends PulImport> extends ScriptCon
             options.addOption(Option.builder("d").longOpt("dir")
                 .desc("Directory holding the ONIX files (default: " + PulImport.DIRECTORY_PROPERTY + ")")
                 .hasArg(true).required(false).build());
-            options.addOption(Option.builder("p").longOpt("pdf-dir")
-                .desc("Directory holding the <GCOI>.pdf files to attach (default: " + PulImport.PDF_DIRECTORY_PROPERTY
-                    + "; none = PDFs are not processed)")
+            options.addOption(Option.builder("f").longOpt("files-dir")
+                .desc("Directory holding the <GCOI>.pdf and <GCOI>.epub files to attach (default: "
+                    + PulImport.FILES_DIRECTORY_PROPERTY + "; none = they are not processed)")
                 .hasArg(true).required(false).build());
             options.addOption(Option.builder("c").longOpt("collection")
                 .desc("UUID or handle of the collection receiving new publications (default: "

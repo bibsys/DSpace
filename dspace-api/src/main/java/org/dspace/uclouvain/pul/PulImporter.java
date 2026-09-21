@@ -7,6 +7,7 @@
  */
 package org.dspace.uclouvain.pul;
 
+import static org.dspace.content.authority.Choices.CF_UNSET;
 import static org.dspace.core.CrisConstants.PLACEHOLDER_PARENT_METADATA_VALUE;
 
 import java.io.File;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
@@ -62,7 +64,8 @@ import org.jdom2.Element;
 /**
  * The import of one PUL ONIX file, step by step: read it and decide ({@link #decide}), then create the publication
  * ({@link #create}) or complete the existing one ({@link #update}); both keep the ONIX file and the cover image.
- * PDF files delivered apart are attached to their publication by {@link #decidePdf} and {@link #storePdf}.
+ * PDF and EPUB files delivered apart are attached to their publication by {@link #decideFile} and
+ * {@link #storeFile}.
  *
  * @author Renaud Michotte (renaud.michotte@uclouvain.be)
  */
@@ -74,9 +77,11 @@ public class PulImporter {
     static final String THUMBNAIL_BUNDLE = "THUMBNAIL";
     /** Marks the cover bitstreams written by this import, so that they can be refreshed. */
     static final String COVER_DESCRIPTION = "PUL cover";
-    /** Item field fed by the ONIX EpubLicense; its presence makes the PDF open access. */
+    /** Item field fed by the ONIX EpubLicense; its presence makes the attached files open access. */
     static final String LICENSE_FIELD = "dcterms.license";
-    /** Names of the access conditions of access-conditions.xml applied to PDFs. */
+    /** Extensions (lower case) of the files PUL delivers apart from the ONIX and that the import attaches. */
+    static final Set<String> FILE_EXTENSIONS = Set.of("pdf", "epub");
+    /** Names of the access conditions of access-conditions.xml applied to the attached files. */
     static final String OPEN_ACCESS = "openaccess";
     static final String RESTRICTED = "restricted";
     private static final Logger log = LogManager.getLogger(PulImporter.class);
@@ -210,10 +215,12 @@ public class PulImporter {
 
     /**
      * Complete the publication an {@link Decision#UPDATE} outcome points to, following the {@link UpdatePolicy}
-     * for every field of the DIM but the authors. An ONIX contributor whose name is not yet an author of the item
+     * for every field of the DIM but the authors. The CRIS author group of the existing authors is completed with
+     * placeholders where values are missing, then an ONIX contributor whose name is not yet an author of the item
      * is appended with its role, the other fields of the author group set to the CRIS placeholder; the existing
-     * authors are never touched. {@code dc.contributor.etal} is removed once the ONIX lists named contributors only.
-     * The ONIX file replaces the previous one of the same name in the administrative bundle. The caller commits.
+     * authors' names, authorities and values are never touched. {@code dc.contributor.etal} is removed once the ONIX
+     * lists named contributors only. The ONIX file replaces the previous one of the same name in the administrative
+     * bundle. The caller commits.
      *
      * @param context the DSpace context, in read-write mode.
      * @param outcome an {@link Decision#UPDATE} outcome.
@@ -230,7 +237,7 @@ public class PulImporter {
 
         for (Map.Entry<String, List<Element>> field : dimFieldsByName(record.dim()).entrySet()) {
             String name = field.getKey();
-            if (name.equals(Publication.AUTHOR_NAME_FIELD) || name.equals(Publication.AUTHOR_ROLE_FIELD)) {
+            if (isAuthorGroupField(name)) {
                 continue;
             }
             switch (updatePolicy.behaviourFor(name)) {
@@ -240,6 +247,7 @@ public class PulImporter {
                 default -> { }
             }
         }
+        completeAuthorGroups(context, item, changes);
         addMissingAuthors(context, item, record, changes);
         if (!changes.isEmpty()) {
             itemService.update(context, item);
@@ -290,6 +298,30 @@ public class PulImporter {
         changes.add(field);
     }
 
+    /**
+     * Repair the CRIS author group of the existing authors: every place of {@code dc.contributor.author} must have a
+     * value in each of the five companion fields, the placeholder when nothing better is known. Only holes are
+     * filled; names, authorities and existing values are never touched, nothing is removed or reordered. Makes a
+     * replay heal publications imported before the group was written in full.
+     */
+    private void completeAuthorGroups(Context context, Item item, List<String> changes) throws Exception {
+        int authors = values(item, Publication.AUTHOR_NAME_FIELD).size();
+        int filled = 0;
+        for (String field : List.of(Publication.AUTHOR_EMAIL_FIELD, Publication.AUTHOR_ORCID_FIELD,
+                Publication.AUTHOR_FGS_FIELD, Publication.AUTHOR_ROLE_FIELD, Publication.AUTHOR_INSTITUTION_FIELD)) {
+            for (int place = 0; place < authors; place++) {
+                if (itemService.getMetadata(item, field, place) == null) {
+                    itemService.setMetadataInPlace(context, item, field, null, PLACEHOLDER_PARENT_METADATA_VALUE,
+                        null, place, CF_UNSET);
+                    filled++;
+                }
+            }
+        }
+        if (filled > 0) {
+            changes.add("author group completed (%d placeholder(s))".formatted(filled));
+        }
+    }
+
     private void addMissingAuthors(Context context, Item item, OnixRecord record, List<String> changes)
         throws Exception {
         List<String> onixNames = dimValues(record.dim(), Publication.AUTHOR_NAME_FIELD);
@@ -326,6 +358,16 @@ public class PulImporter {
     }
 
     // METADATA HELPERS ================================================================================================
+
+    /** The CRIS author group written as a block by the stylesheet and by {@code setAuthor}, never field by field. */
+    private static boolean isAuthorGroupField(String field) {
+        return field.equals(Publication.AUTHOR_NAME_FIELD)
+            || field.equals(Publication.AUTHOR_ROLE_FIELD)
+            || field.equals(Publication.AUTHOR_EMAIL_FIELD)
+            || field.equals(Publication.AUTHOR_ORCID_FIELD)
+            || field.equals(Publication.AUTHOR_FGS_FIELD)
+            || field.equals(Publication.AUTHOR_INSTITUTION_FIELD);
+    }
 
     private List<String> values(Item item, String field) {
         return new ArrayList<>(itemService.getMetadataByMetadataString(item, field).stream()
@@ -414,19 +456,35 @@ public class PulImporter {
         authorizeService.removeAllPolicies(context, bitstream);
     }
 
-    // PDF =============================================================================================================
+    // ATTACHED FILES ==================================================================================================
+
+    /** Whether the file is one the import attaches: a .pdf or .epub (case insensitive), nothing else. */
+    public static boolean isAttachableFile(File file) {
+        return FILE_EXTENSIONS.contains(extensionOf(file));
+    }
+
+    /** The extension of the file name, lower case, empty when there is none. */
+    private static String extensionOf(File file) {
+        String name = file.getName();
+        int dot = name.lastIndexOf('.');
+        return dot < 0 ? "" : name.substring(dot + 1).toLowerCase();
+    }
 
     /**
-     * Decide what to do with a PDF delivered by PUL, named after the GCOI (14 digits) or the ISBN (10 or 13 digits,
-     * hyphens allowed) of its book: attach it to the publication carrying that identifier, or wait for that
-     * publication to be imported. Nothing is written.
+     * Decide what to do with a PDF or EPUB delivered by PUL, named after the GCOI (14 digits) or the ISBN (10 or
+     * 13 digits, hyphens allowed) of its book: attach it to the publication carrying that identifier, or wait for
+     * that publication to be imported. Nothing is written.
      *
      * @param context the DSpace context; must be allowed to see withdrawn and non-discoverable items.
-     * @param pdf     the PDF file.
+     * @param file    the PDF or EPUB file.
      * @return {@link Decision#UPDATE} with the item, {@link Decision#PENDING} or {@link Decision#ERROR}.
      */
-    public Outcome decidePdf(Context context, File pdf) {
-        String stem = pdf.getName().replaceFirst("(?i)\\.pdf$", "");
+    public Outcome decideFile(Context context, File file) {
+        if (!isAttachableFile(file)) {
+            return new Outcome(Decision.ERROR, file, null, null, "not a " + expectedExtensions() + " file");
+        }
+        String extension = extensionOf(file);
+        String stem = file.getName().substring(0, file.getName().length() - extension.length() - 1);
         String digits = stem.replaceAll("[^0-9Xx]", "");
         String field;
         if (digits.matches("\\d{14}")) {
@@ -434,53 +492,62 @@ public class PulImporter {
         } else if (digits.matches("[0-9Xx]{10}|\\d{13}")) {
             field = Publication.IDENTIFIER_ISBN_FIELD;
         } else {
-            return new Outcome(Decision.ERROR, pdf, null, null, "file name is neither <GCOI>.pdf nor <ISBN>.pdf");
+            return new Outcome(Decision.ERROR, file, null, null,
+                "file name is neither <GCOI>.%s nor <ISBN>.%s".formatted(extension, extension));
         }
         String identifier = field.equals(Publication.IDENTIFIER_GCOI_FIELD) ? "GCOI " + stem : "ISBN " + stem;
         try {
             Optional<Publication> found = publicationService.findFirstByIdentifier(context, field, stem);
             if (found.isEmpty()) {
-                return new Outcome(Decision.PENDING, pdf, null, null,
+                return new Outcome(Decision.PENDING, file, null, null,
                     "no publication with %s yet, left for a later run".formatted(identifier));
             }
             Item item = found.get().getItem();
             boolean openAccess = !values(item, LICENSE_FIELD).isEmpty();
-            return new Outcome(Decision.UPDATE, pdf, null, item, "PDF for %s, %s, stored as %s".formatted(identifier,
-                openAccess ? OPEN_ACCESS + " (" + LICENSE_FIELD + " present)" : RESTRICTED, pdfName(item, pdf)));
+            return new Outcome(Decision.UPDATE, file, null, item, "%s for %s, %s, stored as %s".formatted(
+                extension.toUpperCase(), identifier,
+                openAccess ? OPEN_ACCESS + " (" + LICENSE_FIELD + " present)" : RESTRICTED, fileName(item, file)));
         } catch (Exception e) {
-            return new Outcome(Decision.ERROR, pdf, null, null, "lookup failed: " + e.getMessage());
+            return new Outcome(Decision.ERROR, file, null, null, "lookup failed: " + e.getMessage());
         }
     }
 
-    /**
-     * The name a PUL file gets in DSpace: {@code <GCOI>.pdf} with the publication's first GCOI, whatever the
-     * delivered name (PUL also names files after the ISBN); the delivered name when the publication has no GCOI.
-     */
-    private String pdfName(Item item, File pdf) {
-        return values(item, Publication.IDENTIFIER_GCOI_FIELD).stream().findFirst()
-            .map(gcoi -> gcoi + ".pdf")
-            .orElse(pdf.getName());
+    /** The accepted extensions for a message, e.g. {@code .pdf or .epub}. */
+    public static String expectedExtensions() {
+        return FILE_EXTENSIONS.stream().sorted().map(extension -> "." + extension)
+            .collect(Collectors.joining(" or "));
     }
 
     /**
-     * Attach the PDF of a {@link #decidePdf} outcome to its publication: in the ORIGINAL bundle as
-     * {@code <GCOI>.pdf} (see {@link #pdfName}), replacing a file of that name without further ado, primary
-     * bitstream if there is none yet, with a single read policy taken
-     * from the submission access conditions: {@code openaccess} when the item carries a {@code dcterms.license},
-     * {@code restricted} (UCLouvain network) otherwise. An open access PDF also gets the license URL as its own
-     * license. The caller commits.
+     * The name a PUL file gets in DSpace: {@code <GCOI>.<extension>} with the publication's first GCOI and the
+     * delivered extension, whatever the delivered name (PUL also names files after the ISBN); the delivered name
+     * when the publication has no GCOI.
+     */
+    private String fileName(Item item, File file) {
+        return values(item, Publication.IDENTIFIER_GCOI_FIELD).stream().findFirst()
+            .map(gcoi -> gcoi + "." + extensionOf(file))
+            .orElse(file.getName());
+    }
+
+    /**
+     * Attach the file of a {@link #decideFile} outcome to its publication: in the ORIGINAL bundle as
+     * {@code <GCOI>.<extension>} (see {@link #fileName}), replacing a file of that name without further ado, with a
+     * single read policy taken from the submission access conditions: {@code openaccess} when the item carries a
+     * {@code dcterms.license}, {@code restricted} (UCLouvain network) otherwise. An open access file also gets the
+     * license URL as its own license. The primary bitstream of the bundle is never set: a PDF and an EPUB of the
+     * same book are equals. The caller commits.
      *
      * @param context the DSpace context, in read-write mode.
-     * @param outcome an {@link Decision#UPDATE} outcome of {@link #decidePdf}.
+     * @param outcome an {@link Decision#UPDATE} outcome of {@link #decideFile}.
      * @return the outcome completed with what was done.
      * @throws Exception if anything fails; the caller rolls back.
      */
-    public Outcome storePdf(Context context, Outcome outcome) throws Exception {
+    public Outcome storeFile(Context context, Outcome outcome) throws Exception {
         if (outcome.decision() != Decision.UPDATE || outcome.item() == null) {
-            throw new IllegalArgumentException("Not a PDF to store: " + outcome.describe());
+            throw new IllegalArgumentException("Not a file to store: " + outcome.describe());
         }
         Item item = outcome.item();
-        File pdf = outcome.file();
+        File file = outcome.file();
         List<String> licenses = values(item, LICENSE_FIELD);
         boolean openAccess = !licenses.isEmpty();
 
@@ -488,7 +555,7 @@ public class PulImporter {
         Bundle original = bundles.isEmpty()
             ? bundleService.create(context, item, Constants.CONTENT_BUNDLE_NAME)
             : bundles.get(0);
-        String name = pdfName(item, pdf);
+        String name = fileName(item, file);
         boolean replaced = false;
         for (Bitstream previous : new ArrayList<>(original.getBitstreams())) {
             if (name.equals(previous.getName())) {
@@ -497,25 +564,31 @@ public class PulImporter {
             }
         }
         Bitstream bitstream;
-        try (InputStream content = new FileInputStream(pdf)) {
+        try (InputStream content = new FileInputStream(file)) {
             bitstream = bitstreamService.create(context, original, content);
         }
         bitstream.setName(context, name);
-        bitstream.setSource(context, pdf.getName());
+        bitstream.setSource(context, file.getName());
         bitstream.setFormat(context, bitstreamFormatService.guessFormat(context, bitstream));
         if (openAccess && licenses.get(0).startsWith("http")) {
             bitstreamService.setMetadataSingleValue(context, bitstream,
                 new MetadataFieldName(licenseField()), null, licenses.get(0));
         }
         bitstreamService.update(context, bitstream);
-        if (original.getPrimaryBitstream() == null) {
-            original.setPrimaryBitstreamID(bitstream);
-            bundleService.update(context, original);
-        }
         authorizeService.removeAllPolicies(context, bitstream);
         String access = openAccess ? OPEN_ACCESS : RESTRICTED;
         accessCondition(access).createResourcePolicy(context, bitstream, access, null, null, null);
         return outcome.applied(item, "%s %s (%s)".formatted(replaced ? "replaced" : "stored", name, access));
+    }
+
+    /**
+     * The name of the cover: {@code <GCOI>.pdf.jpg} with the publication's first GCOI, the name filter-media would
+     * give a thumbnail of the PDF; the ONIX file name plus {@code .jpg} when the publication has no GCOI.
+     */
+    private String coverName(Item item, OnixRecord record) {
+        return values(item, Publication.IDENTIFIER_GCOI_FIELD).stream().findFirst()
+            .map(gcoi -> gcoi + ".pdf.jpg")
+            .orElse(record.file().getName() + ".jpg");
     }
 
     /** The bitstream license field of the repository (default {@code dc.rights.license}). */
@@ -574,7 +647,7 @@ public class PulImporter {
             for (Bitstream previous : previousCovers) {
                 bundleService.removeBitstream(context, previous.getBundles().get(0), previous);
             }
-            cover.setName(context, pdfName(item, record.file()) + ".jpg");
+            cover.setName(context, coverName(item, record));
             cover.setSource(context, record.coverUrl());
             cover.setDescription(context, COVER_DESCRIPTION);
             cover.setFormat(context, bitstreamFormatService.findByShortDescription(context, "JPEG"));
