@@ -81,7 +81,7 @@
           #end
 
           <p style="margin: 0 0 1.5rem 0; font-size: 12px; line-height: 1.5;">
-            For any question, please contact the DIAL support<br/>
+            For any question, please contact the <a href="${config.get('uclouvain.support-url')}">DIAL support</a>.<br/>
             Best regards,
           </p>
           <p style="font-size: 12px; line-height: 1.5;">
