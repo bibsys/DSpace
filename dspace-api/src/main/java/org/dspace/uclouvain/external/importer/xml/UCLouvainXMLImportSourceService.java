@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.dspace.content.dto.MetadataValueDTO;
+import org.dspace.core.Context;
 import org.dspace.uclouvain.external.importer.UCLouvainImportSourceServiceImpl;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -22,7 +23,7 @@ import org.jdom2.xpath.XPathFactory;
  * External import service specialized for XML sources.
  */
 public abstract class UCLouvainXMLImportSourceService extends UCLouvainImportSourceServiceImpl {
-    public abstract List<MetadataValueDTO> getMetadataList(String query);
+    public abstract List<MetadataValueDTO> getMetadataList(Context context, String query);
 
     /**
      * Get the value of the first matching element of a given XML tree.

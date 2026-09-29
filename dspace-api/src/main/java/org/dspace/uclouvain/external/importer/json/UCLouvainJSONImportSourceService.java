@@ -11,9 +11,10 @@ import java.util.List;
 
 import com.jayway.jsonpath.ReadContext;
 import org.dspace.content.dto.MetadataValueDTO;
+import org.dspace.core.Context;
 import org.dspace.uclouvain.external.importer.UCLouvainImportSourceServiceImpl;
 public abstract class UCLouvainJSONImportSourceService extends UCLouvainImportSourceServiceImpl {
-    public abstract List<MetadataValueDTO> getMetadataList(String query);
+    public abstract List<MetadataValueDTO> getMetadataList(Context context, String query);
 
     /**
      * Get the first string value for a given json context and path.
