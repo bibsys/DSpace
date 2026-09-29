@@ -11,8 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -32,7 +30,6 @@ import org.dspace.content.Item;
 import org.dspace.content.dto.MetadataValueDTO;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
-import org.dspace.importer.external.liveimportclient.service.LiveImportClient;
 import org.dspace.services.RequestService;
 import org.dspace.uclouvain.external.importer.json.crossref.UCLouvainCrossRefImportSourceService;
 import org.dspace.utils.DSpace;
@@ -63,9 +60,9 @@ public class ImportSourceRequestContextIT extends AbstractIntegrationTestWithDat
 
     @Before
     public void stubHttpClient() {
-        LiveImportClient client = mock(LiveImportClient.class);
-        when(client.executeHttpGetRequest(anyInt(), anyString(), any())).thenReturn(CROSSREF_ANSWER);
-        ReflectionTestUtils.setField(crossRefService, "liveImportClient", client);
+        ExternalSourceClient client = mock(ExternalSourceClient.class);
+        when(client.get(anyString())).thenReturn(CROSSREF_ANSWER);
+        ReflectionTestUtils.setField(crossRefService, "externalSourceClient", client);
     }
 
     @After
