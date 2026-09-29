@@ -17,6 +17,7 @@ import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.poller.UCLouvainItemEnhancerPoller;
 import org.dspace.uclouvain.profileIngester.services.IDMPersonValidityService;
 import org.dspace.uclouvain.services.DirectLinkService;
+import org.dspace.uclouvain.services.ItemEnrichmentService;
 import org.dspace.uclouvain.services.ItemSnapshotService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.OrgUnitService;
@@ -50,6 +51,8 @@ public abstract  class UCLouvainServiceFactory {
     public abstract CleanMetadataService getCleanMetadataService();
     public abstract UCLouvainExportService getExportService();
     public abstract ItemSnapshotService getSnapshotService();
+
+    public abstract ItemEnrichmentService getItemEnrichmentService();
 
     public static UCLouvainServiceFactory getInstance() {
         return DSpaceServicesFactory

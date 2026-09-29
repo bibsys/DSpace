@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- Tracking of the enrichment attempts from the external sources (see EnrichMetadataConsumer) -->
+
+  <!-- DAO ========================================================================================================= -->
+  <bean class="org.dspace.uclouvain.content.dao.impl.ItemEnrichmentDAOImpl"/>
+
+  <!-- SERVICES ==================================================================================================== -->
+  <bean id="uclouvainItemEnrichmentService" class="org.dspace.uclouvain.services.impl.ItemEnrichmentServiceImpl"/>
+</beans>
