@@ -12,6 +12,11 @@
                         <ref bean="pubmedLiveImportDataProvider"/>
                     </list>
                 </entry>
+                <entry key="dc.identifier.doi">
+                    <list>
+                        <ref bean="customCrossRefDataProvider"/>
+                    </list>
+                </entry>
 	        </map>           
         </property>
         <property name="generators">

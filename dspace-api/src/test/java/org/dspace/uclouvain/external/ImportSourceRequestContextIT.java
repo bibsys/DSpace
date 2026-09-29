@@ -91,7 +91,7 @@ public class ImportSourceRequestContextIT extends AbstractIntegrationTestWithDat
         assertSame(context, ContextUtil.obtainCurrentRequestContext());
         Item item = itemService.find(context, itemId);
 
-        List<MetadataValueDTO> metadata = crossRefService.getMetadataList("10.1000/probe");
+        List<MetadataValueDTO> metadata = crossRefService.getMetadataList(context, "10.1000/probe");
 
         // the extraction really ran (a failure inside the service is swallowed and returns an empty list)
         assertFalse("no metadata extracted, the service did not run through", metadata.isEmpty());

@@ -36,7 +36,6 @@ import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.external.importer.xml.UCLouvainXMLImportSourceService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.UCLouvainProfileService;
-import org.dspace.web.ContextUtil;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -67,9 +66,9 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
     private String urlFetch;
     private String urlSearch;
 
-    public List<MetadataValueDTO> getMetadataList(String query) {
+    @Override
+    public List<MetadataValueDTO> getMetadataList(Context context, String query) {
         try {
-            Context context = ContextUtil.obtainCurrentRequestContext();
             String rawResponse = fetchData(query);
             Element parsedXml = parseXmlResponse(rawResponse);
             return generateMetadataList(context, parsedXml);
