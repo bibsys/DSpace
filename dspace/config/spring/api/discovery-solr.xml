@@ -9,7 +9,7 @@
 
     <context:annotation-config /> <!-- allows us to use spring annotations in beans -->
 
-    <bean class="org.dspace.discovery.utils.DiscoverQueryBuilder"/>
+    <bean class="org.dspace.uclouvain.discovery.UCLouvainDiscoverQueryBuilder"/>
 
     <bean name='org.dspace.util.MultiFormatDateParser'
           class='org.dspace.util.MultiFormatDateParser'>
