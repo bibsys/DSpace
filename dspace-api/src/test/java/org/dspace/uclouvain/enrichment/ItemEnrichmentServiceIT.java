@@ -8,8 +8,10 @@
 package org.dspace.uclouvain.enrichment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ import org.dspace.uclouvain.content.enrichment.ItemEnrichment;
 import org.dspace.uclouvain.content.enrichment.ItemEnrichment.Status;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.ItemEnrichmentService;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -40,9 +43,22 @@ public class ItemEnrichmentServiceIT extends AbstractIntegrationTestWithDatabase
     private final ItemEnrichmentDAO dao = DSpaceServicesFactory.getInstance().getServiceManager()
         .getServiceByName(null, ItemEnrichmentDAO.class);
     private Item item;
+    private String originalRetryDelay;
+
+    @After
+    public void restoreRetryDelay() {
+        setRetryDelay(originalRetryDelay);
+    }
+
+    private void setRetryDelay(String seconds) {
+        DSpaceServicesFactory.getInstance().getConfigurationService()
+            .setProperty("uclouvain.enrichment.retry-delay", seconds);
+    }
 
     @Before
     public void createItem() {
+        originalRetryDelay = DSpaceServicesFactory.getInstance().getConfigurationService()
+            .getProperty("uclouvain.enrichment.retry-delay");
         context.turnOffAuthorisationSystem();
         parentCommunity = CommunityBuilder.createCommunity(context).build();
         item = ItemBuilder.createItem(context, CollectionBuilder.createCollection(context, parentCommunity).build())
@@ -90,6 +106,23 @@ public class ItemEnrichmentServiceIT extends AbstractIntegrationTestWithDatabase
         service.record(context, item, "crossref", DOI_FIELD, DOI, Status.ERROR, reason);
 
         assertEquals(1024, service.findLatest(context, item, "crossref", DOI).getReason().length());
+    }
+
+    @Test
+    public void onlyErrorsAreRetriedAndOnlyAfterTheDelay() throws Exception {
+        assertTrue("never attempted", service.shouldAttempt(context, item, "crossref", DOI));
+
+        service.record(context, item, "crossref", DOI_FIELD, DOI, Status.SUCCESS, null);
+        assertFalse("already succeeded", service.shouldAttempt(context, item, "crossref", DOI));
+
+        service.record(context, item, "crossref", DOI_FIELD, DOI, Status.NOT_FOUND, null);
+        assertFalse("the source does not know the identifier", service.shouldAttempt(context, item, "crossref", DOI));
+
+        service.record(context, item, "crossref", DOI_FIELD, DOI, Status.ERROR, "HTTP 500");
+        setRetryDelay("3600");
+        assertFalse("failed too recently", service.shouldAttempt(context, item, "crossref", DOI));
+        setRetryDelay("0");
+        assertTrue("delay elapsed", service.shouldAttempt(context, item, "crossref", DOI));
     }
 
     @Test
