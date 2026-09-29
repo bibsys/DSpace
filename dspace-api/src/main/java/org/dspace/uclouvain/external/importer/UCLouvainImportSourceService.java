@@ -10,9 +10,10 @@ package org.dspace.uclouvain.external.importer;
 import java.util.List;
 
 import org.dspace.content.dto.MetadataValueDTO;
+import org.dspace.core.Context;
 
 public interface UCLouvainImportSourceService {
-    public List<MetadataValueDTO> getMetadataList(String query);
+    public List<MetadataValueDTO> getMetadataList(Context context, String query);
 
     /**
      * Retrieve the total result count for a given query.

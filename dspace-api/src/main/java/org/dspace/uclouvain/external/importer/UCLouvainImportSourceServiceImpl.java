@@ -13,11 +13,12 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.content.dto.MetadataValueDTO;
+import org.dspace.core.Context;
 import org.dspace.core.CrisConstants;
 import org.dspace.uclouvain.core.model.MetadataField;
 
 public abstract class UCLouvainImportSourceServiceImpl implements UCLouvainImportSourceService {
-    public abstract List<MetadataValueDTO> getMetadataList(String query);
+    public abstract List<MetadataValueDTO> getMetadataList(Context context, String query);
     public int authorLimit = Integer.MAX_VALUE;
 
     /**

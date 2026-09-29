@@ -56,7 +56,7 @@ public class SimpleMetadataListener implements MetadataListener {
             for (ExternalDataProvider prov : providers) {
                 String id = generateExternalId(context, prov, item, metadata);
                 if (StringUtils.isNotBlank(id)) {
-                    Optional<ExternalDataObject> result = prov.getExternalDataObject(id);
+                    Optional<ExternalDataObject> result = prov.getExternalDataObject(context, id);
                     if (result.isPresent()) {
                         return result.get();
                     }
