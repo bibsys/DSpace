@@ -36,6 +36,23 @@ public interface ItemEnrichmentService {
     ) throws SQLException;
 
     /**
+     * Whether a provider should be queried for an identifier value: yes when it never was, no after a SUCCESS or
+     * NOT_FOUND answer, and again after an ERROR once {@code uclouvain.enrichment.retry-delay} seconds have elapsed.
+     *
+     * @param context         The DSpace context.
+     * @param item            The item.
+     * @param provider        The provider source identifier.
+     * @param identifierValue The identifier value about to be queried.
+     * @return true when the provider should be queried.
+     */
+    boolean shouldAttempt(
+        Context context,
+        Item item,
+        String provider,
+        String identifierValue
+    ) throws SQLException;
+
+    /**
      * Record an attempt.
      *
      * @param context         The DSpace context.
