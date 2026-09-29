@@ -12,8 +12,6 @@ import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -37,10 +35,10 @@ import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.ItemService;
 import org.dspace.event.factory.EventServiceFactory;
 import org.dspace.event.service.EventService;
-import org.dspace.importer.external.liveimportclient.service.LiveImportClient;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.Journal;
+import org.dspace.uclouvain.external.ExternalSourceClient;
 import org.dspace.uclouvain.external.importer.json.crossref.UCLouvainCrossRefImportSourceService;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
@@ -93,8 +91,8 @@ public class EnrichMetadataConsumerIT extends AbstractIntegrationTestWithDatabas
         UCLouvainServiceFactory.getInstance().getItemEnhancerUpdatePoller();
 
     private UCLouvainCrossRefImportSourceService crossRefService;
-    private LiveImportClient originalClient;
-    private LiveImportClient client;
+    private ExternalSourceClient originalClient;
+    private ExternalSourceClient client;
     private Collection collection;
 
     /**
@@ -120,12 +118,12 @@ public class EnrichMetadataConsumerIT extends AbstractIntegrationTestWithDatabas
     @Before
     public void setup() {
         // Stub the HTTP client of the Spring-managed CrossRef service used by the 'customCrossRefDataProvider'.
-        // Until it is armed with an answer it returns null, which the service turns into an empty extraction.
+        // Until it is armed with an answer it returns null, i.e. "not found", which yields an empty extraction.
         crossRefService = DSpaceServicesFactory.getInstance().getServiceManager()
             .getServiceByName("customCrossRefImportService", UCLouvainCrossRefImportSourceService.class);
-        originalClient = (LiveImportClient) ReflectionTestUtils.getField(crossRefService, "liveImportClient");
-        client = mock(LiveImportClient.class);
-        ReflectionTestUtils.setField(crossRefService, "liveImportClient", client);
+        originalClient = (ExternalSourceClient) ReflectionTestUtils.getField(crossRefService, "externalSourceClient");
+        client = mock(ExternalSourceClient.class);
+        ReflectionTestUtils.setField(crossRefService, "externalSourceClient", client);
 
         context.turnOffAuthorisationSystem();
         parentCommunity = CommunityBuilder.createCommunity(context).withName("Parent Community").build();
@@ -136,7 +134,7 @@ public class EnrichMetadataConsumerIT extends AbstractIntegrationTestWithDatabas
     @After
     @Override
     public void destroy() throws Exception {
-        ReflectionTestUtils.setField(crossRefService, "liveImportClient", originalClient);
+        ReflectionTestUtils.setField(crossRefService, "externalSourceClient", originalClient);
         super.destroy();
         enhancerService.cleanForDateRange(context, new Date(0), new Date());
     }
@@ -182,7 +180,7 @@ public class EnrichMetadataConsumerIT extends AbstractIntegrationTestWithDatabas
         // Mock any Crossref call with fixed response
         //   From now on CrossRef answers, and only the poller run below can reach it.
         clearInvocations(client);
-        when(client.executeHttpGetRequest(anyInt(), endsWith(DOI), any())).thenReturn(CROSSREF_ANSWER);
+        when(client.get(endsWith(DOI))).thenReturn(CROSSREF_ANSWER);
 
         // Update the pen name of the person related to publication author
         //    This will trigger enhancement poller for the linked publication
@@ -196,7 +194,7 @@ public class EnrichMetadataConsumerIT extends AbstractIntegrationTestWithDatabas
 
         poller.run();
         // The consumer did run in the poller thread and reached CrossRef for the publication.
-        verify(client).executeHttpGetRequest(anyInt(), endsWith(DOI), any());
+        verify(client).get(endsWith(DOI));
 
         // Reload the publication and check all metadata from Crossref response are filled into it.
         //

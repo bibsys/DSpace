@@ -183,4 +183,9 @@
             </map>
         </property>
     </bean>
+    <!-- HTTP client of the external sources (CrossRef, PubMed, arXiv): 404 -> null, any other failure -> exception -->
+    <bean id="uclouvainExternalSourceClient" class="org.dspace.uclouvain.external.ExternalSourceClient">
+        <constructor-arg value="${uclouvain.external-source.timeout}"/>
+    </bean>
+
 </beans>

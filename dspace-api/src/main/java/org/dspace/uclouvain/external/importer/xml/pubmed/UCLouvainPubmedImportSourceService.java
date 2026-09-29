@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -29,10 +28,11 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.dto.MetadataValueDTO;
 import org.dspace.core.Context;
-import org.dspace.importer.external.liveimportclient.service.LiveImportClient;
 import org.dspace.profile.ResearcherProfile;
 import org.dspace.uclouvain.core.model.Journal;
 import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.external.ExternalSourceClient;
+import org.dspace.uclouvain.external.ExternalSourceException;
 import org.dspace.uclouvain.external.importer.xml.UCLouvainXMLImportSourceService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.UCLouvainProfileService;
@@ -57,7 +57,7 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
     private static final DateTimeFormatter MONTH_FORMATTER = DateTimeFormatter.ofPattern("MMM", Locale.ENGLISH);
 
     @Autowired
-    private LiveImportClient liveImportClient;
+    private ExternalSourceClient externalSourceClient;
     @Autowired
     private UCLouvainProfileService uclouvainProfileService;
     @Autowired
@@ -70,11 +70,16 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
     public List<MetadataValueDTO> getMetadataList(Context context, String query) {
         try {
             String rawResponse = fetchData(query);
+            if (rawResponse == null) {
+                return List.of();
+            }
             Element parsedXml = parseXmlResponse(rawResponse);
             return generateMetadataList(context, parsedXml);
         } catch (URISyntaxException e) {
             logger.warn("Could not build Pubmed request URL.", e);
             return List.of();
+        } catch (ExternalSourceException e) {
+            throw e;
         } catch (Exception e) {
             logger.warn("Error getting external metadata :: {}", e.getMessage(), e);
             return List.of();
@@ -87,7 +92,7 @@ public class UCLouvainPubmedImportSourceService extends UCLouvainXMLImportSource
         uriBuilder.addParameter("db", "pubmed");
         uriBuilder.addParameter("retmode", "xml");
         uriBuilder.addParameter("id", query);
-        return liveImportClient.executeHttpGetRequest(2000, uriBuilder.toString(), Collections.emptyMap());
+        return externalSourceClient.get(uriBuilder.toString());
     }
 
     private Element parseXmlResponse(String xmlResponse) {
