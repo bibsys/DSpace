@@ -306,9 +306,7 @@ public class UCLouvainProfileServiceImpl implements UCLouvainProfileService {
     private OrgUnit getDefaultProfileInstitution(Context context) {
         // The default institution could be null if the OrgUnits have not been init yet.
         try {
-            return orgUnitService.findByName(
-                new Context(), defaultInstitutionAcronym, null, null, null
-            );
+            return orgUnitService.findByName(context, defaultInstitutionAcronym, null, null, null);
         } catch (Exception e) {
             log.error("Could search for default profile institution '" + defaultInstitutionAcronym + "'", e);
             return null;

@@ -10,6 +10,7 @@ package org.dspace.external.provider;
 import java.util.List;
 import java.util.Optional;
 
+import org.dspace.core.Context;
 import org.dspace.external.model.ExternalDataObject;
 
 /**
@@ -31,6 +32,18 @@ public interface ExternalDataProvider {
      *              This ExternalDataObject will return all the data returned by the ExternalDataProvider
      */
     Optional<ExternalDataObject> getExternalDataObject(String id);
+
+    /**
+     * Same as {@link #getExternalDataObject(String)} with the Context of the caller. Providers that need a Context
+     * override this method; the others fall back to the plain lookup.
+     *
+     * @param context the DSpace Context of the caller
+     * @param id      The id of the ExternalDataObject to retrieve
+     * @return An Optional ExternalDataObject
+     */
+    default Optional<ExternalDataObject> getExternalDataObject(Context context, String id) {
+        return getExternalDataObject(id);
+    }
 
     /**
      * This method will query the ExternalDataProvider's endpoint or data source to retrieve and build a list of
