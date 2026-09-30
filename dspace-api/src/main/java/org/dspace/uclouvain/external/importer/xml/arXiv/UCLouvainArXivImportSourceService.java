@@ -16,7 +16,6 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,8 +24,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.content.dto.MetadataValueDTO;
 import org.dspace.core.Context;
-import org.dspace.importer.external.liveimportclient.service.LiveImportClient;
 import org.dspace.uclouvain.core.model.publication.Publication;
+import org.dspace.uclouvain.external.ExternalSourceClient;
+import org.dspace.uclouvain.external.ExternalSourceException;
 import org.dspace.uclouvain.external.importer.xml.UCLouvainXMLImportSourceService;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -47,8 +47,7 @@ public class UCLouvainArXivImportSourceService extends UCLouvainXMLImportSourceS
     private static final String ARXIV_PREFIX = "arxiv:";
 
     @Autowired
-    private LiveImportClient liveImportClient;
-
+    private ExternalSourceClient externalSourceClient;
     private String url;
 
     @Override
@@ -63,11 +62,16 @@ public class UCLouvainArXivImportSourceService extends UCLouvainXMLImportSourceS
     public List<MetadataValueDTO> getMetadataList(Context context, String query) {
         try {
             String rawResponse = fetchData(extractID(query));
+            if (rawResponse == null) {
+                return List.of();
+            }
             Element parsedXml = parseXmlResponse(rawResponse);
             return generateMetadataList(context, parsedXml);
         } catch (URISyntaxException e) {
             logger.error("Could not build ArXiv request URL.", e);
             return List.of();
+        } catch (ExternalSourceException e) {
+            throw e;
         } catch (Exception e) {
             logger.warn("Error getting external metadata :: {}", e.getMessage(), e);
             return List.of();
@@ -89,7 +93,7 @@ public class UCLouvainArXivImportSourceService extends UCLouvainXMLImportSourceS
     private String fetchData(String query) throws URISyntaxException {
         URIBuilder uriBuilder = new URIBuilder(url);
         uriBuilder.addParameter("id_list", query);
-        return liveImportClient.executeHttpGetRequest(2000, uriBuilder.toString(), Collections.emptyMap());
+        return externalSourceClient.get(uriBuilder.toString());
     }
 
     private Element parseXmlResponse(String xmlResponse) {

@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.content.Item;
 import org.dspace.content.dto.MetadataValueDTO;
 import org.dspace.core.Context;
-import org.dspace.importer.external.liveimportclient.service.LiveImportClient;
 import org.dspace.profile.ResearcherProfile;
 import org.dspace.uclouvain.core.model.Journal;
 import org.dspace.uclouvain.core.model.publication.ArticlePublication;
@@ -37,6 +36,8 @@ import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.ReportPublication;
 import org.dspace.uclouvain.core.model.publication.SpeechPublication;
 import org.dspace.uclouvain.core.utils.DateUtils;
+import org.dspace.uclouvain.external.ExternalSourceClient;
+import org.dspace.uclouvain.external.ExternalSourceException;
 import org.dspace.uclouvain.external.importer.json.UCLouvainJSONImportSourceService;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.UCLouvainProfileService;
@@ -52,7 +53,7 @@ public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSou
     private static final Logger logger = LogManager.getLogger(UCLouvainCrossRefImportSourceService.class);
 
     @Autowired
-    private LiveImportClient liveImportClient;
+    private ExternalSourceClient externalSourceClient;
     @Autowired
     private UCLouvainProfileService uclouvainProfileService;
     @Autowired
@@ -64,8 +65,13 @@ public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSou
     public List<MetadataValueDTO> getMetadataList(Context context, String query) {
         try {
             String rawResponse = fetchData(query);
+            if (rawResponse == null) {
+                return Collections.emptyList();
+            }
             ReadContext parsedJson = parseJsonResponse(rawResponse);
             return generateMetadataList(context, parsedJson);
+        } catch (ExternalSourceException e) {
+            throw e;
         } catch (Exception e) {
             logger.warn("Error getting external metadata :: {}", e.getMessage(), e);
             return Collections.emptyList();
@@ -73,8 +79,7 @@ public class UCLouvainCrossRefImportSourceService extends UCLouvainJSONImportSou
     }
 
     private String fetchData(String query) {
-        String finalUrl = url + "/" + query;
-        return liveImportClient.executeHttpGetRequest(2000, finalUrl, Collections.emptyMap());
+        return externalSourceClient.get(url + "/" + query);
     }
 
     private ReadContext parseJsonResponse(String rawResponse) {
