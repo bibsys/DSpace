@@ -146,7 +146,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider implem
                     // get the version
                     Version version = null;
                     try {
-                        versionHistoryService.getVersion(context, history, item);
+                        version = versionHistoryService.getVersion(context, history, item);
                     } catch (SQLException ex) {
                         throw new RuntimeException("Problem with the database connection occurd.", ex);
                     }
