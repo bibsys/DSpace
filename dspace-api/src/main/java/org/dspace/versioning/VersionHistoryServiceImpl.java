@@ -108,15 +108,7 @@ public class VersionHistoryServiceImpl implements VersionHistoryService {
     public Version getVersion(Context context, VersionHistory versionHistory, Item item)
         throws SQLException {
         Version v = versioningService.getVersion(context, item);
-        if (v != null) {
-            ;
-        }
-        {
-            if (versionHistory.equals(v.getVersionHistory())) {
-                return v;
-            }
-        }
-        return null;
+        return v != null && versionHistory.equals(v.getVersionHistory()) ? v : null;
     }
 
     @Override
