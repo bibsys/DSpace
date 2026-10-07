@@ -86,9 +86,10 @@ public class ESBController {
         // '2021' because a thesis is submitted only from January 2021 (or June 2021, or September 2021)
         List<ThesisSummary> data = new ArrayList<>();
         Iterator<Item> searchResult = masterThesisService.search(
-                context,
-                Triple.of("authors.identifier.fgs", fgs, Boolean.TRUE),
-                Triple.of("dateIssued.year", academicYear + 1, Boolean.TRUE)
+            context,
+            Triple.of("authors.identifier.fgs", fgs, Boolean.TRUE),
+            Triple.of("dateIssued.year", academicYear + 1, Boolean.TRUE),
+            Triple.of("withdrawn", Boolean.FALSE, Boolean.TRUE)
         );
         while (searchResult.hasNext()) {
             data.add(ThesisSummary.parse(searchResult.next()));
