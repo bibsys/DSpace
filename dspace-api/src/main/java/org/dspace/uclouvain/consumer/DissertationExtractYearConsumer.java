@@ -20,6 +20,7 @@ import org.dspace.core.Context;
 import org.dspace.event.Consumer;
 import org.dspace.event.Event;
 import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeException;
 import org.dspace.uclouvain.core.model.publication.DissertationPublication;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
@@ -66,8 +67,15 @@ public class DissertationExtractYearConsumer implements Consumer {
                 if (item == null) {
                     continue;
                 }
+                Publication publication;
+                try {
+                    publication = PublicationFactory.build(item);
+                } catch (InvalidModelEntityTypeException imete) {
+                    logger.info("Item with id [{}] is not a dissertation, skipping.", itemId);
+                    continue;
+                }
+
                 // Make sure that the publication type is 'text::thesis' before doing anything.
-                Publication publication = PublicationFactory.build(item);
                 if (!(publication instanceof DissertationPublication dissertationPublication)) {
                     continue;
                 }
