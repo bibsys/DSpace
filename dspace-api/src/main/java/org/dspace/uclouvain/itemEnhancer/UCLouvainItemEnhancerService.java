@@ -24,6 +24,7 @@ public interface UCLouvainItemEnhancerService {
     public List<ItemToEnhance> getItemsToEnhance(Context context, Integer limit);
     public Integer countItemsToEnhance(Context context);
     public Integer cleanForItem(Context context, UUID uuid);
+    public Integer cleanForItems(Context context, List<UUID> uuids);
     public Integer cleanForDateRange(Context context, Date startDate, Date endDate);
     public List<Pair<Item, Integer>> getAuthorityLinkedItems(Context context, MetadataField metadataField, UUID uuid);
     public List<MetadataEnhancer<Object>> getEnhancers(String entityType, String action);

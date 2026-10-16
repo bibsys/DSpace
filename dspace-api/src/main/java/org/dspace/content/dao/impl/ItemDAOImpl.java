@@ -524,4 +524,20 @@ public class ItemDAOImpl extends AbstractHibernateDSODAO<Item> implements ItemDA
         return new UUIDIterator<Item>(context, ids, Item.class, this);
     }
 
+    /**
+     * DEV_NOTE: the lock is taken with a native query on the 'item' table only. A Hibernate pessimistic lock
+     * ('find(..., PESSIMISTIC_WRITE)') is not suitable: on PostgreSQL, Hibernate locks with separate queries
+     * ('follow-on locking') executed AFTER reading the item, and only on the 'dspaceobject' row, every metadata
+     * value and the metadata field/schema registry rows.
+     * Every metadata change of an item updates its 'item' row ('last_modified'), so it waits for this lock.
+     */
+    @Override
+    public boolean lockForUpdate(Context context, Item item) throws SQLException {
+        return !getHibernateSession(context)
+            .createNativeQuery("SELECT 1 FROM item WHERE uuid = :uuid FOR UPDATE", Integer.class)
+            .setParameter("uuid", item.getID())
+            .getResultList()
+            .isEmpty();
+    }
+
 }

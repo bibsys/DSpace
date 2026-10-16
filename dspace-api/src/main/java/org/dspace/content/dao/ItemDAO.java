@@ -241,5 +241,15 @@ public interface ItemDAO extends DSpaceObjectLegacySupportDAO<Item> {
      */
     Iterator<Item> findByIds(Context context, List<UUID> ids) throws SQLException;
 
+    /**
+     * Lock the row of the given item ('SELECT ... FOR UPDATE') until the end of the current transaction
+     * (commit or rollback).
+     *
+     * @param context The current DSpace context.
+     * @param item    The item to lock.
+     * @return false if the item no longer exists (nothing is locked).
+     * @throws SQLException if database error
+     */
+    boolean lockForUpdate(Context context, Item item) throws SQLException;
 
 }

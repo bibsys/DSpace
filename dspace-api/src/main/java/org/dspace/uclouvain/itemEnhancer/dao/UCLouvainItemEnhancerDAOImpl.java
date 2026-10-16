@@ -46,6 +46,10 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
     /**
      * Try to add a new entry to the database using a given item uuid and its entity-type.
      * If the item is already present in the table, update its 'date_queued'.
+     *
+     * DEV_NOTE: Bulk HQL statements are executed directly in the database: they never touch an entity cached in the
+     * session (which could have been deleted meanwhile by the poller) and the date comes from the database clock
+     * (identical for all the JVMs).
      * 
      * @param context The current DSpace application context.
      * @param uuid The UUID of the item to trigger an enhancement from.
@@ -55,18 +59,17 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
     public void addOrUpdateItemToUpdate(Context context, UUID uuid, String entityType) throws SQLException {
         logger.debug("About to query the database to add an item for enhancement");
         Session session = getHibernateSession();
-
-        // DEV_NOTE: Usage of hibernate instead of SQL for better readability/stability.
-        ItemToEnhance existingEntry = session.get(ItemToEnhance.class, uuid);
-        if (existingEntry == null) {
-            ItemToEnhance newItem = new ItemToEnhance();
-            newItem.setItemUUID(uuid);
-            newItem.setEntityType(entityType);
-            newItem.setDateQueued(new Date());
-            session.persist(newItem);
-        } else {
-            existingEntry.setDateQueued(new Date());
-            session.merge(existingEntry);
+        int updated = session.createMutationQuery(
+                "UPDATE ItemToEnhance SET dateQueued = current_timestamp WHERE itemUUID = :uuid")
+            .setParameter("uuid", uuid)
+            .executeUpdate();
+        if (updated == 0) {
+            session.createMutationQuery(
+                    "INSERT INTO ItemToEnhance (itemUUID, entityType, dateQueued) "
+                    + "VALUES (:uuid, :entityType, current_timestamp)")
+                .setParameter("uuid", uuid)
+                .setParameter("entityType", entityType)
+                .executeUpdate();
         }
     }
 
@@ -121,6 +124,21 @@ public class UCLouvainItemEnhancerDAOImpl extends AbstractHibernateDAO<ItemToEnh
             return 1;
         }
         return 0;
+    }
+
+    /**
+     * Delete the entries for the given items.
+     *
+     * @param context The current DSpace application context.
+     * @param uuids The uuids of the items.
+     * @return An integer to indicate the number of deleted entries.
+     */
+    @Override
+    public Integer cleanTableEntriesForItems(Context context, List<UUID> uuids) throws SQLException {
+        return getHibernateSession()
+            .createMutationQuery("DELETE FROM ItemToEnhance WHERE itemUUID IN (:uuids)")
+            .setParameterList("uuids", uuids)
+            .executeUpdate();
     }
 
     /**

@@ -1110,4 +1110,18 @@ public interface ItemService
         Context context, Item item, String mdString, String lang, String value,
         String authority, Integer place, Integer confidence
     ) throws SQLException;
+
+    /**
+     * Lock the given item until the end of the current transaction (commit or rollback).
+     * The returned item reflects the latest committed state, and no other transaction can modify it before the end
+     * of the current lock (a concurrent update waits for it).
+     * This prevents simultaneous updates of an item, which can lead to lost updates and data corruption.
+     *
+     * @param context The current DSpace application context.
+     * @param item    The item to lock.
+     * @return The locked and reloaded item, or null if it no longer exists.
+     * @throws SQLException if database error occurs
+     * @throws jakarta.persistence.PessimisticLockException if the lock cannot be acquired (e.g. deadlock).
+     */
+    public Item lockForUpdate(Context context, Item item) throws SQLException;
 }

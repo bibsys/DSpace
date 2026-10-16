@@ -23,6 +23,7 @@ public interface UCLouvainItemEnhancerDAO {
     public List<ItemToEnhance> getItemsToEnhance(Context context, Integer limit) throws SQLException;
     public Integer countItemsToEnhance(Context context) throws SQLException;
     public Integer cleanTableEntriesForItem(Context context, UUID uuid) throws SQLException;
+    public Integer cleanTableEntriesForItems(Context context, List<UUID> uuids) throws SQLException;
     public Integer cleanTableEntries(Context context, Date startDate, Date endDate) throws SQLException;
     public List<Pair<Item, Integer>> getAuthorityLinkedItem(
         Context context, MetadataField metadataField, String authority
