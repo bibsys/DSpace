@@ -9,7 +9,6 @@ package org.dspace.uclouvain.itemEnhancer.poller;
 
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,9 +24,6 @@ import org.dspace.uclouvain.itemEnhancer.UCLouvainItemEnhancerService;
 import org.dspace.uclouvain.itemEnhancer.enhancers.MetadataEnhancer;
 import org.dspace.uclouvain.itemEnhancer.model.ItemToEnhance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 /**
  * Poller to process desired items and update their metadata values.
@@ -39,8 +35,6 @@ import org.springframework.stereotype.Component;
  * 
  * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
-@Component
-@EnableScheduling
 public class UCLouvainItemEnhancerPoller {
 
     @Autowired
@@ -53,30 +47,19 @@ public class UCLouvainItemEnhancerPoller {
     private ConfigurationService configService = DSpaceServicesFactory
         .getInstance()
         .getConfigurationService();
-    private boolean isScheduledEnabled = configService.getBooleanProperty(
-        "uclouvain-item-enhancer-poller.enabled", false);
     private int pullLimit = configService.getIntProperty(
-        "uclouvain-item-enhancer-poller.limit", 100);
+        "uclouvain.item-enhancer-poller.limit", 500);
     private boolean enableErrorNotify = configService.getBooleanProperty(
         "uclouvain.enhancement_error_notify.mail.enabled", false
     );
 
     /**
-     * Main poller task, executed every x seconds.
-     * DEV_NOTE: use 'fixedDelay' instead of 'fixedRate' because 'fixedDelay' waits for the execution to end
-     * before triggering countdown.
-     */
-    @Scheduled(fixedDelayString = "${uclouvain-item-enhancer-poller.delay}")
-    public void triggerCycleCheck() {
-        if (isScheduledEnabled) {
-            run();
-        }
-    }
-
-    /**
-     * Main method to trigger the main poller functionality.
-     * This method is called through triggerCycleCheck() with a configured fixed delay.
-     * For tests this method is called directly, this is why it is public.
+     * Process one batch of at most 'uclouvain.item-enhancer-poller.limit' entries of the enhancement table.
+     * Called by the command-line tool at each scheduled execution, and directly by the tests.
+     *
+     * The batch is removed from the table before being processed: an item queued again meanwhile (modified during
+     * the processing) gets a new entry, processed at the next run. An entry failing with an error is not retried
+     * (the error is logged and notified); a target that cannot be locked re-queues its source (see the enhancers).
      */
     public void run() {
         Context context = new Context();
@@ -92,9 +75,19 @@ public class UCLouvainItemEnhancerPoller {
         }
         logger.info("Poller found " + itemsToEnhance.size() + " items to update in the database !");
 
-        // Get max/min dates form list of ItemToEnhance.
-        Date maxDate = itemsToEnhance.stream().map(x -> x.getDateQueued()).max(Date::compareTo).get();
-        Date minDate = itemsToEnhance.stream().map(x -> x.getDateQueued()).min(Date::compareTo).get();
+        // Remove the batch from the table (by item uuid, never by date) before processing it.
+        List<UUID> uuids = itemsToEnhance.stream().map(ItemToEnhance::getItemUUID).toList();
+        try {
+            if (itemEnhancerService.cleanForItems(context, uuids) < 0) {
+                throw new SQLException("Could not remove the batch from the enhancement table");
+            }
+            context.commit();
+        } catch (SQLException e) {
+            logger.error("Could not take the batch from the enhancement table, it will be retried at the next run", e);
+            context.restoreAuthSystemState();
+            context.abort();
+            return;
+        }
 
         for (ItemToEnhance enhancement : itemsToEnhance) {
             try {
@@ -118,18 +111,9 @@ public class UCLouvainItemEnhancerPoller {
                     // Close the context and open up a new one to resolve the rollback issues.
                     context.close();
                     context = new Context();
+                    context.turnOffAuthorisationSystem();
                 }
             }
-        }
-
-        // Clean table from all entries between the max && min dates because they are being processed.
-        Integer deletedEntries = itemEnhancerService.cleanForDateRange(context, minDate, maxDate);
-        if (deletedEntries > itemsToEnhance.size()) {
-            logger.warn(
-                "The number of deleted entries and processed items do not match."
-                + " Dates used in delete query = 'minDate': " + minDate + " 'maxDate': " + maxDate + "."
-                + " Unprocessed entries might have been removed from the database."
-            );
         }
 
         try {

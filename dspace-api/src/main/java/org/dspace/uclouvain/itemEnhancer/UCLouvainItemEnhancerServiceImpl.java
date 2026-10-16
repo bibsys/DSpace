@@ -157,6 +157,23 @@ public class UCLouvainItemEnhancerServiceImpl implements UCLouvainItemEnhancerSe
     }
 
     /**
+     * Clean the entries in the enhancement table for the given items.
+     *
+     * @param context The current DSpace application context.
+     * @param uuids The uuids of the items to delete entries for.
+     * @return The number of deleted entries. Set -1 if any error occurred.
+     */
+    @Override
+    public Integer cleanForItems(Context context, List<UUID> uuids) {
+        try {
+            return uclouvainItemEnhancerDAO.cleanTableEntriesForItems(context, uuids);
+        } catch (Exception e) {
+            logger.error("An error occurred while cleaning the entries of " + uuids.size() + " items", e);
+            return -1;
+        }
+    }
+
+    /**
      * Clean all the scheduled metadata enhancement for a given time period.
      * 
      * @param context The current DSpace context.

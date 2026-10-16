@@ -11,14 +11,17 @@ import static org.dspace.content.authority.Choices.CF_ACCEPTED;
 import static org.dspace.content.authority.Choices.CF_UNSET;
 
 import java.sql.SQLException;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
+import java.util.TreeMap;
+import java.util.UUID;
 
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.PessimisticLockException;
 import org.apache.commons.lang3.tuple.Pair;
+import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataFieldName;
 import org.dspace.content.MetadataValue;
@@ -62,14 +65,11 @@ public abstract class MetadataUpdateEnhancer extends MetadataEnhancer<Item> {
         }
         logger.info("Update of source item {}, enhancing targets...", source.getID());
         MetadataField linkMd = getLinkMD();
-        boolean updateRequired = false;
-        // Set of target items that were effectively modified. Used to trigger the re-indexing
-        // of those items in the Solr index (see below).
-        Set<Item> updatedTargets = new LinkedHashSet<>();
         // Process:
         // 1. Find linked target items.
-        // 2. For each target item, enhance the metadata using the provided mapping.
-        // 3. Update each modified target item so that the 'MODIFY' / 'MODIFY_METADATA' events are fired.
+        // 2. For each target item, in its own short transaction: lock it, enhance the metadata using the provided
+        //    mapping, update it (fires the 'MODIFY' / 'MODIFY_METADATA' events) and commit (releases the lock).
+        List<Pair<Item, Integer>> itemsToEnhance;
         try {
             // DEVNOTE: This call is supposedly optimized by Hibernate (cache logic).
             org.dspace.content.MetadataField metadata = metadataFieldService.findByElement(
@@ -82,52 +82,71 @@ public abstract class MetadataUpdateEnhancer extends MetadataEnhancer<Item> {
             // Each matching metadata fields returns the item and the place of the metadata in the item.
             // Ex: If a publication is linked on 2 'dc.contributor.author' to a profile, then the same
             // publication item will appear 2 times in the result list but with 2 different places.
-            List<Pair<Item, Integer>> itemsToEnhance
-                = itemEnhancerService.getAuthorityLinkedItems(context, metadata, source.getID());
-            for (Pair<Item, Integer> toEnhance : itemsToEnhance) {
-                Item item = toEnhance.getLeft();
-                int place = toEnhance.getRight();
-                try {
-                    logger.info("Enhancing for update for item " + item.getID() + " at place " + place);
-                    // Find the place of the target field and enhance metadata.
-                    // Note: the same item can appear multiple times (one entry per linked place).
-                    boolean targetUpdated = processEnhancement(context, item, source, place);
-                    if (targetUpdated) {
-                        updatedTargets.add(item);
-                    }
-                    updateRequired = targetUpdated || updateRequired;
-                } catch (SQLException sqle) {
-                    logger.error(
-                        "Could not enhance target item %s based on source %s".formatted(
-                            item.getID().toString(), source.getID().toString()
-                        ), sqle
-                    );
-                }
-            }
-            // 'setMetadataInPlace' only persists the metadata values: it does NOT fire any DSpace event.
-            // We need to trigger event addition by calling 'itemService.update' on each modified target item.
-            // If we don't do that, nothing will be reindexed in Solr and the search results will be stale.
-            for (Item updatedTarget : updatedTargets) {
-                try {
-                    itemService.update(context, updatedTarget);
-                    logger.info(
-                        "Target item {} updated to trigger the indexing consumer (Solr update)",
-                        updatedTarget.getID()
-                    );
-                } catch (Exception updateException) {
-                    // The metadata has already been persisted by 'setMetadataInPlace';
-                    // failing here means the Solr index will be stale until a next full re-index or update of the item.
-                    logger.error(
-                        "Could not fire update event for enhanced target item %s".formatted(
-                            updatedTarget.getID().toString()
-                        ), updateException
-                    );
-                }
-            }
+            itemsToEnhance = itemEnhancerService.getAuthorityLinkedItems(context, metadata, source.getID());
         } catch (Exception e) {
             logger.warn("Could not retrieve authority linked items for item id :: " + source.getID().toString(), e);
+            return false;
+        }
+        // Distinct targets, always locked in the same (UUID) order to avoid deadlocks between two enhancements.
+        Map<UUID, Item> targets = new TreeMap<>();
+        itemsToEnhance.forEach(toEnhance -> targets.putIfAbsent(toEnhance.getLeft().getID(), toEnhance.getLeft()));
+
+        boolean updateRequired = false;
+        for (Item linkedItem : targets.values()) {
+            try {
+                // Nobody can modify the target until the commit below. Its places may have changed since the query
+                // above: they are computed again on the locked (fresh) item.
+                Item target = itemService.lockForUpdate(context, linkedItem);
+                if (target == null) {
+                    continue;
+                }
+                boolean targetUpdated = false;
+                for (int place : getLinkedPlaces(target, source)) {
+                    logger.info("Enhancing for update for item " + target.getID() + " at place " + place);
+                    targetUpdated = processEnhancement(context, target, source, place) || targetUpdated;
+                }
+                if (targetUpdated) {
+                    // 'setMetadataInPlace' does NOT fire any DSpace event: 'itemService.update' is needed so that
+                    // the target is reindexed in Solr.
+                    itemService.update(context, target);
+                    updateRequired = true;
+                }
+                context.commit();
+            } catch (PessimisticLockException | LockTimeoutException lockException) {
+                // The lock could not be acquired (e.g. deadlock with a concurrent edition of the target):
+                // the whole source is retried at the next cycle (the enhancement is idempotent).
+                logger.warn("Could not lock target item %s, source item %s is queued again".formatted(
+                    linkedItem.getID().toString(), source.getID().toString()), lockException);
+                context.rollback();
+                itemEnhancerService.addItemForEnhancement(context, source.getID(), getSupportedEntityType());
+                context.commit();
+                return updateRequired;
+            } catch (SQLException | AuthorizeException e) {
+                logger.error(
+                    "Could not enhance target item %s based on source %s".formatted(
+                        linkedItem.getID().toString(), source.getID().toString()
+                    ), e
+                );
+                context.rollback();
+            }
         }
         return updateRequired;
+    }
+
+    /**
+     * Find the places of the linked metadata of the target that point to the source.
+     *
+     * @param target The item to update.
+     * @param source The item to get values from.
+     * @return The places of the target metadata linked by authority to the source.
+     */
+    private List<Integer> getLinkedPlaces(Item target, Item source) {
+        String sourceAuthority = source.getID().toString();
+        return itemService.getMetadataByMetadataString(target, getLinkMD().getFullString())
+            .stream()
+            .filter(metadataValue -> Objects.equals(metadataValue.getAuthority(), sourceAuthority))
+            .map(MetadataValue::getPlace)
+            .toList();
     }
 
     /**

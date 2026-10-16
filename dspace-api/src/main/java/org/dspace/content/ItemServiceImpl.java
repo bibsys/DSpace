@@ -2479,6 +2479,16 @@ prevent the generation of resource policy entry values with null dspace_object a
         }
     }
 
+    @Override
+    public Item lockForUpdate(Context context, Item item) throws SQLException {
+        if (!itemDAO.lockForUpdate(context, item)) {
+            return null;
+        }
+        // Read the item again (with its metadata) now that the lock is held: latest committed state.
+        context.uncacheEntity(item);
+        return find(context, item.getID());
+    }
+
     public String getEntityTypeOptimized(Item item) {
         return (item == null)
             ? null
