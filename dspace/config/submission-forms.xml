@@ -662,6 +662,18 @@ it, please enter the types and the actual numbers or codes.</hint>
           <hint>Select the format(s) of content of the item.</hint>
         </field>
       </row>
+      <row>
+        <field>
+          <dc-schema>publication</dc-schema>
+          <dc-element>collection</dc-element>
+          <dc-qualifier>name</dc-qualifier>
+          <label>Affiliation Collection name</label>
+          <input-type value-pairs-name="publication_collection_names">dropdown</input-type>
+          <repeatable>false</repeatable>
+          <required>You must select a publication name</required>
+          <hint>Select the collection to which the publication belongs.</hint>
+        </field>
+      </row>
     </form>
     <form name="publication-lom">
       <row>
@@ -2624,6 +2636,202 @@ it, please enter the types and the actual numbers or codes.</hint>
     </form>
   </form-definitions>
   <form-value-pairs>
+    <!-- Collections of the publications (publication.collection.name) -->
+    <value-pairs value-pairs-name="publication_collection_names" dc-term="publication_collection_name">
+      <pair>
+        <displayed-value>Academic support - Faculty development</displayed-value>
+        <stored-value>Academic support - Faculty development</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Academic support - Information Literacy</displayed-value>
+        <stored-value>Academic support - Information Literacy</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Academic support - OLE</displayed-value>
+        <stored-value>Academic support - OLE</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Academic support - OLL</displayed-value>
+        <stored-value>Academic support - OLL</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Academic support - Secondary to Postsecondary Transition</displayed-value>
+        <stored-value>Academic support - Secondary to Postsecondary Transition</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Agricultural and veterinary sciences - Agricultural biotechnology</displayed-value>
+        <stored-value>Agricultural and veterinary sciences - Agricultural biotechnology</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Agricultural and veterinary sciences - Agriculture, forestry, and fisheries</displayed-value>
+        <stored-value>Agricultural and veterinary sciences - Agriculture, forestry, and fisheries</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Agricultural and veterinary sciences - Animal and dairy science</displayed-value>
+        <stored-value>Agricultural and veterinary sciences - Animal and dairy science</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Agricultural and veterinary sciences - Other agricultural sciences</displayed-value>
+        <stored-value>Agricultural and veterinary sciences - Other agricultural sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Agricultural and veterinary sciences - Veterinary science</displayed-value>
+        <stored-value>Agricultural and veterinary sciences - Veterinary science</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Chemical engineering</displayed-value>
+        <stored-value>Engineering and technology - Chemical engineering</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Civil engineering</displayed-value>
+        <stored-value>Engineering and technology - Civil engineering</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Electrical engineering, electronic engineering, information engineering</displayed-value>
+        <stored-value>Engineering and technology - Electrical engineering, electronic engineering, information engineering</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Environmental biotechnology</displayed-value>
+        <stored-value>Engineering and technology - Environmental biotechnology</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Environmental engineering</displayed-value>
+        <stored-value>Engineering and technology - Environmental engineering</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Industrial biotechnology</displayed-value>
+        <stored-value>Engineering and technology - Industrial biotechnology</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Materials engineering</displayed-value>
+        <stored-value>Engineering and technology - Materials engineering</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Mechanical engineering</displayed-value>
+        <stored-value>Engineering and technology - Mechanical engineering</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Medical engineering</displayed-value>
+        <stored-value>Engineering and technology - Medical engineering</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Nano-technology</displayed-value>
+        <stored-value>Engineering and technology - Nano-technology</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Engineering and technology - Other engineering and technologies</displayed-value>
+        <stored-value>Engineering and technology - Other engineering and technologies</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Humanities and the arts - Arts (arts, history of arts, performing arts, music)</displayed-value>
+        <stored-value>Humanities and the arts - Arts (arts, history of arts, performing arts, music)</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Humanities and the arts - History and archaeology</displayed-value>
+        <stored-value>Humanities and the arts - History and archaeology</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Humanities and the arts - Languages and literature</displayed-value>
+        <stored-value>Humanities and the arts - Languages and literature</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Humanities and the arts - Other humanities</displayed-value>
+        <stored-value>Humanities and the arts - Other humanities</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Humanities and the arts - Philosophy, ethics and religion</displayed-value>
+        <stored-value>Humanities and the arts - Philosophy, ethics and religion</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Medical and health sciences - Basic medicine</displayed-value>
+        <stored-value>Medical and health sciences - Basic medicine</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Medical and health sciences - Clinical medicine</displayed-value>
+        <stored-value>Medical and health sciences - Clinical medicine</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Medical and health sciences - Health sciences</displayed-value>
+        <stored-value>Medical and health sciences - Health sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Medical and health sciences - Medical biotechnology</displayed-value>
+        <stored-value>Medical and health sciences - Medical biotechnology</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Medical and health sciences - Other medical science</displayed-value>
+        <stored-value>Medical and health sciences - Other medical science</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Biological sciences</displayed-value>
+        <stored-value>Natural sciences - Biological sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Chemical sciences</displayed-value>
+        <stored-value>Natural sciences - Chemical sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Computer sciences and information sciences</displayed-value>
+        <stored-value>Natural sciences - Computer sciences and information sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Earth and related environmental sciences</displayed-value>
+        <stored-value>Natural sciences - Earth and related environmental sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Mathematics</displayed-value>
+        <stored-value>Natural sciences - Mathematics</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Other natural sciences</displayed-value>
+        <stored-value>Natural sciences - Other natural sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Physical sciences</displayed-value>
+        <stored-value>Natural sciences - Physical sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Natural sciences - Statistics</displayed-value>
+        <stored-value>Natural sciences - Statistics</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Economics and business</displayed-value>
+        <stored-value>Social sciences - Economics and business</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Education</displayed-value>
+        <stored-value>Social sciences - Education</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Law</displayed-value>
+        <stored-value>Social sciences - Law</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Media and communications</displayed-value>
+        <stored-value>Social sciences - Media and communications</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Other social sciences</displayed-value>
+        <stored-value>Social sciences - Other social sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Political science</displayed-value>
+        <stored-value>Social sciences - Political science</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Psychology and cognitive sciences</displayed-value>
+        <stored-value>Social sciences - Psychology and cognitive sciences</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Social and economic geography</displayed-value>
+        <stored-value>Social sciences - Social and economic geography</stored-value>
+      </pair>
+      <pair>
+        <displayed-value>Social sciences - Sociology</displayed-value>
+        <stored-value>Social sciences - Sociology</stored-value>
+      </pair>
+    </value-pairs>
+
     <value-pairs value-pairs-name="patent_types" dc-term="patent_types">
       <pair>
         <displayed-value>Use by owner</displayed-value>
