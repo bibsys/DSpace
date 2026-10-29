@@ -174,12 +174,20 @@
         </xsl:element>
     </xsl:template>
     <!-- AUTHORS ====================================================== -->
+    <!-- Each author gets an empty email (placeholder) so that authors.email.official -->
+    <!-- stays aligned with dc.contributor.author, as the submission form does -->
     <xsl:template match="/mods:mods/mods:name">
         <xsl:element name="dim:field">
             <xsl:attribute name="mdschema">dc</xsl:attribute>
             <xsl:attribute name="element">contributor</xsl:attribute>
             <xsl:attribute name="qualifier">author</xsl:attribute>
             <xsl:value-of select="normalize-space(./mods:namePart)"/>
+        </xsl:element>
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">authors</xsl:attribute>
+            <xsl:attribute name="element">email</xsl:attribute>
+            <xsl:attribute name="qualifier">official</xsl:attribute>
+            <xsl:text>#PLACEHOLDER_PARENT_METADATA_VALUE#</xsl:text>
         </xsl:element>
     </xsl:template>
     <!-- Rights ====================================================== -->

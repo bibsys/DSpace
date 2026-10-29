@@ -4,6 +4,11 @@
         "lastname": "Bambelle",
         "firstname": "Larry",
         "password": "admin"
+    },{
+        "email": "import-dspace@uclouvain.be",
+        "lastname": "Importer",
+        "firstname": "DSpace",
+        "password": "import"
     }],
     "users":[{
         "email": "manager@dspace.org",
