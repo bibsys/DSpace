@@ -30,6 +30,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.Entity;
 import org.dspace.uclouvain.core.model.EntityType;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 
@@ -83,23 +84,31 @@ public class DegreeMetadataConsumer implements Consumer {
 
     @Override
     public void end(Context context) throws Exception {
-        for (UUID uuid : itemToProcess) {
-            Item item = itemService.find(context, uuid);
-            if (item != null) {
-                // 1) Get existing rootDegree/faculty metadata stored into the item.
-                // 2) Retrieve the rootDegree/faculty related to degrees stored into the item.
-                // 3) Compare both lists; if any divergences are found, then update the item
-                //    a) clear existing rootDegree/faculty metadata stored into the item
-                //    b) add newly computed metadata into the item
-                Set<Pair<String, String>> existingMetadata = getPreviousMetadata(item);
-                Set<Pair<String, String>> computedMetadata = getRelatedEntities(item);
-                if (!(existingMetadata).equals(computedMetadata)) {
-                    clearPreviousMetadata(context, item);
-                    addComputedMetadata(context, item, computedMetadata);
+        try {
+            Set<Item> updatedItems = new HashSet<>();
+            for (UUID uuid : itemToProcess) {
+                Item item = itemService.find(context, uuid);
+                if (item != null) {
+                    // 1) Get existing rootDegree/faculty metadata stored into the item.
+                    // 2) Retrieve the rootDegree/faculty related to degrees stored into the item.
+                    // 3) Compare both lists; if any divergences are found, then update the item
+                    //    a) clear existing rootDegree/faculty metadata stored into the item
+                    //    b) add newly computed metadata into the item
+                    Set<Pair<String, String>> existingMetadata = getPreviousMetadata(item);
+                    Set<Pair<String, String>> computedMetadata = getRelatedEntities(item);
+                    if (!(existingMetadata).equals(computedMetadata)) {
+                        clearPreviousMetadata(context, item);
+                        addComputedMetadata(context, item, computedMetadata);
+                        updatedItems.add(item);
+                    }
                 }
             }
+            // Updated items must be explicitly reindexed : events generated during `end()` are never dispatched.
+            DiscoveryUtils.reindexItems(context, updatedItems);
+        } finally {
+            // Always clear the itemToProcess
+            itemToProcess.clear();
         }
-        itemToProcess.clear();
     }
 
     @Override

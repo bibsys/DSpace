@@ -36,6 +36,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.content.service.CommentService;
 import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 import org.dspace.uclouvain.core.utils.ItemUtils;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
@@ -111,9 +112,16 @@ public class AccessTypeConsumer extends AbstractBitstreamConsumer implements Con
             for (UUID id : bitstreamToProcess) {
                 processBitstream(context, bitstreamService.find(context, id));
             }
+            // Updated items must be explicitly reindexed : events generated during `end()` are
+            // never dispatched to index consumer.
+            Set<Item> updatedItems = new HashSet<>();
             for (UUID id : itemToProcess) {
-                processItem(context, itemService.find(context, id));
+                Item item = itemService.find(context, id);
+                if (item != null && processItem(context, item)) {
+                    updatedItems.add(item);
+                }
             }
+            DiscoveryUtils.reindexItems(context, updatedItems);
         } finally {
             context.restoreAuthSystemState();
             bitstreamToProcess.clear();
@@ -148,9 +156,9 @@ public class AccessTypeConsumer extends AbstractBitstreamConsumer implements Con
         }
     }
 
-    private void processItem(Context context, Item item) throws AuthorizeException, SQLException {
+    private boolean processItem(Context context, Item item) throws AuthorizeException, SQLException {
         String accessType = accessStatusService.getAccessStatus(context, item);
-        updateAccessTypeMetadata(context, item, accessType);
+        return updateAccessTypeMetadata(context, item, accessType);
     }
 
     /**
