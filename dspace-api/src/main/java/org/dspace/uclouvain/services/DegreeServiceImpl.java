@@ -70,7 +70,9 @@ public class DegreeServiceImpl implements DegreeService {
 
     /**
      * Deduplicate two lists of results by degree label.
-     * Results from the first (thesis) list take priority.
+     * For a given label, the result with the most filled fields is kept
+     * (see {@link DegreeSearchResult#completeness()}). On a tie, the first
+     * encountered result wins, so the first (thesis) list takes priority.
      *
      * @param first  primary results (higher priority)
      * @param second secondary results (fill the gap)
@@ -82,7 +84,9 @@ public class DegreeServiceImpl implements DegreeService {
             .collect(Collectors.toMap(
                 DegreeSearchResult::degreeLabel, // Key
                 degreeResult -> degreeResult, // Value
-                (existing, replacement) -> existing, // If duplicate key, keep existing key
+                // If duplicate key, keep the richest result (existing one wins on tie)
+                (existing, replacement) ->
+                    replacement.completeness() > existing.completeness() ? replacement : existing,
                 LinkedHashMap::new
             ))
             .values().stream().toList();
