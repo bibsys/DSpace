@@ -1155,7 +1155,14 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             Object bucketsInfoObj = facets.get("entries_count");
             if (bucketsInfoObj instanceof NamedList) {
                 NamedList<Object> bucketsInfo = (NamedList<Object>) bucketsInfoObj;
-                result.setTotalEntries((int) bucketsInfo.get("numBuckets"));
+                // UPD UCLouvain :: Caused by SolrCloud with multiple shards
+                //   * Solr in standalone mode use `FacetFieldProcessor` that return (int)
+                //   * Solr in distributed mode (cloud) use `FacetFieldMerger` class to add `numBuckets` from every
+                //     shard responses into a `Long` to avoid memory overflow
+                //   --> cast `numBuckets` response into generic `Number` class. It allows a max result to
+                //        2.147.486.647 max value.... seems OK for a facet value.
+                result.setTotalEntries(((Number) bucketsInfo.get("numBuckets")).intValue());
+                // result.setTotalEntries((int) bucketsInfo.get("numBuckets"));
             }
         }
     }
