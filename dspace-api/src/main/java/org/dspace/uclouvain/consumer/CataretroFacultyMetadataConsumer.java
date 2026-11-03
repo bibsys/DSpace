@@ -28,6 +28,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.Entity;
 import org.dspace.uclouvain.core.model.EntityType;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.UCLouvainEntityService;
 
@@ -69,28 +70,36 @@ public class CataretroFacultyMetadataConsumer implements Consumer {
 
     @Override
     public void end(Context context) throws Exception {
-        MetadataField fnField = metadataFieldService.findByString(context, facultyNameFieldName, '.');
-        for (UUID id : itemToProcess) {
-            Item item = itemService.find(context, id);
-            if (item != null) {
-                Set<String> existingFacultyNames = getExistingFacultyNames(item);
-                Set<String> computedFacultyNames = getComputedFacultyNames(item);
-                if (!(existingFacultyNames.equals(computedFacultyNames))) {
-                    // Clear previously stored faculty name metadata
-                    itemService.clearMetadata(
-                            context,
-                            item,
-                            fnField.getMetadataSchema().getName(),
-                            fnField.getElement(),
-                            fnField.getQualifier(),
-                            null
-                    );
-                    // Add new computed faculty names
-                    for (String facultyName : computedFacultyNames) {
-                        itemService.addMetadata(context, item, fnField, null, facultyName);
+        try {
+            MetadataField fnField = metadataFieldService.findByString(context, facultyNameFieldName, '.');
+            Set<Item> updatedItems = new HashSet<>();
+            for (UUID id : itemToProcess) {
+                Item item = itemService.find(context, id);
+                if (item != null) {
+                    Set<String> existingFacultyNames = getExistingFacultyNames(item);
+                    Set<String> computedFacultyNames = getComputedFacultyNames(item);
+                    if (!(existingFacultyNames.equals(computedFacultyNames))) {
+                        // Clear previously stored faculty name metadata
+                        itemService.clearMetadata(
+                                context,
+                                item,
+                                fnField.getMetadataSchema().getName(),
+                                fnField.getElement(),
+                                fnField.getQualifier(),
+                                null
+                        );
+                        // Add new computed faculty names
+                        for (String facultyName : computedFacultyNames) {
+                            itemService.addMetadata(context, item, fnField, null, facultyName);
+                        }
+                        updatedItems.add(item);
                     }
                 }
             }
+            // Updated items must be explicitly reindexed : events generated during `end()` are never dispatched.
+            DiscoveryUtils.reindexItems(context, updatedItems);
+        } finally {
+            itemToProcess.clear();
         }
     }
 
