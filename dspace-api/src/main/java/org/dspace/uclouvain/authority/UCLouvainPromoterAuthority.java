@@ -10,47 +10,43 @@ package org.dspace.uclouvain.authority;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
-import org.dspace.uclouvain.authority.factory.UCLouvainAuthorityServiceFactory;
-import org.dspace.uclouvain.external.dilbert.model.DialPerson;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.dspace.uclouvain.external.patority.model.PatronModel;
 
+/**
+ * This is an implementation for the UCLouvain's ChoiceAuthority which manages the addition of promoters (staff).
+ * 
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
+ */
 public class UCLouvainPromoterAuthority extends AbstractUCLouvainAuthority {
 
-    private UCLouvainAuthorityClient getUCLouvainAuthorityClient() {
-        return UCLouvainAuthorityServiceFactory.getInstance().getUCLouvainAuthorityClient();
+    /** IDM grids of the staff. */
+    private static final int[] TARGET_IDM_GRIDS = {1, 2, 3, 4, 6, 7, 8, 9, 21, 22, 23, 24, 27, 32, 85, 91};
+    private static final String TARGET_EMAIL_DOMAIN = "@uclouvain.be";
+
+    @Override
+    protected int[] getIdmGrids() {
+        return TARGET_IDM_GRIDS.clone();
     }
 
-    public String getLabel(String key, String locale) {
-        return "";
-    }
-
-    /** 
-     * Retrieve the list of promoter based on the query (first and last name)
-     * 
-     * @param query The name typed by the user, used to search for students
-     * @return An array containing the result of the search
-     */
-    DialPerson[] getSuggestions(String query) {
-        return this.getUCLouvainAuthorityClient().getSuggestionByTermWithFilter(query, "promoters");
-    }
-
-    /** 
+    /**
      * Generate a list of extra information that will be displayed under the main information
      * Also used to populate the fields when the user selects a choice in the list
-     * 
-     * @param person One dialPerson (result from a search) that will be used to generate extra data
-     * @return An array containing the extras
+     *
+     * @param patron One patron (result from a search) that will be used to generate extra data
+     * @return A map containing the extras
      */
-    Map<String, String> generateExtras(DialPerson person) {
+    @Override
+    Map<String, String> generateExtras(PatronModel patron) {
         Map<String, String> extras = new HashMap<>();
-        String entity = person.getEntity();
-        String institution = person.getInstitution();
-        if (!entity.isEmpty()) {
-            extras.put("institution-entity-name", entity);
+        String[] affiliations = patron.getAffiliations();
+        if (ArrayUtils.isNotEmpty(affiliations)) {
+            extras.put("institution-entity-name", String.join(", ", affiliations));
         }
         // String with "data-" will be used to fill other form fields
-        extras.put("data-advisors_email", person.getEmail());
-        extras.put("data-advisors_institution_name", institution);
+        extras.put("data-advisors_email", getEmailWithDomain(patron, TARGET_EMAIL_DOMAIN));
+        extras.put("data-advisors_institution_name", StringUtils.defaultString(patron.getInstitution()));
         return extras;
     }
 }
