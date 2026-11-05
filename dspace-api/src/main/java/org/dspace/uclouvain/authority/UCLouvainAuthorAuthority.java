@@ -10,66 +10,53 @@ package org.dspace.uclouvain.authority;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
-import org.dspace.uclouvain.authority.factory.UCLouvainAuthorityServiceFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.uclouvain.core.model.Orcid;
-import org.dspace.uclouvain.external.dilbert.model.DialPerson;
+import org.dspace.uclouvain.external.patority.model.PatronModel;
 
 /**
- * This is an implementation for the UCLouvain's ChoiceAuthority which manages the addition of authors
+ * This is an implementation for the UCLouvain's ChoiceAuthority which manages the addition of authors (students).
+ * 
+ * @author Michaël Pourbaix <michael.pourbaix@uclouvain.be>
  */
 public class UCLouvainAuthorAuthority extends AbstractUCLouvainAuthority {
 
-    private UCLouvainAuthorityClient getUCLouvainAuthorityClient() {
-        return UCLouvainAuthorityServiceFactory.getInstance().getUCLouvainAuthorityClient();
+    /** IDM grids of the students. */
+    private static final int[] TARGET_IDM_GRIDS = {48, 400};
+    private static final String TARGET_EMAIL_DOMAIN = "@student.uclouvain.be";
+
+    @Override
+    protected int[] getIdmGrids() {
+        return TARGET_IDM_GRIDS.clone();
     }
 
-    public String getLabel(String key, String locale) {
-        return "";
-    }
-
-    /** 
-     * Retrieve the list of student based on the query (first and last name)
-     * 
-     * @param query The name typed by the user, used to search for students
-     * @return An array containing the result of the search
-     */
-    DialPerson[] getSuggestions(String query) {
-        return this.getUCLouvainAuthorityClient().getSuggestionByTermWithFilter(query, "authors");
-    }
-
-    /** 
+    /**
      * Generate a list of extra information that will be displayed under the main information
      * Also used to populate the fields when the user selects a choice in the list
-     * 
-     * @param person One dialPerson (result from a search) that will be used to generate extra data
-     * @return An array containing the extras
+     *
+     * @param patron One patron (result from a search) that will be used to generate extra data
+     * @return A map containing the extras
      */
-    Map<String, String> generateExtras(DialPerson person) {
+    @Override
+    Map<String, String> generateExtras(PatronModel patron) {
         Map<String, String> extras = new HashMap<>();
 
-        String employeeId = person.getEmployeeId();
-        String institution = person.getInstitution();
-
-        Orcid orcid = new Orcid(person.orcidId);// String with "data-" will be used to fill other form fields
+        String fgs = StringUtils.defaultString(patron.getFgsIdentifier());
+        String noma = StringUtils.defaultString(patron.getNomaIdentifier());
+        Orcid orcid = new Orcid(StringUtils.defaultString(patron.getOrcidIdentifier()).trim());
 
         // Clear the previous selected value for the degree code when there is a new search
         extras.put("data-masterthesis_degree_code", "");
 
         // String with "data-" will be used to fill other form fields
-        extras.put("data-authors_institution_name", institution);
-        extras.put("data-authors_email_official", person.getEmail());
+        extras.put("data-authors_institution_name", StringUtils.defaultString(patron.getInstitution()));
+        extras.put("data-authors_email_official", getEmailWithDomain(patron, TARGET_EMAIL_DOMAIN));
 
-        // The Default value for those fields is an empty string because this will allow us to override
-        // the previous set value
-        extras.put("data-authors_identifier_fgs", "");
-        extras.put("data-authors_identifier_noma", "");
-        if (institution.contains("UCL")) {
-            extras.put("data-authors_identifier_fgs", person.getPrimaryId());
-        }
-        if (!employeeId.isEmpty()) {
-            extras.put("data-authors_identifier_noma", employeeId);
-            extras.put("authors-identifier-noma", employeeId);
+        // The values are always set (empty string by default) to override any previously selected value
+        extras.put("data-authors_identifier_fgs", fgs);
+        extras.put("data-authors_identifier_noma", noma);
+        if (!noma.isEmpty()) {
+            extras.put("authors-identifier-noma", noma);
         }
         if (!orcid.getOrcid().isEmpty()) {
             // For future usage, metadata reference might need to be changed
