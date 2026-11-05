@@ -112,9 +112,11 @@
                                         <fo:block font-size="{$smFontSize}">
                                             <xsl:value-of select="$currentDate"/>
                                         </fo:block>
-                                        <fo:block font-size="8pt">
-                                            Export non conforme au format officiel FWB
-                                        </fo:block>
+                                        <xsl:if test="$showWarning='true'">
+                                            <fo:block font-size="8pt">
+                                                Export non conforme au format officiel FWB
+                                            </fo:block>
+                                        </xsl:if>
                                     </fo:table-cell>
                                     <fo:table-cell text-align="right">
                                         <fo:block font-size="{$smFontSize}">
