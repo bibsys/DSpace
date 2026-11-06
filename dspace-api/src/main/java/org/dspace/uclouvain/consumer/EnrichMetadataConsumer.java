@@ -29,6 +29,7 @@ import org.dspace.submit.listener.ExternalIdGenerator;
 import org.dspace.submit.listener.MetadataListener;
 import org.dspace.submit.listener.SimpleMetadataListener;
 import org.dspace.uclouvain.content.enrichment.ItemEnrichment.Status;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.ItemEnrichmentService;
 import org.dspace.utils.DSpace;
@@ -78,12 +79,15 @@ public class EnrichMetadataConsumer implements Consumer {
     @Override
     public void end(Context context) throws Exception {
         try {
+            Set<Item> itemsToUpdate = new HashSet<>();
             for (UUID uuid : itemsToEnrich) {
                 Item item = itemService.find(context, uuid);
                 if (item != null) {
                     enrich(context, item);
+                    itemsToUpdate.add(item);
                 }
             }
+            DiscoveryUtils.reindexItems(context, itemsToUpdate);
         } finally {
             // Whatever happened, never carry items over to the next commit handled by this (pooled) consumer.
             itemsToEnrich.clear();
