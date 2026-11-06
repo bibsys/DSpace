@@ -28,6 +28,7 @@ import org.dspace.event.Event;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.uclouvain.core.model.MetadataField;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 import org.dspace.uclouvain.plugins.UCLouvainAccessStatusHelper;
 
 /**
@@ -83,15 +84,20 @@ public class AccessTypeConsumer implements Consumer {
     public void end(Context context) throws Exception {
         context.turnOffAuthorisationSystem();
         try {
+            Set<Item> updatedItems = new HashSet<>();
             for (UUID id : itemToProcess) {
-                processItem(context, itemService.find(context, id));
+                Item item = itemService.find(context, id);
+                if (item != null && processItem(context, item)) {
+                    updatedItems.add(item);
+                }
             }
+            DiscoveryUtils.reindexItems(context, updatedItems);
         } finally {
             context.restoreAuthSystemState();
             itemToProcess.clear();
         }
     }
-    private void processItem(Context context, Item item) throws AuthorizeException, SQLException {
+    private boolean processItem(Context context, Item item) throws AuthorizeException, SQLException {
         // Calculate the item global access type based on attached bitstream
         //   1) if `accessType` is empty or UNKNOWN, remove the possible existing item metadata
         //   2) if `accessType` change from possible existing item metadata, update the item.
@@ -106,13 +112,15 @@ public class AccessTypeConsumer implements Consumer {
                     null
             );
             itemService.update(context, item);
-            return;
+            return true;
         }
         String previousMetadata = itemService.getMetadataFirstValue(item, accessTypeField, null);
         if (!accessType.equals(previousMetadata)) {
             itemService.setMetadataSingleValue(context, item, accessTypeField, null, accessType);
             itemService.update(context, item);
+            return true;
         }
+        return false;
     }
 
     /**
