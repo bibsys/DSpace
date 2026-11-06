@@ -24,6 +24,7 @@ import org.dspace.uclouvain.core.model.exceptions.InvalidModelEntityTypeExceptio
 import org.dspace.uclouvain.core.model.publication.DissertationPublication;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 
 /**
  * Consumer to extract the year from the defense date and put it into the default issue date of the dissertation.
@@ -60,7 +61,7 @@ public class DissertationExtractYearConsumer implements Consumer {
     @Override
     public void end(Context context) throws Exception {
         context.turnOffAuthorisationSystem();
-        boolean updateNeeded = false;
+        Set<Item> updatedItems = new HashSet<>();
         for (UUID itemId: idsToProcess) {
             try {
                 Item item = itemService.find(context, itemId);
@@ -91,7 +92,7 @@ public class DissertationExtractYearConsumer implements Consumer {
                             String.valueOf(defenseYear)
                         );
                         itemService.update(context, item);
-                        updateNeeded = true;
+                        updatedItems.add(item);
                     }
                 } else if (issueYear != -1) { // Clear issue year
                     itemService.clearMetadata(
@@ -103,17 +104,18 @@ public class DissertationExtractYearConsumer implements Consumer {
                         null
                     );
                     itemService.update(context, item);
-                    updateNeeded = true;
+                    updatedItems.add(item);
                 }
             } catch (Exception e) {
                 logger.error("Could not extract defense date year for item with id: [{}]", itemId, e);
             }
         }
+        DiscoveryUtils.reindexItems(context, updatedItems);
         // At the end of process, clear the set.
-        idsToProcess.clear();
-        if (updateNeeded) {
+        if (!updatedItems.isEmpty()) {
             context.commit();
         }
+        idsToProcess.clear();
         context.restoreAuthSystemState();
     }
 

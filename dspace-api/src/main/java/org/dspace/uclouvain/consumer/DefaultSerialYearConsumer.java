@@ -24,6 +24,7 @@ import org.dspace.uclouvain.core.model.publication.ArticlePublication;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
 import org.dspace.uclouvain.core.model.publication.SpeechPublication;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 
 /**
  * When a publication date issued is provided, pre-fill the serial issued year if no value is present.
@@ -57,10 +58,11 @@ public class DefaultSerialYearConsumer implements Consumer {
     }
 
     @Override
-    public void end(Context context) {
+    public void end(Context context) throws Exception {
         if (publicationsToProcess.isEmpty()) {
             return;
         }
+        Set<Item> updatedItems = new HashSet<>();
         for (Publication publication : publicationsToProcess) {
             Item item = publication.getItem();
             if (item == null) {
@@ -84,11 +86,13 @@ public class DefaultSerialYearConsumer implements Consumer {
                     String.valueOf(issuedYear)
                 );
                 itemService.update(context, item);
+                updatedItems.add(item);
             } catch (Exception e) {
                 logger.warn("Could not update modified publication :: {}", item.getID().toString(), e);
             }
             context.restoreAuthSystemState();
         }
+        DiscoveryUtils.reindexItems(context, updatedItems);
         publicationsToProcess.clear();
     }
 

@@ -24,6 +24,7 @@ import org.dspace.event.Event;
 import org.dspace.uclouvain.core.model.publication.Publication;
 import org.dspace.uclouvain.core.model.publication.PublicationAuthor;
 import org.dspace.uclouvain.core.model.publication.PublicationFactory;
+import org.dspace.uclouvain.core.utils.DiscoveryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,6 +97,7 @@ public class DefaultAuthorRoleConsumer implements Consumer {
             // Persist changes if the item has changed.
             itemService.update(context, itemToUpdate);
         }
+        DiscoveryUtils.reindexItems(context, itemsToUpdate);
         itemsToUpdate.clear();
         itemToProcess.clear();
     }
