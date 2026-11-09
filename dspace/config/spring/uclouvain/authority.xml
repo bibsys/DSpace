@@ -18,21 +18,14 @@
     <!-- Handles author authority lookups -->
     <bean id="uclouvainAuthorAuthority" class="org.dspace.uclouvain.authority.UCLouvainAuthorAuthority" />
 
-    <bean id="uclouvainAuthorityAPIConfiguration" class="org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration">
-        <property name="filters">
-            <util:map key-type="java.lang.String" value-type="java.lang.String">
-                <entry key="authors" value="${uclouvain.main_author_query.filter}" />
-           </util:map>
-       </property>
-    </bean>
-
     <bean id="uclouvainAuthorityServiceFactory" class="org.dspace.uclouvain.authority.factory.UCLouvainAuthorityServiceFactoryImpl"/>
 
-    <bean id="uclouvainAuthorityClient" class="org.dspace.uclouvain.external.dilbert.client.DilbertClient" >
+    <bean id="patorityClient" class="org.dspace.uclouvain.external.patority.client.PatorityClientImpl">
         <!-- Custom HttpClient -->
         <property name="httpClient">
             <bean class="org.dspace.uclouvain.core.GenericHttpClient">
-                <property name="baseUrl" value="${uclouvain.main_author_query.url}"/>
+                <property name="baseUrl" value="${uclouvain.patority.main_url}"/>
+                <property name="token" value="${uclouvain.patority.token}"/>
             </bean>
         </property>
     </bean>
