@@ -7,12 +7,11 @@
  */
 package org.dspace.uclouvain.authority.factory;
 
-import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
-import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration;
+import org.dspace.uclouvain.external.patority.client.PatorityClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * UCL's service factory to retrieve an instance of UCLouvainClient & UCLouvainAuthorityConfig
+ * UCLouvain's authority service factory, used to retrieve the Patority client
  * 
  * @author Laurent Dubois (laurent.dubois@uclouvain.be)
  * @author Michaël Pourbaix (michael.pourbaix@uclouvain.be)
@@ -20,17 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UCLouvainAuthorityServiceFactoryImpl implements UCLouvainAuthorityServiceFactory {
 
     @Autowired
-    private UCLouvainAuthorityClient uclouvainAuthorityClient;
-    @Autowired
-    private UCLouvainAuthorityAPIConfiguration uclouvainAuthorityAPIConfiguration;
+    private PatorityClient patorityClient;
 
     @Override
-    public UCLouvainAuthorityClient getUCLouvainAuthorityClient() {
-        return this.uclouvainAuthorityClient;
-    }
-
-    @Override
-    public UCLouvainAuthorityAPIConfiguration getUCLouvainAuthorityConfiguration() {
-        return this.uclouvainAuthorityAPIConfiguration;
+    public PatorityClient getPatorityClient() {
+        return this.patorityClient;
     }
 }
