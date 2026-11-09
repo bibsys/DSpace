@@ -8,8 +8,7 @@
 package org.dspace.uclouvain.authority.factory;
 
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.dspace.uclouvain.authority.client.UCLouvainAuthorityClient;
-import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfiguration;
+import org.dspace.uclouvain.external.patority.client.PatorityClient;
 
 /**
  * Main interface for UCLouvainAuthorityServiceFactory
@@ -19,9 +18,7 @@ import org.dspace.uclouvain.authority.configuration.UCLouvainAuthorityAPIConfigu
  */
 public interface UCLouvainAuthorityServiceFactory {
 
-    UCLouvainAuthorityClient getUCLouvainAuthorityClient();
-
-    UCLouvainAuthorityAPIConfiguration getUCLouvainAuthorityConfiguration();
+    PatorityClient getPatorityClient();
 
     static UCLouvainAuthorityServiceFactory getInstance() {
         return DSpaceServicesFactory
