@@ -15,6 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.time.Duration;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class GenericHttpClient {
     private HttpClient httpClient;
     private String baseUrl;
     private String token;
+    private Duration timeout;
 
     // OAuth configuration
     private boolean oauthEnabled = false;
@@ -45,6 +47,9 @@ public class GenericHttpClient {
 
     private HttpRequest.Builder generateHttpRequestBuilder(String url) {
         HttpRequest.Builder httpRequestBuilder = HttpRequest.newBuilder().uri(URI.create(url));
+        if (this.timeout != null) {
+            httpRequestBuilder.timeout(this.timeout);
+        }
         if (!(this.token == null) && !(this.token.isEmpty())) {
             httpRequestBuilder.setHeader("Authorization", this.token);
         }
@@ -146,6 +151,9 @@ public class GenericHttpClient {
     }
     public void setToken(String token) {
         this.token = token;
+    }
+    public void setTimeout(int timeoutSeconds) {
+        this.timeout = timeoutSeconds > 0 ? Duration.ofSeconds(timeoutSeconds) : null;
     }
     public void setOauthEnabled(boolean oauthEnabled) {
         this.oauthEnabled = oauthEnabled;
