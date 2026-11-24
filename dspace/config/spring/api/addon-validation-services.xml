@@ -67,4 +67,8 @@
     <bean name="FWBAccessStatusValidation" class="org.dspace.uclouvain.validation.FWBAccessTypeValidator">
         <property name="name" value="upload"/>
     </bean>
+    <!-- Custom UCLouvain validator: a value must belong to the list of values (value-pairs) of its field -->
+    <bean name="valuePairsValidation" class="org.dspace.uclouvain.validation.ValuePairsValidator">
+        <property name="name" value="submission-form"/>
+    </bean>
 </beans>

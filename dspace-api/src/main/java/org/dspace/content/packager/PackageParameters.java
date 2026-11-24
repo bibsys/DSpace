@@ -149,6 +149,28 @@ public class PackageParameters extends Properties {
         addProperty("useWorkflow", String.valueOf(value));
     }
 
+    /**
+     * UCLouvain: utility method to tell if an ingested Item must pass the submission validators before being
+     * archived. Checks the Packager parameters.
+     * <p>
+     * Defaults to 'false' if previously unset, so that existing packager usages are unchanged. Not to be confused
+     * with the 'validate' parameter, which is about validating the METS manifest against its XML schemas.
+     *
+     * @return boolean result
+     */
+    public boolean submissionValidationEnabled() {
+        return getBooleanProperty("validateSubmission", false);
+    }
+
+    /***
+     * UCLouvain: utility method to enable/disable the submission validators for Item ingestion.
+     *
+     * @param value boolean value (true = validation enabled, false = validation disabled)
+     */
+    public void setSubmissionValidationEnabled(boolean value) {
+        addProperty("validateSubmission", String.valueOf(value));
+    }
+
 
     /***
      * Utility method to tell if restore mode is enabled.

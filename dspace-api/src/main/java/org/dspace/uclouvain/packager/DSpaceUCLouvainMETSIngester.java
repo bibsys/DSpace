@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -36,6 +37,7 @@ import org.dspace.content.DCDate;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataField;
+import org.dspace.content.WorkspaceItem;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.crosswalk.CrosswalkException;
 import org.dspace.content.crosswalk.MetadataValidationException;
@@ -50,6 +52,7 @@ import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.content.service.MetadataFieldService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
+import org.dspace.discovery.SearchServiceException;
 import org.dspace.profile.ResearcherProfile;
 import org.dspace.profile.service.ResearcherProfileService;
 import org.dspace.services.ConfigurationService;
@@ -62,6 +65,8 @@ import org.dspace.uclouvain.factories.UCLouvainServiceFactory;
 import org.dspace.uclouvain.services.JournalService;
 import org.dspace.uclouvain.services.OrgUnitService;
 import org.dspace.utils.DSpace;
+import org.dspace.validation.model.ValidationError;
+import org.dspace.validation.service.factory.ValidationServiceFactory;
 import org.dspace.workflow.WorkflowException;
 import org.jdom2.Content;
 import org.jdom2.Element;
@@ -265,6 +270,21 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         }
     }
 
+    /**
+     * The mets@ID attribute for UCLouvain is optional: only an object coming from the legacy repository carries one.
+     *
+     * @param manifest the parsed METS manifest
+     * @return the UUID held by the mets@ID attribute; null if the attribute is absent or isn't a UUID
+     * @throws PackageValidationException if validation error
+     */
+    @Override
+    public UUID getObjectID(METSManifest manifest) throws PackageValidationException {
+        String id = manifest.getMets().getAttributeValue("ID");
+        return StringUtils.isBlank(id)
+            ? null
+            : super.getObjectID(manifest);
+    }
+
     @Override
     public void finishObject(Context context, DSpaceObject dso, PackageParameters params)
             throws PackageValidationException, CrosswalkException, AuthorizeException, SQLException, IOException {
@@ -273,6 +293,46 @@ public class DSpaceUCLouvainMETSIngester extends DSpaceMETSIngester {
         //   We need to extract each comment to create a corresponding `Comment` DSO into the system.
         if (dso instanceof Item) {
             createLegacyComment(context, (Item) dso);
+            if (params.submissionValidationEnabled()) {
+                validateSubmission(context, (Item) dso);
+            }
+        }
+    }
+
+    /**
+     * Run the validators of the submission form on an item about to be archived, and check that its DOI is not
+     * the one of an archived item. A refused item is deleted:
+     * unlike a rollback, the deletion leaves no file behind in the assetstore once the standard cleanup has run.
+     *
+     * @param context the DSpace context
+     * @param item the ingested item, not yet archived
+     * @throws SubmissionValidationException if the item is refused; the caller must commit its deletion
+     * @throws PackageValidationException if the item is already archived, as the validators need a submission
+     */
+    private void validateSubmission(Context context, Item item)
+            throws PackageValidationException, SQLException, AuthorizeException, IOException {
+        WorkspaceItem submission = workspaceItemService.findByItem(context, item);
+        if (submission == null) {
+            throw new PackageValidationException("The submission validation only applies to a new item, but ["
+                    + item.getID() + "] is already archived");
+        }
+        List<ValidationError> errors = new ArrayList<>(ValidationServiceFactory
+            .getInstance()
+            .getValidationService()
+            .validate(context, submission));
+        errors.addAll(findDoiDuplicates(context, item));
+        if (!errors.isEmpty()) {
+            workspaceItemService.deleteAll(context, submission);
+            throw new SubmissionValidationException(errors);
+        }
+    }
+
+    private List<ValidationError> findDoiDuplicates(Context context, Item item) throws PackageValidationException {
+        try {
+            return new DoiDuplicateChecker().check(context, item);
+        } catch (SearchServiceException e) {
+            // an unchecked DOI must not be taken for a DOI without duplicate
+            throw new PackageValidationException("Unable to search the archived items having the same DOI", e);
         }
     }
 
