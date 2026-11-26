@@ -164,6 +164,23 @@
             <xsl:value-of select="normalize-space(.)"/>
         </xsl:element>
     </xsl:template>
+    <!-- Additional Link ====================================================== -->
+    <xsl:template match="/mods:mods/mods:location/mods:url">
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">additional</xsl:attribute>
+            <xsl:attribute name="qualifier">uri</xsl:attribute>
+            <xsl:value-of select="normalize-space(.)"/>
+        </xsl:element>
+        <xsl:element name="dim:field">
+            <xsl:attribute name="mdschema">dc</xsl:attribute>
+            <xsl:attribute name="element">additional</xsl:attribute>
+            <xsl:attribute name="qualifier">title</xsl:attribute>
+            <xsl:call-template name="valueOrDefault">
+                <xsl:with-param name="value" select="normalize-space(@displayLabel)"/>
+            </xsl:call-template>
+        </xsl:element>
+    </xsl:template>
     <!-- Language ====================================================== -->
     <xsl:template match="/mods:mods/mods:language/mods:languageTerm[@type='code' and @authority='iso639-2b']">
         <xsl:element name="dim:field">

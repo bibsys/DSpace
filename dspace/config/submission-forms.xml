@@ -557,6 +557,47 @@
         </field>
       </row>
     </form>
+    <form name="publication-additional-dc-additional-uri">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>additional</dc-element>
+          <dc-qualifier>uri</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>URL</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the URL of the external link [i.e. https://www.youtube.com/watch?v=...].</hint>
+          <required>You must enter the URL of the link</required>
+          <regex>^https?://.+</regex>
+        </field>
+      </row>
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>additional</dc-element>
+          <dc-qualifier>title</dc-qualifier>
+          <repeatable>false</repeatable>
+          <label>Title</label>
+          <input-type>onebox</input-type>
+          <hint>Enter the label displayed for this link.</hint>
+          <required />
+        </field>
+      </row>
+    </form>
+    <form name="publication-additional">
+      <row>
+        <field>
+          <dc-schema>dc</dc-schema>
+          <dc-element>additional</dc-element>
+          <dc-qualifier>uri</dc-qualifier>
+          <repeatable>true</repeatable>
+          <label>Additional link(s)</label>
+          <input-type>inline-labeled-group</input-type>
+          <hint>Add additional links related to this item (video, website, ...) with their title.</hint>
+          <required />
+        </field>
+      </row>
+    </form>
     <form name="publication">
       <row>
         <field>
@@ -646,7 +687,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <dc-element>type</dc-element>
           <label>Type</label>
           <input-type value-pairs-name="common_types">dropdown</input-type>
-          <repeatable>false</repeatable>
+          <repeatable>true</repeatable>
           <required>You must select a publication type</required>
           <hint>Select the type(s) of content of the item.</hint>
         </field>
@@ -669,7 +710,7 @@ it, please enter the types and the actual numbers or codes.</hint>
           <dc-qualifier>name</dc-qualifier>
           <label>Affiliation Collection name</label>
           <input-type value-pairs-name="publication_collection_names">dropdown</input-type>
-          <repeatable>false</repeatable>
+          <repeatable>true</repeatable>
           <required>You must select a publication name</required>
           <hint>Select the collection to which the publication belongs.</hint>
         </field>

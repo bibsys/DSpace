@@ -158,6 +158,11 @@
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
       <type>submission-form</type>
     </step-definition>
+    <step-definition id="publication-additional" mandatory="true">
+      <heading>submit.progressbar.describe.publication_additional</heading>
+      <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+      <type>submission-form</type>
+    </step-definition>
     <step-definition id="publication-lom" mandatory="true">
       <heading>submit.progressbar.describe.publication_lom</heading>
       <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
@@ -305,6 +310,7 @@
       <step id="extractionstep" />
       <step id="correction" />
       <step id="upload" />
+      <step id="publication-additional" />
       <step id="publication-authors" />
       <step id="publication" />
       <step id="publication-lom" />
@@ -315,6 +321,7 @@
     <submission-process name="publication-edit">
       <step id="extractionstep" />
       <step id="upload" />
+      <step id="publication-additional" />
       <step id="publication-authors" />
       <step id="publication" />
       <step id="publication-lom" />
