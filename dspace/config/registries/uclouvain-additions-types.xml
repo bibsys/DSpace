@@ -29,6 +29,18 @@
         <qualifier>legacyUri</qualifier>
         <scope_note>To store original handle uri</scope_note>
     </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>additional</element>
+        <qualifier>uri</qualifier>
+        <scope_note>Additional external link (URL) related to the resource [ie: video, website, ...]</scope_note>
+    </dc-type>
+    <dc-type>
+        <schema>dc</schema>
+        <element>additional</element>
+        <qualifier>title</qualifier>
+        <scope_note>Label of the additional external link (aligned with dc.additional.uri)</scope_note>
+    </dc-type>
     <!-- AUTHORS SCHEMA -->
     <dc-schema>
         <name>authors</name>
